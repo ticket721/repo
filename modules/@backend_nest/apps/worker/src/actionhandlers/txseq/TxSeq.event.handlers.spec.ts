@@ -1,11 +1,10 @@
-import { Job, JobOptions, Queue } from 'bull';
+import { Job, JobOptions } from 'bull';
 import { ActionSetsService } from '@lib/common/actionsets/ActionSets.service';
 import { TxsService } from '@lib/common/txs/Txs.service';
-import { getQueueToken, InjectQueue } from '@nestjs/bull';
+import { getQueueToken } from '@nestjs/bull';
 import { TxSeqEventHandlers } from '@app/worker/actionhandlers/txseq/TxSeq.event.handlers';
 import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { Test } from '@nestjs/testing';
-import { MintingTasks } from '@app/worker/tasks/minting/Minting.tasks';
 import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { Action } from '@lib/common/actionsets/helper/Action.class';
 import { TxEntity } from '@lib/common/txs/entities/Tx.entity';

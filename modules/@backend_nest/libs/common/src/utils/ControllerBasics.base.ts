@@ -16,7 +16,6 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
 import { RightEntity } from '@lib/common/rights/entities/Right.entity';
-import { Boundable } from '@lib/common/utils/Boundable.type';
 import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
 import { SearchInputType } from '@lib/common/utils/SearchInput.type';
 
@@ -24,62 +23,6 @@ import { SearchInputType } from '@lib/common/utils/SearchInput.type';
  * Controller Basics, contains most methods used in controllers
  */
 export class ControllerBasics<EntityType> {
-    /**
-     * Helper to use entity binding system
-     *
-     * @param service
-     * @param id
-     * @param entity
-     * @param entityId
-     * @private
-     */
-    public async _bind<CustomEntityType = EntityType>(
-        service: Boundable<CustomEntityType>,
-        id: string,
-        entity: string,
-        entityId: string,
-    ): Promise<CustomEntityType> {
-        const boundRes = await service.bind(id, entity, entityId);
-
-        if (boundRes.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: boundRes.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        return boundRes.response;
-    }
-
-    /**
-     * Helper to use entity unbinding system
-     *
-     * @param service
-     * @param id
-     * @private
-     */
-    public async _unbind<CustomEntityType = EntityType>(
-        service: Boundable<CustomEntityType>,
-        id: string,
-    ): Promise<CustomEntityType> {
-        const unboundRes = await service.unbind(id);
-
-        if (unboundRes.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: unboundRes.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        return unboundRes.response;
-    }
-
     /**
      * Wrap crud response and throw hhtp error on any error with given code
      *

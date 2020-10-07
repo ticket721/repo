@@ -68,6 +68,7 @@ var migration1601551889 = {
                         avatar text,
                         description text,
                         address text,
+                        status text,
                         controller text,
                         dates list<uuid>,
                         created_at timestamp,
@@ -128,6 +129,37 @@ var migration1601551889 = {
             params: []
         };
 
+        //
+        //
+        //
+
+        const category_drop_table = {
+            query: `
+                DROP TABLE ticket721.category;
+             `,
+            params: []
+        }
+
+        const category_table_recreation = {
+            query: `CREATE TABLE IF NOT EXISTS ticket721.category (
+                        id UUID PRIMARY KEY,
+                        group_id text,
+                        category_name text,
+                        display_name text,
+                        sale_begin timestamp,
+                        sale_end timestamp,
+                        price int,
+                        status text,
+                        currency text,
+                        interface text,
+                        dates list<uuid>,
+                        seats int,
+                        created_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
         try {
             console.log('Product Type Creation');
             await db.execute(product_type_creation.query, product_type_creation.params, { prepare: true });
@@ -166,6 +198,14 @@ var migration1601551889 = {
             console.log('Date recreate table');
             await db.execute(date_table_recreation.query, date_table_recreation.params, { prepare: true });
 
+
+
+
+            console.log('Category drop table');
+            await db.execute(category_drop_table.query, category_drop_table.params, { prepare: true });
+
+            console.log('Category recreate table');
+            await db.execute(category_table_recreation.query, category_table_recreation.params, { prepare: true });
         } catch (e) {
             handler(e, false);
         }
@@ -272,7 +312,49 @@ var migration1601551889 = {
             params: []
         };
 
+        //
+        //
+        //
+
+        const category_drop_table = {
+            query: `
+                DROP TABLE ticket721.category;
+             `,
+            params: []
+        }
+
+        const category_table_recreation = {
+            query: `CREATE TABLE IF NOT EXISTS ticket721.category (
+                        id UUID PRIMARY KEY,
+                        group_id text,
+                        category_name text,
+                        display_name text,
+                        sale_begin timestamp,
+                        sale_end timestamp,
+                        resale_begin timestamp,
+                        resale_end timestamp,
+                        scope text,
+                        prices list<frozen<ticket721.price>>,
+                        seats int,
+                        reserved int,
+                        parent_id uuid,
+                        parent_type text,
+                        created_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
         try {
+
+            console.log('Category drop table');
+            await db.execute(category_drop_table.query, category_drop_table.params, { prepare: true });
+
+            console.log('Category recreate table');
+            await db.execute(category_table_recreation.query, category_table_recreation.params, { prepare: true });
+
+
+
 
             console.log('Date drop table');
             await db.execute(date_drop_table.query, date_drop_table.params, { prepare: true });
