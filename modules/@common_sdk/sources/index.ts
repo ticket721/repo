@@ -4,7 +4,7 @@ export { AxiosResponse } from 'axios';
 
 // APP
 import { getAPIInfos } from './app/app';
-import request from 'supertest';
+import request         from 'supertest';
 
 // AUTHENTICATION
 import {
@@ -18,7 +18,7 @@ import {
     resetPassword,
     validateResetPassword,
     updatePassword,
-    resendValidation
+    resendValidation,
 } from './app/api/authentication';
 
 // ACTIONS
@@ -27,7 +27,7 @@ import {
     actionsCreate,
     actionsSearch,
     actionsCount,
-    actionsUpdate
+    actionsUpdate,
 } from './app/api/actions';
 
 // IMAGES
@@ -35,28 +35,19 @@ import { uploadImage } from './app/api/images';
 
 // DATES
 import {
-    datesAddCategories,
+    datesAddCategory,
     datesCount,
-    datesCreate,
-    datesDeleteCategories,
     datesFuzzySearch,
     datesHomeSearch,
     datesSearch,
-    datesUpdate
 } from './app/api/dates';
 
 // EVENTS
 import {
-    eventsAddCategories,
-    eventsAddDates,
     eventsCount,
     eventsCreate,
-    eventsDeleteCategories,
-    eventsDeleteDates,
     eventsSearch,
-    eventsStart,
-    eventsUpdate /*eventsWithdraw, */,
-    eventsGuestlist
+    eventsGuestlist, eventsAddDate, eventsEdit, eventsStatus, eventsBindStripeInterface,
 } from './app/api/events';
 
 // TXS
@@ -67,10 +58,9 @@ import { contractsFetch } from './app/api/contracts';
 
 // CATEGORIES
 import {
+    categoriesAddDateLink,
     categoriesCount,
-    categoriesCreate,
     categoriesSearch,
-    categoriesUpdate
 } from './app/api/categories';
 
 // RIGHTS
@@ -83,7 +73,7 @@ import { metadatasFetch } from './app/api/metadatas';
 import {
     ticketsSearch,
     ticketsCount,
-    ticketsValidate
+    ticketsValidate,
 } from './app/api/tickets';
 
 // USERS
@@ -146,26 +136,20 @@ export class T721SDK {
         this.dates.homeSearch = this.dates.homeSearch.bind(this);
         this.dates.fuzzySearch = this.dates.fuzzySearch.bind(this);
         this.dates.count = this.dates.count.bind(this);
-        this.dates.create = this.dates.create.bind(this);
-        this.dates.addCategories = this.dates.addCategories.bind(this);
-        this.dates.deleteCategories = this.dates.deleteCategories.bind(this);
-        this.dates.update = this.dates.update.bind(this);
+        this.dates.addCategory = this.dates.count.bind(this);
 
         this.events.create.create = this.events.create.create.bind(this);
         this.events.search = this.events.search.bind(this);
         this.events.count = this.events.count.bind(this);
-        this.events.start = this.events.start.bind(this);
-        this.events.update = this.events.update.bind(this);
-        this.events.deleteCategories = this.events.deleteCategories.bind(this);
-        this.events.addCategories = this.events.addCategories.bind(this);
-        this.events.deleteDates = this.events.deleteDates.bind(this);
-        this.events.addDates = this.events.addDates.bind(this);
         this.events.guestlist = this.events.guestlist.bind(this);
+        this.events.addDate = this.events.addDate.bind(this);
+        this.events.edit = this.events.edit.bind(this);
+        this.events.status = this.events.status.bind(this);
+        this.events.bindStripeInterface = this.events.bindStripeInterface.bind(this);
 
-        this.categories.create = this.categories.create.bind(this);
         this.categories.count = this.categories.count.bind(this);
         this.categories.search = this.categories.search.bind(this);
-        this.categories.update = this.categories.update.bind(this);
+        this.categories.addDateLink = this.categories.addDateLink.bind(this);
 
         this.rights.search = this.rights.search.bind(this);
 
@@ -190,37 +174,37 @@ export class T721SDK {
         this.featureFlags.fetch = this.featureFlags.fetch.bind(this);
 
         this.payment.stripe.fetchInterface = this.payment.stripe.fetchInterface.bind(
-            this
+            this,
         );
         this.payment.stripe.fetchBalance = this.payment.stripe.fetchBalance.bind(
-            this
+            this,
         );
         this.payment.stripe.createInterface = this.payment.stripe.createInterface.bind(
-            this
+            this,
         );
         this.payment.stripe.createConnectAccount = this.payment.stripe.createConnectAccount.bind(
-            this
+            this,
         );
         this.payment.stripe.addExternalAccount = this.payment.stripe.addExternalAccount.bind(
-            this
+            this,
         );
         this.payment.stripe.removeExternalAccount = this.payment.stripe.removeExternalAccount.bind(
-            this
+            this,
         );
         this.payment.stripe.generateOnboardingUrl = this.payment.stripe.generateOnboardingUrl.bind(
-            this
+            this,
         );
         this.payment.stripe.generateUpdateUrl = this.payment.stripe.generateUpdateUrl.bind(
-            this
+            this,
         );
         this.payment.stripe.setDefaultExternalAccount = this.payment.stripe.setDefaultExternalAccount.bind(
-            this
+            this,
         );
         this.payment.stripe.payout = this.payment.stripe.payout.bind(
-            this
+            this,
         );
         this.payment.stripe.transactions = this.payment.stripe.transactions.bind(
-            this
+            this,
         );
     }
 
@@ -232,8 +216,8 @@ export class T721SDK {
             baseURL: `${this.protocol}://${this.host}:${this.port.toString()}`,
             timeout: 30000,
             headers: {
-                Accept: 'application/json, multipart/form-data, text/plain, */*'
-            }
+                Accept: 'application/json, multipart/form-data, text/plain, */*',
+            },
         });
     }
 
@@ -243,8 +227,8 @@ export class T721SDK {
             baseURL: res.url,
             timeout: 30000,
             headers: {
-                Accept: 'application/json, multipart/form-data, text/plain, */*'
-            }
+                Accept: 'application/json, multipart/form-data, text/plain, */*',
+            },
         });
     }
 
@@ -253,7 +237,7 @@ export class T721SDK {
             return this.axios({
                 method: 'get',
                 headers,
-                url: route
+                url: route,
             });
         } else {
             throw new Error(`Client not connected`);
@@ -263,14 +247,14 @@ export class T721SDK {
     async post<Body>(
         route: string,
         headers: HTTPHeader,
-        body: Body
+        body: Body,
     ): Promise<AxiosResponse> {
         if (this.axios) {
             return this.axios({
                 method: 'post',
                 headers,
                 data: body,
-                url: route
+                url: route,
             });
         } else {
             throw new Error(`Client not connected`);
@@ -280,14 +264,14 @@ export class T721SDK {
     async put<Body>(
         route: string,
         headers: HTTPHeader,
-        body: Body
+        body: Body,
     ): Promise<AxiosResponse> {
         if (this.axios) {
             return this.axios({
                 method: 'put',
                 headers,
                 data: body,
-                url: route
+                url: route,
             });
         } else {
             throw new Error(`Client not connected`);
@@ -297,14 +281,14 @@ export class T721SDK {
     async delete<Body>(
         route: string,
         headers: HTTPHeader,
-        body: Body
+        body: Body,
     ): Promise<AxiosResponse> {
         if (this.axios) {
             return this.axios({
                 method: 'delete',
                 headers,
                 data: body,
-                url: route
+                url: route,
             });
         } else {
             throw new Error(`Client not connected`);
@@ -327,7 +311,7 @@ export class T721SDK {
 
     public users = {
         me: usersMe,
-        setDeviceAddress: usersSetDeviceAddress
+        setDeviceAddress: usersSetDeviceAddress,
     };
 
     public actions = {
@@ -335,18 +319,15 @@ export class T721SDK {
         count: actionsCount,
         update: actionsUpdate,
         create: actionsCreate,
-        consumeUpdate: actionsConsumeUpdate
+        consumeUpdate: actionsConsumeUpdate,
     };
 
     public dates = {
         search: datesSearch,
         homeSearch: datesHomeSearch,
         fuzzySearch: datesFuzzySearch,
-        create: datesCreate,
         count: datesCount,
-        addCategories: datesAddCategories,
-        deleteCategories: datesDeleteCategories,
-        update: datesUpdate
+        addCategory: datesAddCategory,
     };
 
     public events = {
@@ -355,59 +336,55 @@ export class T721SDK {
         create: {
             create: eventsCreate,
         },
-        update: eventsUpdate,
-        start: eventsStart,
-        deleteCategories: eventsDeleteCategories,
-        addCategories: eventsAddCategories,
-        deleteDates: eventsDeleteDates,
-        addDates: eventsAddDates,
-        // withdraw: eventsWithdraw,
-        guestlist: eventsGuestlist
+        guestlist: eventsGuestlist,
+        addDate: eventsAddDate,
+        edit: eventsEdit,
+        status: eventsStatus,
+        bindStripeInterface: eventsBindStripeInterface,
     };
 
     public rights = {
-        search: rightsSearch
+        search: rightsSearch,
     };
 
     public categories = {
         search: categoriesSearch,
         count: categoriesCount,
-        create: categoriesCreate,
-        update: categoriesUpdate
+        addDateLink: categoriesAddDateLink,
     };
 
     public images = {
-        upload: uploadImage
+        upload: uploadImage,
     };
 
     public txs = {
         search: txsSearch,
         count: txsCount,
         subscribe: txsSubscribe,
-        infos: txsInfos
+        infos: txsInfos,
     };
 
     public contracts = {
-        fetch: contractsFetch
+        fetch: contractsFetch,
     };
 
     public metadatas = {
-        fetch: metadatasFetch
+        fetch: metadatasFetch,
     };
 
     public tickets = {
         search: ticketsSearch,
         count: ticketsCount,
-        validate: ticketsValidate
+        validate: ticketsValidate,
     };
 
     public geoloc = {
         closestCity: geolocClosestCity,
-        fuzzySearch: geolocFuzzySearch
+        fuzzySearch: geolocFuzzySearch,
     };
 
     public featureFlags = {
-        fetch: featureFlagsFetch
+        fetch: featureFlagsFetch,
     };
 
     public payment = {
@@ -422,7 +399,7 @@ export class T721SDK {
             generateOnboardingUrl: paymentStripeGenerateOnboardingUrl,
             generateUpdateUrl: paymentStripeGenerateUpdateUrl,
             payout: paymentStripePayout,
-            transactions: paymentStripeTransactions
-        }
+            transactions: paymentStripeTransactions,
+        },
     };
 }

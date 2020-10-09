@@ -503,6 +503,8 @@ describe('Controller Basics', function() {
             } as RightEntity;
 
             const query: EventEntity = {
+                stripe_interface: 'stripe_interface_id',
+                status: 'preview',
                 address: 'mdr',
                 owner: user.id,
                 controller: 'event',
@@ -612,6 +614,8 @@ describe('Controller Basics', function() {
             } as RightEntity;
 
             const query: EventEntity = {
+                stripe_interface: 'stripe_interface_id',
+                status: 'preview',
                 address: 'mdr',
                 owner: user.id,
                 controller: 'event',
@@ -731,6 +735,8 @@ describe('Controller Basics', function() {
 
             const query: EventEntity = {
                 address: 'mdr',
+                status: 'preview',
+                stripe_interface: 'stripe_interface_id',
                 owner: user.id,
                 controller: 'event',
                 created_at: undefined,

@@ -31,14 +31,11 @@ export default {
             }
         },
         {
-            name: 'Bataclan again',
+            name: 'Online',
+            online: true,
+            online_link: 'https://twitch.tv/justice',
             eventBegin: new Date(Date.now() + 5 * DAY),
             eventEnd: new Date(Date.now() + 6 * DAY),
-            location: {
-                label: '50 Boulevard Voltaire, 75011 Paris',
-                lat: 48.863110,
-                lon: 2.370870
-            }
         }
     ],
     categories: {

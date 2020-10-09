@@ -71,6 +71,7 @@ var migration1601551889 = {
                         status text,
                         controller text,
                         dates list<uuid>,
+                        stripe_interface uuid,
                         created_at timestamp,
                         updated_at timestamp
                     );`,
@@ -122,6 +123,8 @@ var migration1601551889 = {
                         location frozen<ticket721.date_location>,
                         timestamps frozen<ticket721.date_timestamps>,
                         metadata frozen<ticket721.date_metadata>,
+                        online boolean,
+                        online_link text,
                         status text,
                         created_at timestamp,
                         updated_at timestamp
@@ -159,6 +162,10 @@ var migration1601551889 = {
                     );`,
             params: []
         };
+
+        //
+        //
+        //
 
         try {
             console.log('Product Type Creation');

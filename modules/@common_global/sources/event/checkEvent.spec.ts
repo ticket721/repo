@@ -99,12 +99,7 @@ describe('checkEvent', function() {
                     eventBegin: new Date(now.getTime() + 2000000),
                     eventEnd: new Date(now.getTime() + 3000000),
                     online: true,
-                    liveLink: 'https://twitch.tv/kamet0',
-                    location: {
-                        lat: 0.234,
-                        lon: 2.345,
-                        label: '49 rue des rues'
-                    }
+                    online_link: 'https://twitch.tv/kamet0'
                 }
             ],
             categoriesConfiguration: [
@@ -221,12 +216,7 @@ describe('checkEvent', function() {
                     eventBegin: new Date(now.getTime() + 2000000),
                     eventEnd: new Date(now.getTime() + 1000000),
                     online: true,
-                    liveLink: 'https://twitch.tv/kamet0',
-                    location: {
-                        lat: 0.234,
-                        lon: 2.345,
-                        label: '49 rue des rues'
-                    }
+                    online_link: 'https://twitch.tv/kamet0'
                 }
             ],
             categoriesConfiguration: [
@@ -295,12 +285,7 @@ describe('checkEvent', function() {
                     eventBegin: new Date(now.getTime() + 2000000),
                     eventEnd: new Date(now.getTime() + 3000000),
                     online: true,
-                    liveLink: 'https://twitch.tv/kamet0',
-                    location: {
-                        lat: 0.234,
-                        lon: 2.345,
-                        label: '49 rue des rues'
-                    }
+                    online_link: 'https://twitch.tv/kamet0'
                 }
             ],
             categoriesConfiguration: [
@@ -369,12 +354,7 @@ describe('checkEvent', function() {
                     eventBegin: new Date(now.getTime() + 2000000),
                     eventEnd: new Date(now.getTime() + 3000000),
                     online: true,
-                    liveLink: 'https://twitch.tv/kamet0',
-                    location: {
-                        lat: 0.234,
-                        lon: 2.345,
-                        label: '49 rue des rues'
-                    }
+                    online_link: 'https://twitch.tv/kamet0'
                 }
             ],
             categoriesConfiguration: [
@@ -443,12 +423,7 @@ describe('checkEvent', function() {
                     eventBegin: new Date(now.getTime() + 2000000),
                     eventEnd: new Date(now.getTime() + 3000000),
                     online: true,
-                    liveLink: 'https://twitch.tv/kamet0',
-                    location: {
-                        lat: 0.234,
-                        lon: 2.345,
-                        label: '49 rue des rues'
-                    }
+                    online_link: 'https://twitch.tv/kamet0'
                 }
             ],
             categoriesConfiguration: [
@@ -517,12 +492,7 @@ describe('checkEvent', function() {
                     eventBegin: new Date(now.getTime() + 2000000),
                     eventEnd: new Date(now.getTime() + 3000000),
                     online: true,
-                    liveLink: 'https://twitch.tv/kamet0',
-                    location: {
-                        lat: 0.234,
-                        lon: 2.345,
-                        label: '49 rue des rues'
-                    }
+                    online_link: 'https://twitch.tv/kamet0'
                 }
             ],
             categoriesConfiguration: [
@@ -591,12 +561,7 @@ describe('checkEvent', function() {
                     eventBegin: new Date(now.getTime() + 2000000),
                     eventEnd: new Date(now.getTime() + 3000000),
                     online: true,
-                    liveLink: 'https://twitch.tv/kamet0',
-                    location: {
-                        lat: 0.234,
-                        lon: 2.345,
-                        label: '49 rue des rues'
-                    }
+                    online_link: 'https://twitch.tv/kamet0'
                 }
             ],
             categoriesConfiguration: [
