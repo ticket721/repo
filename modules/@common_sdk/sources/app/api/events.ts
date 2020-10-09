@@ -3,15 +3,19 @@ import { T721SDK }                    from '../../index';
 import { EventsSearchInputDto }       from '@app/server/controllers/events/dto/EventsSearchInput.dto';
 import { EventsSearchResponseDto }    from '@app/server/controllers/events/dto/EventsSearchResponse.dto';
 import { EventsBuildResponseDto }     from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
-import { EventsBuildInputDto }        from '@app/server/controllers/events/dto/EventsBuildInput.dto';
-import { EventsCountInputDto }        from '@app/server/controllers/events/dto/EventsCountInput.dto';
-import { EventsCountResponseDto }     from '@app/server/controllers/events/dto/EventsCountResponse.dto';
-import { EventsGuestlistInputDto }    from '@app/server/controllers/events/dto/EventsGuestlistInput.dto';
-import { EventsGuestlistResponseDto } from '@app/server/controllers/events/dto/EventsGuestlistResponse.dto';
-import { EventsAddDateInputDto }      from '@app/server/controllers/events/dto/EventsAddDateInput.dto';
-import { EventsAddDateResponseDto }   from '@app/server/controllers/events/dto/EventsAddDateResponse.dto';
-import { EventsEditInputDto }         from '@app/server/controllers/events/dto/EventsEditInput.dto';
-import { EventsEditResponseDto }      from '@app/server/controllers/events/dto/EventsEditResponse.dto';
+import { EventsBuildInputDto }               from '@app/server/controllers/events/dto/EventsBuildInput.dto';
+import { EventsCountInputDto }                  from '@app/server/controllers/events/dto/EventsCountInput.dto';
+import { EventsCountResponseDto }               from '@app/server/controllers/events/dto/EventsCountResponse.dto';
+import { EventsGuestlistInputDto }              from '@app/server/controllers/events/dto/EventsGuestlistInput.dto';
+import { EventsGuestlistResponseDto }           from '@app/server/controllers/events/dto/EventsGuestlistResponse.dto';
+import { EventsAddDateInputDto }                from '@app/server/controllers/events/dto/EventsAddDateInput.dto';
+import { EventsAddDateResponseDto }             from '@app/server/controllers/events/dto/EventsAddDateResponse.dto';
+import { EventsEditInputDto }                   from '@app/server/controllers/events/dto/EventsEditInput.dto';
+import { EventsEditResponseDto }                from '@app/server/controllers/events/dto/EventsEditResponse.dto';
+import { EventsStatusResponseDto }              from '@app/server/controllers/events/dto/EventsStatusResponse.dto';
+import { EventsStatusInputDto }                 from '@app/server/controllers/events/dto/EventsStatusInput.dto';
+import { EventsBindStripeInterfaceInputDto }    from '@app/server/controllers/events/dto/EventsBindStripeInterfaceInput.dto';
+import { EventsBindStripeInterfaceResponseDto } from '@app/server/controllers/events/dto/EventsBindStripeInterfaceResponse.dto';
 
 export async function eventsSearch(
     token: string,
@@ -46,6 +50,32 @@ export async function eventsCreate(
     const self: T721SDK = this;
 
     return self.post<EventsBuildInputDto>('/events', {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
+export async function eventsStatus(
+    token: string,
+    event: string,
+    query: EventsStatusInputDto,
+): Promise<AxiosResponse<EventsStatusResponseDto>> {
+    const self: T721SDK = this;
+
+    return self.post<EventsStatusInputDto>(`/events/${event}/status`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
+export async function eventsBindStripeInterface(
+    token: string,
+    event: string,
+    query: EventsBindStripeInterfaceInputDto,
+): Promise<AxiosResponse<EventsBindStripeInterfaceResponseDto>> {
+    const self: T721SDK = this;
+
+    return self.post<EventsBindStripeInterfaceInputDto>(`/events/${event}/bind-stripe-interface`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
