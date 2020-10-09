@@ -133,8 +133,6 @@ describe('checkDate', function() {
             }
         };
 
-        console.log(JSON.stringify(event, null, 4));
-
         const error = checkDate(event);
 
         expect(error).toEqual(

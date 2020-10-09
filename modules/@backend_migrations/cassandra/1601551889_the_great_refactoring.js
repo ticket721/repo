@@ -163,6 +163,37 @@ var migration1601551889 = {
             params: []
         };
 
+        //
+        //
+        //
+
+        const category_drop_table = {
+            query: `
+                DROP TABLE ticket721.category;
+             `,
+            params: []
+        }
+
+        const category_table_recreation = {
+            query: `CREATE TABLE IF NOT EXISTS ticket721.category (
+                        id UUID PRIMARY KEY,
+                        group_id text,
+                        category_name text,
+                        display_name text,
+                        sale_begin timestamp,
+                        sale_end timestamp,
+                        price int,
+                        status text,
+                        currency text,
+                        interface text,
+                        dates list<uuid>,
+                        seats int,
+                        created_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
         try {
             console.log('Product Type Creation');
             await db.execute(product_type_creation.query, product_type_creation.params, { prepare: true });

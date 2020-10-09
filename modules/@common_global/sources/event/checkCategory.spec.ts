@@ -45,8 +45,6 @@ describe('checkCategory', function() {
             currency: 'eur'
         };
 
-        console.log(JSON.stringify(category, null, 4));
-
         const error = checkCategory(category);
 
         expect(error).toEqual(null);
