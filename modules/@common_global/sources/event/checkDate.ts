@@ -17,7 +17,7 @@ export interface DatePayload {
     name: string;
     eventBegin: Date;
     eventEnd: Date;
-    location: Location;
+    location?: Location;
 }
 
 export const DatePayloadChecker = Joi.object<DatePayload>({
