@@ -8,7 +8,7 @@ import { IsObject } from 'class-validator';
  */
 export class EventsBuildInputDto {
     @ApiProperty({
-        description: 'Complete ActionSet ID to consume',
+        description: 'Event creation payload',
     })
     @IsObject()
     eventPayload: EventCreationPayload;

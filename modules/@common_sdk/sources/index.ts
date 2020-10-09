@@ -35,28 +35,19 @@ import { uploadImage } from './app/api/images';
 
 // DATES
 import {
-    datesAddCategories,
+    datesAddCategory,
     datesCount,
-    datesCreate,
-    datesDeleteCategories,
     datesFuzzySearch,
     datesHomeSearch,
     datesSearch,
-    datesUpdate
 } from './app/api/dates';
 
 // EVENTS
 import {
-    eventsAddCategories,
-    eventsAddDates,
     eventsCount,
     eventsCreate,
-    eventsDeleteCategories,
-    eventsDeleteDates,
     eventsSearch,
-    eventsStart,
-    eventsUpdate /*eventsWithdraw, */,
-    eventsGuestlist
+    eventsGuestlist, eventsAddDate, eventsEdit,
 } from './app/api/events';
 
 // TXS
@@ -67,10 +58,9 @@ import { contractsFetch } from './app/api/contracts';
 
 // CATEGORIES
 import {
+    categoriesAddDateLink,
     categoriesCount,
-    categoriesCreate,
     categoriesSearch,
-    categoriesUpdate
 } from './app/api/categories';
 
 // RIGHTS
@@ -146,26 +136,18 @@ export class T721SDK {
         this.dates.homeSearch = this.dates.homeSearch.bind(this);
         this.dates.fuzzySearch = this.dates.fuzzySearch.bind(this);
         this.dates.count = this.dates.count.bind(this);
-        this.dates.create = this.dates.create.bind(this);
-        this.dates.addCategories = this.dates.addCategories.bind(this);
-        this.dates.deleteCategories = this.dates.deleteCategories.bind(this);
-        this.dates.update = this.dates.update.bind(this);
+        this.dates.addCategory = this.dates.count.bind(this);
 
         this.events.create.create = this.events.create.create.bind(this);
         this.events.search = this.events.search.bind(this);
         this.events.count = this.events.count.bind(this);
-        this.events.start = this.events.start.bind(this);
-        this.events.update = this.events.update.bind(this);
-        this.events.deleteCategories = this.events.deleteCategories.bind(this);
-        this.events.addCategories = this.events.addCategories.bind(this);
-        this.events.deleteDates = this.events.deleteDates.bind(this);
-        this.events.addDates = this.events.addDates.bind(this);
         this.events.guestlist = this.events.guestlist.bind(this);
+        this.events.addDate = this.events.addDate.bind(this);
+        this.events.edit = this.events.edit.bind(this);
 
-        this.categories.create = this.categories.create.bind(this);
         this.categories.count = this.categories.count.bind(this);
         this.categories.search = this.categories.search.bind(this);
-        this.categories.update = this.categories.update.bind(this);
+        this.categories.addDateLink = this.categories.addDateLink.bind(this);
 
         this.rights.search = this.rights.search.bind(this);
 
@@ -342,11 +324,8 @@ export class T721SDK {
         search: datesSearch,
         homeSearch: datesHomeSearch,
         fuzzySearch: datesFuzzySearch,
-        create: datesCreate,
         count: datesCount,
-        addCategories: datesAddCategories,
-        deleteCategories: datesDeleteCategories,
-        update: datesUpdate
+        addCategory: datesAddCategory
     };
 
     public events = {
@@ -355,14 +334,9 @@ export class T721SDK {
         create: {
             create: eventsCreate,
         },
-        update: eventsUpdate,
-        start: eventsStart,
-        deleteCategories: eventsDeleteCategories,
-        addCategories: eventsAddCategories,
-        deleteDates: eventsDeleteDates,
-        addDates: eventsAddDates,
-        // withdraw: eventsWithdraw,
-        guestlist: eventsGuestlist
+        guestlist: eventsGuestlist,
+        addDate: eventsAddDate,
+        edit: eventsEdit
     };
 
     public rights = {
@@ -372,8 +346,7 @@ export class T721SDK {
     public categories = {
         search: categoriesSearch,
         count: categoriesCount,
-        create: categoriesCreate,
-        update: categoriesUpdate
+        addDateLink: categoriesAddDateLink,
     };
 
     public images = {

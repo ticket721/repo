@@ -12,6 +12,7 @@ import {
 
 export interface DatePayload {
     online: boolean;
+    online_link?: string;
     liveLink?: string;
     name: string;
     eventBegin: Date;
@@ -23,10 +24,6 @@ export const DatePayloadChecker = Joi.object<DatePayload>({
     online: Joi
         .bool()
         .required(),
-    liveLink: Joi
-        .string()
-        .uri()
-        .optional(),
     name: Joi
         .string()
         .max(50)
@@ -38,8 +35,20 @@ export const DatePayloadChecker = Joi.object<DatePayload>({
     eventEnd: Joi
         .date()
         .required(),
+    online_link: Joi
+        .string()
+        .uri()
+        .when('online', {
+            is: true,
+            then: Joi.optional(),
+            otherwise: Joi.forbidden()
+        }),
     location: LocationChecker
-        .required(),
+        .when('online', {
+            is: true,
+            then: Joi.forbidden(),
+            otherwise: Joi.required()
+        })
 });
 
 export interface DateCreationPayload {

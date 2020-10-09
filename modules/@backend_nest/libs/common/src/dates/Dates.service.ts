@@ -5,6 +5,7 @@ import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { fromES } from '@lib/common/utils/fromES.helper';
 
 /**
  * Service to CRUD DateEntities
@@ -44,6 +45,59 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> {
         return this.create(date);
     }
 
+    public async findAllByGroupId(groupId: string): Promise<ServiceResponse<DateEntity[]>> {
+        const datesCountRes = await this.countElastic({
+            body: {
+                query: {
+                    bool: {
+                        must: {
+                            term: {
+                                group_id: groupId,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (datesCountRes.error) {
+            return {
+                error: 'error_while_counting',
+                response: null,
+            };
+        }
+
+        const total = datesCountRes.response.count;
+
+        // Recover Event
+        const dateRes = await this.searchElastic({
+            body: {
+                size: total,
+                query: {
+                    bool: {
+                        must: {
+                            term: {
+                                group_id: groupId,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (dateRes.error) {
+            return {
+                error: 'error_while_checking',
+                response: null,
+            };
+        }
+
+        return {
+            response: dateRes.response.hits.hits.map(fromES),
+            error: null,
+        };
+    }
+
     async findOne(dateId: string): Promise<ServiceResponse<DateEntity>> {
         // Recover Event
         const dateRes = await this.search({
@@ -57,8 +111,15 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> {
             };
         }
 
+        if (dateRes.response.length === 0) {
+            return {
+                error: 'not_found',
+                response: null,
+            };
+        }
+
         return {
-            response: dateRes.response.length !== 0 ? dateRes.response[0] : null,
+            response: dateRes.response[0],
             error: null,
         };
     }
@@ -68,14 +129,7 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> {
 
         if (dateRes.error) {
             return {
-                error: 'error_while_checking_date_exists',
-                response: null,
-            };
-        }
-
-        if (dateRes.response === null) {
-            return {
-                error: 'date_not_found',
+                error: 'cannot_recover_date',
                 response: null,
             };
         }

@@ -1,4 +1,14 @@
-import { Body, Controller, HttpCode, Injectable, Post, UseFilters } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    HttpCode,
+    HttpException,
+    Injectable,
+    Param,
+    Post,
+    UseFilters,
+    UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
@@ -7,10 +17,18 @@ import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { CategoriesSearchInputDto } from '@app/server/controllers/categories/dto/CategoriesSearchInput.dto';
 import { CategoriesSearchResponseDto } from '@app/server/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { RightsService } from '@lib/common/rights/Rights.service';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
 import { CategoriesCountInputDto } from '@app/server/controllers/categories/dto/CategoriesCountInput.dto';
 import { CategoriesCountResponseDto } from '@app/server/controllers/categories/dto/CategoriesCountResponse.dto';
+import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { User } from '@app/server/authentication/decorators/User.controller.decorator';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { CategoriesAddDateLinkInputDto } from '@app/server/controllers/categories/dto/CategoriesAddDateLinkInput.dto';
+import { CategoriesAddDateLinkResponseDto } from '@app/server/controllers/categories/dto/CategoriesAddDateLinkResponse.dto';
+import { EventsService } from '@lib/common/events/Events.service';
+import { DatesService } from '@lib/common/dates/Dates.service';
 
 /**
  * Generic Categories controller. Recover Categories linked to all types of events
@@ -24,9 +42,14 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
      * Dependency Injection
      *
      * @param categoriesService
-     * @param rightsService
+     * @param eventsService
+     * @param datesService
      */
-    constructor(private readonly categoriesService: CategoriesService, private readonly rightsService: RightsService) {
+    constructor(
+        private readonly categoriesService: CategoriesService,
+        private readonly eventsService: EventsService,
+        private readonly datesService: DatesService,
+    ) {
         super();
     }
 
@@ -40,8 +63,6 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
     async search(@Body() body: CategoriesSearchInputDto): Promise<CategoriesSearchResponseDto> {
-        await this._authorizeGlobal(this.rightsService, this.categoriesService, null, null, ['route_search']);
-
         const categories = await this._search(this.categoriesService, body);
 
         return {
@@ -59,8 +80,6 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
     async count(@Body() body: CategoriesCountInputDto): Promise<CategoriesCountResponseDto> {
-        await this._authorizeGlobal(this.rightsService, this.categoriesService, null, null, ['route_search']);
-
         const categories = await this._count(this.categoriesService, body);
 
         return {
@@ -68,318 +87,82 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
         };
     }
 
-    // /**
-    //  * Create a new Category
-    //  *
-    //  * @param body
-    //  * @param user
-    //  */
-    // @Post('/')
-    // @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
-    // @UseFilters(new HttpExceptionFilter())
-    // @HttpCode(StatusCodes.Created)
-    // @Roles('authenticated')
-    // @ApiResponses([StatusCodes.Created, StatusCodes.Conflict, StatusCodes.BadRequest, StatusCodes.InternalServerError])
-    // async create(@Body() body: CategoriesCreateInputDto, @User() user: UserDto): Promise<CategoriesCreateResponseDto> {
-    //     await this._authorizeGlobal(this.rightsService, this.categoriesService, user, body.group_id, ['route_create']);
-    //
-    //     const scope = this.configService.get('TICKETFORGE_SCOPE');
-    //     const categoryName = serialize(body.display_name);
-    //
-    //     const categories = await this._search<CategoryEntity>(this.categoriesService, {
-    //         group_id: {
-    //             $eq: body.group_id,
-    //         },
-    //         category_name: {
-    //             $eq: categoryName,
-    //         },
-    //     } as SearchInputType<CategoryEntity>);
-    //
-    //     if (categories.length !== 0) {
-    //         throw new HttpException(
-    //             {
-    //                 status: StatusCodes.Conflict,
-    //                 message: 'category_name_conflict',
-    //             },
-    //             StatusCodes.Conflict,
-    //         );
-    //     }
-    //
-    //     const pricesResolverRes = await this.currenciesService.resolveInputPrices(body.prices);
-    //
-    //     if (pricesResolverRes.error) {
-    //         throw new HttpException(
-    //             {
-    //                 status: StatusCodes.BadRequest,
-    //                 message: pricesResolverRes.error,
-    //             },
-    //             StatusCodes.BadRequest,
-    //         );
-    //     }
-    //
-    //     if (!isFutureDateRange(new Date(body.sale_begin), new Date(body.sale_end))) {
-    //         throw new HttpException(
-    //             {
-    //                 status: StatusCodes.BadRequest,
-    //                 message: 'invalid_sale_dates',
-    //             },
-    //             StatusCodes.BadRequest,
-    //         );
-    //     }
-    //
-    //     if (!isFutureDateRange(new Date(body.resale_begin), new Date(body.resale_end))) {
-    //         throw new HttpException(
-    //             {
-    //                 status: StatusCodes.BadRequest,
-    //                 message: 'invalid_resale_dates',
-    //             },
-    //             StatusCodes.BadRequest,
-    //         );
-    //     }
-    //
-    //     const priceChecks = this.checkPrices(body.prices);
-    //
-    //     if (priceChecks) {
-    //         throw new HttpException(
-    //             {
-    //                 status: StatusCodes.BadRequest,
-    //                 message: priceChecks,
-    //             },
-    //             StatusCodes.BadRequest,
-    //         );
-    //     }
-    //
-    //     const categoryEntity: CategoryEntity = await this._new<CategoryEntity>(this.categoriesService, {
-    //         group_id: body.group_id,
-    //         category_name: categoryName,
-    //         display_name: body.display_name,
-    //         sale_begin: body.sale_begin,
-    //         sale_end: body.sale_end,
-    //         resale_begin: body.resale_begin,
-    //         resale_end: body.resale_end,
-    //         scope,
-    //         prices: pricesResolverRes.response,
-    //         seats: body.seats,
-    //         reserved: 0,
-    //     });
-    //
-    //     await this._serviceCall(
-    //         this.metadatasService.attach(
-    //             'history',
-    //             'create',
-    //             [
-    //                 {
-    //                     type: 'category',
-    //                     id: categoryEntity.id,
-    //                     field: 'id',
-    //                     rightId: categoryEntity.group_id,
-    //                     rightField: 'group_id',
-    //                 },
-    //             ],
-    //             [
-    //                 {
-    //                     type: 'category',
-    //                     id: body.group_id,
-    //                     field: 'group_id',
-    //                 },
-    //             ],
-    //             [],
-    //             {
-    //                 date: {
-    //                     at: new Date(Date.now()),
-    //                 },
-    //             },
-    //             user,
-    //             this.categoriesService,
-    //         ),
-    //         StatusCodes.InternalServerError,
-    //     );
-    //
-    //     return {
-    //         category: categoryEntity,
-    //     };
-    // }
-    //
-    // /**
-    //  * Utility to check prices provided for a creation / update of a currency
-    //  *
-    //  * @param prices
-    //  */
-    // checkPrices(prices: InputPrice[]): string {
-    //     const allowed = ['T721Token', 'Fiat'];
-    //     const minimum = 200;
-    //
-    //     if (prices.length === 0) {
-    //         return 'free_category_unavailable';
-    //     }
-    //
-    //     if (prices.length > 1) {
-    //         return 'multi_currency_unavailable';
-    //     }
-    //
-    //     for (const price of prices) {
-    //         if (allowed.indexOf(price.currency) === -1) {
-    //             return 'currency_unavailable';
-    //         }
-    //
-    //         if (parseInt(price.price, 10) < minimum) {
-    //             return 'price_under_minimum_allowed';
-    //         }
-    //     }
-    //
-    //     return null;
-    // }
-    //
-    // /**
-    //  * Update a Category
-    //  *
-    //  * @param body
-    //  * @param categoryId
-    //  * @param user
-    //  */
-    // @Put('/:categoryId')
-    // @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
-    // @UseFilters(new HttpExceptionFilter())
-    // @HttpCode(StatusCodes.OK)
-    // @Roles('authenticated')
-    // @ApiResponses([
-    //     StatusCodes.OK,
-    //     StatusCodes.Unauthorized,
-    //     StatusCodes.BadRequest,
-    //     StatusCodes.Conflict,
-    //     StatusCodes.InternalServerError,
-    // ])
-    // async update(
-    //     @Body() body: CategoriesUpdateInputDto,
-    //     @Param('categoryId') categoryId: string,
-    //     @User() user: UserDto,
-    // ): Promise<CategoriesUpdateResponseDto> {
-    //     const categoryEntity: CategoryEntity = await this._authorizeOne(
-    //         this.rightsService,
-    //         this.categoriesService,
-    //         user,
-    //         {
-    //             id: categoryId,
-    //         },
-    //         'group_id',
-    //         ['route_update'],
-    //     );
-    //
-    //     if (
-    //         !isValidDateRange(
-    //             body.sale_begin ? new Date(body.sale_begin) : categoryEntity.sale_begin,
-    //             body.sale_end ? new Date(body.sale_end) : categoryEntity.sale_end,
-    //         )
-    //     ) {
-    //         throw new HttpException(
-    //             {
-    //                 status: StatusCodes.BadRequest,
-    //                 message: 'invalid_sale_dates',
-    //             },
-    //             StatusCodes.BadRequest,
-    //         );
-    //     }
-    //
-    //     if (
-    //         !isValidDateRange(
-    //             body.resale_begin ? new Date(body.resale_begin) : categoryEntity.resale_begin,
-    //             body.resale_end ? new Date(body.resale_end) : categoryEntity.resale_end,
-    //         )
-    //     ) {
-    //         throw new HttpException(
-    //             {
-    //                 status: StatusCodes.BadRequest,
-    //                 message: 'invalid_resale_dates',
-    //             },
-    //             StatusCodes.BadRequest,
-    //         );
-    //     }
-    //
-    //     let newPrices: Price[] = [];
-    //
-    //     if (body.prices) {
-    //         const priceChecks = this.checkPrices(body.prices);
-    //
-    //         if (priceChecks) {
-    //             throw new HttpException(
-    //                 {
-    //                     status: StatusCodes.BadRequest,
-    //                     message: priceChecks,
-    //                 },
-    //                 StatusCodes.BadRequest,
-    //             );
-    //         }
-    //
-    //         const pricesResolverRes = await this.currenciesService.resolveInputPrices(body.prices);
-    //
-    //         if (pricesResolverRes.error) {
-    //             throw new HttpException(
-    //                 {
-    //                     status: StatusCodes.BadRequest,
-    //                     message: pricesResolverRes.error,
-    //                 },
-    //                 StatusCodes.BadRequest,
-    //             );
-    //         }
-    //
-    //         newPrices = pricesResolverRes.response;
-    //     }
-    //
-    //     if (body.seats !== undefined) {
-    //         if (body.seats < categoryEntity.reserved) {
-    //             body.seats = categoryEntity.reserved;
-    //         }
-    //     }
-    //
-    //     await this._edit<CategoryEntity>(
-    //         this.categoriesService,
-    //         {
-    //             id: categoryId,
-    //         },
-    //         {
-    //             ...body,
-    //             prices: body.prices ? newPrices : categoryEntity.prices,
-    //         },
-    //     );
-    //
-    //     await this._serviceCall(
-    //         this.metadatasService.attach(
-    //             'history',
-    //             'update',
-    //             [
-    //                 {
-    //                     type: 'category',
-    //                     id: categoryEntity.id,
-    //                     field: 'id',
-    //                     rightId: categoryEntity.group_id,
-    //                     rightField: 'group_id',
-    //                 },
-    //             ],
-    //             [
-    //                 {
-    //                     type: 'category',
-    //                     id: categoryEntity.group_id,
-    //                     field: 'group_id',
-    //                 },
-    //             ],
-    //             [],
-    //             {
-    //                 date: {
-    //                     at: new Date(Date.now()),
-    //                 },
-    //             },
-    //             user,
-    //             this.categoriesService,
-    //         ),
-    //         StatusCodes.InternalServerError,
-    //     );
-    //
-    //     return {
-    //         category: {
-    //             ...categoryEntity,
-    //             ...body,
-    //             prices: body.prices ? newPrices : categoryEntity.prices,
-    //         },
-    //     };
-    // }
+    private async isCategoryOwner(category: CategoryEntity, user: UserDto): Promise<boolean> {
+        const event = await this._serviceCall(
+            this.eventsService.findOneFromGroupId(category.group_id),
+            StatusCodes.InternalServerError,
+        );
+
+        return event.owner === user.id;
+    }
+
+    /**
+     * Links a category to a new date
+     *
+     * @param categoryId
+     * @param body
+     * @param user
+     */
+    @Post('/:category/date')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.Unauthorized,
+        StatusCodes.BadRequest,
+        StatusCodes.InternalServerError,
+    ])
+    async addDateLink(
+        @Param('category') categoryId: string,
+        @Body() body: CategoriesAddDateLinkInputDto,
+        @User() user: UserDto,
+    ): Promise<CategoriesAddDateLinkResponseDto> {
+        const category = await this._crudCall(
+            this.categoriesService.findOne(categoryId),
+            StatusCodes.InternalServerError,
+        );
+
+        if (!(await this.isCategoryOwner(category, user))) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Unauthorized,
+                    message: 'not_category_owner',
+                },
+                StatusCodes.Unauthorized,
+            );
+        }
+
+        if (category.dates.indexOf(body.date) !== -1) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Conflict,
+                    message: 'already_linked',
+                },
+                StatusCodes.Conflict,
+            );
+        }
+
+        const date = await this._crudCall(this.datesService.findOne(body.date), StatusCodes.InternalServerError);
+
+        if (date.group_id !== category.group_id) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Unauthorized,
+                    message: 'not_date_owner',
+                },
+                StatusCodes.Unauthorized,
+            );
+        }
+
+        await this._crudCall(this.datesService.addCategory(body.date, category), StatusCodes.InternalServerError);
+
+        return {
+            category: {
+                ...category,
+                dates: [...category.dates, body.date],
+            },
+        };
+    }
 }

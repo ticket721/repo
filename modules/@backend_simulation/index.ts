@@ -5,52 +5,6 @@ import { AxiosResponse } from 'axios';
 import FormData          from 'form-data';
 import { UserDto }       from '../@backend_nest/libs/common/src/users/dto/User.dto';
 
-const waitForAction = async (sdk: T721SDK, token: string, actionset: string): Promise<any> => {
-    let tries = 0;
-    return new Promise((ok, ko): void => {
-
-        const intervalId = setInterval(async () => {
-
-            if (tries === 30) {
-                clearInterval(intervalId);
-                return ko(new Error('Maximum attempts reached'));
-            }
-
-            tries += 1;
-
-            const res = await sdk.actions.search(token, { id: { $eq: actionset } });
-
-            if (res.data.actionsets.length === 0) {
-                return;
-            }
-
-            const actionSetEntity = res.data.actionsets[0];
-            if (actionSetEntity.current_status !== 'input:waiting' && actionSetEntity.current_status !== 'event:waiting') {
-                clearInterval(intervalId);
-                switch (actionSetEntity.current_status) {
-                    case 'complete':
-                    case 'event:in progress':
-                    case 'input:in progress':
-                        return ok(actionSetEntity.current_status);
-                    case 'error':
-                    case 'input:incomplete':
-                    case 'event:incomplete':
-                    case 'input:error':
-                    case 'event:error':
-                        console.log(`Got ${actionSetEntity.current_status} on entity`);
-                        console.log(actionSetEntity.actions[actionSetEntity.current_action].error);
-                        return ko({
-                            current_status: actionSetEntity.current_status,
-                            error: actionSetEntity.actions[actionSetEntity.current_action].error,
-                        });
-                }
-            }
-
-        }, 1000);
-
-    });
-};
-
 export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, event: string, imagesPath: string): Promise<void> => {
     console.log(`Deploying Test Event with ID: ${event}: ...`);
 
@@ -94,8 +48,9 @@ export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, ev
                         name: date.name,
                         eventBegin: date.eventBegin,
                         eventEnd: date.eventEnd,
-                        online: false,
-                        location: date.location
+                        online: date.online || false,
+                        online_link: date.online_link,
+                        location: date.online ? undefined : date.location
                     }))
                 ],
                 categoriesConfiguration: [

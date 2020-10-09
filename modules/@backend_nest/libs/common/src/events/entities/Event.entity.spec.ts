@@ -20,6 +20,7 @@ describe('Event Entity', function() {
                 status: 'preview',
                 created_at: new Date(),
                 updated_at: new Date(),
+                stripe_interface: 'stripe_interface_id',
             } as EventEntity;
 
             const eventEntity = new EventEntity(rawEventEntity);
@@ -39,6 +40,7 @@ describe('Event Entity', function() {
                 status: 'preview',
                 created_at: new Date(),
                 updated_at: new Date(),
+                stripe_interface: null,
             } as EventEntity;
 
             const eventEntity = new EventEntity(rawEventEntity);

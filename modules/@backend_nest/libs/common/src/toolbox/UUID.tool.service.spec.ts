@@ -18,4 +18,18 @@ describe('UUID Tool Service', function() {
             expect(uuid).toMatch(/^[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}$/);
         });
     });
+
+    describe('verify', function() {
+        it('should properly validate uuid', function() {
+            const uuid = context.uuidToolService.generate();
+
+            expect(context.uuidToolService.verify(uuid)).toEqual(true);
+        });
+
+        it('should properly invalidate uuid', function() {
+            const uuid = 'not uuid';
+
+            expect(context.uuidToolService.verify(uuid)).toEqual(false);
+        });
+    });
 });

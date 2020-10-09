@@ -27,6 +27,7 @@ export class EventEntity {
         if (e) {
             this.id = e.id ? e.id.toString() : e.id;
             this.group_id = e.group_id;
+            this.stripe_interface = e.stripe_interface ? e.stripe_interface.toString() : e.stripe_interface;
             this.owner = e.owner ? e.owner.toString() : e.owner;
             this.avatar = e.avatar;
             this.name = e.name;
@@ -54,6 +55,15 @@ export class EventEntity {
     })
     // tslint:disable-next-line:variable-name
     owner: string;
+
+    /**
+     * ID of the stripe interface to use in case of stripe payments
+     */
+    @Column({
+        type: 'uuid',
+    })
+    // tslint:disable-next-line:variable-name
+    stripe_interface: string;
 
     /**
      * Category visibility status

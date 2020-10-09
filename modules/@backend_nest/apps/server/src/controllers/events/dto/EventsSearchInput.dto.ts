@@ -8,7 +8,7 @@ import { EventEntity } from '@lib/common/events/entities/Event.entity';
 /**
  * Data model for the event search query
  */
-export class EventsSearchInputDto implements SearchInputType<EventEntity> {
+export class EventsSearchInputDto implements SearchInputType<Omit<EventEntity, 'stripe_interface' | 'avatar'>> {
     /**
      * Searchable field to search by id
      */
@@ -32,14 +32,6 @@ export class EventsSearchInputDto implements SearchInputType<EventEntity> {
     @IsOptional()
     // tslint:disable-next-line:variable-name
     owner: SearchableField<string>;
-
-    /**
-     * Searchable field to search by avatar
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    avatar: SearchableField<string>;
 
     /**
      * Searchable field to search by description
@@ -88,14 +80,6 @@ export class EventsSearchInputDto implements SearchInputType<EventEntity> {
     @IsOptional()
     // tslint:disable-next-line:variable-name
     dates: SearchableField<string[]>;
-
-    /**
-     * Searchable field to search by categories
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    categories: SearchableField<string[]>;
 
     /**
      * Searchable field to search by created_at

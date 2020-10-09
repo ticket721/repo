@@ -5,6 +5,7 @@ import { EventEntity } from '@lib/common/events/entities/Event.entity';
 import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { DatesService } from '@lib/common/dates/Dates.service';
+import { fromES } from '@lib/common/utils/fromES.helper';
 
 /**
  * Service to CRUD EventEntities
@@ -38,6 +39,42 @@ export class EventsService extends CRUDExtension<EventsRepository, EventEntity> 
         );
     }
 
+    async findOneFromGroupId(groupId: string): Promise<ServiceResponse<EventEntity>> {
+        // Recover Event
+        const eventRes = await this.searchElastic({
+            body: {
+                query: {
+                    bool: {
+                        must: {
+                            term: {
+                                group_id: groupId,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (eventRes.error) {
+            return {
+                error: 'error_while_checking',
+                response: null,
+            };
+        }
+
+        if (eventRes.response.hits.total === 0) {
+            return {
+                error: 'not_found',
+                response: null,
+            };
+        }
+
+        return {
+            response: fromES(eventRes.response.hits.hits[0]),
+            error: null,
+        };
+    }
+
     async findOne(eventId: string): Promise<ServiceResponse<EventEntity>> {
         // Recover Event
         const eventRes = await this.search({
@@ -51,8 +88,15 @@ export class EventsService extends CRUDExtension<EventsRepository, EventEntity> 
             };
         }
 
+        if (eventRes.response.length === 0) {
+            return {
+                error: 'not_found',
+                response: null,
+            };
+        }
+
         return {
-            response: eventRes.response.length !== 0 ? eventRes.response[0] : null,
+            response: eventRes.response[0],
             error: null,
         };
     }
@@ -62,14 +106,7 @@ export class EventsService extends CRUDExtension<EventsRepository, EventEntity> 
 
         if (eventRes.error) {
             return {
-                error: 'error_while_checking_event_exists',
-                response: null,
-            };
-        }
-
-        if (eventRes.response === null) {
-            return {
-                error: 'event_not_found',
+                error: 'cannot_recover_event',
                 response: null,
             };
         }

@@ -295,6 +295,8 @@ export class DateEntity {
             this.categories = ECAAG(d.categories);
             this.location = d.location;
             this.timestamps = d.timestamps;
+            this.online = d.online;
+            this.online_link = d.online_link;
             this.metadata = d.metadata;
             this.created_at = d.created_at;
             this.updated_at = d.updated_at;
@@ -306,6 +308,24 @@ export class DateEntity {
      */
     @GeneratedUUidColumn()
     id: string;
+
+    /**
+     * Is the event online or not
+     */
+    @Column({
+        type: 'boolean',
+    })
+    // tslint:disable-next-line:variable-name
+    online: boolean;
+
+    /**
+     * Link for the online event
+     */
+    @Column({
+        type: 'text',
+    })
+    // tslint:disable-next-line:variable-name
+    online_link: string;
 
     /**
      * Current status of the category
