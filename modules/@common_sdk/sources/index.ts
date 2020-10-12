@@ -36,7 +36,7 @@ import { uploadImage } from './app/api/images';
 // DATES
 import {
     datesAddCategory,
-    datesCount,
+    datesCount, datesDelete, datesEdit,
     datesFuzzySearch,
     datesHomeSearch,
     datesSearch,
@@ -137,6 +137,8 @@ export class T721SDK {
         this.dates.fuzzySearch = this.dates.fuzzySearch.bind(this);
         this.dates.count = this.dates.count.bind(this);
         this.dates.addCategory = this.dates.count.bind(this);
+        this.dates.edit = this.dates.edit.bind(this);
+        this.dates.delete = this.dates.delete.bind(this);
 
         this.events.create.create = this.events.create.create.bind(this);
         this.events.search = this.events.search.bind(this);
@@ -328,6 +330,8 @@ export class T721SDK {
         fuzzySearch: datesFuzzySearch,
         count: datesCount,
         addCategory: datesAddCategory,
+        edit: datesEdit,
+        delete: datesDelete
     };
 
     public events = {

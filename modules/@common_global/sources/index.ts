@@ -39,7 +39,7 @@ export {
     DateCreationPayload,
     DatePayloadChecker,
     checkCategory,
-    checkDate,
+    checkDate
 }                                                                                                            from './event';
 
 /**

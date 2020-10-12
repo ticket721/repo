@@ -10,6 +10,9 @@ import { DatesFuzzySearchInputDto }    from '@app/server/controllers/dates/dto/D
 import { DatesFuzzySearchResponseDto } from '@app/server/controllers/dates/dto/DatesFuzzySearchResponse.dto';
 import { DatesAddCategoryInputDto }    from '@app/server/controllers/dates/dto/DatesAddCategoryInput.dto';
 import { DatesAddCategoryResponseDto } from '@app/server/controllers/dates/dto/DatesAddCategoryResponse.dto';
+import { DatesEditInputDto }           from '@app/server/controllers/dates/dto/DatesEditInput.dto';
+import { DatesEditResponseDto }        from '@app/server/controllers/dates/dto/DatesEditResponse.dto';
+import { DatesDeleteResponseDto }      from '@app/server/controllers/dates/dto/DatesDeleteResponse.dto';
 
 export async function datesSearch(
     token: string,
@@ -49,6 +52,33 @@ export async function datesAddCategory(
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
+}
+
+export async function datesEdit(
+    token: string,
+    date: string,
+    query: Partial<DatesEditInputDto>,
+): Promise<AxiosResponse<DatesEditResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.put<Partial<DatesEditInputDto>>(`/dates/${date}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
+export async function datesDelete(
+    token: string,
+    date: string
+): Promise<AxiosResponse<DatesDeleteResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.delete(`/dates/${date}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, null);
 }
 
 export async function datesHomeSearch(

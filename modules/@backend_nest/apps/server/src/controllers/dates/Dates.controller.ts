@@ -1,4 +1,15 @@
-import { Body, Controller, HttpCode, HttpException, Param, Post, UseFilters, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    HttpCode,
+    HttpException,
+    Param,
+    Post,
+    Put,
+    UseFilters,
+    UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { DatesService } from '@lib/common/dates/Dates.service';
@@ -30,7 +41,19 @@ import { DatesAddCategoryResponseDto } from '@app/server/controllers/dates/dto/D
 import { EventsService } from '@lib/common/events/Events.service';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
-import { CategoryCreationPayload } from '@common/global';
+import {
+    CategoryCreationPayload,
+    checkDate,
+    DateCreationPayload,
+    DatePayload,
+    ImagesMetadata,
+    TextMetadata,
+} from '@common/global';
+import { DatesEditInputDto } from '@app/server/controllers/dates/dto/DatesEditInput.dto';
+import { DatesEditResponseDto } from '@app/server/controllers/dates/dto/DatesEditResponse.dto';
+import { DatesDeleteResponseDto } from '@app/server/controllers/dates/dto/DatesDeleteResponse.dto';
+import { isNil, merge, pickBy } from 'lodash';
+import { closestCity } from '@common/geoloc';
 
 /**
  * Generic Dates controller. Recover Dates linked to all types of events
@@ -323,5 +346,212 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 dates: [dateId],
             },
         };
+    }
+
+    /**
+     * Edits a date
+     *
+     * @param body
+     * @param user
+     * @param dateId
+     */
+    @Put('/:date')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.Unauthorized,
+        StatusCodes.BadRequest,
+        StatusCodes.InternalServerError,
+    ])
+    async edit(
+        @Body() body: DatesEditInputDto,
+        @User() user: UserDto,
+        @Param('date') dateId: string,
+    ): Promise<DatesEditResponseDto> {
+        const date = await this._crudCall(this.datesService.findOne(dateId), StatusCodes.NotFound);
+
+        if (!(await this.isDateOwner(date, user))) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Unauthorized,
+                    message: 'not_date_owner',
+                },
+                StatusCodes.Unauthorized,
+            );
+        }
+
+        const existingDateCreationValue: DateCreationPayload = {
+            info: {
+                online: date.online,
+                online_link: date.online_link,
+                name: date.metadata.name,
+                eventBegin: new Date(date.timestamps.event_begin),
+                eventEnd: new Date(date.timestamps.event_end),
+                location: date.location
+                    ? {
+                          label: date.location.location_label,
+                          lon: date.location.location.lon,
+                          lat: date.location.location.lat,
+                      }
+                    : null,
+            },
+            textMetadata: {
+                name: date.metadata.name,
+                description: date.metadata.description,
+                twitter: date.metadata.twitter,
+                website: date.metadata.website,
+                facebook: date.metadata.facebook,
+                email: date.metadata.email,
+                linked_in: date.metadata.linked_in,
+                tiktok: date.metadata.tiktok,
+                instagram: date.metadata.instagram,
+                spotify: date.metadata.spotify,
+            },
+            imagesMetadata: {
+                avatar: date.metadata.avatar,
+                signatureColors: date.metadata.signature_colors as [string, string],
+            },
+        };
+
+        const identityNotNil = (val: any): boolean => !isNil(val);
+
+        const dateEditionPayload: DateCreationPayload = merge({}, existingDateCreationValue, body.date);
+        dateEditionPayload.info = pickBy(dateEditionPayload.info, identityNotNil) as DatePayload;
+        dateEditionPayload.textMetadata = pickBy(dateEditionPayload.textMetadata, identityNotNil) as TextMetadata;
+        dateEditionPayload.imagesMetadata = pickBy(dateEditionPayload.imagesMetadata, identityNotNil) as ImagesMetadata;
+
+        const checkResult = checkDate(dateEditionPayload);
+
+        if (checkResult !== null) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'date_payload_validation_error',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
+        const identityNotUndef = (val: any): boolean => val !== undefined;
+
+        const editPayload = pickBy(
+            {
+                online: dateEditionPayload.info.online,
+                online_link: dateEditionPayload.info.online_link,
+                location: dateEditionPayload.info.online
+                    ? null
+                    : {
+                          location: {
+                              lat: dateEditionPayload.info.location.lat,
+                              lon: dateEditionPayload.info.location.lon,
+                          },
+                          location_label: dateEditionPayload.info.location.label,
+                          assigned_city: closestCity(dateEditionPayload.info.location).id,
+                      },
+                timestamps: {
+                    event_begin: new Date(dateEditionPayload.info.eventBegin),
+                    event_end: new Date(dateEditionPayload.info.eventEnd),
+                },
+                metadata: {
+                    name: dateEditionPayload.textMetadata.name,
+                    description: dateEditionPayload.textMetadata.name,
+                    avatar: dateEditionPayload.imagesMetadata.avatar,
+                    signature_colors: dateEditionPayload.imagesMetadata.signatureColors,
+                    twitter: dateEditionPayload.textMetadata.twitter,
+                    spotify: dateEditionPayload.textMetadata.spotify,
+                    website: dateEditionPayload.textMetadata.website,
+                    facebook: dateEditionPayload.textMetadata.facebook,
+                    email: dateEditionPayload.textMetadata.email,
+                    linked_in: dateEditionPayload.textMetadata.linked_in,
+                    tiktok: dateEditionPayload.textMetadata.tiktok,
+                    instagram: dateEditionPayload.textMetadata.instagram,
+                },
+            },
+            identityNotUndef,
+        );
+
+        await this._crudCall(
+            this.datesService.update(
+                {
+                    id: dateId,
+                },
+                editPayload,
+            ),
+            StatusCodes.InternalServerError,
+        );
+
+        const updatedDate = await this._crudCall(this.datesService.findOne(dateId), StatusCodes.InternalServerError);
+
+        return {
+            date: updatedDate,
+        };
+    }
+
+    /**
+     * Attempts to delete a date
+     *
+     * @param user
+     * @param dateId
+     */
+    @Delete('/:date')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.Unauthorized,
+        StatusCodes.BadRequest,
+        StatusCodes.InternalServerError,
+    ])
+    async delete(@User() user: UserDto, @Param('date') dateId: string): Promise<DatesDeleteResponseDto> {
+        const date = await this._crudCall(this.datesService.findOne(dateId), StatusCodes.NotFound);
+
+        if (!(await this.isDateOwner(date, user))) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Unauthorized,
+                    message: 'not_date_owner',
+                },
+                StatusCodes.Unauthorized,
+            );
+        }
+
+        if (date.categories.length > 0) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'cannot_delete_date_with_categories',
+                },
+                StatusCodes.BadRequest,
+            );
+        } else {
+            const event = await this._crudCall(this.eventsService.findOne(date.event), StatusCodes.NotFound);
+            const datesList = event.dates.filter((linkedDateId: string): boolean => linkedDateId !== dateId);
+
+            await this._crudCall(
+                this.eventsService.update(
+                    {
+                        id: event.id,
+                    },
+                    {
+                        dates: datesList,
+                    },
+                ),
+                StatusCodes.InternalServerError,
+            );
+
+            await this._crudCall(
+                this.datesService.delete({
+                    id: dateId,
+                }),
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        return {};
     }
 }
