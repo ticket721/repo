@@ -1,11 +1,13 @@
 import {
     Body,
     Controller,
+    Delete,
     HttpCode,
     HttpException,
     Injectable,
     Param,
     Post,
+    Put,
     UseFilters,
     UseGuards,
 } from '@nestjs/common';
@@ -29,6 +31,12 @@ import { CategoriesAddDateLinkInputDto } from '@app/server/controllers/categorie
 import { CategoriesAddDateLinkResponseDto } from '@app/server/controllers/categories/dto/CategoriesAddDateLinkResponse.dto';
 import { EventsService } from '@lib/common/events/Events.service';
 import { DatesService } from '@lib/common/dates/Dates.service';
+import { CategoriesDeleteResponseDto } from '@app/server/controllers/categories/dto/CategoriesDeleteResponse.dto';
+import { CategoriesRemoveDateLinkResponseDto } from '@app/server/controllers/categories/dto/CategoriesRemoveDateLinkResponse.dto';
+import { CategoryCreationPayload } from '@common/global';
+import { CategoriesEditInputDto } from '@app/server/controllers/categories/dto/CategoriesEditInput.dto';
+import { CategoriesEditResponseDto } from '@app/server/controllers/categories/dto/CategoriesEditResponse.dto';
+import { isNil, merge, pickBy } from 'lodash';
 
 /**
  * Generic Categories controller. Recover Categories linked to all types of events
@@ -164,5 +172,213 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
                 dates: [...category.dates, body.date],
             },
         };
+    }
+
+    /**
+     * Removes a category link
+     *
+     * @param categoryId
+     * @param dateId
+     * @param user
+     */
+    @Delete('/:category/date/:date')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.Unauthorized,
+        StatusCodes.BadRequest,
+        StatusCodes.InternalServerError,
+    ])
+    async removeDateLink(
+        @Param('category') categoryId: string,
+        @Param('date') dateId: string,
+        @User() user: UserDto,
+    ): Promise<CategoriesRemoveDateLinkResponseDto> {
+        const category = await this._crudCall(
+            this.categoriesService.findOne(categoryId),
+            StatusCodes.InternalServerError,
+        );
+
+        if (!(await this.isCategoryOwner(category, user))) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Unauthorized,
+                    message: 'not_category_owner',
+                },
+                StatusCodes.Unauthorized,
+            );
+        }
+
+        if (category.dates.length <= 1) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'date_link_count_too_low',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
+        await this._crudCall(
+            this.datesService.removeCategory(dateId, category),
+            StatusCodes.InternalServerError,
+            'error_while_removing_link',
+        );
+
+        return {};
+    }
+
+    /**
+     * Edits a category
+     *
+     * @param categoryId
+     * @param body
+     * @param user
+     */
+    @Put('/:category')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.Unauthorized,
+        StatusCodes.BadRequest,
+        StatusCodes.InternalServerError,
+    ])
+    async edit(
+        @Param('category') categoryId: string,
+        @Body() body: CategoriesEditInputDto,
+        @User() user: UserDto,
+    ): Promise<CategoriesEditResponseDto> {
+        const category = await this._crudCall(
+            this.categoriesService.findOne(categoryId),
+            StatusCodes.InternalServerError,
+        );
+
+        if (!(await this.isCategoryOwner(category, user))) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Unauthorized,
+                    message: 'not_category_owner',
+                },
+                StatusCodes.Unauthorized,
+            );
+        }
+
+        const existingCategoryCreationPayload: CategoryCreationPayload = {
+            name: category.display_name,
+            saleBegin: new Date(category.sale_begin),
+            saleEnd: new Date(category.sale_end),
+            seats: category.seats,
+            price: category.price,
+            currency: category.currency,
+        };
+
+        const identityNotNil = (val: any): boolean => !isNil(val);
+
+        const categoryEditionPayload: CategoryCreationPayload = merge(
+            {},
+            existingCategoryCreationPayload,
+            pickBy(body.category, identityNotNil),
+        );
+
+        // TODO check if seat is still above or equal to ticket count
+
+        const identityNotUndef = (val: any): boolean => val !== undefined;
+
+        const editPayload = pickBy(
+            {
+                category_name: categoryId,
+                display_name: categoryEditionPayload.name,
+                sale_begin: categoryEditionPayload.saleBegin,
+                sale_end: categoryEditionPayload.saleEnd,
+                price: categoryEditionPayload.price,
+                currency: categoryEditionPayload.currency,
+                interface: CategoriesService.interfaceFromCurrencyAndPrice(
+                    categoryEditionPayload.currency,
+                    categoryEditionPayload.price,
+                ),
+                seats: categoryEditionPayload.seats,
+            },
+            identityNotUndef,
+        );
+
+        await this._crudCall(
+            this.categoriesService.update(
+                {
+                    id: categoryId,
+                },
+                editPayload,
+            ),
+            StatusCodes.InternalServerError,
+        );
+
+        const updatedCategory = await this._crudCall(
+            this.categoriesService.findOne(categoryId),
+            StatusCodes.InternalServerError,
+        );
+
+        return {
+            category: updatedCategory,
+        };
+    }
+    /**
+     * Removes a category
+     *
+     * @param categoryId
+     * @param user
+     */
+    @Delete('/:category')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.Unauthorized,
+        StatusCodes.BadRequest,
+        StatusCodes.InternalServerError,
+    ])
+    async delete(@Param('category') categoryId: string, @User() user: UserDto): Promise<CategoriesDeleteResponseDto> {
+        const category = await this._crudCall(
+            this.categoriesService.findOne(categoryId),
+            StatusCodes.InternalServerError,
+        );
+
+        if (!(await this.isCategoryOwner(category, user))) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Unauthorized,
+                    message: 'not_category_owner',
+                },
+                StatusCodes.Unauthorized,
+            );
+        }
+
+        if (false) {
+            // TODO check if any emitted tickets
+        } else {
+            for (const dateId of category.dates) {
+                await this._crudCall(
+                    this.datesService.removeCategory(dateId, category),
+                    StatusCodes.InternalServerError,
+                    'error_while_removing_date_link',
+                );
+            }
+
+            await this._crudCall(
+                this.categoriesService.delete({
+                    id: category.id,
+                }),
+                StatusCodes.InternalServerError,
+                'error_while_deleting_category',
+            );
+        }
+
+        return {};
     }
 }

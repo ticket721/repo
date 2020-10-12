@@ -1,11 +1,14 @@
-import { AxiosResponse }                    from 'axios';
-import { T721SDK }                          from '../../index';
-import { CategoriesSearchResponseDto }      from '@app/server/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { CategoriesSearchInputDto }         from '@app/server/controllers/categories/dto/CategoriesSearchInput.dto';
-import { CategoriesCountInputDto }          from '@app/server/controllers/categories/dto/CategoriesCountInput.dto';
-import { CategoriesCountResponseDto }       from '@app/server/controllers/categories/dto/CategoriesCountResponse.dto';
-import { CategoriesAddDateLinkInputDto }    from '@app/server/controllers/categories/dto/CategoriesAddDateLinkInput.dto';
-import { CategoriesAddDateLinkResponseDto } from '@app/server/controllers/categories/dto/CategoriesAddDateLinkResponse.dto';
+import { AxiosResponse }                       from 'axios';
+import { T721SDK }                             from '../../index';
+import { CategoriesSearchResponseDto }         from '@app/server/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { CategoriesSearchInputDto }            from '@app/server/controllers/categories/dto/CategoriesSearchInput.dto';
+import { CategoriesCountInputDto }             from '@app/server/controllers/categories/dto/CategoriesCountInput.dto';
+import { CategoriesCountResponseDto }          from '@app/server/controllers/categories/dto/CategoriesCountResponse.dto';
+import { CategoriesAddDateLinkInputDto }       from '@app/server/controllers/categories/dto/CategoriesAddDateLinkInput.dto';
+import { CategoriesAddDateLinkResponseDto }    from '@app/server/controllers/categories/dto/CategoriesAddDateLinkResponse.dto';
+import { CategoriesEditInputDto }              from '@app/server/controllers/categories/dto/CategoriesEditInput.dto';
+import { CategoriesEditResponseDto }           from '@app/server/controllers/categories/dto/CategoriesEditResponse.dto';
+import { CategoriesRemoveDateLinkResponseDto } from '@app/server/controllers/categories/dto/CategoriesRemoveDateLinkResponse.dto';
 
 export async function categoriesSearch(
     token: string,
@@ -31,6 +34,47 @@ export async function categoriesCount(
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
+}
+
+export async function categoriesEdit(
+    token: string,
+    category: string,
+    query: Partial<CategoriesEditInputDto>,
+): Promise<AxiosResponse<CategoriesEditResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.put<Partial<CategoriesEditInputDto>>(`/categories/${category}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
+export async function categoriesDelete(
+    token: string,
+    category: string
+): Promise<AxiosResponse<CategoriesEditResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.delete(`/categories/${category}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, null);
+}
+
+export async function categoriesRemoveDateLink(
+    token: string,
+    category: string,
+    date: string
+): Promise<AxiosResponse<CategoriesRemoveDateLinkResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.delete(`/categories/${category}/date/${date}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, null);
 }
 
 export async function categoriesAddDateLink(

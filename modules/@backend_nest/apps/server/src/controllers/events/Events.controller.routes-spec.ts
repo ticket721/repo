@@ -1487,7 +1487,6 @@ export default function(getCtx: () => { ready: Promise<void> }) {
         //     });
         // });
         //
-
         // describe('guestlist (POST /events/:eventId/guestlist)', function() {
         //     test('should search for ticket list of event', async function() {
         //         const {
