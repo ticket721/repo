@@ -59,7 +59,7 @@ import { contractsFetch } from './app/api/contracts';
 // CATEGORIES
 import {
     categoriesAddDateLink,
-    categoriesCount,
+    categoriesCount, categoriesDelete, categoriesEdit, categoriesRemoveDateLink,
     categoriesSearch,
 } from './app/api/categories';
 
@@ -152,6 +152,9 @@ export class T721SDK {
         this.categories.count = this.categories.count.bind(this);
         this.categories.search = this.categories.search.bind(this);
         this.categories.addDateLink = this.categories.addDateLink.bind(this);
+        this.categories.removeDateLink = this.categories.removeDateLink.bind(this);
+        this.categories.edit = this.categories.edit.bind(this);
+        this.categories.delete = this.categories.delete.bind(this);
 
         this.rights.search = this.rights.search.bind(this);
 
@@ -355,6 +358,9 @@ export class T721SDK {
         search: categoriesSearch,
         count: categoriesCount,
         addDateLink: categoriesAddDateLink,
+        removeDateLink: categoriesRemoveDateLink,
+        edit: categoriesEdit,
+        delete: categoriesDelete
     };
 
     public images = {

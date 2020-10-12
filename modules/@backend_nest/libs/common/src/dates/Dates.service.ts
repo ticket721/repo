@@ -124,6 +124,75 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> {
         };
     }
 
+    public async removeCategory(dateId: string, category: CategoryEntity): Promise<CRUDResponse<DateEntity>> {
+        const dateRes = await this.findOne(dateId);
+
+        if (dateRes.error) {
+            return {
+                error: 'cannot_recover_date',
+                response: null,
+            };
+        }
+
+        const date = dateRes.response;
+
+        if (date.categories.indexOf(category.id) === -1) {
+            return {
+                error: 'category_not_linked_to_date',
+                response: null,
+            };
+        }
+
+        if (category.dates.indexOf(dateId) === -1) {
+            return {
+                error: 'date_not_linked_to_category',
+                response: null,
+            };
+        }
+
+        const newCategoryList = date.categories.filter((categoryId: string): boolean => categoryId !== category.id);
+
+        const dateUpdateRes = await this.update(
+            {
+                id: dateId,
+            },
+            {
+                categories: newCategoryList,
+            },
+        );
+
+        if (dateUpdateRes.error) {
+            return {
+                error: 'cannot_update_date',
+                response: null,
+            };
+        }
+
+        const categoryUpdateRes = await this.categoriesService.update(
+            {
+                id: category.id,
+            },
+            {
+                dates: category.dates.filter((_dateId: string): boolean => _dateId !== date.id),
+            },
+        );
+
+        if (categoryUpdateRes.error) {
+            return {
+                error: 'cannot_update_category',
+                response: null,
+            };
+        }
+
+        return {
+            error: null,
+            response: {
+                ...date,
+                categories: newCategoryList,
+            },
+        };
+    }
+
     public async addCategory(dateId: string, category: CategoryEntity): Promise<CRUDResponse<DateEntity>> {
         const dateRes = await this.findOne(dateId);
 
