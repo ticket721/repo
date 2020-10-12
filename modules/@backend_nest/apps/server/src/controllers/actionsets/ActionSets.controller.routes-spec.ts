@@ -297,207 +297,207 @@ export default function(getCtx: () => { ready: Promise<void> }) {
             });
         });
 
-        describe('updateAction (POST /:actionSetId)', function() {
-            test('should properly set data on action set first step', async function() {
-                const {
-                    sdk,
-                    token,
-                    user,
-                    password,
-                }: {
-                    sdk: T721SDK;
-                    token: string;
-                    user: PasswordlessUserDto;
-                    password: string;
-                } = await getSDKAndUser(getCtx);
-
-                const initialArgument = {};
-
-                const actionSetName = 'event_create';
-
-                const eventCreationActionSetRes = await sdk.actions.create(token, {
-                    name: actionSetName,
-                    arguments: initialArgument,
-                });
-
-                const eventUpdateRes = await sdk.actions.update(token, eventCreationActionSetRes.data.actionset.id, {
-                    data: {
-                        name: 'Event',
-                        description: 'This is an event',
-                        tags: ['test', 'event'],
-                    },
-                });
-
-                const firstActionData = eventUpdateRes.data.actionset.actions[0].data;
-
-                expect(JSON.parse(firstActionData)).toEqual({
-                    name: 'Event',
-                    description: 'This is an event',
-                    tags: ['test', 'event'],
-                });
-            });
-
-            test('should properly set data on action set first step even if complete', async function() {
-                const {
-                    sdk,
-                    token,
-                    user,
-                    password,
-                }: {
-                    sdk: T721SDK;
-                    token: string;
-                    user: PasswordlessUserDto;
-                    password: string;
-                } = await getSDKAndUser(getCtx);
-
-                const initialArgument = {};
-
-                const actionSetName = 'event_create';
-
-                const eventCreationActionSetRes = await sdk.actions.create(token, {
-                    name: actionSetName,
-                    arguments: initialArgument,
-                });
-
-                const eventUpdateRes = await sdk.actions.update(token, eventCreationActionSetRes.data.actionset.id, {
-                    data: {
-                        name: 'Event',
-                        description: 'This is an event',
-                        tags: ['test', 'event'],
-                    },
-                });
-
-                const firstActionData = eventUpdateRes.data.actionset.actions[0].data;
-
-                expect(JSON.parse(firstActionData)).toEqual({
-                    name: 'Event',
-                    description: 'This is an event',
-                    tags: ['test', 'event'],
-                });
-
-                await waitForActionSet(sdk, token, eventUpdateRes.data.actionset.id, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 1;
-                });
-
-                const secondEventUpdateRes = await sdk.actions.update(
-                    token,
-                    eventCreationActionSetRes.data.actionset.id,
-                    {
-                        action_idx: 0,
-                        data: {
-                            name: 'THE Event',
-                            description: 'This is an event',
-                            tags: ['test', 'event'],
-                        },
-                    },
-                );
-
-                const finalActionData = JSON.parse(secondEventUpdateRes.data.actionset.actions[0].data);
-
-                expect(finalActionData).toEqual({
-                    name: 'THE Event',
-                    description: 'This is an event',
-                    tags: ['test', 'event'],
-                });
-            });
-
-            test('should fail updating action above current index', async function() {
-                const {
-                    sdk,
-                    token,
-                    user,
-                    password,
-                }: {
-                    sdk: T721SDK;
-                    token: string;
-                    user: PasswordlessUserDto;
-                    password: string;
-                } = await getSDKAndUser(getCtx);
-
-                const initialArgument = {};
-
-                const actionSetName = 'event_create';
-
-                const eventCreationActionSetRes = await sdk.actions.create(token, {
-                    name: actionSetName,
-                    arguments: initialArgument,
-                });
-
-                await failWithCode(
-                    sdk.actions.update(token, eventCreationActionSetRes.data.actionset.id, {
-                        action_idx: 1,
-                        data: {
-                            name: 'Event',
-                            description: 'This is an event',
-                            tags: ['test', 'event'],
-                        },
-                    }),
-                    StatusCodes.BadRequest,
-                );
-            });
-
-            test('should fail on private action set update', async function() {
-                const {
-                    sdk,
-                    token,
-                    user,
-                    password,
-                }: {
-                    sdk: T721SDK;
-                    token: string;
-                    user: PasswordlessUserDto;
-                    password: string;
-                } = await getSDKAndUser(getCtx);
-
-                const event = await createEvent(token, sdk);
-
-                const cartActionSetRes = await sdk.actions.create(token, {
-                    name: 'cart_create',
-                    arguments: {},
-                });
-
-                const actionSetId = cartActionSetRes.data.actionset.id;
-
-                await sdk.cart.ticketSelections(token, actionSetId, {
-                    tickets: [
-                        ...[...Array(3)].map(() => ({
-                            categoryId: event.categories[0],
-                            price: {
-                                currency: 'Fiat',
-                                price: '200',
-                            },
-                        })),
-                    ],
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 1;
-                });
-
-                await sdk.cart.modulesConfiguration(token, actionSetId, {});
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_action === 2;
-                });
-
-                await sdk.checkout.cart.commit.stripe(token, {
-                    cart: actionSetId,
-                });
-
-                await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
-                    return as.current_status === 'complete';
-                });
-
-                await failWithCode(
-                    sdk.actions.update(token, actionSetId, {
-                        action_idx: 2,
-                        data: {},
-                    }),
-                    StatusCodes.Unauthorized,
-                );
-            });
-        });
-
+        // describe('updateAction (POST /:actionSetId)', function() {
+        //     test('should properly set data on action set first step', async function() {
+        //         const {
+        //             sdk,
+        //             token,
+        //             user,
+        //             password,
+        //         }: {
+        //             sdk: T721SDK;
+        //             token: string;
+        //             user: PasswordlessUserDto;
+        //             password: string;
+        //         } = await getSDKAndUser(getCtx);
+        //
+        //         const initialArgument = {};
+        //
+        //         const actionSetName = 'event_create';
+        //
+        //         const eventCreationActionSetRes = await sdk.actions.create(token, {
+        //             name: actionSetName,
+        //             arguments: initialArgument,
+        //         });
+        //
+        //         const eventUpdateRes = await sdk.actions.update(token, eventCreationActionSetRes.data.actionset.id, {
+        //             data: {
+        //                 name: 'Event',
+        //                 description: 'This is an event',
+        //                 tags: ['test', 'event'],
+        //             },
+        //         });
+        //
+        //         const firstActionData = eventUpdateRes.data.actionset.actions[0].data;
+        //
+        //         expect(JSON.parse(firstActionData)).toEqual({
+        //             name: 'Event',
+        //             description: 'This is an event',
+        //             tags: ['test', 'event'],
+        //         });
+        //     });
+        //
+        //     test('should properly set data on action set first step even if complete', async function() {
+        //         const {
+        //             sdk,
+        //             token,
+        //             user,
+        //             password,
+        //         }: {
+        //             sdk: T721SDK;
+        //             token: string;
+        //             user: PasswordlessUserDto;
+        //             password: string;
+        //         } = await getSDKAndUser(getCtx);
+        //
+        //         const initialArgument = {};
+        //
+        //         const actionSetName = 'event_create';
+        //
+        //         const eventCreationActionSetRes = await sdk.actions.create(token, {
+        //             name: actionSetName,
+        //             arguments: initialArgument,
+        //         });
+        //
+        //         const eventUpdateRes = await sdk.actions.update(token, eventCreationActionSetRes.data.actionset.id, {
+        //             data: {
+        //                 name: 'Event',
+        //                 description: 'This is an event',
+        //                 tags: ['test', 'event'],
+        //             },
+        //         });
+        //
+        //         const firstActionData = eventUpdateRes.data.actionset.actions[0].data;
+        //
+        //         expect(JSON.parse(firstActionData)).toEqual({
+        //             name: 'Event',
+        //             description: 'This is an event',
+        //             tags: ['test', 'event'],
+        //         });
+        //
+        //         await waitForActionSet(sdk, token, eventUpdateRes.data.actionset.id, (as: ActionSetEntity): boolean => {
+        //             return as.current_action === 1;
+        //         });
+        //
+        //         const secondEventUpdateRes = await sdk.actions.update(
+        //             token,
+        //             eventCreationActionSetRes.data.actionset.id,
+        //             {
+        //                 action_idx: 0,
+        //                 data: {
+        //                     name: 'THE Event',
+        //                     description: 'This is an event',
+        //                     tags: ['test', 'event'],
+        //                 },
+        //             },
+        //         );
+        //
+        //         const finalActionData = JSON.parse(secondEventUpdateRes.data.actionset.actions[0].data);
+        //
+        //         expect(finalActionData).toEqual({
+        //             name: 'THE Event',
+        //             description: 'This is an event',
+        //             tags: ['test', 'event'],
+        //         });
+        //     });
+        //
+        //     test('should fail updating action above current index', async function() {
+        //         const {
+        //             sdk,
+        //             token,
+        //             user,
+        //             password,
+        //         }: {
+        //             sdk: T721SDK;
+        //             token: string;
+        //             user: PasswordlessUserDto;
+        //             password: string;
+        //         } = await getSDKAndUser(getCtx);
+        //
+        //         const initialArgument = {};
+        //
+        //         const actionSetName = 'event_create';
+        //
+        //         const eventCreationActionSetRes = await sdk.actions.create(token, {
+        //             name: actionSetName,
+        //             arguments: initialArgument,
+        //         });
+        //
+        //         await failWithCode(
+        //             sdk.actions.update(token, eventCreationActionSetRes.data.actionset.id, {
+        //                 action_idx: 1,
+        //                 data: {
+        //                     name: 'Event',
+        //                     description: 'This is an event',
+        //                     tags: ['test', 'event'],
+        //                 },
+        //             }),
+        //             StatusCodes.BadRequest,
+        //         );
+        //     });
+        //
+        //     test('should fail on private action set update', async function() {
+        //         const {
+        //             sdk,
+        //             token,
+        //             user,
+        //             password,
+        //         }: {
+        //             sdk: T721SDK;
+        //             token: string;
+        //             user: PasswordlessUserDto;
+        //             password: string;
+        //         } = await getSDKAndUser(getCtx);
+        //
+        //         const event = await createEvent(token, sdk);
+        //
+        //         const cartActionSetRes = await sdk.actions.create(token, {
+        //             name: 'cart_create',
+        //             arguments: {},
+        //         });
+        //
+        //         const actionSetId = cartActionSetRes.data.actionset.id;
+        //
+        //         await sdk.cart.ticketSelections(token, actionSetId, {
+        //             tickets: [
+        //                 ...[...Array(3)].map(() => ({
+        //                     categoryId: event.categories[0],
+        //                     price: {
+        //                         currency: 'Fiat',
+        //                         price: '200',
+        //                     },
+        //                 })),
+        //             ],
+        //         });
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_action === 1;
+        //         });
+        //
+        //         await sdk.cart.modulesConfiguration(token, actionSetId, {});
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_action === 2;
+        //         });
+        //
+        //         await sdk.checkout.cart.commit.stripe(token, {
+        //             cart: actionSetId,
+        //         });
+        //
+        //         await waitForActionSet(sdk, token, actionSetId, (as: ActionSetEntity): boolean => {
+        //             return as.current_status === 'complete';
+        //         });
+        //
+        //         await failWithCode(
+        //             sdk.actions.update(token, actionSetId, {
+        //                 action_idx: 2,
+        //                 data: {},
+        //             }),
+        //             StatusCodes.Unauthorized,
+        //         );
+        //     });
+        // });
+        //
         describe('search (GET /actions/search)', function() {
             test('should search for my actionsets only', async function() {
                 const {

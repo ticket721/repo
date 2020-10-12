@@ -13,7 +13,6 @@ import {
 export interface DatePayload {
     online: boolean;
     online_link?: string;
-    liveLink?: string;
     name: string;
     eventBegin: Date;
     eventEnd: Date;

@@ -1,5 +1,5 @@
-import Joi                                                                                           from '@hapi/joi';
-import { symbolOf }                                                                                                        from '../currency';
+import Joi                                         from '@hapi/joi';
+import { symbolOf }                                from '../currency';
 import {
     ErrorNode,
     generateErrorFromJoiError,
@@ -8,8 +8,8 @@ import {
     noStringDate, quickError,
     TextMetadata,
     TextMetadataChecker,
-}                                          from './common';
-import { DatePayload, DatePayloadChecker }                                  from './checkDate';
+}                                                  from './common';
+import { DatePayload, DatePayloadChecker }         from './checkDate';
 import { CategoryPayload, CategoryPayloadChecker } from './checkCategory';
 
 interface CategoryWithDatesPayload extends CategoryPayload {
@@ -30,7 +30,7 @@ const EventCreationPayloadChecker = Joi.object<EventCreationPayload>({
     categoriesConfiguration: Joi.array().items(
         (CategoryPayloadChecker as Joi.ObjectSchema)
             .keys({
-                dates: Joi.array().items(Joi.number())
+                dates: Joi.array().items(Joi.number()),
             }))
         .required(),
 });
