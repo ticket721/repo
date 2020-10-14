@@ -24,11 +24,23 @@ var migration1601551889 = {
             params: []
         };
 
-        const purchase_type_creation = {
-            query: `CREATE TYPE IF NOT EXISTS ticket721.purchase (
+        const fee_type_creation = {
+            query: `CREATE TYPE IF NOT EXISTS ticket721.fee (
+                type text,
+                price int
+          );`,
+            params: []
+        }
+
+        const purchase_table_creation = {
+            query: `CREATE TABLE IF NOT EXISTS ticket721.purchase (
+                id UUID PRIMARY KEY,
+                owner uuid,
                 products list<frozen<ticket721.product>>,
                 payment frozen<ticket721.payment>,
+                fees list<frozen<ticket721.fee>>,
                 created_at timestamp,
+                updated_at timestamp,
                 closed_at timestamp,
                 payment_interface text,
                 price int,
@@ -44,8 +56,8 @@ var migration1601551889 = {
         const user_payments_cart_field_creation = {
             query: `ALTER TABLE ticket721.user
              ADD (
-                current_purchase frozen<ticket721.purchase>,
-                past_purchases list<frozen<ticket721.purchase>>
+                current_purchase uuid,
+                past_purchases list<uuid>
              );`,
             params: []
         };
@@ -167,15 +179,38 @@ var migration1601551889 = {
         //
         //
 
+        const ticket_drop_table = {
+            query: `
+                DROP TABLE ticket721.ticket;
+             `,
+            params: []
+        }
+
+        const ticket_table_recreation = {
+            query: `CREATE TABLE IF NOT EXISTS ticket721.ticket ( 
+                        id uuid PRIMARY KEY,
+                        receipt uuid,
+                        owner text,
+                        category uuid,
+                        group_id text,
+                        created_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
         try {
             console.log('Product Type Creation');
             await db.execute(product_type_creation.query, product_type_creation.params, { prepare: true });
 
             console.log('Payment Type Creation');
             await db.execute(payment_type_creation.query, payment_type_creation.params, { prepare: true });
+            
+            console.log('Fee Type Creation');
+            await db.execute(fee_type_creation.query, fee_type_creation.params, { prepare: true });
 
             console.log('Purchase Type Creation');
-            await db.execute(purchase_type_creation.query, purchase_type_creation.params, { prepare: true });
+            await db.execute(purchase_table_creation.query, purchase_table_creation.params, { prepare: true });
 
 
 
@@ -213,6 +248,15 @@ var migration1601551889 = {
 
             console.log('Category recreate table');
             await db.execute(category_table_recreation.query, category_table_recreation.params, { prepare: true });
+
+
+
+
+            console.log('Ticket drop table');
+            await db.execute(ticket_drop_table.query, ticket_drop_table.params, { prepare: true });
+
+            console.log('Ticket recreate table');
+            await db.execute(ticket_table_recreation.query, ticket_table_recreation.params, { prepare: true });
         } catch (e) {
             handler(e, false);
         }
@@ -232,8 +276,13 @@ var migration1601551889 = {
             params: []
         };
 
-        const purchase_type_creation = {
-            query: `DROP TYPE ticket721.purchase;`,
+        const fee_type_creation = {
+            query: `DROP TYPE ticket721.fee;`,
+            params: []
+        }
+
+        const purchase_table_creation = {
+            query: `DROP TABLE ticket721.purchase;`,
             params: []
         }
 
@@ -273,6 +322,7 @@ var migration1601551889 = {
                     );`,
             params: []
         };
+        
         //
         //
         //
@@ -352,7 +402,43 @@ var migration1601551889 = {
             params: []
         };
 
+        //
+        //
+        //
+
+        const ticket_drop_table = {
+            query: `
+                DROP TABLE ticket721.ticket;
+             `,
+            params: []
+        }
+
+        const ticket_table_recreation = {
+            query: `CREATE TABLE IF NOT EXISTS ticket721.ticket ( 
+                        id text PRIMARY KEY,
+                        authorization uuid,
+                        owner text,
+                        env text,
+                        status text,
+                        transaction_hash text,
+                        category uuid,
+                        group_id text,
+                        parent_id uuid,
+                        parent_type text,
+                        created_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
         try {
+            console.log('Ticket drop table');
+            await db.execute(ticket_drop_table.query, ticket_drop_table.params, { prepare: true });
+
+            console.log('Ticket recreate table');
+            await db.execute(ticket_table_recreation.query, ticket_table_recreation.params, { prepare: true });
+
+
 
             console.log('Category drop table');
             await db.execute(category_drop_table.query, category_drop_table.params, { prepare: true });
@@ -398,8 +484,11 @@ var migration1601551889 = {
             console.log('Payment Type Creation');
             await db.execute(payment_type_creation.query, payment_type_creation.params, { prepare: true });
 
-            console.log('Purchase Type Creation');
-            await db.execute(purchase_type_creation.query, purchase_type_creation.params, { prepare: true });
+            console.log('Fee Type Creation');
+            await db.execute(fee_type_creation.query, fee_type_creation.params, { prepare: true });
+            
+            console.log('Purchase Table Creation');
+            await db.execute(purchase_table_creation.query, purchase_table_creation.params, { prepare: true });
 
         } catch (e) {
             handler(e, false);

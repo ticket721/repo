@@ -61,6 +61,7 @@ import { FeatureFlagsController } from '@app/server/controllers/featureflags/Fea
 import { StripeInterfacesModule } from '@lib/common/stripeinterface/StripeInterfaces.module';
 import { StripeController } from '@app/server/controllers/payment/stripe/Stripe.controller';
 import { FilestoreModule } from '@lib/common/filestore/Filestore.module';
+import { PurchasesModule } from '@lib/common/purchases/Purchases.module';
 
 @Module({
     imports: [
@@ -94,6 +95,7 @@ import { FilestoreModule } from '@lib/common/filestore/Filestore.module';
         MetadatasModule,
         CurrenciesModule,
         TicketsModule,
+        PurchasesModule,
 
         CartModule,
         StripeModule.register(),

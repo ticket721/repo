@@ -23,7 +23,7 @@ export class TicketsSearchInputDto implements SearchInputType<TicketEntity> {
     @ApiPropertyOptional()
     @IsOptional()
     // tslint:disable-next-line:variable-name
-    authorization: SearchableField<string>;
+    receipt: SearchableField<string>;
 
     /**
      * Searchable field to search by owner
@@ -32,30 +32,6 @@ export class TicketsSearchInputDto implements SearchInputType<TicketEntity> {
     @IsOptional()
     // tslint:disable-next-line:variable-name
     owner: SearchableField<string>;
-
-    /**
-     * Searchable field to search by env
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    env: SearchableField<'chain' | 'db'>;
-
-    /**
-     * Searchable field to search by status
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    status: SearchableField<'minting' | 'ready' | 'canceled'>;
-
-    /**
-     * Searchable field to search by transaction_hash
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    transaction_hash: SearchableField<string>;
 
     /**
      * Searchable field to search by category
@@ -72,22 +48,6 @@ export class TicketsSearchInputDto implements SearchInputType<TicketEntity> {
     @IsOptional()
     // tslint:disable-next-line:variable-name
     group_id: SearchableField<string>;
-
-    /**
-     * Searchable field to search by parent_id
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    parent_id: SearchableField<string>;
-
-    /**
-     * Searchable field to search by parent_type
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    parent_type: SearchableField<string>;
 
     /**
      * Searchable field to search by created_at
