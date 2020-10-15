@@ -318,8 +318,8 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.create(
                     deepEqual({
-                        id: uuid,
-                        current_purchase: uuid,
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -417,8 +417,8 @@ describe('Authentication Service', function() {
             verify(
                 usersServiceMock.create(
                     deepEqual({
-                        id: uuid,
-                        current_purchase: uuid,
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         address,
@@ -608,8 +608,8 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.create(
                     deepEqual({
-                        id: uuid,
-                        current_purchase: uuid,
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         address,
@@ -695,8 +695,8 @@ describe('Authentication Service', function() {
             verify(
                 usersServiceMock.create(
                     deepEqual({
-                        id: uuid,
-                        current_purchase: uuid,
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -800,8 +800,8 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.create(
                     deepEqual({
-                        id: uuid,
-                        current_purchase: uuid,
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -853,8 +853,8 @@ describe('Authentication Service', function() {
             verify(
                 usersServiceMock.create(
                     deepEqual({
-                        id: uuid,
-                        current_purchase: uuid,
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -1321,8 +1321,8 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.create(
                     deepEqual({
-                        id: uuid,
-                        current_purchase: uuid,
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         device_address: null,
                         username,
@@ -1419,8 +1419,8 @@ describe('Authentication Service', function() {
             verify(
                 usersServiceMock.create(
                     deepEqual({
-                        id: uuid,
-                        current_purchase: uuid,
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -1536,8 +1536,8 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.create(
                     deepEqual({
-                        id: uuid,
-                        current_purchase: uuid,
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -1624,8 +1624,8 @@ describe('Authentication Service', function() {
                     deepEqual({
                         email,
                         username,
-                        id: uuid,
-                        current_purchase: uuid,
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         device_address: null,
                         address: anyString(),
                         type: 't721',
@@ -2027,8 +2027,8 @@ describe('Authentication Service', function() {
             when(
                 usersServiceMock.create(
                     deepEqual({
-                        id: uuid,
-                        current_purchase: uuid,
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         device_address: null,
                         username,
@@ -2080,8 +2080,8 @@ describe('Authentication Service', function() {
             verify(
                 usersServiceMock.create(
                     deepEqual({
-                        id: uuid,
-                        current_purchase: uuid,
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,

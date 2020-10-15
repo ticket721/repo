@@ -7,6 +7,7 @@ import { CreateUserServiceInputDto } from './dto/CreateUserServiceInput.dto';
 import { toAcceptedAddressFormat } from '@common/global';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
 
 /**
  * Utilities and services around the user entity
@@ -59,6 +60,7 @@ export class UsersService {
      * @param user
      */
     async create(user: CreateUserServiceInputDto): Promise<ServiceResponse<UserDto>> {
+        console.log(user);
         try {
             const createdUser = await this.usersRepository
                 .save(
@@ -96,6 +98,30 @@ export class UsersService {
                 error: null,
             };
         } catch (e) {
+            return {
+                response: null,
+                error: 'unexpected_error',
+            };
+        }
+    }
+
+    async recoverUserCart(id: string): Promise<ServiceResponse<string>> {
+        try {
+            const user: UserEntity = await this.usersRepository
+                .findOne({ id: UUIDToolService.fromString(id) })
+                .toPromise();
+            if (user === null) {
+                return {
+                    error: 'user_not_found',
+                    response: null,
+                };
+            }
+            return {
+                response: user.current_purchase,
+                error: null,
+            };
+        } catch (e) {
+            console.log(e);
             return {
                 response: null,
                 error: 'unexpected_error',

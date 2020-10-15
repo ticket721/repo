@@ -223,8 +223,8 @@ export class AuthenticationService {
         const purchase: PurchaseEntity = initialPurchase.response;
 
         const newUser: ServiceResponse<UserDto> = await this.usersService.create({
-            id,
-            current_purchase: purchase.id,
+            id: UUIDToolService.fromString(id),
+            current_purchase: UUIDToolService.fromString(purchase.id),
             email,
             password: null,
             username,
@@ -401,8 +401,8 @@ export class AuthenticationService {
         const purchase: PurchaseEntity = initialPurchase.response;
 
         const newUser: ServiceResponse<UserDto> = await this.usersService.create({
-            id,
-            current_purchase: purchase.id,
+            id: UUIDToolService.fromString(id),
+            current_purchase: UUIDToolService.fromString(purchase.id),
             email,
             password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10)),
             username,

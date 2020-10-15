@@ -12,6 +12,15 @@ export class UUIDToolService {
     }
 
     /**
+     * Load uuid from string value
+     *
+     * @param id
+     */
+    static fromString(id: string): any {
+        return uuid(id);
+    }
+
+    /**
      *
      * @param uuidValue
      */

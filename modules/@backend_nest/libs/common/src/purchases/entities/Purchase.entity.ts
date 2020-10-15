@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, UpdateDateColumn } from '@iaminfinity/express-cassandra';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    GeneratedUUidColumn,
+    UpdateDateColumn,
+} from '@iaminfinity/express-cassandra';
 import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 
 export interface Product {
@@ -53,9 +59,7 @@ export class PurchaseEntity {
     /**
      * Unique id
      */
-    @Column({
-        type: 'uuid',
-    })
+    @GeneratedUUidColumn()
     id: string;
 
     @Column({
