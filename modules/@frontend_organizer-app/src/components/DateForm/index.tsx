@@ -6,9 +6,9 @@ import styled                            from 'styled-components';
 
 import { useTranslation }              from 'react-i18next';
 import { LocationInput }               from '@frontend/core/lib/components/LocationInput';
-import { getLatLng, geocodeByAddress } from 'react-google-places-autocomplete';
-import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
-import { useDispatch }                 from 'react-redux';
+// import { getLatLng, geocodeByAddress } from 'react-google-places-autocomplete';
+// import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
+// import { useDispatch }                 from 'react-redux';
 
 import './locales';
 import { getEnv }                      from '@frontend/core/lib/utils/getEnv';
@@ -20,37 +20,37 @@ interface Props {
 }
 
 const DateForm = ({ formik, formActions, className }: Props) => {
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
     const [ t, i18n ] = useTranslation(['date_form', 'vaildation', 'errors']);
 
-    const onLocationChange = (result: any) => {
-        geocodeByAddress(result.description)
-            .then((gecodeResult) => {
-                    getLatLng(gecodeResult[0])
-                        .then(({ lat, lng }) => {
-                            formik.setFieldValue('location', {
-                                label: gecodeResult[0].formatted_address,
-                                lon: lng,
-                                lat,
-                            })
-                        }).catch(() => {
-                        dispatch(PushNotification(t('google_api_error'), 'error'));
-                        formik.setFieldValue('location', {
-                            label: '',
-                            lon: null,
-                            lat: null,
-                        });
-                    })
-                }
-            ).catch(() => {
-            dispatch(PushNotification(t('google_api_error'), 'error'));
-            formik.setFieldValue('location', {
-                label: '',
-                lon: null,
-                lat: null,
-            });
-        });
-    };
+    // const onLocationChange = (result: any) => {
+    //     geocodeByAddress(result.description)
+    //         .then((gecodeResult) => {
+    //                 getLatLng(gecodeResult[0])
+    //                     .then(({ lat, lng }) => {
+    //                         formik.setFieldValue('location', {
+    //                             label: gecodeResult[0].formatted_address,
+    //                             lon: lng,
+    //                             lat,
+    //                         })
+    //                     }).catch(() => {
+    //                     dispatch(PushNotification(t('google_api_error'), 'error'));
+    //                     formik.setFieldValue('location', {
+    //                         label: '',
+    //                         lon: null,
+    //                         lat: null,
+    //                     });
+    //                 })
+    //             }
+    //         ).catch(() => {
+    //         dispatch(PushNotification(t('google_api_error'), 'error'));
+    //         formik.setFieldValue('location', {
+    //             label: '',
+    //             lon: null,
+    //             lat: null,
+    //         });
+    //     });
+    // };
 
     const computeError = (field: string): string => {
         if (field === 'location') {
@@ -73,7 +73,7 @@ const DateForm = ({ formik, formActions, className }: Props) => {
                     name={'startDate'}
                     dateFormat={'iii, MMM do, yyyy - HH:mm'}
                     minDate={new Date()}
-                    selected={formik.values.eventBegin}
+                    value={formik.values.eventBegin}
                     startDate={formik.values.eventBegin}
                     endDate={formik.values.eventEnd}
                     locale={i18n.language}
@@ -95,7 +95,7 @@ const DateForm = ({ formik, formActions, className }: Props) => {
                     name={'endDate'}
                     dateFormat={'iii, MMM do, yyyy - HH:mm'}
                     minDate={formik.values.eventBegin}
-                    selected={formik.values.eventEnd}
+                    value={formik.values.eventEnd}
                     startDate={formik.values.eventBegin}
                     endDate={formik.values.eventEnd}
                     locale={i18n.language}
@@ -118,7 +118,12 @@ const DateForm = ({ formik, formActions, className }: Props) => {
                 initialValue={formik.values.location.label}
                 label={t('location_label')}
                 placeholder={t('location_placeholder')}
-                onSelect={onLocationChange}
+                onSuccess={(location) => formik.setFieldValue('location', location)}
+                onError={() => formik.setFieldValue('location', {
+                        label: '',
+                        lon: null,
+                        lat: null,
+                    })}
                 error={
                     computeError('location') &&
                     t(computeError('location'))

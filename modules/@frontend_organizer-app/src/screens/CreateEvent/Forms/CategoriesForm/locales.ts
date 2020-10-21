@@ -1,31 +1,19 @@
 import i18n from '@frontend/core/lib/utils/i18n';
 
-i18n.addResourceBundle('en', 'categories', {
-    global_tab: 'Global Passes',
-    global_desc: 'A Global Pass give the user an access to all dates of your event.',
-    date_specific_tab: 'Tickets',
-    date_specific_desc: 'You can choose one or several dates to replicate categories.',
-    create_category: 'Create New Category',
-    select_dates_label: 'Dates',
-    select_dates_placeholder: 'select date(s)',
+i18n.addResourceBundle('en', 'categories_form', {
+    categories_by_date_label: 'Categories by date',
+    multi_dates_categories_label: 'Multi-dates categories',
     all_dates: 'All dates',
+    add_new_category: 'Create new category',
+    no_category: 'No corresponding category for this date',
+    no_multi_dates_category: 'No multi-dates category',
 });
 
-i18n.addResourceBundle('fr', 'categories', {
-    global_tab: 'Pass globaux',
-    global_desc: 'Un pass global permet a l\'utilisateur d\'avoir accès a chaque date de votre évènement.',
-    date_specific_tab: 'Tickets',
-    date_specific_desc: 'Vous pouvez choisir une ou plusieurs dates sur lesquelles répliquer la catégorie que vous souhaitez créer.',
-    create_category: 'Créer Une Catégorie',
-    select_dates_label: 'Dates',
-    select_dates_placeholder: 'sélectionner une/des dates',
+i18n.addResourceBundle('fr', 'categories_form', {
+    categories_by_date_label: 'Catégories par date',
+    multi_dates_categories_label: 'Catégories multi-dates',
     all_dates: 'Toutes les dates',
-});
-
-i18n.addResourceBundle('en', 'create_date', {
-    create_date: 'Create New Date',
-});
-
-i18n.addResourceBundle('fr', 'create_date', {
-    create_date: 'Créer une date',
+    add_new_category: 'Créer une nouvelle catégorie',
+    no_category: 'Aucune catégorie configurée pour cette date',
+    no_multi_dates_category: 'Aucune catégorie multi-dates',
 });

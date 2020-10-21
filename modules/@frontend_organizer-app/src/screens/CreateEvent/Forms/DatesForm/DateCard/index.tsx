@@ -1,66 +1,106 @@
-import React, { Fragment }     from 'react';
-import styled                  from 'styled-components';
-import { displayCompleteDate } from '@frontend/core/lib/utils/date';
-import { Icon }                    from '@frontend/flib-react/lib/components';
-import { FormCard, FormCardProps } from '../../../../../components/FormCard';
+import React from 'react';
 
-export interface DateCardProps extends FormCardProps {
-    beginDate: Date;
-    endDate: Date;
-    location: string;
+import { useTranslation }     from 'react-i18next';
+import './locales';
+
+import styled from 'styled-components';
+import { useFormikContext } from 'formik';
+import { EventCreationPayload } from '@common/global';
+import { OnlineTag } from '../OnlineTag';
+import { SideActions } from './SideActions';
+import { CardInformations } from './CardInformations';
+
+export interface DateCardProps {
+    idx: number;
+    onEdition: () => void;
+    triggerDelete: () => void;
 }
 
-export const DateCard: React.FC<DateCardProps> = (props: DateCardProps) => (
-    <FormCard
-    name={props.name}
-    editable={props.editable}
-    edit={props.edit}
-    setEdit={props.setEdit}>
-        {
-            props.edit ?
-                props.children :
-                <Fragment>
-                    <DateContainer>
-                        <Icon
-                            icon={'calendar'}
-                            size={'16px'} />
-                        <span>{displayCompleteDate(props.beginDate)}</span>
-                        <Arrow
-                            icon={'arrow'}
-                            size={'15px'}
-                            color={'rgba(255, 255, 255, 0.9)'}/>
-                        <span>{displayCompleteDate(props.endDate)}</span>
-                    </DateContainer>
-                    <Location>
-                        <Icon
-                            icon={'pin'}
-                            size={'16px'} />
-                        <span className={'label'}>{props.location}</span>
-                    </Location>
-                </Fragment>
-        }
-    </FormCard>
-);
+export const DateCard: React.FC<DateCardProps> = ({ idx, onEdition, triggerDelete }) => {
+    const [ t ] = useTranslation('date_card');
+    const formikCtx = useFormikContext<EventCreationPayload>();
 
-const DateContainer = styled.div`
+    return (
+        <DateCardContainer
+        error={formikCtx.errors.datesConfiguration && !!formikCtx.errors.datesConfiguration[idx]}>
+            <Header>
+                <Title>
+                    <span>{t('date_title') + (idx + 1)}</span>
+                    {
+                        formikCtx.values.datesConfiguration[idx].online ?
+                        <OnlineTag/> :
+                        null
+                    }
+                </Title>
+                <div className={'side-actions'}>
+                    <SideActions
+                    edit={onEdition}
+                    triggerDelete={triggerDelete}/>
+                </div>
+            </Header>
+            <CardInformations idx={idx} />
+            {
+                formikCtx.errors.datesConfiguration && !!formikCtx.errors.datesConfiguration[idx] ?
+                <Error>
+                    {t('error_msg')}
+                </Error> :
+                null
+            }
+        </DateCardContainer>
+    );
+};
+
+const DateCardContainer = styled.div<{ error: boolean }>`
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: ${props => props.theme.defaultRadius};
+    padding: ${props => props.theme.biggerSpacing};
+    background-color: ${props => props.theme.darkerBg};
+    font-size: 13px;
+    font-weight: bold;
+    transition: background-color 300ms;
+    border: ${props => props.error ? `1px solid ${props.theme.errorColor.hex}` : 'none'};
+    box-shadow: 0 0 8px rgba(0,0,0,0.4);
+
+
+    &:hover .side-actions {
+        display: block;
+    }
+`;
+
+const Header = styled.div`
+    display: flex;
+    justify-content: space-between;
+    top: 10px;
+    right: 10px;
+    margin-bottom: ${props => props.theme.biggerSpacing};
+    text-transform: uppercase;
+
+    .side-actions {
+        display: none;
+        position: absolute;
+        top: 12px;
+        right: 12px;
+    }
+`;
+
+const Title = styled.div`
     display: flex;
     align-items: center;
-    margin-bottom: ${props => props.theme.regularSpacing};
 
     & > span:first-child {
-        margin-right: ${props => props.theme.regularSpacing};
+        color: ${props => props.theme.textColor};
+        margin-right: ${props => props.theme.smallSpacing};
+        padding: 4px 0;
     }
 `;
 
-const Arrow = styled(Icon)`
-    margin: 0 20px;
-`;
-
-const Location = styled.div`
-    display: flex;
-    align-items: center;
-
-    .label {
-        margin-left: ${props => props.theme.regularSpacing};
-    }
+const Error = styled.span`
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    color: ${props => props.theme.errorColor.hex};
+    font-weight: 500;
 `;

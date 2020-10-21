@@ -4,12 +4,11 @@ import styled                         from 'styled-components';
 import { TicketHeader, PreviewInfos, Button } from '@frontend/flib-react/lib/components';
 import TicketInterface                from '@frontend/flib-react/lib/shared/ticketInterface';
 
-import { useSelector }                from 'react-redux';
-import { MergedAppState }             from '../../../../index';
-
 import { useTranslation } from 'react-i18next';
-import '../../../../shared/Translations/StylesForm';
+import './locales';
 import { useRef } from 'react';
+import { useFormikContext } from 'formik';
+import { EventCreationPayload } from '@common/global';
 
 interface ComponentsPreviewProps {
     previewSrc: string;
@@ -38,7 +37,7 @@ const Overlap = styled.div`
 `;
 
 export const ComponentsPreview: React.FC<ComponentsPreviewProps> = (props: ComponentsPreviewProps) => {
-    const eventName: string = useSelector((state: MergedAppState) => state.eventCreation.textMetadata.name);
+    const eventName: string = useFormikContext<EventCreationPayload>().values.textMetadata.name;
     const [ t ] = useTranslation('event_creation_styles_preview');
     const previewRef = useRef(null);
 

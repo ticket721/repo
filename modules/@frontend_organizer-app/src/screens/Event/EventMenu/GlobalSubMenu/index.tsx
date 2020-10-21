@@ -5,7 +5,7 @@ import { useHistory, useParams } from 'react-router';
 import Icon                      from '@frontend/flib-react/lib/components/icon';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { useSelector }                 from 'react-redux';
-import { MergedAppState }              from '../../../../index';
+import { AppState } from '@frontend/core/lib/redux';
 import { v4 }                          from 'uuid';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { CategoryEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
@@ -24,7 +24,7 @@ export const GlobalSubMenu: React.FC = () => {
     const [ showingGlobalCategories, setShowingGlobalCategories ] = useState<boolean>(false);
 
     const [ globalCategories, setGlobalCategories ] = useState<CategoryEntity[]>([]);
-    const token = useSelector((state: MergedAppState) => state.auth.token.value);
+    const token = useSelector((state: AppState) => state.auth.token.value);
 
     const { response: eventResp } = useRequest<EventsSearchResponseDto>(
         {
@@ -105,9 +105,7 @@ export const GlobalSubMenu: React.FC = () => {
                                 <Tile
                                     key={category.id + '-global'}
                                     active={activeTile === category.id}
-                                    onClick={() => history.push(`/group/${groupId}/event/${category.parent_id}/category/${category.id}`, {
-                                        showingGlobalCategories,
-                                    })}>
+                                    onClick={() => console.error('implement history.push')}>
                                     <span>{category.display_name}</span>
                                 </Tile>
                             ))

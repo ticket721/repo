@@ -1,26 +1,24 @@
 import React, { useState }  from 'react';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { v4 }                       from 'uuid';
-import { useHistory, useParams }    from 'react-router';
+import { useParams }    from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { MergedAppState }                from '../../../index';
+import { AppState } from '@frontend/core/lib/redux';
 import { DatesSearchResponseDto }        from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { checkFormatDate }               from '@frontend/core/lib/utils/date';
 import { CategoryForm, CategoryItem }    from '../../../components/CategoryForm';
 import { useDeepEffect }                 from '@frontend/core/lib/hooks/useDeepEffect';
 import { PushNotification }              from '@frontend/core/lib/redux/ducks/notifications';
 import { useLazyRequest }                from '@frontend/core/lib/hooks/useLazyRequest';
-import { CategoriesCreateResponseDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesCreateResponse.dto';
-import { DatesAddCategoriesResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesAddCategoriesResponse.dto';
 
 const NewCategory: React.FC = () => {
-    const history = useHistory();
+    // const history = useHistory();
     const { groupId, dateId } = useParams();
 
     const [ loadingState, setLoadingState ] = useState<boolean>(false);
     const dispatch = useDispatch();
     const [uuid] = useState(v4() + '@create-category');
-    const token = useSelector((state: MergedAppState) => state.auth.token.value);
+    const token = useSelector((state: AppState) => state.auth.token.value);
     const { response: dateResp } = useRequest<DatesSearchResponseDto>(
         {
             method: 'dates.search',
@@ -37,8 +35,8 @@ const NewCategory: React.FC = () => {
         uuid
     );
 
-    const { lazyRequest: createCategory, response: createResp } = useLazyRequest<CategoriesCreateResponseDto>('categories.create', uuid);
-    const { lazyRequest: addCategory, response: addCategoryResp } = useLazyRequest<DatesAddCategoriesResponseDto>('dates.addCategories', uuid);
+    const { lazyRequest: createCategory, response: createResp } = useLazyRequest('categories.create', uuid);
+    const { response: addCategoryResp } = useLazyRequest('dates.addCategories', uuid);
 
     const create = (values: CategoryItem) => {
         setLoadingState(true);
@@ -60,22 +58,24 @@ const NewCategory: React.FC = () => {
     };
 
     useDeepEffect(() => {
-        if (createResp.data?.category) {
-            addCategory([
-                token,
-                dateId,
-                {
-                    categories: [createResp.data.category.id]
-                }
-            ]);
-        }
+        // if (createResp.data?.category) {
+        //     addCategory([
+        //         token,
+        //         dateId,
+        //         {
+        //             categories: [createResp.data.category.id]
+        //         }
+        //     ]);
+        // }
+        console.error('addCategory');
     }, [createResp.data]);
 
     useDeepEffect(() => {
         if (addCategoryResp.data) {
             setLoadingState(false);
             dispatch(PushNotification('Successfuly updated', 'success'));
-            history.push(`/group/${groupId}/date/${dateId}/category/${createResp.data.category.id}`);
+            console.error('implement history.push');
+            // history.push(`/group/${groupId}/date/${dateId}/category/${createResp.data.category.id}`);
         }
     }, [addCategoryResp.data]);
 

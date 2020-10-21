@@ -23,7 +23,6 @@ const PopupWrapper = styled.div`
 const PopupContent = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: center;
     width: 450px;
     padding: ${(props) => `${props.theme.doubleSpacing} ${props.theme.biggerSpacing} ${props.theme.smallSpacing}`};
     box-shadow: 0 0 5px #120f1a;

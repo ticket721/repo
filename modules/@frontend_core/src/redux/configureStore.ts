@@ -32,6 +32,10 @@ export const configureStore = <AdditionalState>(
         composeEnhancer(middlewares),
     );
 
+    if (!additionalSagas) {
+        additionalSagas = [];
+    }
+
     const rootSaga = function* (): IterableIterator<AllEffect<any>> {
         yield all(
             [

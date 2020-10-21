@@ -1,158 +1,156 @@
-import React, { Dispatch, useEffect, useRef } from 'react';
-import MuiAppBar                              from '@material-ui/core/AppBar';
-import MuiTabs                                      from '@material-ui/core/Tabs';
-import Tab                                          from '@material-ui/core/Tab';
+import React, { useState } from 'react';
 import styled                       from 'styled-components';
-import { useSelector } from 'react-redux';
-
-import { categoriesValidationSchema }               from './validationSchema';
-import { GlobalCategories }                         from './GlobalCategories';
-
-import { DateSpecificCategories }                             from './DateSpecificCategories';
-import { useEventCreation }                         from '../../../../hooks/useEventCreation';
-import {
-    EventsCreateCategoriesConfiguration,
-}                                                   from '@common/sdk/lib/@backend_nest/apps/worker/src/actionhandlers/events/Events.input.handlers';
-import { EventCreationActions, EventCreationSteps } from '../../../../core/event_creation/EventCreationCore';
-import { OrganizerState }                           from '../../../../redux/ducks';
+import { useFormikContext } from 'formik';
+import { CategoryWithDatesPayload, EventCreationPayload } from '@common/global';
+import { Scroll } from 'framer';
+import { CategoryForm } from './CategoryForm';
+import { ConfirmDeletion } from './ConfirmDeletion';
+import { CategoriesByDate } from './CategoriesByDate';
+import { Button, SelectInput, SelectOption } from '@frontend/flib-react/lib/components';
+import { formatShort } from '@frontend/core/lib/utils/date';
 
 import { useTranslation } from 'react-i18next';
 import './locales';
-import { FormProps }      from '../../index';
-import { useDeepEffect }  from '@frontend/core/lib/hooks/useDeepEffect';
-import { CategoryItem }   from '../../../../components/CategoryForm';
 
-const defaultValues: EventsCreateCategoriesConfiguration = {
-    global: [],
+const initialCategory: CategoryWithDatesPayload = {
+    name: '',
+    saleBegin: null,
+    saleEnd: null,
+    seats: null,
+    price: null,
+    currency: '',
     dates: [],
-};
+}
 
-const CategoriesForm: React.FC<FormProps> = ({ onComplete }) => {
-    const reference = useRef(null);
-    const [ t ] = useTranslation('categories');
-    const [ tabIdx, setTabIdx ]: [ number, Dispatch<number> ] = React.useState(0);
-    const datesLength: number = useSelector((state: OrganizerState) => state.eventCreation.datesConfiguration.dates.length);
-    const eventCreationFormik = useEventCreation<EventsCreateCategoriesConfiguration>(
-        EventCreationSteps.Categories,
-        EventCreationActions.CategoriesConfiguration,
-        categoriesValidationSchema,
-        defaultValues,
-    );
+export const CategoriesForm: React.FC = () => {
+    const [ t ] = useTranslation('categories_form');
 
-    const globalCategoriesChange = (categories: CategoryItem[]) => {
-        eventCreationFormik.handleFocus('global pass confirmed');
-        eventCreationFormik.update({
-            ...eventCreationFormik.values,
-            global: categories,
-        });
+    const allDatesOpt = {
+        label: t('all_dates'),
+        value: 'all',
     };
 
-    const dateSpecificCategoriesChange = (categories: CategoryItem[][]) => {
-        eventCreationFormik.handleFocus('date specific confirmed');
-        eventCreationFormik.update({
-            ...eventCreationFormik.values,
-            dates: categories,
+    const [ currentEditingCategory, setCurrentEditingCategory ] = useState<number>(-1);
+    const [ currentDeletingCategory, setCurrentDeletingCategory ] = useState<number>(-1);
+    const [ newCategory, setNewCategory ] = useState<boolean>(false);
+
+    const [ onError, setOnError ] = useState<boolean>(false);
+
+    const [ selectedDate, setSelectedDate ] = useState<SelectOption>(allDatesOpt);
+
+    const formikCtx = useFormikContext<EventCreationPayload>();
+
+    const addCategory = () => {
+        const categoryCount = formikCtx.values.categoriesConfiguration.length;
+        setCurrentEditingCategory(categoryCount);
+        formikCtx.setFieldValue(`categoriesConfiguration[${categoryCount}]`, {
+            ...initialCategory,
+            currency: 'EUR',
         });
+        setNewCategory(true);
     };
 
-    useDeepEffect(() => {
-        onComplete(true);
-    }, [
-        eventCreationFormik.isValid
-    ]);
-
-    useEffect(() => {
-        window.scrollTo({ top: reference.current.offsetTop, left: 0, behavior: 'smooth' });
-    }, []);
-
-    return (
-        <>
-            <AppBar position='static' ref={reference}>
-                <Border />
-                <Tabs
-                value={tabIdx}
-                onChange={(e: any, idx: number) => setTabIdx(idx)}
-                aria-label='from tabs'>
-                    <Tab
-                    label={t('date_specific_tab')}
-                    id={`simple-tab-${0}`}
-                    aria-controls={`simple-tabpanel-${0}`}/>
-                    {
-                        datesLength > 1 ?
-                        <Tab
-                        label={t('global_tab')}
-                        id={`simple-tab-${1}`}
-                        aria-controls={`simple-tabpanel-${1}`}/> :
-                            null
-                    }
-                </Tabs>
-            </AppBar>
-            <div
-            role='tabpanel'
-            hidden={tabIdx !== 0}
-            id={`simple-tabpanel-${0}`}
-            aria-labelledby={`simple-tab-${0}`}>
-                {tabIdx === 0 && (
-                    <>
-                        <Description>{t('date_specific_desc')}</Description>
-                        <DateSpecificCategories
-                            categories={eventCreationFormik.values.dates}
-                            onCategoriesChange={dateSpecificCategoriesChange}/>
-                    </>
-                )}
-            </div>
-            <div
-            role='tabpanel'
-            hidden={tabIdx !== 1}
-            id={`simple-tabpanel-${1}`}
-            aria-labelledby={`simple-tab-${1}`}>
-                {tabIdx === 1 && (
-                    <>
-                        <Description>{t('global_desc')}</Description>
-                        <GlobalCategories
-                            categories={eventCreationFormik.values.global}
-                            onCategoriesChange={globalCategoriesChange} />
-                    </>
-                )}
-            </div>
-        </>
-    );
+    return <StyledForm>
+        {
+            formikCtx.values.categoriesConfiguration.length > 0 ?
+            <CategoriesContainer>
+                <SelectInput
+                label={t('categories_by_date_label')}
+                options={formikCtx.values.datesConfiguration.map((date, idx) => ({
+                    label: `date n•${idx + 1} - ${formatShort(date.eventBegin)} => ${formatShort(date.eventEnd)}`,
+                    value: idx.toString(),
+                }))}
+                allOpt={allDatesOpt}
+                value={[selectedDate]}
+                onChange={(opt) => setSelectedDate(opt[0])} />
+                <Delimiter/>
+                <Scroll
+                position={'static'}
+                width={'100%'}
+                wheelEnabled={true}
+                style={{
+                    maxHeight: 'calc(100vh - 460px)'
+                }}
+                height={'auto'}>
+                    <CategoriesByDate
+                    selectedDate={selectedDate.value === allDatesOpt.value ? undefined : parseInt(selectedDate.value, 10)}
+                    editingCategory={currentEditingCategory}
+                    updateEditingCategory={(idx, errorState) => {
+                        setCurrentEditingCategory(idx);
+                        setOnError(errorState);
+                    }}
+                    updateDeletingCategory={setCurrentDeletingCategory} />
+                </Scroll>
+                <Delimiter/>
+            </CategoriesContainer> :
+            null
+        }
+        {
+            currentEditingCategory > -1 ?
+            <DisabledBg>
+                <CategoryForm
+                idx={currentEditingCategory}
+                newCategory={newCategory}
+                onError={onError}
+                onComplete={() => {
+                    setCurrentEditingCategory(-1);
+                    setNewCategory(false);
+                }}/>
+            </DisabledBg> :
+            <AddCategory>
+                <Button
+                title={t('add_new_category')}
+                variant={'custom'}
+                gradients={formikCtx.values.imagesMetadata.signatureColors}
+                onClick={addCategory} />
+            </AddCategory>
+        }
+        {
+            currentDeletingCategory > -1 ?
+            <ConfirmDeletion
+            idx={currentDeletingCategory}
+            complete={() => setCurrentDeletingCategory(-1)}/> :
+            null
+        }
+    </StyledForm>;
 };
 
-const Tabs = styled(MuiTabs)`
-    && {
-        color: ${(props) => props.theme.textColor};
-        span {
-            font-size: 11px;
-            font-weight: bold;
-        }
-    }
-`;
-
-const AppBar = styled(MuiAppBar)`
-    && {
-        box-shadow: none;
-        background-color: transparent;
-        div > div > span {
-            background-color: ${(props) => props.theme.primaryColor.hex};
-        }
-    }
-`;
-
-const Border = styled.div`
-    position: absolute;
-    bottom: 0;
+const StyledForm = styled.div`
+    position: relative;
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    border-bottom: 2px solid ${props => props.theme.componentColorLight};
 `;
 
-const Description = styled.h2`
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 20px;
-    color: ${props => props.theme.textColorDark};
-    margin: ${props => props.theme.biggerSpacing} 0;
-    white-space: pre-wrap;
+const CategoriesContainer = styled.div`
+    & > div:first-child {
+        margin-bottom: ${props => props.theme.regularSpacing};
+    }
 `;
 
-export default CategoriesForm;
+const Delimiter = styled.div`
+    position: relative;
+    left: -10px;
+    width: calc(100% + 20px);
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.2);
+    z-index: 1;
+`;
+
+const DisabledBg = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 200;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.6);
+`;
+
+const AddCategory = styled.div`
+    width: 50%;
+    margin-top: ${props => props.theme.smallSpacing};
+`;
