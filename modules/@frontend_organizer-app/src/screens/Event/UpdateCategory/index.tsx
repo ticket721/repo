@@ -3,7 +3,7 @@ import { useRequest }                 from '@frontend/core/lib/hooks/useRequest'
 import { v4 }                          from 'uuid';
 import { useParams, useHistory }       from 'react-router';
 import { useSelector }                 from 'react-redux';
-import { MergedAppState }              from '../../../index';
+import { AppState } from '@frontend/core/lib/redux';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { UpdateCategoryForm }          from './Form';
 import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
@@ -15,7 +15,7 @@ const UpdateCategory: React.FC = () => {
     const history = useHistory();
 
     const [uuid] = useState(v4() + '@update-category');
-    const token = useSelector((state: MergedAppState) => state.auth.token.value);
+    const token = useSelector((state: AppState) => state.auth.token.value);
     const { response: dateResp } = useRequest<DatesSearchResponseDto>(
         {
             method: 'dates.search',

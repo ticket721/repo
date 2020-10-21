@@ -7,7 +7,7 @@ import './locales';
 import { useFormik }                   from 'formik';
 import { useDispatch, useSelector }    from 'react-redux';
 import { useLazyRequest }              from '@frontend/core/lib/hooks/useLazyRequest';
-import { MergedAppState }              from '../../../index';
+import { AppState } from '@frontend/core/lib/redux';
 // import { geocodeByAddress, getLatLng } from 'react-google-places-autocomplete';
 import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
 // import { LocationInput }               from '@frontend/core/lib/components/LocationInput';
@@ -36,7 +36,7 @@ export const LocationForm: React.FC<LocationFormProps> = (props: LocationFormPro
     const dispatch = useDispatch();
     const [ t ] = useTranslation(['update_location', 'validation', 'errors']);
 
-    const token = useSelector((state: MergedAppState): string => state.auth.token.value);
+    const token = useSelector((state: AppState): string => state.auth.token.value);
     const { lazyRequest: updateLocation, response: updateResponse } = useLazyRequest('dates.update', props.uuid);
 
     const formik = useFormik<Location>({

@@ -1,4 +1,4 @@
-import { DateCreationPayload, EventCreationPayload } from '@common/global';
+import { DatePayload, EventCreationPayload } from '@common/global';
 import { useFormikContext } from 'formik';
 import React, { useState }  from 'react';
 import styled                                            from 'styled-components';
@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import './locales';
 import { Button } from '@frontend/flib-react/lib/components';
 
-const initialDate: DateCreationPayload = {
+const initialDate: DatePayload = {
     name: '',
     online: false,
     eventBegin: null,

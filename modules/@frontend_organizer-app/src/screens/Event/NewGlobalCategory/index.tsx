@@ -3,17 +3,13 @@ import { useRequest }                  from '@frontend/core/lib/hooks/useRequest
 import { v4 }                       from 'uuid';
 import { useHistory, useParams }    from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { MergedAppState }                 from '../../../index';
+import { AppState } from '@frontend/core/lib/redux';
 import { DatesSearchResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { checkFormatDate, year }      from '@frontend/core/lib/utils/date';
 import { CategoryForm, CategoryItem } from '../../../components/CategoryForm';
 import { useDeepEffect }                  from '@frontend/core/lib/hooks/useDeepEffect';
 import { PushNotification }               from '@frontend/core/lib/redux/ducks/notifications';
 import { useLazyRequest }                 from '@frontend/core/lib/hooks/useLazyRequest';
-import {
-    CategoriesCreateResponseDto
-}    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesCreateResponse.dto';
-import { EventsAddCategoriesResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsAddCategoriesResponse.dto';
 import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 
 const NewGlobalCategory: React.FC = () => {
@@ -26,7 +22,7 @@ const NewGlobalCategory: React.FC = () => {
     const [uuidEvent] = useState(v4() + '@create-global-category-events.search');
     const [uuidCreate] = useState(v4() + '@create-global-category-create');
     const [uuidAdd] = useState(v4() + '@create-global-category-add');
-    const token = useSelector((state: MergedAppState) => state.auth.token.value);
+    const token = useSelector((state: AppState) => state.auth.token.value);
     const { response: dateResp } = useRequest<DatesSearchResponseDto>(
         {
             method: 'dates.search',
@@ -58,8 +54,8 @@ const NewGlobalCategory: React.FC = () => {
         uuidEvent
     );
 
-    const { lazyRequest: createCategory, response: createResp } = useLazyRequest<CategoriesCreateResponseDto>('categories.create', uuidCreate);
-    const { lazyRequest: addCategory, response: addCategoryResp } = useLazyRequest<EventsAddCategoriesResponseDto>('events.addCategories', uuidAdd);
+    const { lazyRequest: createCategory, response: createResp } = useLazyRequest('categories.create', uuidCreate);
+    const { lazyRequest: addCategory, response: addCategoryResp } = useLazyRequest('events.addCategories', uuidAdd);
 
     const create = (values: CategoryItem) => {
         setLoadingState(true);
@@ -86,27 +82,27 @@ const NewGlobalCategory: React.FC = () => {
         return checkFormatDate(sortedDates[0].timestamps.event_end);
     };
 
-    useDeepEffect(() => {
-        if (createResp.data?.category) {
-            addCategory([
-                token,
-                eventId,
-                {
-                    categories: [createResp.data.category.id]
-                }
-            ]);
-        }
-    }, [createResp.data]);
+    // useDeepEffect(() => {
+    //     if (createResp.data?.category) {
+    //         addCategory([
+    //             token,
+    //             eventId,
+    //             {
+    //                 categories: [createResp.data.category.id]
+    //             }
+    //         ]);
+    //     }
+    // }, [createResp.data]);
 
-    useDeepEffect(() => {
-        if (addCategoryResp.data) {
-            setLoadingState(false);
-            dispatch(PushNotification('Successfuly updated', 'success'));
-            history.push(`/group/${groupId}/event/${eventId}/category/${createResp.data.category.id}`, {
-                showingGlobalCategories: true
-            })
-        }
-    }, [addCategoryResp.data]);
+    // useDeepEffect(() => {
+    //     if (addCategoryResp.data) {
+    //         setLoadingState(false);
+    //         dispatch(PushNotification('Successfuly updated', 'success'));
+    //         history.push(`/group/${groupId}/event/${eventId}/category/${createResp.data.category.id}`, {
+    //             showingGlobalCategories: true
+    //         })
+    //     }
+    // }, [addCategoryResp.data]);
 
     useDeepEffect(() => {
         if (createResp.error || addCategoryResp.error) {

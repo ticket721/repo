@@ -5,7 +5,7 @@ import { useHistory, useParams } from 'react-router';
 import Icon                      from '@frontend/flib-react/lib/components/icon';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { useSelector }                 from 'react-redux';
-import { MergedAppState }              from '../../../../index';
+import { AppState } from '@frontend/core/lib/redux';
 import { v4 }                          from 'uuid';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { CategoryEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
@@ -24,7 +24,7 @@ export const DateSubMenu: React.FC = () => {
     const [ showingDateCategories, setShowingDateCategories ] = useState<boolean>(false);
 
     const [ dateCategories, setDateCategories ] = useState<CategoryEntity[]>([]);
-    const token = useSelector((state: MergedAppState) => state.auth.token.value);
+    const token = useSelector((state: AppState) => state.auth.token.value);
     const { response: dateCategoriesResp } = useRequest<CategoriesSearchResponseDto>(
         {
             method: 'categories.search',

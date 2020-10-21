@@ -10,8 +10,8 @@ import { v4 }                       from 'uuid';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDeepEffect }            from '@frontend/core/lib/hooks/useDeepEffect';
 import { PushNotification }         from '@frontend/core/lib/redux/ducks/notifications';
-import { MergedAppState }        from '../../../index';
 import { useHistory, useParams } from 'react-router';
+import { AppState } from '@frontend/core/lib/redux';
 
 interface CategoryDeletionPopupProps{
     parentType: 'event' | 'date';
@@ -30,7 +30,7 @@ export const CategoryDeletionPopup: React.FC<CategoryDeletionPopupProps> =
     const { groupId, dateId } = useParams();
 
     const [uuid] = useState(v4() + '@delete-category');
-    const token = useSelector((state: MergedAppState): string => state.auth.token.value);
+    const token = useSelector((state: AppState): string => state.auth.token.value);
     const { lazyRequest: deleteCategory, response } = useLazyRequest(`${parentType}s.deleteCategories`, uuid);
 
     useDeepEffect(() => {

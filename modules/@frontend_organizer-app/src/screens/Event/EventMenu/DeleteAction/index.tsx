@@ -12,7 +12,7 @@ import { useDeepEffect }            from '@frontend/core/lib/hooks/useDeepEffect
 import { PushNotification }         from '@frontend/core/lib/redux/ducks/notifications';
 // import { DateEntity }               from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { Button }                   from '@frontend/flib-react/lib/components';
-import { MergedAppState }           from '../../../../index';
+import { AppState } from '@frontend/core/lib/redux';
 import './locales';
 
 export const DeleteAction = () => {
@@ -21,7 +21,7 @@ export const DeleteAction = () => {
   const [ t ] = useTranslation('delete_action');
   const [uuid] = useState<string>(v4() + '@event-menu-dates.search');
   const [uuidDelete] = useState<string>(v4() + '@event-menu-dates.delete');
-  const token = useSelector((state: MergedAppState) => state.auth.token.value);
+  const token = useSelector((state: AppState) => state.auth.token.value);
   const dispatch = useDispatch();
   const [eventId,] = useState<string>(null);
 

@@ -1,4 +1,4 @@
-import { DateLocationPayload } from '@common/global';
+import { Location } from '@common/global';
 import { LocationInputProps } from '@frontend/core/lib/components/LocationInput';
 import { CustomDatePickerProps, ToggleProps, TextInputProps } from '@frontend/flib-react/lib/components';
 import { useField, useFormikContext } from 'formik';
@@ -20,8 +20,8 @@ export const useDateCreationFields = (idx: number): {
 } => {
     const [ t, i18n ] = useTranslation('date_fields');
 
-    const [ storeLink, setStoreLink ] = useState<string>('');
-    const [ storeLocation, setStoreLocation ] = useState<DateLocationPayload>({
+    const [ storedLink, setStoredLink ] = useState<string>();
+    const [ storedLocation, setStoredLocation ] = useState<Location>({
         label: '',
         lon: null,
         lat: null,
@@ -32,8 +32,8 @@ export const useDateCreationFields = (idx: number): {
     const [ eventBeginField, eventBeginMeta, eventBeginHelper ] = useField<Date>(`datesConfiguration[${idx}].eventBegin`);
     const [ eventEndField, eventEndMeta, eventEndHelper ] = useField<Date>(`datesConfiguration[${idx}].eventEnd`);
     const [ onlineField,, ] = useField<boolean>(`datesConfiguration[${idx}].online`);
-    const [ liveLinkField, liveLinkMeta, liveLinkHelper ] = useField<string>(`datesConfiguration[${idx}].liveLink`);
-    const [ locationField, locationMeta, locationHelper ] = useField<DateLocationPayload>(`datesConfiguration[${idx}].location`);
+    const [ onlineLinkField, onlineLinkMeta, onlineLinkHelper ] = useField<string>(`datesConfiguration[${idx}].online_link`);
+    const [ locationField, locationMeta, locationHelper ] = useField<Location>(`datesConfiguration[${idx}].location`);
 
     return {
         eventBeginProps: {
@@ -74,13 +74,13 @@ export const useDateCreationFields = (idx: number): {
             onChange: (checked, __, e) => {
                 onlineField.onChange(e);
                 if (checked) {
-                    setStoreLocation(locationField.value);
+                    setStoredLocation(locationField.value);
                     locationHelper.setValue(undefined);
-                    liveLinkHelper.setValue(storeLink);
+                    onlineLinkHelper.setValue(storedLink);
                 } else {
-                    setStoreLink(liveLinkField.value);
-                    liveLinkHelper.setValue(undefined);
-                    locationHelper.setValue(storeLocation);
+                    setStoredLink(onlineLinkField.value ? onlineLinkField.value : undefined);
+                    onlineLinkHelper.setValue(undefined);
+                    locationHelper.setValue(storedLocation);
                 }
 
                 setTimeout(() => {
@@ -93,7 +93,7 @@ export const useDateCreationFields = (idx: number): {
             ...locationField,
             googleApiKey: getEnv().REACT_APP_GOOGLE_PLACES_API_KEY,
             initialValue: locationField.value?.label,
-            onSuccess: (location: DateLocationPayload) => locationHelper.setValue(location),
+            onSuccess: (location: Location) => locationHelper.setValue(location),
             onError: () => locationHelper.setValue({label: '', lon: null, lat: null}),
             onFocus: (e) => e.target.select(),
             onBlur: () => locationHelper.setTouched(true),
@@ -102,10 +102,17 @@ export const useDateCreationFields = (idx: number): {
             placeholder: t('location_placeholder'),
         } : null,
         onlineLinkProps: onlineField.value ? {
-            ...liveLinkField,
+            ...onlineLinkField,
+            value: onlineLinkField.value === undefined ? '' : onlineLinkField.value,
             label: t('live_link_label'),
             placeholder: t('live_link_placeholder'),
-            error: liveLinkMeta.error && (liveLinkMeta.error as any).reasons[0].type !== 'any.unknown' ? evaluateError(liveLinkMeta) : null,
+            onBlur: (e) => {
+                onlineLinkHelper.setTouched(true);
+                if (!onlineLinkField.value) {
+                    onlineLinkHelper.setValue(undefined);
+                }
+            },
+            error: onlineLinkField.value ? evaluateError(onlineLinkMeta) : null,
         } : null,
     }
 };

@@ -2,7 +2,7 @@ import React, { ChangeEvent } from 'react';
 import GooglePlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-google-places-autocomplete';
 import { TextInput } from '@frontend/flib-react/lib/components';
 import styled from 'styled-components';
-import { DateLocationPayload } from '@common/global';
+import { Location } from '@common/global';
 
 import './locales';
 import { useTranslation } from 'react-i18next';
@@ -63,7 +63,7 @@ export interface LocationInputProps {
     googleApiKey: string;
     name: string;
     label: string;
-    onSuccess: (location: DateLocationPayload) => void;
+    onSuccess: (location: Location) => void;
     onError: () => void;
     initialValue?: string;
     className?: string;

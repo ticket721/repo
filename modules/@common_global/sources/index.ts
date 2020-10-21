@@ -31,6 +31,7 @@ export {
     ImagesMetadataChecker,
     quickError,
     CategoryCreationPayload,
+    CategoryWithDatesPayload,
     CategoryPayloadChecker,
     CategoryCreationPayloadChecker,
     CategoryPayload,

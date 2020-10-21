@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled                       from 'styled-components';
 import { useFormikContext } from 'formik';
-import { CategoryCreationPayload, EventCreationPayload } from '@common/global';
+import { CategoryWithDatesPayload, EventCreationPayload } from '@common/global';
 import { Scroll } from 'framer';
 import { CategoryForm } from './CategoryForm';
 import { ConfirmDeletion } from './ConfirmDeletion';
@@ -12,7 +12,7 @@ import { formatShort } from '@frontend/core/lib/utils/date';
 import { useTranslation } from 'react-i18next';
 import './locales';
 
-const initialCategory: CategoryCreationPayload = {
+const initialCategory: CategoryWithDatesPayload = {
     name: '',
     saleBegin: null,
     saleEnd: null,

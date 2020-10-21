@@ -9,7 +9,7 @@ import '../../../shared/Translations/StylesForm';
 import { useFormik }                from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLazyRequest }           from '@frontend/core/lib/hooks/useLazyRequest';
-import { MergedAppState }           from '../../../index';
+import { AppState } from '@frontend/core/lib/redux';
 import { EventCreationCore }        from '../../../core/event_creation/EventCreationCore';
 import { PushNotification }         from '@frontend/core/lib/redux/ducks/notifications';
 import { getImgPath }               from '@frontend/core/lib/utils/images';
@@ -37,7 +37,7 @@ export const StylesForm: React.FC<StylesFormProps> = (props: StylesFormProps) =>
     const dispatch = useDispatch();
     const [ t ] = useTranslation(['event_styles', 'validation', 'react_dropzone_errors']);
 
-    const token = useSelector((state: MergedAppState): string => state.auth.token.value);
+    const token = useSelector((state: AppState): string => state.auth.token.value);
     const { lazyRequest: updateStyles, response: updateResponse } = useLazyRequest('dates.update', props.uuid);
 
     const formik = useFormik<Styles>({

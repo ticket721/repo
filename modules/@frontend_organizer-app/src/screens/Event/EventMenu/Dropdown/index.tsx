@@ -15,7 +15,7 @@ import { checkFormatDate, displayCompleteDate } from '@frontend/core/lib/utils/d
 import { DateEntity }                   from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 
 import { EventsSearchResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
-import { MergedAppState }              from '../../../../index';
+import { AppState } from '@frontend/core/lib/redux';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import './locales';
 
@@ -31,7 +31,7 @@ export const Dropdown: React.FC = () => {
     const [t] = useTranslation('options');
     const history = useHistory();
     const [uuid] = useState<string>(v4() + '@event-menu');
-    const token = useSelector((state: MergedAppState) => state.auth.token.value);
+    const token = useSelector((state: AppState) => state.auth.token.value);
     const { groupId, dateId, eventId } = useParams();
 
     const [ selectableDates, setSelectableDates ] = useState<DateOption[]>([]);

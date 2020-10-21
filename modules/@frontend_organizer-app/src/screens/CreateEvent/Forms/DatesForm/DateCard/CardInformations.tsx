@@ -50,9 +50,9 @@ export const CardInformations: React.FC<CardInformationsProps> = ({ idx }) => {
                         size={'16px'}
                         color={primaryColor} />
                         {
-                            formikCtx.values.datesConfiguration[idx].liveLink ?
+                            formikCtx.values.datesConfiguration[idx].online_link ?
                             <a
-                            href={formikCtx.values.datesConfiguration[idx].liveLink}
+                            href={formikCtx.values.datesConfiguration[idx].online_link}
                             target='_blank'
                             rel={'noopener noreferrer'}>
                                 {t('online_link')}

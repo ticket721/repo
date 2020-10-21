@@ -12,7 +12,7 @@ import {
 import { DatePayload, DatePayloadChecker }         from './checkDate';
 import { CategoryPayload, CategoryPayloadChecker } from './checkCategory';
 
-interface CategoryWithDatesPayload extends CategoryPayload {
+export interface CategoryWithDatesPayload extends CategoryPayload {
     dates: number[];
 }
 

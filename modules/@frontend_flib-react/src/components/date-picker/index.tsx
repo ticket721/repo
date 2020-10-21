@@ -6,11 +6,18 @@ import es from 'date-fns/locale/es';
 import it from 'date-fns/locale/it';
 import { TextInput } from '../inputs/text';
 import styled, { ThemeContext } from 'styled-components';
-import { format } from '@frontend/core/lib/utils/date';
 
 registerLocale('es', es);
 registerLocale('fr', fr);
 registerLocale('it', it);
+
+const DTFormat = new Intl.DateTimeFormat('default', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: 'numeric',
+    minute: 'numeric',
+});
 
 export interface CustomDatePickerProps extends React.ComponentProps<any> {
     dateFormat?: string;
@@ -44,7 +51,7 @@ export const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = 
     return (
         <DatePickerWrapper gradients={props.gradients}>
             <TextInput
-                value={props.value ? format(props.value) : ''}
+                value={props.value ? DTFormat.format(props.value) : ''}
                 name={props.name}
                 onChange={console.log}
                 label={props.label}

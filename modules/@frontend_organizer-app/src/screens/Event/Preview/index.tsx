@@ -29,8 +29,8 @@ import {
 }                                      from '@frontend/core/lib/utils/date';
 import { getImgPath }                  from '@frontend/core/lib/utils/images';
 
-import { MergedAppState } from '../../../index';
-import { getPriceRange }  from '../../../utils/functions';
+import { AppState } from '@frontend/core/lib/redux';
+// import { getPriceRange }  from '../../../utils/functions';
 
 import './locales';
 
@@ -73,7 +73,7 @@ const Preview: React.FC = () => {
     const { dateId } = useParams();
     const history = useHistory();
     const [uuid] = useState(v4() + '@event-preview');
-    const token = useSelector((state: MergedAppState) => state.auth.token.value);
+    const token = useSelector((state: AppState) => state.auth.token.value);
     const [ datePreview, setDatePreview ] = useState<DatePreview>(null);
     const [ priceRange, setPriceRange ] = useState<number[]>([]);
     const [ hideBanner, setHideBanner ] = useState<boolean>(false);
@@ -123,11 +123,11 @@ const Preview: React.FC = () => {
         }
     }, [dateResp.data]);
 
-    useDeepEffect(() => {
-        if (categoryResp.data?.categories?.length > 0) {
-            setPriceRange(getPriceRange(categoryResp.data.categories));
-        }
-    }, [categoryResp.data]);
+    // useDeepEffect(() => {
+    //     if (categoryResp.data?.categories?.length > 0) {
+    //         setPriceRange(getPriceRange(categoryResp.data.categories));
+    //     }
+    // }, [categoryResp.data]);
 
     return (
         <>

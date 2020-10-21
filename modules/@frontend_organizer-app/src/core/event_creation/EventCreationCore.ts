@@ -23,84 +23,6 @@ export enum EventCreationSteps {
 }
 
 export abstract class EventCreationCore {
-    /**
-     * @return acset id
-     * @param token
-     */
-    public static getAcsetId = async (
-        token: string
-    ): Promise<string | false> => {
-        const lastInProgressEventAcsetResp = await global.window.t721Sdk.actions.search(
-            token,
-            {
-                $sort: [
-                    {
-                        $field_name: 'updated_at',
-                        $order: 'desc',
-                    },
-                ],
-                $page_size: 1,
-                consumed: {
-                    $eq: false,
-                },
-                name: {
-                    $eq: '@events/creation',
-                },
-            }
-        );
-
-        return !lastInProgressEventAcsetResp.data.actionsets.length
-            ? false
-            : lastInProgressEventAcsetResp.data.actionsets[0].id;
-    };
-
-    /**
-     * @return acset id
-     * @param token
-     * @param initialArgs
-     */
-    public static createEventAcset = async (
-        token: string,
-        initialArgs: any = {}
-    ): Promise<string> => {
-        const createEventAcsetResp = await AcsetCore.createAcset(
-            token,
-            'event_create',
-            initialArgs
-        );
-
-        return createEventAcsetResp.id;
-    };
-
-    /**
-     * @return event acset entity
-     * @param token
-     * @param acsetId
-     * @param action
-     * @param args
-     */
-    public static updateEventAcset = async (
-        token: string,
-        acsetId: string,
-        action: EventCreationActions,
-        args: any
-    ): Promise<ActionSetEntity> => {
-        const sdkMethod = get(
-            global.window.t721Sdk?.events.create,
-            action,
-            undefined
-        );
-
-        if (!sdkMethod) {
-            throw new Error(
-                `Specified action ${action} does not correspond to any events T721 SDK method`
-            );
-        }
-
-        const updateEventAcsetResp = await sdkMethod(token, acsetId, args);
-
-        return updateEventAcsetResp.data.actionset;
-    };
 
     /**
      * @return event id
@@ -151,15 +73,16 @@ export abstract class EventCreationCore {
                 throw Error('t721sdk_undefined');
             }
 
-            const startEventResp = await global.window.t721Sdk.events.start(
-                token,
-                {
-                    event: eventId,
-                    dates,
-                }
-            );
+            // const startEventResp = await global.window.t721Sdk.events.start(
+            //     token,
+            //     {
+            //         event: eventId,
+            //         dates,
+            //     }
+            // );
 
-            return startEventResp.data.event.id;
+            // return startEventResp.data.event.id;
+            throw Error('Implement publish event');
         } catch (e) {
             if (e.response.data.statusCode === 400) {
                 throw Error(e.response.data.message);

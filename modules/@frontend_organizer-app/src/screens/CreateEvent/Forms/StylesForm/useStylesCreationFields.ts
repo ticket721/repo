@@ -7,11 +7,11 @@ import './locales';
 
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { MergedAppState } from '../../../..';
 import { EventCreationCore } from '../../../../core/event_creation/EventCreationCore';
 import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 import Vibrant from 'node-vibrant';
 import { ColorResult } from 'react-color';
+import { AppState } from '@frontend/core/lib/redux';
 
 export const useStylesCreationFields = (): {
     avatarProps: FilesUploaderProps,
@@ -22,7 +22,7 @@ export const useStylesCreationFields = (): {
     const dispatch = useDispatch();
     const [ t ] = useTranslation(['event_styles', 'react_dropzone_errors', 'error_notifications']);
 
-    const token: string = useSelector((state: MergedAppState) => state.auth.token.value);
+    const token: string = useSelector((state: AppState) => state.auth.token.value);
 
     const [ loadingImg, setLoadingImg ] = useState<boolean>(false);
     const [ preview, setPreview ] = useState<string>('');

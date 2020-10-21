@@ -71,15 +71,15 @@ const formatPricesAndSeats = (categories: CategoryEntity[], events: EventDashboa
             .map((category) => category.seats)
             .reduce((acc, seats) => acc + seats);
         // console.log(filteredCategories);
-        const sortedPrices: string[] = filteredCategories
+        const sortedPrices: number[] = filteredCategories
             .map((category) => {
-                const T721TokenPrice = category.prices.filter((price) => price.currency === 'T721Token');
-                return T721TokenPrice[0].value;
-            }).sort((priceA: string, priceB: string) => parseInt(priceA, 10) - parseInt(priceB, 10));
+                const T721TokenPrice = category.price;
+                return T721TokenPrice;
+            }).sort((priceA: number, priceB: number) => priceA - priceB);
         // console.log(sortedPrices);
         return {
             ...event,
-            startPrice: sortedPrices[0],
+            startPrice: sortedPrices[0].toString(),
             totalSeats: seatsCount,
         }
     })
