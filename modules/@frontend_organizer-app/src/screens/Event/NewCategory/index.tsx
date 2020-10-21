@@ -1,7 +1,7 @@
 import React, { useState }  from 'react';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { v4 }                       from 'uuid';
-import { useHistory, useParams }    from 'react-router';
+import { useParams }    from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '@frontend/core/lib/redux';
 import { DatesSearchResponseDto }        from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
@@ -12,7 +12,7 @@ import { PushNotification }              from '@frontend/core/lib/redux/ducks/no
 import { useLazyRequest }                from '@frontend/core/lib/hooks/useLazyRequest';
 
 const NewCategory: React.FC = () => {
-    const history = useHistory();
+    // const history = useHistory();
     const { groupId, dateId } = useParams();
 
     const [ loadingState, setLoadingState ] = useState<boolean>(false);
@@ -36,7 +36,7 @@ const NewCategory: React.FC = () => {
     );
 
     const { lazyRequest: createCategory, response: createResp } = useLazyRequest('categories.create', uuid);
-    const { lazyRequest: addCategory, response: addCategoryResp } = useLazyRequest('dates.addCategories', uuid);
+    const { response: addCategoryResp } = useLazyRequest('dates.addCategories', uuid);
 
     const create = (values: CategoryItem) => {
         setLoadingState(true);

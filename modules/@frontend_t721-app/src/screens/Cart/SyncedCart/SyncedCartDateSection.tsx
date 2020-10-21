@@ -86,7 +86,12 @@ export const SyncedCartDateSection: React.FC<SyncedCartDateSectionProps> = (prop
                       }}
                       onChange={(opt) => {
                           dispatch(
-                            SetTickets(completeCartRecomputingOnDateTicketChange(props.convertedCart, props.date, categoryId, parseInt(opt[0].value, 10)))
+                            SetTickets(completeCartRecomputingOnDateTicketChange(
+                                props.convertedCart,
+                                props.date,
+                                categoryId,
+                                parseInt(opt[0].value, 10)
+                            ))
                           )
                       }}
                       initialOption={{

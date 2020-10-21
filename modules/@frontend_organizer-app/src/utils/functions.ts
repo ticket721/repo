@@ -1,5 +1,5 @@
 // import { Price }          from '@common/sdk/lib/@backend_nest/libs/common/src/currencies/Currencies.service';
-import { CategoryEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+// import { CategoryEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 
 
 export const formatDateForDisplay = (dateToFormat: Date | string, format: 'all' | 'day' | 'time' = 'all'): string => {

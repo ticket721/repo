@@ -20,7 +20,6 @@ import TagsListCard                    from '@frontend/flib-react/lib/components
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
-import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { DateEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import {
     checkFormatDate,
@@ -75,7 +74,7 @@ const Preview: React.FC = () => {
     const [uuid] = useState(v4() + '@event-preview');
     const token = useSelector((state: AppState) => state.auth.token.value);
     const [ datePreview, setDatePreview ] = useState<DatePreview>(null);
-    const [ priceRange, setPriceRange ] = useState<number[]>([]);
+    const [ priceRange, ] = useState<number[]>([]);
     const [ hideBanner, setHideBanner ] = useState<boolean>(false);
 
     const { response: dateResp } = useRequest<DatesSearchResponseDto>(
@@ -94,22 +93,22 @@ const Preview: React.FC = () => {
         uuid
     );
 
-    const { response: categoryResp } = useRequest<CategoriesSearchResponseDto>(
-        {
-            method: 'categories.search',
-            args: [
-                token,
-                {
-                    parent_id: {
-                        $eq: dateId,
-                    },
-                    $page_size: 1,
-                },
-            ],
-            refreshRate: 1,
-        },
-        uuid
-    );
+    // const { response: categoryResp } = useRequest<CategoriesSearchResponseDto>(
+    //     {
+    //         method: 'categories.search',
+    //         args: [
+    //             token,
+    //             {
+    //                 parent_id: {
+    //                     $eq: dateId,
+    //                 },
+    //                 $page_size: 1,
+    //             },
+    //         ],
+    //         refreshRate: 1,
+    //     },
+    //     uuid
+    // );
 
     useDeepEffect(() => {
         if (dateResp.data) {

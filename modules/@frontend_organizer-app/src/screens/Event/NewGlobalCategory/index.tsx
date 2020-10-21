@@ -55,7 +55,7 @@ const NewGlobalCategory: React.FC = () => {
     );
 
     const { lazyRequest: createCategory, response: createResp } = useLazyRequest('categories.create', uuidCreate);
-    const { lazyRequest: addCategory, response: addCategoryResp } = useLazyRequest('events.addCategories', uuidAdd);
+    const { response: addCategoryResp } = useLazyRequest('events.addCategories', uuidAdd);
 
     const create = (values: CategoryItem) => {
         setLoadingState(true);

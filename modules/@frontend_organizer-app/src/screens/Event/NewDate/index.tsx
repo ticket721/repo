@@ -46,7 +46,7 @@ const NewDate = (): JSX.Element => {
         uuidEvent
     );
     const { lazyRequest: createDate, response: createResponse } = useLazyRequest('dates.create', uuid);
-    const { lazyRequest: addDate, response: addResponse } = useLazyRequest('events.addDates', uuid);
+    const { response: addResponse } = useLazyRequest('events.addDates', uuid);
 
     const formik = useFormik({
         initialValues: {

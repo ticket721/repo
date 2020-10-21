@@ -194,7 +194,11 @@ export const SyncedCartGlobalSection: React.FC<SyncedCartGlobalSectionProps> = (
                             }}
                             onChange={(opt) => {
                                 dispatch(
-                                    SetTickets(completeCartRecomputingOnGlobalTicketChange(props.convertedCart, props.group, categoryId, parseInt(opt[0].value, 10)))
+                                    SetTickets(completeCartRecomputingOnGlobalTicketChange(
+                                        props.convertedCart,
+                                        props.group, categoryId,
+                                        parseInt(opt[0].value, 10))
+                                    )
                                 )
                             }}
                             initialOption={{

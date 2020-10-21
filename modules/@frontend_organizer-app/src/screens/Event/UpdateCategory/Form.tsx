@@ -19,7 +19,7 @@ interface UpdateCategoryFormProps {
 }
 
 export const UpdateCategoryForm: React.FC<UpdateCategoryFormProps> = (props: UpdateCategoryFormProps) => {
-    const [ lastInitialValues, setLastInitialValues ] = useState<CategoryItem>(null);
+    const [ lastInitialValues, ] = useState<CategoryItem>(null);
     const [ loadingState, setLoadingState ] = useState<boolean>(false);
     const dispatch = useDispatch();
 
