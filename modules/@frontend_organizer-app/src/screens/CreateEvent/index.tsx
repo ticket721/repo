@@ -3,7 +3,6 @@ import styled                                           from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux';
 
 import '@frontend/core/lib/utils/window';
-import { MergedAppState }           from '../../index';
 
 import { Button } from '@frontend/flib-react/lib/components';
 
@@ -22,6 +21,7 @@ import { Persist } from 'formik-persist';
 import { checkEvent, EventCreationPayload } from '@common/global';
 import { DelayedOnMountValidation } from './DelayedOnMountValidation';
 import { Stepper, StepStatus } from './Stepper';
+import { AppState } from '@frontend/core/lib/redux';
 
 export interface FormProps {
     onComplete: () => void;
@@ -77,7 +77,7 @@ const CreateEvent: React.FC = () => {
     const [ stepStatuses, setStepStatuses ] = useState<StepStatus[]>([]);
     const dispatch = useDispatch();
     const history = useHistory();
-    const token: string = useSelector((state: MergedAppState) => state.auth.token.value);
+    const token: string = useSelector((state: AppState) => state.auth.token.value);
 
     const validate = (eventPayload: EventCreationPayload) => {
         const errors = checkEvent(eventPayload);
@@ -132,75 +132,81 @@ const CreateEvent: React.FC = () => {
 
     return (
         <Container>
-            <PositionedStepper>
-                <Stepper
-                steps={stepsInfos.map((infos, idx) => ({
-                    label: t(infos.title),
-                    status: stepStatuses[idx],
-                }))}
-                editStep={currentStep}/>
-            </PositionedStepper>
         {
             <Formik
             initialValues={initialValues}
             onSubmit={submit}
             validate={validate}>
                 { formikProps =>
-                    <Form onSubmit={formikProps.handleSubmit}>
-                        <StepWrapper>
-                            <Title>{t(stepsInfos[currentStep].title)}</Title>
-                            <Description>{t(stepsInfos[currentStep].description)}</Description>
+                    <>
+                        <PositionedStepper>
+                            <Stepper
+                            steps={stepsInfos.map((infos, idx) => ({
+                                label: t(infos.title),
+                                status: stepStatuses[idx],
+                            }))}
+                            editStep={currentStep}
+                            onStepClick={(idx) => {
+                                setCurrentStep(idx);
+                                setTimeout(() => formikProps.validateForm(), 200);
+                            }}/>
+                        </PositionedStepper>
+                        <Form onSubmit={formikProps.handleSubmit}>
+                            <StepWrapper>
+                                <Title>{t(stepsInfos[currentStep].title)}</Title>
+                                <Description>{t(stepsInfos[currentStep].description)}</Description>
+                                {
+                                    buildForm()
+                                }
+                                <StepButtons>
+                                    {
+                                        currentStep > 0 ?
+                                        <Button
+                                            variant={'secondary'}
+                                            title={t('previous_step_btn')}
+                                            onClick={() => {
+                                                setCurrentStep(currentStep - 1);
+                                                setTimeout(() => formikProps.validateForm(), 200);
+                                            }}
+                                        /> :
+                                        <div/>
+                                    }
+                                    {
+                                        currentStep < (stepsInfos.length - 1) ?
+                                        <Button
+                                            variant={'primary'}
+                                            title={t('next_step_btn')}
+                                            onClick={() => {
+                                                setCurrentStep(currentStep + 1);
+                                                setTimeout(() => formikProps.validateForm(), 200);
+                                            }}
+                                        /> :
+                                        null
+                                    }
+                                </StepButtons>
+                            </StepWrapper>
                             {
-                                buildForm()
+                                stepStatuses.every(status => status === 'complete' || status === 'edit')
+                                && formikProps.isValid ?
+                                <SubmitButton
+                                    type={'submit'}
+                                    variant={'primary'}
+                                    title={t('create_event_btn')}
+                                /> :
+                                null
                             }
-                            <StepButtons>
-                                {
-                                    currentStep > 0 ?
-                                    <Button
-                                        variant={'secondary'}
-                                        title={t('previous_step_btn')}
-                                        onClick={() => {
-                                            setCurrentStep(currentStep - 1);
-                                            setTimeout(() => formikProps.validateForm(), 200);
-                                        }}
-                                    /> :
-                                    <div/>
-                                }
-                                {
-                                    currentStep < (stepsInfos.length - 1) ?
-                                    <Button
-                                        variant={'primary'}
-                                        title={t('next_step_btn')}
-                                        onClick={() => {
-                                            setCurrentStep(currentStep + 1);
-                                            setTimeout(() => formikProps.validateForm(), 200);
-                                        }}
-                                    /> :
-                                    null
-                                }
-                            </StepButtons>
-                        </StepWrapper>
-                        {
-                            stepStatuses.every(status => status === 'complete' || status === 'edit')
-                            && formikProps.isValid ?
-                            <SubmitButton
-                                type={'submit'}
-                                variant={'primary'}
-                                title={t('create_event_btn')}
-                            /> :
-                            null
-                        }
 
-                        <ResetEventCreateForm
-                        token={token}
-                        onReset={() => {
-                            formikProps.resetForm();
-                            formikProps.validateForm();
-                            setCurrentStep(0);
-                        }}/>
-                        <Persist name={'event-creation'} />
-                        <DelayedOnMountValidation/>
-                    </Form>
+                            <ResetEventCreateForm
+                            token={token}
+                            onReset={() => {
+                                formikProps.resetForm();
+                                formikProps.validateForm();
+                                setCurrentStep(0);
+                            }}/>
+                            <Persist name={'event-creation'} />
+                            <DelayedOnMountValidation/>
+                        </Form>
+                    </>
                 }
             </Formik>
         }

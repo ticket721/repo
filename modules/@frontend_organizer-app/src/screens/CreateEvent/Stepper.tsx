@@ -12,6 +12,7 @@ interface StepItem {
 export interface StepperProps {
     steps: StepItem[];
     editStep: number;
+    onStepClick: (idx: number) => void;
 }
 
 const getStatusIcon = (status: StepStatus): string => {
@@ -21,7 +22,7 @@ const getStatusIcon = (status: StepStatus): string => {
     }
 }
 
-export const Stepper: React.FC<StepperProps> = ({ steps, editStep }) => {
+export const Stepper: React.FC<StepperProps> = ({ steps, editStep, onStepClick }) => {
     const stepCount = steps.length;
 
     return <StepperContainer stepCount={stepCount}>
@@ -30,7 +31,12 @@ export const Stepper: React.FC<StepperProps> = ({ steps, editStep }) => {
         </Gauge>
         {
             steps.map((step, idx) =>
-                <Step key={step.label} status={step.status}>
+                <Step
+                key={step.label}
+                status={step.status}
+                onClick={() => {
+                    onStepClick(idx);
+                }}>
                     {
                         step.status === 'disable' || step.status === 'edit' ?
                             <span className={'step-idx'}>{idx + 1}</span> :
