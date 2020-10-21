@@ -61,6 +61,8 @@ import { FeatureFlagsController } from '@app/server/controllers/featureflags/Fea
 import { StripeInterfacesModule } from '@lib/common/stripeinterface/StripeInterfaces.module';
 import { StripeController } from '@app/server/controllers/payment/stripe/Stripe.controller';
 import { FilestoreModule } from '@lib/common/filestore/Filestore.module';
+import { PurchasesModule } from '@lib/common/purchases/Purchases.module';
+import { PurchasesController } from '@app/server/controllers/purchases/Purchases.controller';
 
 @Module({
     imports: [
@@ -94,6 +96,7 @@ import { FilestoreModule } from '@lib/common/filestore/Filestore.module';
         MetadatasModule,
         CurrenciesModule,
         TicketsModule,
+        PurchasesModule,
 
         CartModule,
         StripeModule.register(),
@@ -176,6 +179,7 @@ import { FilestoreModule } from '@lib/common/filestore/Filestore.module';
         GeolocController,
         FeatureFlagsController,
         StripeController,
+        PurchasesController,
     ],
     providers: [
         ServerService,

@@ -19,6 +19,9 @@ import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { RocksideService } from '@lib/common/rockside/Rockside.service';
 import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
+import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
+import { PurchasesService } from '@lib/common/purchases/Purchases.service';
+import { PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
 
 const context: {
     authenticationService: AuthenticationService;
@@ -27,6 +30,8 @@ const context: {
     web3ServiceMock: Web3Service;
     rocksideServiceMock: RocksideService;
     metadatasServiceMock: MetadatasService;
+    uuidToolServiceMock: UUIDToolService;
+    purchasesServiceMock: PurchasesService;
 } = {
     authenticationService: null,
     usersServiceMock: null,
@@ -34,9 +39,12 @@ const context: {
     web3ServiceMock: null,
     rocksideServiceMock: null,
     metadatasServiceMock: null,
+    uuidToolServiceMock: null,
+    purchasesServiceMock: null,
 };
 
 const resultAddress = toAcceptedAddressFormat('0x87c02dec6b33498b489e1698801fc2ef79d02eef');
+const uuid = 'ef06f5d9-e867-4319-8ca5-c1953c7b3138';
 
 describe('Authentication Service', function() {
     beforeEach(async function() {
@@ -45,7 +53,10 @@ describe('Authentication Service', function() {
         context.web3ServiceMock = mock(Web3Service);
         context.rocksideServiceMock = mock(RocksideService);
         context.metadatasServiceMock = mock(MetadatasService);
+        context.uuidToolServiceMock = mock(UUIDToolService);
+        context.purchasesServiceMock = mock(PurchasesService);
 
+        when(context.uuidToolServiceMock.generate()).thenReturn(uuid);
         when(context.configServiceMock.get('AUTH_SIGNATURE_TIMEOUT')).thenReturn('30');
         when(context.web3ServiceMock.net()).thenResolve(1);
 
@@ -75,6 +86,16 @@ describe('Authentication Service', function() {
                 {
                     provide: MetadatasService,
                     useValue: instance(context.metadatasServiceMock),
+                },
+
+                {
+                    provide: UUIDToolService,
+                    useValue: instance(context.uuidToolServiceMock),
+                },
+
+                {
+                    provide: PurchasesService,
+                    useValue: instance(context.purchasesServiceMock),
                 },
             ],
         }).compile();
@@ -266,9 +287,39 @@ describe('Authentication Service', function() {
                 error: null,
             });
 
+            const purchaseEntity: Partial<PurchaseEntity> = {
+                id: uuid,
+                owner: uuid,
+                fees: [],
+                products: [],
+                currency: null,
+                payment: null,
+                payment_interface: null,
+                price: null,
+            };
+
+            when(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: purchaseEntity as PurchaseEntity,
+            });
+
             when(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -350,8 +401,24 @@ describe('Authentication Service', function() {
             });
 
             verify(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).once();
+
+            verify(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         address,
@@ -405,6 +472,76 @@ describe('Authentication Service', function() {
             ).times(1);
         });
 
+        test('should fail on purchase creation error', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const wallet: Wallet = await createWallet();
+            const address = toAcceptedAddressFormat(wallet.address);
+
+            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+            const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+            const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
+
+            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+                response: null,
+                error: null,
+            });
+
+            when(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: null,
+            });
+
+            when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
+            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+
+            const res = await authenticationService.createWeb3User(
+                email,
+                username,
+                registerPayload[0].toString(),
+                address,
+                registerSignature.hex,
+                'en',
+            );
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('unexpected_error');
+
+            verify(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).once();
+
+            verify(usersServiceMock.findByAddress(address)).called();
+            verify(usersServiceMock.findByEmail(email)).called();
+            verify(usersServiceMock.findByUsername(username)).called();
+        });
+
         test('should fail on metadata creation error', async function() {
             const authenticationService: AuthenticationService = context.authenticationService;
             const usersServiceMock: UsersService = context.usersServiceMock;
@@ -440,9 +577,39 @@ describe('Authentication Service', function() {
                 error: null,
             });
 
+            const purchaseEntity: Partial<PurchaseEntity> = {
+                id: uuid,
+                owner: uuid,
+                fees: [],
+                products: [],
+                currency: null,
+                payment: null,
+                payment_interface: null,
+                price: null,
+            };
+
+            when(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: purchaseEntity as PurchaseEntity,
+            });
+
             when(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         address,
@@ -512,8 +679,24 @@ describe('Authentication Service', function() {
             expect(res.response).toEqual(null);
 
             verify(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).once();
+
+            verify(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -586,9 +769,39 @@ describe('Authentication Service', function() {
                 error: null,
             });
 
+            const purchaseEntity: Partial<PurchaseEntity> = {
+                id: uuid,
+                owner: uuid,
+                fees: [],
+                products: [],
+                currency: null,
+                payment: null,
+                payment_interface: null,
+                price: null,
+            };
+
+            when(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: purchaseEntity as PurchaseEntity,
+            });
+
             when(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -624,8 +837,24 @@ describe('Authentication Service', function() {
             expect(res.response).toEqual(null);
 
             verify(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).once();
+
+            verify(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -1061,9 +1290,39 @@ describe('Authentication Service', function() {
                 error: null,
             });
 
+            const purchaseEntity: Partial<PurchaseEntity> = {
+                id: uuid,
+                owner: uuid,
+                fees: [],
+                products: [],
+                currency: null,
+                payment: null,
+                payment_interface: null,
+                price: null,
+            };
+
+            when(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: purchaseEntity as PurchaseEntity,
+            });
+
             when(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         device_address: null,
                         username,
@@ -1144,8 +1403,24 @@ describe('Authentication Service', function() {
             });
 
             verify(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).once();
+
+            verify(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -1230,9 +1505,39 @@ describe('Authentication Service', function() {
                 error: null,
             });
 
+            const purchaseEntity: Partial<PurchaseEntity> = {
+                id: uuid,
+                owner: uuid,
+                fees: [],
+                products: [],
+                currency: null,
+                payment: null,
+                payment_interface: null,
+                price: null,
+            };
+
+            when(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: purchaseEntity as PurchaseEntity,
+            });
+
             when(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -1301,10 +1606,26 @@ describe('Authentication Service', function() {
             expect(res.response).toEqual(null);
 
             verify(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).once();
+
+            verify(
                 usersServiceMock.create(
                     deepEqual({
                         email,
                         username,
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         device_address: null,
                         address: anyString(),
                         type: 't721',
@@ -1675,9 +1996,39 @@ describe('Authentication Service', function() {
                 error: null,
             });
 
+            const purchaseEntity: Partial<PurchaseEntity> = {
+                id: uuid,
+                owner: uuid,
+                fees: [],
+                products: [],
+                currency: null,
+                payment: null,
+                payment_interface: null,
+                price: null,
+            };
+
+            when(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: purchaseEntity as PurchaseEntity,
+            });
+
             when(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         device_address: null,
                         username,
@@ -1710,12 +2061,27 @@ describe('Authentication Service', function() {
 
             expect(res.response).toEqual(null);
             expect(res.error).toEqual('unexpected_error');
+            verify(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).once();
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByUsername(username)).called();
             verify(usersServiceMock.findByAddress(resultAddress)).called();
             verify(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -1728,6 +2094,81 @@ describe('Authentication Service', function() {
                     }),
                 ),
             ).called();
+            verify(context.rocksideServiceMock.createIdentity()).called();
+        });
+
+        test('should fail on purchase entity creation error', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
+
+            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+                response: null,
+                error: null,
+            });
+
+            const purchaseEntity: Partial<PurchaseEntity> = {
+                id: uuid,
+                owner: uuid,
+                fees: [],
+                products: [],
+                currency: null,
+                payment: null,
+                payment_interface: null,
+                price: null,
+            };
+
+            when(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: purchaseEntity as PurchaseEntity,
+            });
+
+            when(usersServiceMock.findByAddress(resultAddress)).thenReturn(emptyServiceResponse);
+            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+            when(context.rocksideServiceMock.createIdentity()).thenResolve({
+                response: {
+                    address: resultAddress,
+                },
+                error: null,
+            });
+
+            const res = await authenticationService.createT721User(email, hashedp, username, 'en');
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('unexpected_error');
+
+            verify(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        price: null,
+                    }),
+                ),
+            ).once();
+            verify(usersServiceMock.findByEmail(email)).called();
+            verify(usersServiceMock.findByUsername(username)).called();
+            verify(usersServiceMock.findByAddress(resultAddress)).called();
             verify(context.rocksideServiceMock.createIdentity()).called();
         });
     });

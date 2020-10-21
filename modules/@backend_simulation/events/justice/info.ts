@@ -66,8 +66,8 @@ export default {
                     saleBegin: new Date(Date.now() + 30 * SECOND),
                     saleEnd: new Date(Date.now() + 23 * HOUR),
                     seats: 200,
-                    price: 10000,
-                    currency: 'eur',
+                    price: 0,
+                    currency: 'FREE',
                 },
                 {
                     name: 'Super Tickets',

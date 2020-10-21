@@ -532,11 +532,7 @@ export const waitForTickets = async (
     let tickets: AxiosResponse<TicketsSearchResponseDto>;
 
     do {
-        tickets = await sdk.tickets.search(token, {
-            owner: {
-                $eq: address,
-            },
-        });
+        tickets = await sdk.tickets.search(token, {});
         await pause(10);
     } while (!checker(tickets.data.tickets));
 

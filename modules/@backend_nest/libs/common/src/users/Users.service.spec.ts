@@ -810,7 +810,6 @@ describe('Users Service', function() {
                 valid: false,
                 admin: false,
                 past_purchases: [],
-                current_purchase: null,
             } as Partial<UserEntity>;
 
             const entity = {
@@ -873,7 +872,6 @@ describe('Users Service', function() {
                 valid: false,
                 admin: false,
                 past_purchases: [],
-                current_purchase: null,
             } as Partial<UserEntity>;
 
             const entity = {

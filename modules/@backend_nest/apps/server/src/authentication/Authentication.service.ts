@@ -9,6 +9,10 @@ import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { Web3Service } from '@lib/common/web3/Web3.service';
 import { RocksideService } from '@lib/common/rockside/Rockside.service';
 import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
+import { PurchasesService } from '@lib/common/purchases/Purchases.service';
+import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
+import { PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
+import { CRUDResponse } from '@lib/common/crud/CRUDExtension.base';
 
 /**
  * Authentication services and utilities
@@ -23,6 +27,8 @@ export class AuthenticationService {
      * @param web3Service
      * @param rocksideService
      * @param metadatasService
+     * @param purchasesService
+     * @param uuidToolService
      */
     constructor /* instanbul ignore next */(
         private readonly usersService: UsersService,
@@ -30,6 +36,8 @@ export class AuthenticationService {
         private readonly web3Service: Web3Service,
         private readonly rocksideService: RocksideService,
         private readonly metadatasService: MetadatasService,
+        private readonly purchasesService: PurchasesService,
+        private readonly uuidToolService: UUIDToolService,
     ) {}
 
     /**
@@ -193,7 +201,30 @@ export class AuthenticationService {
             };
         }
 
+        const id = this.uuidToolService.generate();
+
+        const initialPurchase: CRUDResponse<PurchaseEntity> = await this.purchasesService.create({
+            owner: id,
+            fees: [],
+            products: [],
+            currency: null,
+            payment: null,
+            payment_interface: null,
+            price: null,
+        });
+
+        if (initialPurchase.error) {
+            return {
+                error: initialPurchase.error,
+                response: null,
+            };
+        }
+
+        const purchase: PurchaseEntity = initialPurchase.response;
+
         const newUser: ServiceResponse<UserDto> = await this.usersService.create({
+            id: UUIDToolService.fromString(id),
+            current_purchase: UUIDToolService.fromString(purchase.id),
             email,
             password: null,
             username,
@@ -348,7 +379,30 @@ export class AuthenticationService {
             };
         }
 
+        const id = this.uuidToolService.generate();
+
+        const initialPurchase: CRUDResponse<PurchaseEntity> = await this.purchasesService.create({
+            owner: id,
+            fees: [],
+            products: [],
+            currency: null,
+            payment: null,
+            payment_interface: null,
+            price: null,
+        });
+
+        if (initialPurchase.error) {
+            return {
+                error: initialPurchase.error,
+                response: null,
+            };
+        }
+
+        const purchase: PurchaseEntity = initialPurchase.response;
+
         const newUser: ServiceResponse<UserDto> = await this.usersService.create({
+            id: UUIDToolService.fromString(id),
+            current_purchase: UUIDToolService.fromString(purchase.id),
             email,
             password: await hash(password, parseInt(this.configService.get('BCRYPT_SALT_ROUNDS'), 10)),
             username,

@@ -28,6 +28,8 @@ export class EventEntity {
             this.id = e.id ? e.id.toString() : e.id;
             this.group_id = e.group_id;
             this.stripe_interface = e.stripe_interface ? e.stripe_interface.toString() : e.stripe_interface;
+            this.custom_percent_fee = e.custom_percent_fee;
+            this.custom_static_fee = e.custom_static_fee;
             this.owner = e.owner ? e.owner.toString() : e.owner;
             this.avatar = e.avatar;
             this.name = e.name;
@@ -46,6 +48,18 @@ export class EventEntity {
      */
     @GeneratedUUidColumn()
     id: string;
+
+    @Column({
+        type: 'int',
+    })
+    // tslint:disable-next-line:variable-name
+    custom_static_fee: number;
+
+    @Column({
+        type: 'double',
+    })
+    // tslint:disable-next-line:variable-name
+    custom_percent_fee: number;
 
     /**
      * ID of the owner

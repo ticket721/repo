@@ -1,4 +1,4 @@
-import { IsBoolean, IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsOptional, IsString, IsUUID } from 'class-validator';
 
 /**
  * Input format when creating a user with the UserService
@@ -10,6 +10,13 @@ export class CreateUserServiceInputDto {
     @IsString()
     @IsOptional()
     id?: any;
+
+    /**
+     * Unique Identifier of the purchase
+     */
+    @IsUUID()
+    // tslint:disable-next-line:variable-name
+    current_purchase: any;
 
     /**
      * Unique email

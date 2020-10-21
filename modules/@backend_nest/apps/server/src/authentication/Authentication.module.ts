@@ -9,6 +9,8 @@ import { JwtStrategy } from '@app/server/authentication/Jwt.strategy';
 import { AuthenticationService } from '@app/server/authentication/Authentication.service';
 import { AuthenticationController } from '@app/server/authentication/Authentication.controller';
 import { MetadatasModule } from '@lib/common/metadatas/Metadatas.module';
+import { PurchasesModule } from '@lib/common/purchases/Purchases.module';
+import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 
 /**
  * Authentication module. Handles users registrations and authentication
@@ -18,6 +20,8 @@ import { MetadatasModule } from '@lib/common/metadatas/Metadatas.module';
         UsersModule,
         Web3TokensModule,
         MetadatasModule,
+        PurchasesModule,
+        ToolBoxModule,
         JwtModule.registerAsync({
             useFactory: async (configService: ConfigService): Promise<JwtModuleOptions> => ({
                 secret: configService.get('JWT_SECRET'),

@@ -45,11 +45,6 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
         ticketsRepository: TicketsRepository,
         @InjectModel(TicketEntity)
         ticketEntity: BaseModel<TicketEntity>,
-        // private readonly ticketforgeService: TicketforgeService,
-        // private readonly categoriesService: CategoriesService,
-        // private readonly rightsService: RightsService,
-        // private readonly metadatasService: MetadatasService,
-        // private readonly usersService: UsersService,
     ) {
         super(
             ticketEntity,
@@ -65,7 +60,7 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
         );
     }
 
-    // /**
+    // /*
     //  * Utility to pre-generate the ticket entities before the transaction is emitted by computing their deterministic IDs
     //  *
     //  * @param predictionInputs

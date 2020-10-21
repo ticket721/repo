@@ -103,7 +103,7 @@ export class CategoriesService extends CRUDExtension<CategoriesRepository, Categ
 
         if (categoryRes.response.length === 0) {
             return {
-                error: 'not_found',
+                error: 'category_not_found',
                 response: null,
             };
         }

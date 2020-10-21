@@ -11,15 +11,10 @@ describe('Ticket Entity', function() {
         it('should build from raw entity', function() {
             const rawTicketEntity: TicketEntity = {
                 id: 'ticket_id',
+                receipt: 'receipt_id',
                 owner: '0xaddress',
-                authorization: 'authorization-id',
-                env: 'chain',
-                status: 'minting',
-                transaction_hash: '0xhash',
                 category: 'category_id',
                 group_id: 'group_id',
-                parent_id: 'parent_id',
-                parent_type: 'event',
                 created_at: new Date(Date.now()),
                 updated_at: new Date(Date.now()),
             };
@@ -31,16 +26,11 @@ describe('Ticket Entity', function() {
 
         it('should build from raw entity with null id', function() {
             const rawTicketEntity: TicketEntity = {
-                id: 'ticket_id',
+                id: null,
+                receipt: null,
                 owner: '0xaddress',
-                authorization: null,
-                env: 'chain',
-                status: 'minting',
-                transaction_hash: '0xhash',
                 category: null,
                 group_id: 'group_id',
-                parent_id: null,
-                parent_type: 'event',
                 created_at: new Date(Date.now()),
                 updated_at: new Date(Date.now()),
             };

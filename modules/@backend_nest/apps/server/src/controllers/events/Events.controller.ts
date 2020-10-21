@@ -256,6 +256,8 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 address: eventAddress,
                 controller: eventAddress,
                 dates: [],
+                custom_static_fee: null,
+                custom_percent_fee: null,
             }),
             StatusCodes.InternalServerError,
         );

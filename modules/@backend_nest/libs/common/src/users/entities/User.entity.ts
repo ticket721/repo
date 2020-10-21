@@ -1,5 +1,4 @@
 import { Entity, Column, GeneratedUUidColumn } from '@iaminfinity/express-cassandra';
-import { Purchase } from '@lib/common/users/entities/Purchases.type';
 
 /**
  * Entity representing a user
@@ -25,18 +24,17 @@ export class UserEntity {
     id: string;
 
     @Column({
-        type: 'frozen',
-        typeDef: '<purchase>',
+        type: 'uuid',
     })
     // tslint:disable-next-line:variable-name
-    current_purchase: Purchase;
+    current_purchase: string;
 
     @Column({
         type: 'list',
-        typeDef: '<frozen<purchase>>',
+        typeDef: '<uuid>',
     })
     // tslint:disable-next-line:variable-name
-    past_purchases: Purchase[];
+    past_purchases: string[];
 
     /**
      * Unique email
