@@ -35,24 +35,20 @@ const IconSpan = styled.span<IconProps>`
     flex-shrink: 0;
     font-size: ${(props) => props.size};
     transition: all 300ms ease;
-    color: ${(props) => (
+    color: ${(props) =>
         props.color
-            ?
-            typeof props.color === 'string'
-                ?
-                props.color
-                :
-                props.color.hexCodes[0]
-            :
-        props.theme.primaryColor.hex)} !important;
-    ${props => props.color && typeof props.color !== 'string' ?
-        `
+            ? typeof props.color === 'string'
+                ? props.color
+                : props.color.hexCodes[0]
+            : props.theme.primaryColor.hex} !important;
+    ${(props) =>
+        props.color && typeof props.color !== 'string'
+            ? `
         background: -webkit-linear-gradient(${props.color.angle}deg, ${props.color.hexCodes.join(',')});
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        ` :
-        null
-    }
+        `
+            : null}
 `;
 
 Icon.defaultProps = {

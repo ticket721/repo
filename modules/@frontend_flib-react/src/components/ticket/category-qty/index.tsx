@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
-import Select from '../../inputs/select';
+import Select, { SelectOption } from '../../inputs/select';
 import Icon from '../../icon';
 
 export interface CategoryQtyProps extends React.ComponentProps<any> {
@@ -11,9 +11,9 @@ export interface CategoryQtyProps extends React.ComponentProps<any> {
     image: string;
     price: string;
     date: string;
-    options: { value: any; label: string }[];
-    selectedOption: { value: any; label: string };
-    onChange: (val: { value: any; label: string }) => void;
+    options: SelectOption[];
+    selectedOption: SelectOption;
+    onChange: (val: SelectOption[]) => void;
 }
 
 const Container = styled.article<CategoryQtyProps>`

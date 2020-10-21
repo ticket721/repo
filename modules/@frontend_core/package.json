@@ -39,6 +39,7 @@
         "i18next-browser-languagedetector": "4.0.2",
         "i18next-xhr-backend": "3.2.2",
         "lodash.get": "4.4.2",
+        "moment": "2.29.1",
         "react": "16.13.1",
         "react-dom": "16.13.1",
         "react-google-places-autocomplete": "2.0.7",

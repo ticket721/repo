@@ -5,7 +5,7 @@ import styled from '../../../config/styled';
 import { ChangeEvent } from 'react';
 import Icon, { IconColor } from '../../icon';
 
-export interface InputProps extends React.ComponentProps<any> {
+export interface TextInputProps extends React.ComponentProps<any> {
     error?: string;
     label: string;
     name: string;
@@ -58,7 +58,7 @@ const StyledLabel = styled.label`
     }
 `;
 
-const StyledInputContainer = styled.div<InputProps>`
+const StyledInputContainer = styled.div<TextInputProps>`
     position: relative;
     background-color: ${(props) => props.theme.componentColor};
     border-radius: ${(props) => props.theme.defaultRadius};
@@ -115,21 +115,14 @@ const StyledInputContainer = styled.div<InputProps>`
     }
 `;
 
-export const TextInput: React.FunctionComponent<InputProps & { className?: string }> = (
-    props: InputProps,
+export const TextInput: React.FunctionComponent<TextInputProps & { className?: string }> = (
+    props: TextInputProps,
 ): JSX.Element => {
     return (
         <StyledInputContainer error={props.error} className={props.className}>
             <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
             <div className={'sub-container'}>
-                {
-                    props.icon ? 
-                    <Icon
-                        icon={props.icon}
-                        size={'16px'}
-                        color={props.iconColor}/> :
-                    null
-                }
+                {props.icon ? <Icon icon={props.icon} size={'16px'} color={props.iconColor} /> : null}
                 {props.options ? (
                     <Cleave
                         options={props.options}

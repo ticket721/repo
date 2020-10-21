@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
-import Select from '../../inputs/select';
+import Select, { SelectOption } from '../../inputs/select';
 import Icon from '../../icon';
 import { useEffect, useState } from 'react';
 
@@ -16,9 +16,9 @@ export interface GlobalCategoryQtyProps extends React.ComponentProps<any> {
     categoryName: string;
     price: string;
     date: string;
-    options: { value: any; label: string }[];
-    selectedOption: { value: any; label: string };
-    onChange: (val: { value: any; label: string }) => void;
+    options: SelectOption[];
+    selectedOption: SelectOption;
+    onChange: (val: SelectOption[]) => void;
     onCancel: () => void;
 }
 

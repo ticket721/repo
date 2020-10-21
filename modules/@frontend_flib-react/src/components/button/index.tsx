@@ -152,7 +152,6 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
                 name={props.title}
                 onClick={props.onClick}
                 gradients={props.gradients}
-                variant={props.variant}
                 type={props.type}
                 disabled={props.variant === 'disabled'}
                 {...props}

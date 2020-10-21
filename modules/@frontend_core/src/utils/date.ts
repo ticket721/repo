@@ -1,3 +1,7 @@
+import moment from 'moment';
+import 'moment/locale/fr';
+import parseISO from 'date-fns/parseISO';
+
 export const second: number = 1000;
 export const minute: number = 60 * second;
 export const hour: number = 60 * minute;
@@ -37,14 +41,6 @@ export const displayDate = (date: Date | string): string => {
 
 export const displayCompleteDate = (date: Date | string): string => {
     return `${displayDate(date)} - ${displayTime(date)}`;
-};
-
-export const checkFormatDate = (date: string | Date): Date => {
-    if (typeof date === 'string') {
-        return new Date(date);
-    }
-
-    return date;
 };
 
 export const compareDates = (dateA: Date | string, dateB: Date | string, precision?: TimeScale): boolean => {
@@ -118,7 +114,11 @@ const DTFormatHour = new Intl.DateTimeFormat('default', {
     minute: '2-digit',
 });
 
-export const format = (date: Date): string => DTFormat.format(date);
-export const formatShort = (date: Date): string => DTFormatShort.format(date);
-export const formatDay = (date: Date): string => DTFormatDay.format(date);
-export const formatHour = (date: Date): string => DTFormatHour.format(date);
+export const format = (date: Date | string): string => DTFormat.format(checkFormatDate(date));
+export const formatShort = (date: Date | string): string => DTFormatShort.format(checkFormatDate(date));
+export const formatDay = (date: Date | string): string => DTFormatDay.format(checkFormatDate(date));
+export const formatHour = (date: Date | string): string => DTFormatHour.format(checkFormatDate(date));
+
+export const checkFormatDate = (date: Date | string): Date => (typeof date === 'string' ? parseISO(date) : date);
+
+export const humanizeTime = (time: number, locale: string): string => moment.duration(time).locale(locale).humanize();

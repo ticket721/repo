@@ -1,7 +1,13 @@
 import React, { ChangeEvent } from 'react';
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import GooglePlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-google-places-autocomplete';
 import { TextInput } from '@frontend/flib-react/lib/components';
 import styled from 'styled-components';
+import { DateLocationPayload } from '@common/global';
+
+import './locales';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { PushNotification } from '../../redux/ducks/notifications';
 
 export interface SuggestionsProps {
     activeSuggestion: number;
@@ -23,10 +29,14 @@ const Suggestions: React.FC<SuggestionsProps> = ({ activeSuggestion, suggestions
     </SuggestionContainer>
 );
 
+const LocationInputContainer = styled.div`
+    & > div {
+        position: relative;
+    }
+`;
+
 const SuggestionContainer = styled.div`
-    position: relative;
-    top: -8px;
-    left: ${(props) => props.theme.biggerSpacing};
+    position: absolute;
     z-index: 3;
     width: fit-content;
     background-color: ${(props) => props.theme.darkerBg};
@@ -53,45 +63,76 @@ export interface LocationInputProps {
     googleApiKey: string;
     name: string;
     label: string;
-    onSelect: (selection: any) => void;
+    onSuccess: (location: DateLocationPayload) => void;
+    onError: () => void;
     initialValue?: string;
     className?: string;
     placeholder?: string;
     error?: string;
-    onFocus?: (
-        eventOrPath: string | ChangeEvent<any>,
-    ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
+    iconColor?: string;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onFocus?: (e: ChangeEvent<HTMLInputElement>) => void;
+    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
 
-export const LocationInput: React.FC<LocationInputProps> = (props: LocationInputProps) => (
-    <GooglePlacesAutocomplete
-        apiKey={props.googleApiKey}
-        debounce={500}
-        initialValue={props.initialValue}
-        placeholder={props.placeholder}
-        renderInput={(locationProps) => (
-            <TextInput
-                icon={'pin'}
-                type={'search'}
-                name={props.name}
-                label={props.label}
-                className={props.className}
-                error={props.error}
-                onFocus={props.onFocus}
-                {...locationProps}
+export const LocationInput: React.FC<LocationInputProps> = (props: LocationInputProps) => {
+    const dispatch = useDispatch();
+    const [t] = useTranslation('errors');
+
+    const onLocationChange = (result: any) => {
+        geocodeByAddress(result.description)
+            .then((geocodeResult) => {
+                getLatLng(geocodeResult[0])
+                    .then(({ lat, lng }) => {
+                        props.onSuccess({ label: geocodeResult[0].formatted_address, lat, lon: lng });
+                    })
+                    .catch(() => {
+                        dispatch(PushNotification(t('google_api_error'), 'error'));
+                        props.onError();
+                    });
+            })
+            .catch(() => {
+                dispatch(PushNotification(t('google_api_error'), 'error'));
+                props.onError();
+            });
+    };
+
+    return (
+        <LocationInputContainer>
+            <GooglePlacesAutocomplete
+                apiKey={props.googleApiKey}
+                debounce={500}
+                initialValue={props.initialValue}
+                placeholder={props.placeholder}
+                renderInput={(locationProps) => {
+                    return (
+                        <TextInput
+                            icon={'pin'}
+                            iconColor={props.iconColor}
+                            type={'search'}
+                            name={props.name}
+                            label={props.label}
+                            error={props.error}
+                            className={props.className}
+                            onFocus={props.onFocus}
+                            onBlur={props.onBlur}
+                            {...locationProps}
+                        />
+                    );
+                }}
+                renderSuggestions={(
+                    activeSuggestion: number,
+                    suggestions: Array<any>,
+                    onSelectSuggestion: (selection: any, event: any) => void,
+                ) => (
+                    <Suggestions
+                        activeSuggestion={activeSuggestion}
+                        suggestions={suggestions}
+                        onSelectSuggestion={onSelectSuggestion}
+                    />
+                )}
+                onSelect={onLocationChange}
             />
-        )}
-        renderSuggestions={(
-            activeSuggestion: number,
-            suggestions: Array<any>,
-            onSelectSuggestion: (selection: any, event: any) => void,
-        ) => (
-            <Suggestions
-                activeSuggestion={activeSuggestion}
-                suggestions={suggestions}
-                onSelectSuggestion={onSelectSuggestion}
-            />
-        )}
-        onSelect={props.onSelect}
-    />
-);
+        </LocationInputContainer>
+    );
+};

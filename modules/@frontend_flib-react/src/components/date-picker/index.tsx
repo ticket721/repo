@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import fr from 'date-fns/locale/fr';
 import es from 'date-fns/locale/es';
 import it from 'date-fns/locale/it';
 import { TextInput } from '../inputs/text';
-import styled from 'styled-components';
+import styled, { ThemeContext } from 'styled-components';
+import { format } from '@frontend/core/lib/utils/date';
 
 registerLocale('es', es);
 registerLocale('fr', fr);
@@ -20,9 +21,10 @@ export interface CustomDatePickerProps extends React.ComponentProps<any> {
     maxDate?: Date;
     onChange: (date: Date) => void;
     onChangeRaw?: (e: React.FocusEvent<HTMLInputElement>) => void;
+    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
     open?: boolean;
     placeholder?: string;
-    selected?: Date;
+    value: Date;
     error?: string;
     selectsStart?: boolean;
     selectsEnd?: boolean;
@@ -31,52 +33,62 @@ export interface CustomDatePickerProps extends React.ComponentProps<any> {
     startDate?: Date;
     endDate?: Date;
     disabled?: boolean;
+    gradients?: string[];
 }
 
 export const CustomDatePicker: React.FunctionComponent<CustomDatePickerProps> = (
     props: CustomDatePickerProps,
-): JSX.Element => (
-    <DatePickerWrapper>
-        <Placeholder>{props.placeholder}</Placeholder>
-        <DatePicker
-            customInput={
-                <TextInput
-                    value={props.value}
-                    name={props.name}
-                    onChange={() => null}
-                    label={props.label}
-                    icon={'calendar'}
-                    error={props.error}
-                    disabled={props.disabled}
-                />
-            }
-            name={props.name}
-            dateFormat={props.dateFormat}
-            locale={props.locale}
-            minDate={props.minDate}
-            maxDate={props.maxDate}
-            startDate={props.startDate}
-            endDate={props.endDate}
-            onChange={props.onChange}
-            onChangeRaw={
-                props.onChangeRaw
-                    ? props.onChangeRaw
-                    : (e: any) => {
-                          e.preventDefault();
-                      }
-            }
-            open={props.open}
-            selected={props.selected}
-            shouldCloseOnSelect={!props.selectsStart && !props.selectsEnd && !props.showTime}
-            selectsStart={props.selectsStart}
-            selectsEnd={props.selectsEnd}
-            showTimeInput={props.showTime}
-            timeInputLabel={props.timeInputLabel + ':'}
-        />
-    </DatePickerWrapper>
-);
+): JSX.Element => {
+    const themeCtx = useContext(ThemeContext);
 
-const DatePickerWrapper = styled.div`
+    return (
+        <DatePickerWrapper gradients={props.gradients}>
+            <TextInput
+                value={props.value ? format(props.value) : ''}
+                name={props.name}
+                onChange={console.log}
+                label={props.label}
+                icon={'calendar'}
+                iconColor={
+                    props.error
+                        ? themeCtx.errorColor.hex
+                        : props.gradients
+                        ? props.gradients[0]
+                        : themeCtx.primaryColor.hex
+                }
+                placeholder={props.placeholder}
+                error={props.error}
+            />
+            <DatePicker
+                name={props.name}
+                dateFormat={props.dateFormat}
+                locale={props.locale}
+                minDate={props.minDate}
+                maxDate={props.maxDate}
+                startDate={props.startDate}
+                endDate={props.endDate}
+                onChange={props.onChange}
+                onChangeRaw={
+                    props.onChangeRaw
+                        ? props.onChangeRaw
+                        : (e: any) => {
+                              e.preventDefault();
+                          }
+                }
+                onBlur={props.onBlur}
+                open={props.open}
+                selected={props.value}
+                shouldCloseOnSelect={!props.selectsStart && !props.selectsEnd && !props.showTime}
+                selectsStart={props.selectsStart}
+                selectsEnd={props.selectsEnd}
+                showTimeInput={props.showTime}
+                timeInputLabel={props.timeInputLabel + ':'}
+            />
+        </DatePickerWrapper>
+    );
+};
+
+const DatePickerWrapper = styled.div<{ gradients?: string[] }>`
     position: relative;
 
     .react-datepicker {
@@ -86,7 +98,21 @@ const DatePickerWrapper = styled.div`
         font-family: ${(props) => props.theme.fontStack};
 
         &-wrapper {
+            position: absolute;
+            top: 0;
             width: 100%;
+            height: 87px;
+            opacity: 0;
+
+            > div {
+                height: 100%;
+
+                > input {
+                    width: 100%;
+                    height: 100%;
+                    cursor: pointer;
+                }
+            }
         }
 
         &__navigation {
@@ -147,12 +173,14 @@ const DatePickerWrapper = styled.div`
 
             &--in-range {
                 border-radius: 0;
-                background-color: ${(props) => props.theme.primaryColorGradientEnd.hex};
+                background-color: ${(props) =>
+                    props.gradients ? props.gradients[1] : props.theme.primaryColorGradientEnd.hex};
             }
 
             &--in-selecting-range {
                 border-radius: 0;
-                background-color: ${(props) => props.theme.primaryColorGradientEnd.hex};
+                background-color: ${(props) =>
+                    props.gradients ? props.gradients[1] : props.theme.primaryColorGradientEnd.hex};
             }
 
             &--selected,
@@ -169,24 +197,24 @@ const DatePickerWrapper = styled.div`
             &--selected {
                 background: linear-gradient(
                     265deg,
-                    ${(props) => props.theme.primaryColor.hex},
-                    ${(props) => props.theme.primaryColorGradientEnd.hex}
+                    ${(props) => (props.gradients ? props.gradients[0] : props.theme.primaryColor.hex)},
+                    ${(props) => (props.gradients ? props.gradients[1] : props.theme.primaryColorGradientEnd.hex)}
                 );
             }
 
             &--range-start {
                 background: linear-gradient(
                     90deg,
-                    ${(props) => props.theme.primaryColor.hex},
-                    ${(props) => props.theme.primaryColorGradientEnd.hex}
+                    ${(props) => (props.gradients ? props.gradients[0] : props.theme.primaryColor.hex)},
+                    ${(props) => (props.gradients ? props.gradients[1] : props.theme.primaryColorGradientEnd.hex)}
                 );
             }
 
             &--range-end {
                 background: linear-gradient(
                     270deg,
-                    ${(props) => props.theme.primaryColor.hex},
-                    ${(props) => props.theme.primaryColorGradientEnd.hex}
+                    ${(props) => (props.gradients ? props.gradients[0] : props.theme.primaryColor.hex)},
+                    ${(props) => (props.gradients ? props.gradients[1] : props.theme.primaryColorGradientEnd.hex)}
                 );
             }
 
@@ -237,15 +265,6 @@ const DatePickerWrapper = styled.div`
             }
         }
     }
-`;
-
-const Placeholder = styled.span`
-    position: absolute;
-    font-size: 14px;
-    font-weight: 500;
-    top: 53px;
-    left: 50px;
-    color: ${(props) => props.theme.textColorDarker};
 `;
 
 export default CustomDatePicker;
