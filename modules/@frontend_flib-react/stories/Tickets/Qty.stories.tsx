@@ -20,12 +20,12 @@ export const showcase = () => (
         options={[
             {
                 label: '1',
-                value: 1,
+                value: '1',
             },
         ]}
         initialOption={{
             label: '1',
-            value: 1,
+            value: '1',
         }}
         gradient={array('Gradient', gradientsValues)}
         onChange={action('onChange')}
