@@ -148,8 +148,8 @@ export const StylesForm: React.FC<StylesFormProps> = (props: StylesFormProps) =>
 
             <ColorPickers
             srcImage={preview}
-            colors={formik.values.signatureColors}
-            onColorsChange={(colors) => formik.setFieldValue('signatureColors', colors)}/>
+            value={formik.values.signatureColors as [string, string]}
+            onChange={(colors) => formik.setFieldValue('signatureColors', colors)}/>
             <Button
                 variant={updatable ? 'primary' : 'disabled'}
                 type='submit'

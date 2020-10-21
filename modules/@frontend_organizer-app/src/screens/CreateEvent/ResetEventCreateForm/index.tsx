@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled                                           from 'styled-components';
-import { useDispatch } from 'react-redux';
 
 import '@frontend/core/lib/utils/window';
 
@@ -34,7 +33,10 @@ export const ResetEventCreateForm: React.FC<ResetEventCreateFormProps> = ({ toke
                         <Button
                             title={t('reset_btn')}
                             variant={'danger'}
-                            onClick={onReset}
+                            onClick={() => {
+                                onReset();
+                                setShowResetPopup(false);
+                            }}
                         />
                     </BtnContainer>
                 </Popup>

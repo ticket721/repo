@@ -1,11 +1,9 @@
 import React from 'react';
-import { RichText, Textarea, TextInput }  from '@frontend/flib-react/lib/components';
+import { Textarea, TextInput }  from '@frontend/flib-react/lib/components';
 import styled                      from 'styled-components';
 
 import { useTranslation } from 'react-i18next';
 import './locales';
-import { FormProps }      from '../../';
-import { useDeepEffect }  from '@frontend/core/lib/hooks/useDeepEffect';
 import { useField } from 'formik';
 
 import { SocialSection } from './Socials/SocialSection';
@@ -14,8 +12,8 @@ import { evaluateError } from '../../../../utils/extractError';
 export const GeneralInfoForm: React.FC = () => {
     const [ t ] = useTranslation('general_infos');
 
-    const [nameField, nameMeta] = useField<string>({ name: 'textMetadata.name' });
-    const [descField, descMeta] = useField<string>({ name: 'textMetadata.description' });
+    const [nameField, nameMeta] = useField<string>('textMetadata.name');
+    const [descField, descMeta] = useField<string>('textMetadata.description');
 
     return (
         <GeneralInfos>

@@ -1,27 +1,27 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import styled                                           from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 
 import '@frontend/core/lib/utils/window';
 import { MergedAppState }           from '../../index';
-import { OrganizerState }           from '../../redux/ducks';
 
 import { Button } from '@frontend/flib-react/lib/components';
 
 import { GeneralInfoForm }     from './Forms/GeneralInfoForm';
 import { StylesForm }          from './Forms/StylesForm';
-// import DatesForm           from './Forms/DatesForm';
-// import CategoriesForm      from './Forms/CategoriesForm';
+import { DatesForm }           from './Forms/DatesForm';
+import { CategoriesForm }      from './Forms/CategoriesForm';
 
 import { useTranslation }                from 'react-i18next';
 import './locales';
 import { ResetEventCreateForm }          from './ResetEventCreateForm';
 import { PushNotification }              from '@frontend/core/lib/redux/ducks/notifications';
 import { useHistory }                    from 'react-router';
-import { FullPageLoading }                from '@frontend/flib-react/lib/components';
-import { Formik, FormikHelpers, useFormikContext } from 'formik';
+import { Formik, FormikHelpers } from 'formik';
 import { Persist } from 'formik-persist';
 import { checkEvent, EventCreationPayload } from '@common/global';
+import { DelayedOnMountValidation } from './DelayedOnMountValidation';
+import { Stepper, StepStatus } from './Stepper';
 
 export interface FormProps {
     onComplete: () => void;
@@ -40,98 +40,166 @@ const initialValues: EventCreationPayload = {
     categoriesConfiguration: [],
 };
 
+interface StepInfos {
+    step: string;
+    title: string;
+    description: string;
+}
+
+const stepsInfos: StepInfos[] = [
+    {
+        step: 'textMetadata',
+        title: 'general_infos_title',
+        description: 'general_infos_description',
+    },
+    {
+        step: 'imagesMetadata',
+        title: 'styles_title',
+        description: 'styles_description',
+    },
+    {
+        step: 'datesConfiguration',
+        title: 'dates_title',
+        description: 'dates_description',
+    },
+    {
+        step: 'categoriesConfiguration',
+        title: 'categories_title',
+        description: 'categories_description',
+    },
+];
+
 const CreateEvent: React.FC = () => {
     const [ t ] = useTranslation('create_event');
 
-    const themeFormRef = useRef(null);
-    const datesFormRef = useRef(null);
-    const categoriesFormRef = useRef(null);
+    const [ currentStep, setCurrentStep ] = useState<number>(0);
 
-    const [ stepIdx, setStepIdx ] = useState<number>(null);
-    const [ loadingForms, setLoadingForms ] = useState<boolean[]>([false, false, false, false]);
-    const [ validSteps, setValidSteps ] = useState<string[]>([]);
+    const [ stepStatuses, setStepStatuses ] = useState<StepStatus[]>([]);
     const dispatch = useDispatch();
     const history = useHistory();
     const token: string = useSelector((state: MergedAppState) => state.auth.token.value);
 
-    const datesLength = useSelector((state: OrganizerState) => state.eventCreation.datesConfiguration.dates.length);
+    const validate = (eventPayload: EventCreationPayload) => {
+        const errors = checkEvent(eventPayload);
+        const errorKeys = errors ? Object.keys(errors) : [];
+        const eventCreationKeys = Object.keys(eventPayload);
 
-    const handleLoadingState = (updateIdx: number, updateLoadingState: boolean) =>
-        setLoadingForms(loadingForms.map(
-            (loadingState, idx) => idx === updateIdx ?
-                updateLoadingState :
-                loadingState
-        ));
+        setStepStatuses(
+            eventCreationKeys.map(
+                (step: string, idx: number) => {
+                    if (idx === currentStep) {
+                        return 'edit';
+                    }
 
-console.log('validSteps:', validSteps);
+                    if (idx > currentStep) {
+                        return 'disable';
+                    }
+
+                    if (errorKeys.includes(step)) {
+                        return 'invalid';
+                    }
+
+                    return 'complete';
+                }
+            )
+        );
+        return checkEvent(eventPayload);
+    };
+
+    const buildForm = () => {
+        switch (currentStep) {
+            case 0: return <GeneralInfoForm/>;
+            case 1: return <StylesForm/>;
+            case 2: return <DatesForm/>;
+            case 3: return <CategoriesForm/>;
+            default: return <></>;
+        }
+    };
+
+    const submit = (eventPayload: EventCreationPayload, { resetForm, validateForm }: FormikHelpers<EventCreationPayload>) => {
+        global.window.t721Sdk.events.create.create(
+            token,
+            {
+                eventPayload,
+            }
+        ).then((event) => {
+            dispatch(PushNotification(t('event_create_success'), 'success'));
+            resetForm();
+            validateForm();
+            history.push('/');
+        }).catch((e) => dispatch(PushNotification(e.message, 'error')));
+    };
+
     return (
         <Container>
+            <PositionedStepper>
+                <Stepper
+                steps={stepsInfos.map((infos, idx) => ({
+                    label: t(infos.title),
+                    status: stepStatuses[idx],
+                }))}
+                editStep={currentStep}/>
+            </PositionedStepper>
         {
             <Formik
             initialValues={initialValues}
-            onSubmit={(eventPayload: EventCreationPayload, { resetForm }) => {
-                global.window.t721Sdk.events.create.create(
-                    token,
-                    {
-                        eventPayload,
-                    }
-                ).then((event) => {
-                    dispatch(PushNotification(t('event_create_success'), 'success'));
-                    history.push('/group/' + event.data.event.group_id);
-                })
-                    .catch((e) => dispatch(PushNotification(e.message, 'error')))
-                resetForm();
-            }}
-            validateOnMount={true}
-            validate={(eventPayload: EventCreationPayload) => {
-                const errors = checkEvent(eventPayload);
-                const errorKeys = Object.keys(errors);
-                const eventCreationKeys = Object.keys(eventPayload);
-console.log('payload:', eventPayload);
-console.log('errors:', errors);
-                setValidSteps(
-                    eventCreationKeys.filter(
-                        (step: string) => errorKeys.findIndex((key: string) => key === step) === -1
-                    )
-                );
-                return checkEvent(eventPayload);
-            }}>
-                { props =>
-                    <Form>
+            onSubmit={submit}
+            validate={validate}>
+                { formikProps =>
+                    <Form onSubmit={formikProps.handleSubmit}>
                         <StepWrapper>
-                            <Title>{t('general_infos_title')}</Title>
-                            <Description>{t('general_infos_description')}</Description>
-                            <GeneralInfoForm/>
-                        </StepWrapper>
-                        <StepWrapper disabled={validSteps.findIndex((step: string) => step === 'textMetadata') === -1} ref={themeFormRef}>
-                            <Title>{t('styles_title')}</Title>
-                            <Description>{t('styles_description')}</Description>
-                            <StylesForm disabled={validSteps.findIndex((step: string) => step === 'textMetadata') === -1}/>
-                        </StepWrapper>
-                        {/*
-                        <StepWrapper ref={datesFormRef}>
-                            <Title>{t('dates_title')} {
-                                datesLength > 0 ?
-                                <span className={'date-quantity'}>
-                                    - {datesLength} date{datesLength > 1 ? 's' : null}
-                                </span> :
+                            <Title>{t(stepsInfos[currentStep].title)}</Title>
+                            <Description>{t(stepsInfos[currentStep].description)}</Description>
+                            {
+                                buildForm()
+                            }
+                            <StepButtons>
+                                {
+                                    currentStep > 0 ?
+                                    <Button
+                                        variant={'secondary'}
+                                        title={t('previous_step_btn')}
+                                        onClick={() => {
+                                            setCurrentStep(currentStep - 1);
+                                            setTimeout(() => formikProps.validateForm(), 200);
+                                        }}
+                                    /> :
+                                    <div/>
+                                }
+                                {
+                                    currentStep < (stepsInfos.length - 1) ?
+                                    <Button
+                                        variant={'primary'}
+                                        title={t('next_step_btn')}
+                                        onClick={() => {
+                                            setCurrentStep(currentStep + 1);
+                                            setTimeout(() => formikProps.validateForm(), 200);
+                                        }}
+                                    /> :
                                     null
-                            }</Title>
-                            <Description>{t('dates_description')}</Description>
-                            <DatesForm onComplete={(valid) => handleLoadingState(2, valid)}/>
+                                }
+                            </StepButtons>
                         </StepWrapper>
-                        <StepWrapper ref={categoriesFormRef}>
-                            <Title>{t('categories_title')}</Title>
-                            <CategoriesForm onComplete={(valid) => handleLoadingState(3, valid)}/>
-                        </StepWrapper> */}
-                        <SubmitButton
-                            variant={'primary'}
-                            title={t('create_event_btn')}
-                        />
+                        {
+                            stepStatuses.every(status => status === 'complete' || status === 'edit')
+                            && formikProps.isValid ?
+                            <SubmitButton
+                                type={'submit'}
+                                variant={'primary'}
+                                title={t('create_event_btn')}
+                            /> :
+                            null
+                        }
+
                         <ResetEventCreateForm
                         token={token}
-                        onReset={() => props.resetForm()}/>
+                        onReset={() => {
+                            formikProps.resetForm();
+                            formikProps.validateForm();
+                            setCurrentStep(0);
+                        }}/>
                         <Persist name={'event-creation'} />
+                        <DelayedOnMountValidation/>
                     </Form>
                 }
             </Formik>
@@ -147,6 +215,12 @@ const Container = styled.div`
     width: 100%;
 `;
 
+const PositionedStepper = styled.div`
+    position: fixed;
+    left: ${props => props.theme.doubleSpacing};
+    top: calc(50vh - 80px + 4 * 8px);
+`;
+
 const Form = styled.form`
     display: flex;
     justify-content: center;
@@ -157,11 +231,13 @@ const Form = styled.form`
 
 const StepWrapper = styled.div<{ disabled?: boolean }>`
     width: 100%;
-    margin: 50px 0;
     min-height: 65vh;
     opacity: ${props => props.disabled ? 0.3 : 1};
-    pointer-events: ${props => props.disabled ? 'none' : 'auto'};
     filter: ${props => props.disabled ? 'grayscale(0.8)' : 'none'};
+
+    & * {
+        pointer-events: ${props => props.disabled ? 'none' : 'auto'};
+    }
 `;
 
 const Title = styled.h1`
@@ -186,6 +262,16 @@ const Description = styled.h2`
     color: ${props => props.theme.textColorDark};
     margin-bottom: ${props => props.theme.biggerSpacing};
     white-space: pre-wrap;
+`;
+
+const StepButtons = styled.div`
+    display: flex;
+    justify-content: space-between;
+
+    button {
+        width: fit-content;
+        padding: ${props => props.theme.regularSpacing + ' ' + props.theme.biggerSpacing};
+    }
 `;
 
 const SubmitButton = styled(Button)`

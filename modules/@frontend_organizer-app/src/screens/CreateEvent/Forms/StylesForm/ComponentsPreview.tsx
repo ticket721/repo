@@ -8,7 +8,7 @@ import { useSelector }                from 'react-redux';
 import { MergedAppState }             from '../../../../index';
 
 import { useTranslation } from 'react-i18next';
-import '../../../../shared/Translations/StylesForm';
+import './locales';
 import { useRef } from 'react';
 
 interface ComponentsPreviewProps {

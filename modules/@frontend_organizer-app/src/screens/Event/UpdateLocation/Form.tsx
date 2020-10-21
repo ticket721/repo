@@ -8,16 +8,16 @@ import { useFormik }                   from 'formik';
 import { useDispatch, useSelector }    from 'react-redux';
 import { useLazyRequest }              from '@frontend/core/lib/hooks/useLazyRequest';
 import { MergedAppState }              from '../../../index';
-import { geocodeByAddress, getLatLng } from 'react-google-places-autocomplete';
+// import { geocodeByAddress, getLatLng } from 'react-google-places-autocomplete';
 import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
-import { LocationInput }               from '@frontend/core/lib/components/LocationInput';
+// import { LocationInput }               from '@frontend/core/lib/components/LocationInput';
 import { Button, LeafletMap }          from '@frontend/flib-react/lib/components';
 import { locationValidationSchema }    from './validationSchema';
 import { InputDateLocation }           from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { Coordinates }                 from '@common/global';
 import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
 import { isEqual }                     from 'lodash';
-import { getEnv }                      from '@frontend/core/lib/utils/getEnv';
+// import { getEnv }                      from '@frontend/core/lib/utils/getEnv';
 
 interface LocationFormProps {
     uuid: string;
@@ -61,42 +61,42 @@ export const LocationForm: React.FC<LocationFormProps> = (props: LocationFormPro
         }
     });
 
-    const onLocationChange = (result: any) => {
-        geocodeByAddress(result.description)
-            .then((gecodeResult) => {
-                    getLatLng(gecodeResult[0])
-                        .then(({ lat, lng }) => {
-                            formik.setValues({
-                                locationLabel: gecodeResult[0].formatted_address,
-                                coords: {
-                                    lon: lng,
-                                    lat
-                                }
-                            });
-                        }).catch(() => {
-                        dispatch(PushNotification(t('errors:google_api_error'), 'error'));
-                        formik.setValues({
-                            locationLabel: '',
-                            coords: {
-                                lon: null,
-                                lat: null,
-                            },
-                        });
-                    })
-                }
-            ).catch(() => {
-            dispatch(PushNotification(t('errors:google_api_error'), 'error'));
-            formik.setValues({
-                locationLabel: '',
-                coords: {
-                    lon: null,
-                    lat: null,
-                },
-            });
-        });
-    };
+    // const onLocationChange = (result: any) => {
+    //     geocodeByAddress(result.description)
+    //         .then((gecodeResult) => {
+    //                 getLatLng(gecodeResult[0])
+    //                     .then(({ lat, lng }) => {
+    //                         formik.setValues({
+    //                             locationLabel: gecodeResult[0].formatted_address,
+    //                             coords: {
+    //                                 lon: lng,
+    //                                 lat
+    //                             }
+    //                         });
+    //                     }).catch(() => {
+    //                     dispatch(PushNotification(t('errors:google_api_error'), 'error'));
+    //                     formik.setValues({
+    //                         locationLabel: '',
+    //                         coords: {
+    //                             lon: null,
+    //                             lat: null,
+    //                         },
+    //                     });
+    //                 })
+    //             }
+    //         ).catch(() => {
+    //         dispatch(PushNotification(t('errors:google_api_error'), 'error'));
+    //         formik.setValues({
+    //             locationLabel: '',
+    //             coords: {
+    //                 lon: null,
+    //                 lat: null,
+    //             },
+    //         });
+    //     });
+    // };
 
-    const computeError = (field: string) => formik.touched[field] && formik.errors[field] ? 'validation:' + formik.errors[field] : '';
+    // const computeError = (field: string) => formik.touched[field] && formik.errors[field] ? 'validation:' + formik.errors[field] : '';
 
     useDeepEffect(() => {
         if (updateResponse.data) {
@@ -123,7 +123,7 @@ export const LocationForm: React.FC<LocationFormProps> = (props: LocationFormPro
 
     return (
         <Form onSubmit={formik.handleSubmit}>
-            <LocationInput
+            {/* <LocationInput
                 googleApiKey={getEnv().REACT_APP_GOOGLE_PLACES_API_KEY}
                 name={'location'}
                 initialValue={formik.values.locationLabel}
@@ -134,7 +134,7 @@ export const LocationForm: React.FC<LocationFormProps> = (props: LocationFormPro
                     computeError('location') &&
                     t(computeError('location'))
                 }
-            />
+            /> */}
             <LeafletMap
             width={'600px'}
             height={'300px'}

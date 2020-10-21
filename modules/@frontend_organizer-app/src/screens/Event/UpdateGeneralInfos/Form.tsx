@@ -41,7 +41,7 @@ export const GeneralInfosForm: React.FC<GeneralInfosFormProps> = (props: General
         initialValues: {
             name: props.initialValues.name,
             description:  props.initialValues.description,
-            tags:  props.initialValues.tags,
+            tags:  null,
         },
         validationSchema: textMetadataValidationSchema,
         onSubmit: (values) => {
@@ -123,7 +123,7 @@ export const GeneralInfosForm: React.FC<GeneralInfosFormProps> = (props: General
         setLastInitialValues({
             name: props.initialValues.name,
             description: props.initialValues.description,
-            tags: props.initialValues.tags
+            tags: null
         })
     }, [props.initialValues]);
 

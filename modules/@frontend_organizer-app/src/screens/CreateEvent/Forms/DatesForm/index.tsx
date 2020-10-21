@@ -1,196 +1,150 @@
-import React, { Dispatch, useEffect, useRef, useState }  from 'react';
+import { DateCreationPayload, EventCreationPayload } from '@common/global';
+import { useFormikContext } from 'formik';
+import React, { useState }  from 'react';
 import styled                                            from 'styled-components';
-import { datesConfigValidationSchema }                   from './validationSchema';
-import { EventsCreateDatesConfiguration }                from '@common/sdk/lib/@backend_nest/apps/worker/src/actionhandlers/events/Events.input.handlers';
-import { useDispatch, useSelector }                      from 'react-redux';
-import { OrganizerState }                                from '../../../../redux/ducks';
-import { useEventCreation }                              from '../../../../hooks/useEventCreation';
-import { EventCreationActions, EventCreationSteps }      from '../../../../core/event_creation/EventCreationCore';
-import { DateCard }                                      from './DateCard';
-import { UpdateDate }                                    from './UpdateDate';
-import { checkFormatDate }                               from '@frontend/core/lib/utils/date';
-import { SetActionData, SetCurrentAction, UpdateAction } from '../../../../redux/ducks/event_creation';
-import { CreateDate }                                    from './CreateDate';
-import { FormProps }                                     from '../../index';
-import { useDeepEffect }                                 from '@frontend/core/lib/hooks/useDeepEffect';
-import { CategoryItem }                                  from '../../../../components/CategoryForm';
+import { DateCard } from './DateCard';
+import { DateForm } from './DateForm';
+import { Scroll } from 'framer';
+import { ConfirmDeletion } from './ConfirmDeletion';
 
-const defaultValues: EventsCreateDatesConfiguration = {
-    dates: [],
-};
+import { useTranslation } from 'react-i18next';
+import './locales';
+import { Button } from '@frontend/flib-react/lib/components';
 
-export interface DateItem {
-    name: string;
-    eventBegin: Date;
-    eventEnd: Date;
+const initialDate: DateCreationPayload = {
+    name: '',
+    online: false,
+    eventBegin: null,
+    eventEnd: null,
     location: {
-        lon: number;
-        lat: number;
-        label: string;
+        label: '',
+        lat: null,
+        lon: null,
     }
 }
 
-const DatesForm: React.FC<FormProps> = ({ onComplete }) => {
-    const reference = useRef(null);
-    const [ editIdx, setEditIdx ]: [ number, Dispatch<number> ] = useState(null);
-    const [ lastActionIdx, setLastActionIdx ] = useState<number>(null);
-    const eventName: string = useSelector((state: OrganizerState) => state.eventCreation.textMetadata.name);
+export const DatesForm: React.FC = () => {
+    const [ t ] = useTranslation('dates_form');
 
-    const eventCreationFormik = useEventCreation<EventsCreateDatesConfiguration>(
-        EventCreationSteps.Dates,
-        EventCreationActions.DatesConfiguration,
-        datesConfigValidationSchema,
-        defaultValues,
-    );
+    const [ currentEditingDate, setCurrentEditingDate ] = useState<number>(-1);
+    const [ currentDeletingDate, setCurrentDeletingDate ] = useState<number>(-1);
+    const [ newDate, setNewDate ] = useState<boolean>(false);
 
-    const [ categories, sync ] =
-        useSelector((state: OrganizerState) => [
-            state.eventCreation.categoriesConfiguration,
-            state.eventCreation.sync,
-        ]);
-    const dispatch = useDispatch();
+    const formikCtx = useFormikContext<EventCreationPayload>();
 
-    const resetEdition = () => {
-        setEditIdx(null);
+    const addDate = () => {
+        const dateCount = formikCtx.values.datesConfiguration.length;
+        setCurrentEditingDate(dateCount);
+        setNewDate(true);
+        formikCtx.setFieldValue(`datesConfiguration[${dateCount}]`, {
+            ...initialDate,
+            name: formikCtx.values.textMetadata.name,
+        });
     };
-
-    const deleteDate = (deleteIdx: number) => {
-        eventCreationFormik.handleFocus('date delete');
-        const dates: DateItem[] = eventCreationFormik.values.dates
-            .filter((date: DateItem, idx: number) => deleteIdx !== idx);
-
-        resetEdition();
-        eventCreationFormik.update({dates});
-        setLastActionIdx(deleteIdx);
-    };
-
-    const updateDate = (comfirmedIdx: number ,updateDateItem: DateItem) => {
-        eventCreationFormik.handleFocus('dates confirm');
-        const dates: DateItem[] = eventCreationFormik.values.dates.map((dateItem: DateItem, idx) =>
-            comfirmedIdx === idx ? updateDateItem : dateItem
-        );
-
-        eventCreationFormik.update({dates});
-        resetEdition();
-    };
-
-    const createDate = (dateItem: DateItem) => {
-        eventCreationFormik.handleFocus('dates confirm');
-        const dates: DateItem[] = [
-            ...eventCreationFormik.values.dates,
-            {
-                ...dateItem,
-                name: eventName,
-            },
-        ];
-        eventCreationFormik.update({dates});
-    };
-
-    useEffect(() => {
-        if (sync && eventCreationFormik.values.dates.length !== categories.dates.length) {
-            const datesCategoriesDelta = eventCreationFormik.values.dates.length - categories.dates.length;
-            dispatch(SetCurrentAction(EventCreationActions.CategoriesConfiguration));
-            if (datesCategoriesDelta > 0) {
-                const emptyCategories = [];
-                for (let i = 0; i < datesCategoriesDelta; i++) {
-                    emptyCategories[i] = [];
-                }
-
-                dispatch(SetActionData(EventCreationActions.CategoriesConfiguration, {
-                    ...categories,
-                    dates: [
-                        ...categories.dates,
-                        ...emptyCategories,
-                    ],
-                }));
-                dispatch(UpdateAction());
-            } else {
-                const filteredCategories = categories.dates
-                    .filter((dateCategories: CategoryItem[], idx: number) => lastActionIdx !== idx);
-                dispatch(SetActionData(EventCreationActions.CategoriesConfiguration, {
-                    ...categories,
-                    dates: filteredCategories,
-                }));
-                dispatch(UpdateAction());
-            }
-        }
-        // eslint-disable-next-line
-    }, [lastActionIdx, sync]);
-
-    useDeepEffect(() => {
-        if (eventCreationFormik.isValid && eventCreationFormik.values !== eventCreationFormik.initialValues) {
-            onComplete(true);
-        } else {
-            onComplete(false);
-        }
-    }, [
-        eventCreationFormik.isValid,
-        eventCreationFormik.initialValues,
-        eventCreationFormik.values,
-    ]);
-
-    useEffect(() => {
-        window.scrollTo({ top: reference.current.offsetTop, left: 0, behavior: 'smooth' });
-    }, []);
 
     return (
-        <StyledForm ref={reference}>
-            <DatesContainer>
-                {
-                    eventCreationFormik.values.dates.map((date, idx) => (
-                        <DateCard
-                        key={'date-' + idx}
-                        name={`date ${idx + 1}`}
-                        beginDate={checkFormatDate(date.eventBegin)}
-                        endDate={checkFormatDate(date.eventEnd)}
-                        location={date.location.label}
-                        editable={editIdx === null}
-                        edit={editIdx === idx}
-                        setEdit={() => setEditIdx(idx)}>
-                            <UpdateDate
-                            initialValues={date}
-                            delete={() => deleteDate(idx)}
-                            cancel={() => resetEdition()}
-                            confirm={(dateItem: DateItem) => updateDate(idx, dateItem)}/>
-                        </DateCard>
-                    ))
-                }
-            </DatesContainer>
-            <CreateDate
-            forcedEdit={eventCreationFormik.values.dates.length === 0}
-            initialName={eventName}
-            initialLocation={
-                eventCreationFormik.values.dates.length > 0 ?
-                    eventCreationFormik.values.dates[eventCreationFormik.values.dates.length - 1].location :
-                    undefined
+        <StyledForm dateCount={formikCtx.values.datesConfiguration.length}>
+            {
+                formikCtx.values.datesConfiguration.length > 0 ?
+                <>
+                    <Delimiter/>
+                    <Scroll
+                    position={'static'}
+                    width={'100%'}
+                    wheelEnabled={true}
+                    style={{
+                        maxHeight: 'calc(100vh - 460px)'
+                    }}
+                    height={'auto'}>
+                        <CardsContainer>
+                            {
+                                formikCtx.values.datesConfiguration
+                                .filter((_, idx) => currentEditingDate !== idx)
+                                .map((_, idx) =>
+                                    <DateCard
+                                    key={`date-${idx}`}
+                                    idx={idx}
+                                    onEdition={() => setCurrentEditingDate(idx)}
+                                    triggerDelete={() => setCurrentDeletingDate(idx)}/>
+                                )
+                            }
+                        </CardsContainer>
+                    </Scroll>
+                    <Delimiter/>
+                </> :
+                null
             }
-            editable={editIdx === null}
-            onDateCreate={createDate}/>
+            {
+                currentEditingDate > -1 ?
+                <DisabledBg>
+                    <DateForm
+                    idx={currentEditingDate}
+                    newDate={newDate}
+                    onComplete={() => {
+                        setCurrentEditingDate(-1);
+                        setNewDate(false);
+                    }}/>
+                </DisabledBg> :
+                <AddDate>
+                    <Button
+                    title={t('add_new_date')}
+                    variant={'custom'}
+                    gradients={formikCtx.values.imagesMetadata.signatureColors}
+                    onClick={addDate} />
+                </AddDate>
+            }
+            {
+                currentDeletingDate > -1 ?
+                <ConfirmDeletion
+                idx={currentDeletingDate}
+                complete={() => {
+                    setCurrentDeletingDate(-1);
+                    setTimeout(() => formikCtx.validateForm(), 400);
+                }}/> :
+                null
+            }
       </StyledForm>
   );
 };
 
-const StyledForm = styled.div`
+const StyledForm = styled.div<{ dateCount: number }>`
     position: relative;
     display: flex;
     flex-direction: column;
     width: 100%;
-
-    & > div:nth-child(2) {
-        margin-top: ${props => props.theme.regularSpacing};
-    }
 `;
 
-const DatesContainer = styled.div`
-    width: 100%;
+const CardsContainer = styled.div`
+    padding-top: ${props => props.theme.regularSpacing};
 
     & > div {
-        margin-bottom: ${props => props.theme.regularSpacing};
-    }
-
-    & > div:last-child {
-        margin-bottom: 0;
+        margin-bottom: ${props => props.theme.biggerSpacing};
     }
 `;
 
-export default DatesForm;
+const Delimiter = styled.div`
+    position: relative;
+    left: -10px;
+    width: calc(100% + 20px);
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.1);
+    z-index: 1;
+`;
+
+const DisabledBg = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 200;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.6);
+`;
+
+const AddDate = styled.div`
+    width: 50%;
+    margin-top: ${props => props.theme.smallSpacing};
+`;

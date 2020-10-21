@@ -63,7 +63,7 @@ const formatDatePreview = (date: DateEntity): DatePreview => ({
     gradients: date.metadata.signature_colors,
     location: date.location.location_label,
     coord: date.location.location,
-    tags: date.metadata.tags.map(tag => ({ id: tag, label: tag })),
+    tags: null,
     resale: false,
     status: date.status,
 });

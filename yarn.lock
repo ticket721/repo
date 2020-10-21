@@ -15504,6 +15504,24 @@ framer-motion@2.6.9:
   optionalDependencies:
     "@emotion/is-prop-valid" "^0.8.2"
 
+framer-motion@2.9.1:
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-2.9.1.tgz#86713730e9503922eedcf5e1bb91a5acc30076f5"
+  integrity sha512-NjEF5u1FkCTS+zRsDWOPPCxWBUWk255WXy4d1FDCC3j6ETJzDXx0V/NUPvwhzyATHbahfX5JdsHWdRe1whNHJg==
+  dependencies:
+    framesync "^4.1.0"
+    hey-listen "^1.0.8"
+    popmotion "9.0.0-rc.20"
+    style-value-types "^3.1.9"
+    tslib "^1.10.0"
+  optionalDependencies:
+    "@emotion/is-prop-valid" "^0.8.2"
+
+framer@1.2.8:
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/framer/-/framer-1.2.8.tgz#e6ef3fce024f40b0ae140d8f8ca04353f51ae69e"
+  integrity sha512-vqUdAGTaH2W+8b+EdLFFg1ETLgYRpzBa7r0Ki/FkKm7xg7M5Dd9kXL7sVEjiBFnrSkNs2dhUmgORcwRphdALwA==
+
 framesync@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/framesync/-/framesync-4.1.0.tgz#69a8db3ca432dc70d6a76ba882684a1497ef068a"
@@ -21833,6 +21851,11 @@ moment-timezone@^0.5.31:
   dependencies:
     moment ">= 2.9.0"
 
+moment@2.29.1:
+  version "2.29.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
+  integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
+
 "moment@>= 2.9.0", moment@^2.24.0, moment@^2.25.3:
   version "2.26.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.26.0.tgz#5e1f82c6bafca6e83e808b30c8705eed0dcbd39a"
@@ -23850,6 +23873,16 @@ popmotion@9.0.0-rc.13:
     style-value-types "^3.1.9"
     tslib "^1.10.0"
 
+popmotion@9.0.0-rc.20:
+  version "9.0.0-rc.20"
+  resolved "https://registry.yarnpkg.com/popmotion/-/popmotion-9.0.0-rc.20.tgz#f3550042ae31957b5416793ae8723200951ad39d"
+  integrity sha512-f98sny03WuA+c8ckBjNNXotJD4G2utG/I3Q23NU69OEafrXtxxSukAaJBxzbtxwDvz3vtZK69pu9ojdkMoBNTg==
+  dependencies:
+    framesync "^4.1.0"
+    hey-listen "^1.0.8"
+    style-value-types "^3.1.9"
+    tslib "^1.10.0"
+
 popper.js@1.14.3:
   version "1.14.3"
   resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.14.3.tgz#1438f98d046acf7b4d78cd502bf418ac64d4f095"
@@ -25397,10 +25430,10 @@ react-countdown@2.2.1:
   dependencies:
     prop-types "^15.7.2"
 
-react-datepicker@2.16.0:
-  version "2.16.0"
-  resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-2.16.0.tgz#6bd68de94f5fb38c8f6a4370f3c612837c700e4e"
-  integrity sha512-TvcmSY27rn0JKvuJuIXNNS+niGQNdgtuG/CsBttVYhPOA9KmSw7c2PvQBPVEvzkyV+QPNJ8jN/KVJNj9uvopqA==
+react-datepicker@3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-3.3.0.tgz#38dec531fd7c8e0de6860a55dfbc3a8ff803d43c"
+  integrity sha512-QnIlBxDSWEGBi2X5P1BqWzvfnPFRKhtrsgAcujUVwyWeID/VatFaAOEjEjfD1bXR9FuSYVLlLR3j/vbG19hWOA==
   dependencies:
     classnames "^2.2.6"
     date-fns "^2.0.1"

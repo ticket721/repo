@@ -12,28 +12,36 @@ export interface SocialInputProps {
     color: IconColor;
     options?: any;
     pattern?: string;
-    onRemove: () => void;
 }
 
-export const SocialInput: React.FC<SocialInputProps> = ({ name, color, options, onRemove }: SocialInputProps) => {
+export const SocialInput: React.FC<SocialInputProps> = ({ name, color, options }: SocialInputProps) => {
     const [ t ] = useTranslation(['socials', 'errors']);
 
-    const [ field, meta, helper ] = useField<string>({ name: `textMetadata.${name}` });
+
+    const [ field, meta, helper ] = useField<string>(`textMetadata.${name}`);
 
     useEffect(() => {
-        if (field.value === undefined || field.value === null) {
-            helper.setValue('');
+        document.getElementsByClassName(name)[0].getElementsByTagName('input')[0].focus();
+
+        return () => {
+            helper.setError(null);
+            setTimeout(() => helper.setTouched(false), 200);
         }
-    }, [field.value]);
+    // eslint-disable-next-line
+    }, [name]);
 
     return (
         <SocialInputContainer>
             <TextInput
             {...field}
-            value={field.value === undefined ? '' : field.value}
+            className={name}
+            value={field.value}
             onChange={options ? (e) => helper.setValue(e.target.value.substring(options.prefix.length)) :
                 field.onChange
             }
+            onBlur={() => {
+                setTimeout(() => helper.setTouched(true), 200);
+            }}
             label={t(`${name}_label`)}
             placeholder={t(`${name}_placeholder`)}
             icon={name}
@@ -41,10 +49,7 @@ export const SocialInput: React.FC<SocialInputProps> = ({ name, color, options, 
             options={options}
             error={evaluateError(meta)}
             />
-            <Close onClick={() => {
-                helper.setValue(undefined);
-                onRemove();
-            }}>
+            <Close onClick={() => helper.setValue(undefined)}>
                 <Icon icon={'close'} size={'16px'} color={'#FFF'}/>
             </Close>
         </SocialInputContainer>

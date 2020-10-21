@@ -1,6 +1,6 @@
 import { ActionSetEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/actionsets/entities/ActionSet.entity';
-import { default as get }  from 'lodash.get';
-import { AcsetCore }       from '@frontend/core/lib/cores/acset/AcsetCore';
+import { default as get } from 'lodash.get';
+import { AcsetCore } from '@frontend/core/lib/cores/acset/AcsetCore';
 import '@frontend/core/lib/utils/window';
 
 export enum EventCreationActions {
@@ -23,31 +23,34 @@ export enum EventCreationSteps {
 }
 
 export abstract class EventCreationCore {
-
     /**
      * @return acset id
      * @param token
      */
-    public static getAcsetId = async (token: string): Promise<string | false> => {
+    public static getAcsetId = async (
+        token: string
+    ): Promise<string | false> => {
         const lastInProgressEventAcsetResp = await global.window.t721Sdk.actions.search(
             token,
             {
-                $sort: [{
-                    $field_name: 'updated_at',
-                    $order: 'desc'
-                }],
+                $sort: [
+                    {
+                        $field_name: 'updated_at',
+                        $order: 'desc',
+                    },
+                ],
                 $page_size: 1,
                 consumed: {
-                    $eq: false
+                    $eq: false,
                 },
                 name: {
-                    $eq: '@events/creation'
-                }
+                    $eq: '@events/creation',
+                },
             }
         );
 
-        return !lastInProgressEventAcsetResp.data.actionsets.length ?
-            false
+        return !lastInProgressEventAcsetResp.data.actionsets.length
+            ? false
             : lastInProgressEventAcsetResp.data.actionsets[0].id;
     };
 
@@ -56,7 +59,10 @@ export abstract class EventCreationCore {
      * @param token
      * @param initialArgs
      */
-    public static createEventAcset = async (token: string, initialArgs: any = {}): Promise<string> => {
+    public static createEventAcset = async (
+        token: string,
+        initialArgs: any = {}
+    ): Promise<string> => {
         const createEventAcsetResp = await AcsetCore.createAcset(
             token,
             'event_create',
@@ -79,10 +85,16 @@ export abstract class EventCreationCore {
         action: EventCreationActions,
         args: any
     ): Promise<ActionSetEntity> => {
-        const sdkMethod = get(global.window.t721Sdk?.events.create, action, undefined);
+        const sdkMethod = get(
+            global.window.t721Sdk?.events.create,
+            action,
+            undefined
+        );
 
         if (!sdkMethod) {
-            throw new Error(`Specified action ${action} does not correspond to any events T721 SDK method`);
+            throw new Error(
+                `Specified action ${action} does not correspond to any events T721 SDK method`
+            );
         }
 
         const updateEventAcsetResp = await sdkMethod(token, acsetId, args);
@@ -95,13 +107,19 @@ export abstract class EventCreationCore {
      * @param token
      * @param acsetId
      */
-    public static createEvent = async (token: string, acsetId: string): Promise<string> => {
+    public static createEvent = async (
+        token: string,
+        acsetId: string
+    ): Promise<string> => {
         try {
             if (!global.window.t721Sdk) {
                 throw Error('t721sdk_undefined');
             }
 
-            const createEventResp = await global.window.t721Sdk.events.create.create(token, { completedActionSet: acsetId });
+            const createEventResp = await global.window.t721Sdk.events.create.create(
+                token,
+                { completedActionSet: acsetId }
+            );
 
             return createEventResp.data.event.id;
         } catch (e) {
@@ -123,16 +141,23 @@ export abstract class EventCreationCore {
      * @param eventId
      * @param dates
      */
-    public static startEvent = async (token: string, eventId: string, dates?: string[]): Promise<string> => {
+    public static startEvent = async (
+        token: string,
+        eventId: string,
+        dates?: string[]
+    ): Promise<string> => {
         try {
             if (!global.window.t721Sdk) {
                 throw Error('t721sdk_undefined');
             }
 
-            const startEventResp = await global.window.t721Sdk.events.start(token, {
-                event: eventId,
-                dates
-            });
+            const startEventResp = await global.window.t721Sdk.events.start(
+                token,
+                {
+                    event: eventId,
+                    dates,
+                }
+            );
 
             return startEventResp.data.event.id;
         } catch (e) {
@@ -150,13 +175,21 @@ export abstract class EventCreationCore {
         }
     };
 
-    public static uploadImages = async (token: string, data: FormData, headers: any): Promise<string[]> => {
+    public static uploadImages = async (
+        token: string,
+        data: FormData,
+        headers: any
+    ): Promise<string[]> => {
         try {
             if (!global.window.t721Sdk) {
                 throw Error('t721sdk_undefined');
             }
 
-            const imageUploadResp = await global.window.t721Sdk.images.upload(token, data, headers);
+            const imageUploadResp = await global.window.t721Sdk.images.upload(
+                token,
+                data,
+                headers
+            );
 
             return imageUploadResp.data.urls;
         } catch (e) {
@@ -170,5 +203,5 @@ export abstract class EventCreationCore {
                 throw e;
             }
         }
-    }
+    };
 }
