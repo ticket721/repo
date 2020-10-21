@@ -515,6 +515,8 @@ describe('Controller Basics', function() {
                 group_id: 'dcba',
                 id: 'abcd',
                 name: 'lol',
+                custom_percent_fee: null,
+                custom_static_fee: null,
                 updated_at: undefined,
             };
 
@@ -626,6 +628,8 @@ describe('Controller Basics', function() {
                 group_id: 'dcba',
                 id: 'abcd',
                 name: 'lol',
+                custom_percent_fee: null,
+                custom_static_fee: null,
                 updated_at: undefined,
             };
 
@@ -746,6 +750,8 @@ describe('Controller Basics', function() {
                 group_id: 'dcba',
                 id: 'abcd',
                 name: 'lol',
+                custom_percent_fee: null,
+                custom_static_fee: null,
                 updated_at: undefined,
             };
 
