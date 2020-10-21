@@ -78,7 +78,7 @@ export const SyncedCartDateSection: React.FC<SyncedCartDateSectionProps> = (prop
                   .keys(sortedCategories)
                   .map((categoryId: string): JSX.Element =>
                     <TicketQty
-                      options={[...new Array(5)].map((u, i) => ({label: (i + 1).toString(), value: i + 1}))}
+                      options={[...new Array(5)].map((u, i) => ({label: (i + 1).toString(), value: (i + 1).toString()}))}
                       onCancel={() => {
                           dispatch(
                             SetTickets(completeCartRecomputingOnDateTicketChange(props.convertedCart, props.date, categoryId, 0))
@@ -86,11 +86,11 @@ export const SyncedCartDateSection: React.FC<SyncedCartDateSectionProps> = (prop
                       }}
                       onChange={(opt) => {
                           dispatch(
-                            SetTickets(completeCartRecomputingOnDateTicketChange(props.convertedCart, props.date, categoryId, opt.value))
+                            SetTickets(completeCartRecomputingOnDateTicketChange(props.convertedCart, props.date, categoryId, parseInt(opt[0].value, 10)))
                           )
                       }}
                       initialOption={{
-                          value: sortedCategories[categoryId].length,
+                          value: sortedCategories[categoryId].length.toString(),
                           label: sortedCategories[categoryId].length.toString()
                       }}
                       key={categoryId}

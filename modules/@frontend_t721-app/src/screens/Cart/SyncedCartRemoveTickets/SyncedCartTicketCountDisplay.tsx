@@ -49,20 +49,20 @@ export const SyncedCartTicketCountDisplay: React.FC<SyncedCartTicketCountDisplay
 
     const options = [...(new Array(5))].map((v, idx: number) => ({
         label: (idx + 1).toString(),
-        value: (idx + 1),
+        value: (idx + 1).toString(),
     }));
 
     return <CategoryQty
         selectedOption={{
             label: props.amount.toString(),
-            value: props.amount,
+            value: props.amount.toString(),
         }}
         categoryName={props.ticket.display_name}
         image={imageUrl}
         price={`${getT721TokenPrice(props.ticket.prices)} €`}
         date={formatShort(new Date(dateEntity.timestamps.event_begin))}
         options={options}
-        onChange={(option) => props.onChange(option.value)}
+        onChange={(option) => props.onChange(parseInt(option[0].value, 10))}
         onCancel={() => props.onChange(0)}
     />;
 };

@@ -186,7 +186,7 @@ export const SyncedCartGlobalSection: React.FC<SyncedCartGlobalSectionProps> = (
                     .keys(sortedCategories)
                     .map((categoryId: string): JSX.Element => <TicketQty
                             key={categoryId}
-                            options={[...new Array(5)].map((u, i) => ({label: (i + 1).toString(), value: i + 1}))}
+                            options={[...new Array(5)].map((u, i) => ({label: (i + 1).toString(), value: (i + 1).toString()}))}
                             onCancel={() => {
                                 dispatch(
                                     SetTickets(completeCartRecomputingOnGlobalTicketChange(props.convertedCart, props.group, categoryId, 0))
@@ -194,11 +194,11 @@ export const SyncedCartGlobalSection: React.FC<SyncedCartGlobalSectionProps> = (
                             }}
                             onChange={(opt) => {
                                 dispatch(
-                                    SetTickets(completeCartRecomputingOnGlobalTicketChange(props.convertedCart, props.group, categoryId, opt.value))
+                                    SetTickets(completeCartRecomputingOnGlobalTicketChange(props.convertedCart, props.group, categoryId, parseInt(opt[0].value, 10)))
                                 )
                             }}
                             initialOption={{
-                                value: sortedCategories[categoryId].length,
+                                value: sortedCategories[categoryId].length.toString(),
                                 label: sortedCategories[categoryId].length.toString()
                             }}
                             fees={`+ ${t('service_fees')}`}
