@@ -8,7 +8,9 @@ import { EventEntity } from '@lib/common/events/entities/Event.entity';
 /**
  * Data model for the event search query
  */
-export class EventsSearchInputDto implements SearchInputType<Omit<EventEntity, 'stripe_interface' | 'avatar'>> {
+export class EventsSearchInputDto
+    implements
+        SearchInputType<Omit<EventEntity, 'stripe_interface' | 'avatar' | 'custom_static_fee' | 'custom_percent_fee'>> {
     /**
      * Searchable field to search by id
      */

@@ -98,6 +98,9 @@ import {
     paymentStripeCreateConnectAccount, paymentStripePayout, paymentStripeTransactions,
 } from './app/api/payment';
 
+// PURCHASES
+import { purchasesCheckout, purchasesClose, purchasesFetch, purchasesSetProducts } from './app/api/purchases';
+
 export { FailedRegisterReport } from './app/api/authentication';
 
 interface HTTPHeader {
@@ -211,6 +214,11 @@ export class T721SDK {
         this.payment.stripe.transactions = this.payment.stripe.transactions.bind(
             this,
         );
+
+        this.purchases.fetch = this.purchases.fetch.bind(this);
+        this.purchases.setProducts = this.purchases.setProducts.bind(this);
+        this.purchases.checkout = this.purchases.checkout.bind(this);
+        this.purchases.close = this.purchases.close.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -334,7 +342,7 @@ export class T721SDK {
         count: datesCount,
         addCategory: datesAddCategory,
         edit: datesEdit,
-        delete: datesDelete
+        delete: datesDelete,
     };
 
     public events = {
@@ -360,7 +368,7 @@ export class T721SDK {
         addDateLink: categoriesAddDateLink,
         removeDateLink: categoriesRemoveDateLink,
         edit: categoriesEdit,
-        delete: categoriesDelete
+        delete: categoriesDelete,
     };
 
     public images = {
@@ -411,5 +419,12 @@ export class T721SDK {
             payout: paymentStripePayout,
             transactions: paymentStripeTransactions,
         },
+    };
+
+    public purchases = {
+        fetch: purchasesFetch,
+        setProducts: purchasesSetProducts,
+        checkout: purchasesCheckout,
+        close: purchasesClose,
     };
 }

@@ -6,17 +6,33 @@ import {
     UpdateDateColumn,
 } from '@iaminfinity/express-cassandra';
 import { ECAAG } from '@lib/common/utils/ECAAG.helper';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export interface Product {
+export class Product {
+    @ApiProperty()
+    @IsString()
     type: string;
+
+    @ApiProperty()
+    @IsString()
     id: string;
+
+    @ApiProperty()
+    @IsNumber()
     quantity: number;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    // tslint:disable-next-line:variable-name
+    group_id: string;
 }
 
 export interface Payment {
-    type: string;
+    type: 'stripe' | 'none';
     id: string;
-    status: string;
+    status: 'waiting' | 'confirmed' | 'rejected';
 }
 
 export interface Fee {
@@ -24,9 +40,6 @@ export interface Fee {
     price: number;
 }
 
-/**
- * EventSet Entity
- */
 @Entity<PurchaseEntity>({
     table_name: 'purchase',
     key: ['id'],

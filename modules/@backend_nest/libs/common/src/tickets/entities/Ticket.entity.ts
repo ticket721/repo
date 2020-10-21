@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, UpdateDateColumn } from '@iaminfinity/express-cassandra';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    GeneratedUUidColumn,
+    UpdateDateColumn,
+} from '@iaminfinity/express-cassandra';
 
 /**
  * Ticket Entity
@@ -29,11 +35,9 @@ export class TicketEntity {
     }
 
     /**
-     * Unique id
+     * Unique Category ID
      */
-    @Column({
-        type: 'uuid',
-    })
+    @GeneratedUUidColumn()
     id: string;
 
     /**

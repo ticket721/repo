@@ -31,6 +31,7 @@ import { EventsService } from '@lib/common/events/Events.service';
 import { RightsService } from '@lib/common/rights/Rights.service';
 import { UsersService } from '@lib/common/users/Users.service';
 import { toAcceptedAddressFormat } from '@common/global';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
 
 /**
  * Controller Handling Tickets
@@ -70,7 +71,12 @@ export class TicketsController extends ControllerBasics<TicketEntity> {
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async search(@Body() body: TicketsSearchInputDto, @User() user: UserDto): Promise<TicketsSearchResponseDto> {
-        const tickets = await this._search(this.ticketsService, body);
+        const tickets = await this._search(this.ticketsService, {
+            ...body,
+            owner: {
+                $eq: user.id,
+            },
+        } as SearchInputType<TicketEntity>);
 
         return {
             tickets,
@@ -90,7 +96,12 @@ export class TicketsController extends ControllerBasics<TicketEntity> {
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async count(@Body() body: TicketsCountInputDto, @User() user: UserDto): Promise<TicketsCountResponseDto> {
-        const tickets = await this._count(this.ticketsService, body);
+        const tickets = await this._count(this.ticketsService, {
+            ...body,
+            owner: {
+                $eq: user.id,
+            },
+        } as SearchInputType<TicketEntity>);
 
         return {
             tickets,

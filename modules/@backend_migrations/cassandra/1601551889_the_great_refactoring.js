@@ -10,7 +10,8 @@ var migration1601551889 = {
             query: `CREATE TYPE IF NOT EXISTS ticket721.product (
             type text,
             id text,
-            quantity int
+            quantity int,
+            group_id text
           );`,
             params: []
         };
@@ -84,6 +85,8 @@ var migration1601551889 = {
                         controller text,
                         dates list<uuid>,
                         stripe_interface uuid,
+                        custom_static_fee int,
+                        custom_percent_fee double,
                         created_at timestamp,
                         updated_at timestamp
                     );`,
@@ -199,13 +202,40 @@ var migration1601551889 = {
             params: []
         };
 
+        //
+        //
+        //
+
+        const operation_create_table = {
+            query: `CREATE TABLE IF NOT EXISTS ticket721.operation (
+                        id TIMEUUID PRIMARY KEY,
+                        group_id text,
+                        purchase_id uuid,
+                        client_id uuid,
+                        category_id uuid,
+                        ticket_ids list<uuid>,
+                        type text,
+                        status text,
+                        quantity int,
+                        fee int,
+                        price int,
+                        created_at timestamp,
+                        updated_at timestamp
+                    );`,
+            params: []
+        };
+
+        //
+        //
+        //
+
         try {
             console.log('Product Type Creation');
             await db.execute(product_type_creation.query, product_type_creation.params, { prepare: true });
 
             console.log('Payment Type Creation');
             await db.execute(payment_type_creation.query, payment_type_creation.params, { prepare: true });
-            
+
             console.log('Fee Type Creation');
             await db.execute(fee_type_creation.query, fee_type_creation.params, { prepare: true });
 
@@ -257,6 +287,12 @@ var migration1601551889 = {
 
             console.log('Ticket recreate table');
             await db.execute(ticket_table_recreation.query, ticket_table_recreation.params, { prepare: true });
+
+
+
+
+            console.log('Operation create table');
+            await db.execute(operation_create_table.query, operation_create_table.params, { prepare: true });
         } catch (e) {
             handler(e, false);
         }
@@ -322,7 +358,7 @@ var migration1601551889 = {
                     );`,
             params: []
         };
-        
+
         //
         //
         //
@@ -431,7 +467,27 @@ var migration1601551889 = {
             params: []
         };
 
+        //
+        //
+        //
+
+        const operation_create_table = {
+            query: `DROP TABLE ticket721.operation;`,
+            params: []
+        };
+
+        //
+        //
+        //
+
+
         try {
+            console.log('Operation create table');
+            await db.execute(operation_create_table.query, operation_create_table.params, { prepare: true });
+
+
+
+
             console.log('Ticket drop table');
             await db.execute(ticket_drop_table.query, ticket_drop_table.params, { prepare: true });
 
@@ -486,7 +542,7 @@ var migration1601551889 = {
 
             console.log('Fee Type Creation');
             await db.execute(fee_type_creation.query, fee_type_creation.params, { prepare: true });
-            
+
             console.log('Purchase Table Creation');
             await db.execute(purchase_table_creation.query, purchase_table_creation.params, { prepare: true });
 

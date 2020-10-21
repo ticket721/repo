@@ -8,7 +8,7 @@ import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
 /**
  * Search Query Paramaters to fetch Tickets
  */
-export class TicketsSearchInputDto implements SearchInputType<TicketEntity> {
+export class TicketsSearchInputDto implements SearchInputType<Omit<TicketEntity, 'owner'>> {
     /**
      * Searchable field to search by id
      */
@@ -24,14 +24,6 @@ export class TicketsSearchInputDto implements SearchInputType<TicketEntity> {
     @IsOptional()
     // tslint:disable-next-line:variable-name
     receipt: SearchableField<string>;
-
-    /**
-     * Searchable field to search by owner
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    owner: SearchableField<string>;
 
     /**
      * Searchable field to search by category

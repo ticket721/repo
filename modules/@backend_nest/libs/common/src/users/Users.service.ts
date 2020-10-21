@@ -32,7 +32,7 @@ export class UsersService {
      *
      * @param user
      */
-    async update(user: Partial<UserDto>): Promise<ServiceResponse<UserDto>> {
+    async update(user: Partial<UserEntity>): Promise<ServiceResponse<UserDto>> {
         try {
             const { id, ...complete_user } = user;
 
@@ -60,7 +60,6 @@ export class UsersService {
      * @param user
      */
     async create(user: CreateUserServiceInputDto): Promise<ServiceResponse<UserDto>> {
-        console.log(user);
         try {
             const createdUser = await this.usersRepository
                 .save(
@@ -90,9 +89,9 @@ export class UsersService {
      *
      * @param id
      */
-    async findById(id: string): Promise<ServiceResponse<UserDto>> {
+    async findById(id: string): Promise<ServiceResponse<UserEntity>> {
         try {
-            const user: UserDto = await this.usersRepository.findOne({ id: uuid(id) as any }).toPromise();
+            const user: UserEntity = await this.usersRepository.findOne({ id: uuid(id) as any }).toPromise();
             return {
                 response: user || null,
                 error: null,
