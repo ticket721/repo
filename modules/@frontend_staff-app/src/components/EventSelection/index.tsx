@@ -42,7 +42,8 @@ export const EventSelection: React.FC<EventSelectionProps> = ({ events, dates, h
     const dispatch = useDispatch();
     const [ currentDateId, currentDateName ] = useSelector((state: StaffAppState) =>
         [state.currentEvent.dateId, state.currentEvent.dateName]);
-    const [ selectOptions, setSelectOptions ] = useState<SelectOption[]>([]);
+
+    const [ groupedOptions, setGroupedOptions ] = useState<SelectOption[]>([]);
     const [ defaultOpt, setDefaultOpt ] = useState<Option | string>(null);
 
     useDeepEffect(() => {
@@ -68,12 +69,12 @@ export const EventSelection: React.FC<EventSelectionProps> = ({ events, dates, h
 
     useDeepEffect(() => {
         const dateOpts = formatOptions(events, dates);
-        setSelectOptions(dateOpts);
+        setGroupedOptions(dateOpts);
     }, [events, dates]);
 
     return <DropdownWrapper hideCalendar={hideCalendar}>
         {
-            selectOptions.length > 0 ?
+            groupedOptions.length > 0 ?
                 <>
                     {
                         !hideCalendar ?
@@ -84,8 +85,17 @@ export const EventSelection: React.FC<EventSelectionProps> = ({ events, dates, h
                         defaultValue={typeof defaultOpt !== 'string' && defaultOpt}
                         grouped={true}
                         searchable={false}
-                        options={selectOptions}
-                        onChange={(option) => {
+                        options={groupedOptions.map((groupedOpt) => ({
+                            label: groupedOpt.label,
+                            options: groupedOpt.options.map((opt, idx) => ({
+                                label: opt.label,
+                                value: idx.toString(),
+                            }))
+                        }))}
+                        onChange={(opt) => {
+                            console.log(opt);
+                            const flatOptions = groupedOptions.flatMap(groupedOpt => groupedOpt.options);
+                            const option = flatOptions[parseInt(opt[0].value, 10)];
                             dispatch(SetEventId(option.eventId));
                             dispatch(SetDate(option.dateId, option.dateName));
                         }}/>

@@ -80,12 +80,17 @@ export interface SelectOption {
     value: string;
 }
 
+export interface GroupedSelectOption {
+    label: string;
+    options: SelectOption[];
+}
+
 export interface SelectProps {
     defaultValue?: SelectOption;
     error?: string;
     label?: string;
     disabled?: boolean;
-    options: Array<SelectOption>;
+    options: Array<SelectOption | GroupedSelectOption>;
     allOpt?: SelectOption;
     placeholder?: string;
     searchable?: boolean;
@@ -194,10 +199,11 @@ export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectP
                     if (props.multiple) {
                         if (
                             options &&
+                            !Object.keys(props.options[0]).includes('options') &&
                             (options as SelectOption[]).findIndex((option) => option.value === props.allOpt?.value) !==
                                 -1
                         ) {
-                            props.onChange(props.options);
+                            props.onChange(props.options as SelectOption[]);
                         } else {
                             props.onChange(options as SelectOption[]);
                         }
