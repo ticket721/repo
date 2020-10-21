@@ -3,9 +3,9 @@ import * as React from 'react';
 import Cleave from 'cleave.js/react';
 import styled from '../../../config/styled';
 import { ChangeEvent } from 'react';
-import Icon from '../../icon';
+import Icon, { IconColor } from '../../icon';
 
-export interface InputProps extends React.ComponentProps<any> {
+export interface TextInputProps extends React.ComponentProps<any> {
     error?: string;
     label: string;
     name: string;
@@ -17,12 +17,15 @@ export interface InputProps extends React.ComponentProps<any> {
     onBlur?: (eventOrPath: string | ChangeEvent<any>) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
     placeholder?: string;
     options?: any;
+    defaultValue?: string | number;
     value?: string | number;
     className?: string;
     type?: string | undefined;
     icon?: string;
+    iconColor?: IconColor;
     minimum?: number;
     autoComplete?: string;
+    pattern?: string;
     inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
 }
 
@@ -55,7 +58,7 @@ const StyledLabel = styled.label`
     }
 `;
 
-const StyledInputContainer = styled.div<InputProps>`
+const StyledInputContainer = styled.div<TextInputProps>`
     position: relative;
     background-color: ${(props) => props.theme.componentColor};
     border-radius: ${(props) => props.theme.defaultRadius};
@@ -112,26 +115,28 @@ const StyledInputContainer = styled.div<InputProps>`
     }
 `;
 
-export const TextInput: React.FunctionComponent<InputProps & { className?: string }> = (
-    props: InputProps,
+export const TextInput: React.FunctionComponent<TextInputProps & { className?: string }> = (
+    props: TextInputProps,
 ): JSX.Element => {
     return (
         <StyledInputContainer error={props.error} className={props.className}>
             <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
             <div className={'sub-container'}>
-                {props.icon ? <Icon icon={props.icon} size={'16px'} /> : null}
+                {props.icon ? <Icon icon={props.icon} size={'16px'} color={props.iconColor} /> : null}
                 {props.options ? (
                     <Cleave
                         options={props.options}
                         id={props.name}
                         name={props.name}
                         placeholder={props.placeholder}
-                        defaultValue={props.value}
+                        defaultValue={props.defaultValue}
+                        value={props.value}
                         onChange={props.onChange}
                         onFocus={props.onFocus}
                         onBlur={props.onBlur}
                         type={props.type || 'text'}
                         autoComplete={props.autoComplete || 'off'}
+                        pattern={props.pattern}
                         inputMode={props.inputMode}
                     />
                 ) : (
@@ -143,11 +148,13 @@ export const TextInput: React.FunctionComponent<InputProps & { className?: strin
                         placeholder={props.placeholder}
                         onFocus={props.onFocus}
                         onKeyDown={props.onKeyDown}
+                        defaultValue={props.defaultValue}
                         value={props.value}
                         step={'.01'}
                         type={props.type || 'text'}
                         onChange={props.onChange}
                         onBlur={props.onBlur}
+                        pattern={props.pattern}
                         inputMode={props.inputMode}
                     />
                 )}

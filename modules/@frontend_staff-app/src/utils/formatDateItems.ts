@@ -3,7 +3,7 @@ import { DateItem }    from '../components/EventSelection';
 
 export const formatDateItems = (dates: DateEntity[]): DateItem[] =>
     dates.map(date => ({
-        eventId: date.parent_id,
+        eventId: '',
         dateId: date.id,
         dateName: date.metadata.name,
         timestamps: {

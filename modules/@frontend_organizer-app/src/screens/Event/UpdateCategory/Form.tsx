@@ -2,7 +2,7 @@ import React, { useEffect, useState }        from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useLazyRequest }           from '@frontend/core/lib/hooks/useLazyRequest';
-import { MergedAppState }           from '../../../index';
+import { AppState } from '@frontend/core/lib/redux';
 import { useDeepEffect }            from '@frontend/core/lib/hooks/useDeepEffect';
 import { PushNotification }         from '@frontend/core/lib/redux/ducks/notifications';
 import { CategoryEntity }             from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
@@ -19,12 +19,12 @@ interface UpdateCategoryFormProps {
 }
 
 export const UpdateCategoryForm: React.FC<UpdateCategoryFormProps> = (props: UpdateCategoryFormProps) => {
-    const [ lastInitialValues, setLastInitialValues ] = useState<CategoryItem>(null);
+    const [ lastInitialValues, ] = useState<CategoryItem>(null);
     const [ loadingState, setLoadingState ] = useState<boolean>(false);
     const dispatch = useDispatch();
 
     const [ deletionOpened, setDeletionOpened ] = useState<boolean>(false);
-    const token = useSelector((state: MergedAppState): string => state.auth.token.value);
+    const token = useSelector((state: AppState): string => state.auth.token.value);
     const { lazyRequest: updateCategory, response: updateResponse } = useLazyRequest('categories.update', props.uuid);
 
     const update = (values: CategoryItem) => {
@@ -60,18 +60,18 @@ export const UpdateCategoryForm: React.FC<UpdateCategoryFormProps> = (props: Upd
         }
     }, [updateResponse.error, dispatch]);
 
-    useEffect(() => {
-        setLastInitialValues({
-            name: props.initialValues.display_name,
-            currencies: props.initialValues.prices.map((priceItem) => ({
-                currency: priceItem.currency,
-                price: priceItem.value,
-            })),
-            seats: props.initialValues.seats,
-            saleBegin: props.initialValues.sale_begin,
-            saleEnd: props.initialValues.sale_end,
-        })
-    }, [props.initialValues]);
+    // useEffect(() => {
+    //     setLastInitialValues({
+    //         name: props.initialValues.display_name,
+    //         currencies: props.initialValues.price.map((priceItem) => ({
+    //             currency: priceItem.currency,
+    //             price: priceItem.value,
+    //         })),
+    //         seats: props.initialValues.seats,
+    //         saleBegin: props.initialValues.sale_begin,
+    //         saleEnd: props.initialValues.sale_end,
+    //     })
+    // }, [props.initialValues]);
 
     return (
         <>

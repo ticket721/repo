@@ -20,7 +20,6 @@ import TagsListCard                    from '@frontend/flib-react/lib/components
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
-import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { DateEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import {
     checkFormatDate,
@@ -29,8 +28,8 @@ import {
 }                                      from '@frontend/core/lib/utils/date';
 import { getImgPath }                  from '@frontend/core/lib/utils/images';
 
-import { MergedAppState } from '../../../index';
-import { getPriceRange }  from '../../../utils/functions';
+import { AppState } from '@frontend/core/lib/redux';
+// import { getPriceRange }  from '../../../utils/functions';
 
 import './locales';
 
@@ -63,7 +62,7 @@ const formatDatePreview = (date: DateEntity): DatePreview => ({
     gradients: date.metadata.signature_colors,
     location: date.location.location_label,
     coord: date.location.location,
-    tags: date.metadata.tags.map(tag => ({ id: tag, label: tag })),
+    tags: null,
     resale: false,
     status: date.status,
 });
@@ -73,9 +72,9 @@ const Preview: React.FC = () => {
     const { dateId } = useParams();
     const history = useHistory();
     const [uuid] = useState(v4() + '@event-preview');
-    const token = useSelector((state: MergedAppState) => state.auth.token.value);
+    const token = useSelector((state: AppState) => state.auth.token.value);
     const [ datePreview, setDatePreview ] = useState<DatePreview>(null);
-    const [ priceRange, setPriceRange ] = useState<number[]>([]);
+    const [ priceRange, ] = useState<number[]>([]);
     const [ hideBanner, setHideBanner ] = useState<boolean>(false);
 
     const { response: dateResp } = useRequest<DatesSearchResponseDto>(
@@ -94,22 +93,22 @@ const Preview: React.FC = () => {
         uuid
     );
 
-    const { response: categoryResp } = useRequest<CategoriesSearchResponseDto>(
-        {
-            method: 'categories.search',
-            args: [
-                token,
-                {
-                    parent_id: {
-                        $eq: dateId,
-                    },
-                    $page_size: 1,
-                },
-            ],
-            refreshRate: 1,
-        },
-        uuid
-    );
+    // const { response: categoryResp } = useRequest<CategoriesSearchResponseDto>(
+    //     {
+    //         method: 'categories.search',
+    //         args: [
+    //             token,
+    //             {
+    //                 parent_id: {
+    //                     $eq: dateId,
+    //                 },
+    //                 $page_size: 1,
+    //             },
+    //         ],
+    //         refreshRate: 1,
+    //     },
+    //     uuid
+    // );
 
     useDeepEffect(() => {
         if (dateResp.data) {
@@ -123,11 +122,11 @@ const Preview: React.FC = () => {
         }
     }, [dateResp.data]);
 
-    useDeepEffect(() => {
-        if (categoryResp.data?.categories?.length > 0) {
-            setPriceRange(getPriceRange(categoryResp.data.categories));
-        }
-    }, [categoryResp.data]);
+    // useDeepEffect(() => {
+    //     if (categoryResp.data?.categories?.length > 0) {
+    //         setPriceRange(getPriceRange(categoryResp.data.categories));
+    //     }
+    // }, [categoryResp.data]);
 
     return (
         <>

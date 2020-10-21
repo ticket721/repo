@@ -232,7 +232,7 @@ export const StripeSetupCreateExternalAccountManager: React.FC<StripeSetupManage
                                     label={t('country_label')}
                                     options={CountriesOptions}
                                     placeholder={t('country_placeholder')}
-                                    onChange={(opt) => setCountry(opt.value)}
+                                    onChange={(opt) => setCountry(opt[0].value)}
                                 />
                             </InputContainer>
                             <InputContainer>
@@ -240,7 +240,7 @@ export const StripeSetupCreateExternalAccountManager: React.FC<StripeSetupManage
                                     label={t('currency_label')}
                                     options={CurrenciesOptions}
                                     placeholder={t('currency_placeholder')}
-                                    onChange={(opt) => setCurrency(opt.value)}
+                                    onChange={(opt) => setCurrency(opt[0].value)}
                                 />
                             </InputContainer>
                             <InputContainer>

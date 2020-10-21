@@ -84,8 +84,8 @@ export const Styles: React.FC<StylesProps> = ({ formik }) => {
             />
             <ColorPickers
                 srcImage={preview}
-                colors={formik.values.signature_colors}
-                onColorsChange={(colors) => formik.setFieldValue('signature_colors', colors)}/>
+                value={formik.values.signature_colors}
+                onChange={(colors) => formik.setFieldValue('signature_colors', colors)}/>
         </>
     )
 };

@@ -34,4 +34,5 @@ html {
     background: -ms-linear-gradient(91.44deg,#0a0812 0.31%,#120f1a 99.41%);
     background: -o-linear-gradient(91.44deg,#0a0812 0.31%,#120f1a 99.41%);
     background: linear-gradient(91.44deg,#0a0812 0.31%,#120f1a 99.41%);
+    scroll-behavior: smooth;
 }

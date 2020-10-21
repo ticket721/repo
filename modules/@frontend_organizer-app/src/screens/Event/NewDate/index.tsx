@@ -11,9 +11,6 @@ import { AppState } from '@frontend/core/src/redux/ducks';
 import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
-import {
-    DatesCreateResponseDto
-} from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesCreateResponse.dto';
 import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 import { useRequest } from '@frontend/core/lib/hooks/useRequest';
 
@@ -48,8 +45,8 @@ const NewDate = (): JSX.Element => {
         },
         uuidEvent
     );
-    const { lazyRequest: createDate, response: createResponse } = useLazyRequest<DatesCreateResponseDto>('dates.create', uuid);
-    const { lazyRequest: addDate, response: addResponse } = useLazyRequest<DatesCreateResponseDto>('events.addDates', uuid);
+    const { lazyRequest: createDate, response: createResponse } = useLazyRequest('dates.create', uuid);
+    const { response: addResponse } = useLazyRequest('events.addDates', uuid);
 
     const formik = useFormik({
         initialValues: {
@@ -95,11 +92,11 @@ const NewDate = (): JSX.Element => {
         }
     }, [createResponse.error]);
 
-    useDeepEffect(() => {
-        if (createResponse.data) {
-            addDate([token, eventId, { dates: [createResponse.data.date.id]}])
-        }
-    }, [createResponse.data]);
+    // useDeepEffect(() => {
+    //     if (createResponse.data) {
+    //         addDate([token, eventId, { dates: [createResponse.data.date.id]}])
+    //     }
+    // }, [createResponse.data]);
 
     useDeepEffect(() => {
         if (addResponse.error) {
@@ -107,12 +104,12 @@ const NewDate = (): JSX.Element => {
         }
     }, [addResponse.error]);
 
-    useDeepEffect(() => {
-        if (addResponse.data) {
-            dispatch(PushNotification(t('success'), 'success'));
-            history.push(`/group/${groupId}/date/${createResponse.data.date.id}`);
-        }
-    }, [addResponse.data]);
+    // useDeepEffect(() => {
+    //     if (addResponse.data) {
+    //         dispatch(PushNotification(t('success'), 'success'));
+    //         history.push(`/group/${groupId}/date/${createResponse.data.date.id}`);
+    //     }
+    // }, [addResponse.data]);
 
     useDeepEffect(() => {
         if (!eventsResp.loading && eventsResp.data && eventsResp.data.events.length === 0) {

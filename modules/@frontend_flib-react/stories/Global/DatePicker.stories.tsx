@@ -10,11 +10,11 @@ export default {
 };
 
 interface StoreObject {
-    selectedDate: Date | undefined;
+    selectedDate: Date;
 }
 
 const storeObject: StoreObject = {
-    selectedDate: undefined,
+    selectedDate: new Date(),
 };
 
 const store = new Store(storeObject);
@@ -47,7 +47,7 @@ export const singleDate = () => (
                 onChange={onChange}
                 onChangeRaw={onChangeRaw}
                 placeholderText={text('Placeholder', 'Pick a date')}
-                selected={state.selectedDate}
+                value={state.selectedDate}
                 name={'DatePickerName'}
             />,
         ]}

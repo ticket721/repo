@@ -167,7 +167,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
                     dateFormat={'iii, MMM do, yyyy'}
                     minDate={new Date()}
                     maxDate={props.maxDate}
-                    selected={formik.values.saleBegin}
+                    value={formik.values.saleBegin}
                     locale={i18n.language}
                     onChange={(date: Date) => onSaleDateChange('saleBegin', date)}
                     error={
@@ -201,7 +201,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = (props: CategoryFormPro
                     dateFormat={'iii, MMM do, yyyy'}
                     minDate={formik.values.saleBegin}
                     maxDate={props.maxDate}
-                    selected={formik.values.saleEnd}
+                    value={formik.values.saleEnd}
                     locale={i18n.language}
                     onChange={(date: Date) => onSaleDateChange('saleEnd', date)}
                     error={

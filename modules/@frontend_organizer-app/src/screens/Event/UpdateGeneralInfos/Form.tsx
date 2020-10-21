@@ -9,7 +9,7 @@ import './locales';
 import { useFormik }                from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLazyRequest }           from '@frontend/core/lib/hooks/useLazyRequest';
-import { MergedAppState }           from '../../../index';
+import { AppState } from '@frontend/core/lib/redux';
 import { DateMetadata }             from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { useDeepEffect }            from '@frontend/core/lib/hooks/useDeepEffect';
 import { PushNotification }         from '@frontend/core/lib/redux/ducks/notifications';
@@ -34,14 +34,14 @@ export const GeneralInfosForm: React.FC<GeneralInfosFormProps> = (props: General
     const [ inputTag, setInputTag ] = useState('');
     const [ t ] = useTranslation(['update_general_infos', 'validation']);
 
-    const token = useSelector((state: MergedAppState): string => state.auth.token.value);
+    const token = useSelector((state: AppState): string => state.auth.token.value);
     const { lazyRequest: updateGeneralInfos, response: updateResponse } = useLazyRequest('dates.update', props.uuid);
 
     const formik = useFormik<GeneralInfos>({
         initialValues: {
             name: props.initialValues.name,
             description:  props.initialValues.description,
-            tags:  props.initialValues.tags,
+            tags:  null,
         },
         validationSchema: textMetadataValidationSchema,
         onSubmit: (values) => {
@@ -123,7 +123,7 @@ export const GeneralInfosForm: React.FC<GeneralInfosFormProps> = (props: General
         setLastInitialValues({
             name: props.initialValues.name,
             description: props.initialValues.description,
-            tags: props.initialValues.tags
+            tags: null
         })
     }, [props.initialValues]);
 

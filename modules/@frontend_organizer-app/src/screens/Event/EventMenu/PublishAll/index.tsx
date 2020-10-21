@@ -7,25 +7,24 @@ import { Button }  from '@frontend/flib-react/lib/components';
 import { useTranslation }           from 'react-i18next';
 import './locales';
 import { useDispatch, useSelector } from 'react-redux';
-import { MergedAppState }           from '../../../../index';
+import { AppState } from '@frontend/core/lib/redux';
 import { useDeepEffect }            from '@frontend/core/lib/hooks/useDeepEffect';
 import { useRequest }               from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { v4 }                       from 'uuid';
 import { PushNotification }         from '@frontend/core/lib/redux/ducks/notifications';
 import { useLazyRequest }           from '@frontend/core/lib/hooks/useLazyRequest';
-import { EventsStartResponseDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsStartResponse.dto';
 
 export const PublishAll: React.FC = () => {
     const [ t ] = useTranslation('publish_all');
     const dispatch = useDispatch();
-    const token = useSelector((state: MergedAppState): string => state.auth.token.value);
+    const token = useSelector((state: AppState): string => state.auth.token.value);
     const [uuid] = useState<string>(v4() + '@publish-all');
     const { groupId } = useParams();
 
     const [ publishLoading, setPublishLoading ] = useState<boolean>(false);
 
-    const { lazyRequest: publishEvent, response: publishResp } = useLazyRequest<EventsStartResponseDto>('events.start', uuid);
+    const { lazyRequest: publishEvent, response: publishResp } = useLazyRequest('events.start', uuid);
 
     const { response: notPublishedResp } = useRequest<DatesSearchResponseDto>({
             method: 'dates.search',

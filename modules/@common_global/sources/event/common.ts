@@ -27,12 +27,33 @@ export const TextMetadataChecker = Joi.object<TextMetadata>({
         .required(),
     instagram: Joi
         .string()
+        .max(30)
+        .custom((value, helpers) => {
+            if (!/^([A-Za-z0-9]|_|\.)+$/.test(value)) {
+                return helpers.error('string.pattern.instagram')
+            }
+            return value;
+        })
         .optional(),
     twitter: Joi
         .string()
+        .max(15)
+        .custom((value, helpers) => {
+            if (!/^([A-Za-z0-9]|_)+$/.test(value)) {
+                return helpers.error('string.pattern.twitter')
+            }
+            return value;
+        })
         .optional(),
     tiktok: Joi
         .string()
+        .max(24)
+        .custom((value, helpers) => {
+            if (!/^([A-Za-z0-9]|_|\.)+$/.test(value)) {
+                return helpers.error('string.pattern.tiktok')
+            }
+            return value;
+        })
         .optional(),
     website: Joi
         .string()

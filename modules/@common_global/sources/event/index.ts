@@ -1,4 +1,4 @@
-export { checkEvent, EventCreationPayload }                                                                                from './checkEvent';
+export { checkEvent, EventCreationPayload, CategoryWithDatesPayload }                                                      from './checkEvent';
 export { checkDate, DatePayloadChecker, DateCreationPayload, DatePayload, DateCreationPayloadChecker }                     from './checkDate';
 export { checkCategory, CategoryPayload, CategoryPayloadChecker, CategoryCreationPayloadChecker, CategoryCreationPayload } from './checkCategory';
 export {
@@ -15,4 +15,3 @@ export {
     generateErrorFromJoiError,
     LocationChecker,
 }                                                                                                                          from './common';
-
