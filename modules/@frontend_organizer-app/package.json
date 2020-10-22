@@ -46,7 +46,7 @@
         "@embarklabs/subspace-react": "1.0.4",
         "rxjs": "6.5.5",
         "@capacitor/cli": "2.0.1",
-        "react-scripts": "3.4.1",
+        "react-scripts": "3.4.4",
         "tslint": "6.0.0",
         "serve": "11.3.2"
     },
