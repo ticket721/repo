@@ -81,6 +81,7 @@ var migration1601551889 = {
                         avatar text,
                         description text,
                         address text,
+                        signature_colors list<text>,
                         status text,
                         controller text,
                         dates list<uuid>,
