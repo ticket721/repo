@@ -277,7 +277,7 @@ export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateC
                                     <CurrencySelectInputContainer>
                                         <CurrencySelectInput
                                             options={currenciesSelectOptions}
-                                            onChange={(opt: any) => setCurrency(opt.value)}
+                                            onChange={(opt: any) => setCurrency(opt[0].value)}
                                         />
                                     </CurrencySelectInputContainer>
                                 </>

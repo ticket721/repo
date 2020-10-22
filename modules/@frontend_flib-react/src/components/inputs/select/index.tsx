@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import Select from 'react-select';
 import styled from '../../../config/styled';
 
@@ -177,13 +178,19 @@ const GroupLabel = styled.div`
 const formatGroupLabel = (data: any) => <GroupLabel>{data.label}</GroupLabel>;
 
 export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectProps): JSX.Element => {
+    const [selected, setSelected] = useState<SelectOption[]>();
+
+    useEffect(() => {
+        setSelected(props.value);
+    }, [props.value]);
+
     return (
         <StyledInputContainer label={props.label} className={props.className}>
             {props.label && <StyledLabel>{props.label}</StyledLabel>}
             <Select
                 isMulti={props.multiple}
                 isSearchable={props.searchable}
-                value={props.multiple ? props.value : props.value ? props.value[0] : null}
+                value={props.multiple ? selected : selected ? selected[0] : null}
                 defaultValue={props.defaultValue}
                 noOptionsMessage={() => 'No values available'}
                 options={props.allOpt ? [props.allOpt, ...props.options] : props.options}
@@ -191,6 +198,7 @@ export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectP
                 placeholder={props.placeholder}
                 styles={customStyles}
                 onChange={(options: SelectOption | SelectOption[]) => {
+                    setSelected(options as any);
                     if (!options) {
                         props.onChange([]);
                         return;
