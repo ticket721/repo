@@ -10,7 +10,12 @@ import { EventEntity } from '@lib/common/events/entities/Event.entity';
  */
 export class EventsSearchInputDto
     implements
-        SearchInputType<Omit<EventEntity, 'stripe_interface' | 'avatar' | 'custom_static_fee' | 'custom_percent_fee'>> {
+        SearchInputType<
+            Omit<
+                EventEntity,
+                'stripe_interface' | 'avatar' | 'custom_static_fee' | 'custom_percent_fee' | 'signature_colors'
+            >
+        > {
     /**
      * Searchable field to search by id
      */

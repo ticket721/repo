@@ -30,6 +30,7 @@ export class EventEntity {
             this.stripe_interface = e.stripe_interface ? e.stripe_interface.toString() : e.stripe_interface;
             this.custom_percent_fee = e.custom_percent_fee;
             this.custom_static_fee = e.custom_static_fee;
+            this.signature_colors = ECAAG(e.signature_colors) as [string, string];
             this.owner = e.owner ? e.owner.toString() : e.owner;
             this.avatar = e.avatar;
             this.name = e.name;
@@ -96,6 +97,16 @@ export class EventEntity {
     })
     // tslint:disable-next-line:variable-name
     avatar: string;
+
+    /**
+     * Signature colors
+     */
+    @Column({
+        type: 'list',
+        typeDef: '<text>',
+    })
+    // tslint:disable-next-line:variable-name
+    signature_colors: [string, string];
 
     /**
      * Description of the event
