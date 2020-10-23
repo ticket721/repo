@@ -43,6 +43,7 @@ var migration1601551889 = {
                 created_at timestamp,
                 updated_at timestamp,
                 closed_at timestamp,
+                checked_out_at timestamp,
                 payment_interface text,
                 price int,
                 currency text

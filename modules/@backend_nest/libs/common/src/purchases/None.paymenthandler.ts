@@ -24,6 +24,13 @@ export class NonePaymentHandler implements PaymentHandlerBaseService {
         };
     }
 
+    async onComplete(user: UserDto, payment: Payment, paymentInterfaceId): Promise<ServiceResponse<void>> {
+        return {
+            error: null,
+            response: null,
+        };
+    }
+
     async fetch(payment: Payment, paymentInterfaceId: string): Promise<ServiceResponse<Payment>> {
         return {
             error: null,
