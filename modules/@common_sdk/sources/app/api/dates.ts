@@ -13,6 +13,7 @@ import { DatesAddCategoryResponseDto } from '@app/server/controllers/dates/dto/D
 import { DatesEditInputDto }           from '@app/server/controllers/dates/dto/DatesEditInput.dto';
 import { DatesEditResponseDto }        from '@app/server/controllers/dates/dto/DatesEditResponse.dto';
 import { DatesDeleteResponseDto }      from '@app/server/controllers/dates/dto/DatesDeleteResponse.dto';
+import { DatesOwnerResponseDto }       from '@app/server/controllers/dates/dto/DatesOwnerResponse.dto';
 
 export async function datesSearch(
     token: string,
@@ -25,6 +26,19 @@ export async function datesSearch(
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
+}
+
+export async function datesOwner(
+    token: string,
+    date: string
+): Promise<AxiosResponse<DatesOwnerResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.get(`/dates/owner/${date}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    });
 }
 
 export async function datesCount(

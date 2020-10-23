@@ -9,6 +9,7 @@ import { CategoriesAddDateLinkResponseDto }    from '@app/server/controllers/cat
 import { CategoriesEditInputDto }              from '@app/server/controllers/categories/dto/CategoriesEditInput.dto';
 import { CategoriesEditResponseDto }           from '@app/server/controllers/categories/dto/CategoriesEditResponse.dto';
 import { CategoriesRemoveDateLinkResponseDto } from '@app/server/controllers/categories/dto/CategoriesRemoveDateLinkResponse.dto';
+import { CategoriesOwnerResponseDto }          from '@app/server/controllers/categories/dto/CategoriesOwnerResponse.dto';
 
 export async function categoriesSearch(
     token: string,
@@ -21,6 +22,19 @@ export async function categoriesSearch(
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
+}
+
+export async function categoriesOwner(
+    token: string,
+    category: string
+): Promise<AxiosResponse<CategoriesOwnerResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.get(`/categories/owner/${category}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    });
 }
 
 export async function categoriesCount(

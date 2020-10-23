@@ -1,4 +1,15 @@
-import { Body, Controller, HttpCode, HttpException, Param, Post, Put, UseFilters, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    HttpCode,
+    HttpException,
+    Param,
+    Post,
+    Put,
+    UseFilters,
+    UseGuards,
+} from '@nestjs/common';
 import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -43,6 +54,7 @@ import { EventsStatusInputDto } from '@app/server/controllers/events/dto/EventsS
 import { EventsStatusResponseDto } from '@app/server/controllers/events/dto/EventsStatusResponse.dto';
 import { isNil } from '@nestjs/common/utils/shared.utils';
 import { StripeInterfaceEntity } from '@lib/common/stripeinterface/entities/StripeInterface.entity';
+import { EventsOwnerResponseDto } from '@app/server/controllers/events/dto/EventsOwnerResponse.dto';
 
 /**
  * Events controller to create and fetch events
@@ -86,6 +98,18 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         return {
             events,
+        };
+    }
+
+    @Get('/owner/:event')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
+    async ownerOf(@Param('event') eventId: string): Promise<EventsOwnerResponseDto> {
+        const event = await this._crudCall(this.eventsService.findOne(eventId), StatusCodes.InternalServerError);
+
+        return {
+            owner: event.owner,
         };
     }
 

@@ -16,6 +16,7 @@ import { EventsStatusResponseDto }              from '@app/server/controllers/ev
 import { EventsStatusInputDto }                 from '@app/server/controllers/events/dto/EventsStatusInput.dto';
 import { EventsBindStripeInterfaceInputDto }    from '@app/server/controllers/events/dto/EventsBindStripeInterfaceInput.dto';
 import { EventsBindStripeInterfaceResponseDto } from '@app/server/controllers/events/dto/EventsBindStripeInterfaceResponse.dto';
+import { EventsOwnerResponseDto }               from '@app/server/controllers/events/dto/EventsOwnerResponse.dto';
 
 export async function eventsSearch(
     token: string,
@@ -28,6 +29,19 @@ export async function eventsSearch(
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
+}
+
+export async function eventsOwner(
+    token: string,
+    event: string
+): Promise<AxiosResponse<EventsOwnerResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.get(`/events/owner/${event}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    });
 }
 
 export async function eventsCount(
