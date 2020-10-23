@@ -86,6 +86,7 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         }
 
         const categoryTicketCountCheckRes = await this.categoryCountCheck(
+            purchaseEntity,
             categoryEntity,
             purchaseEntity.products[productIdx],
         );
@@ -224,8 +225,12 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
-    async categoryCountCheck(category: CategoryEntity, product: Product): Promise<ServiceResponse<void>> {
-        const ticketCountRes = await this.ticketsService.getTicketCount(category.id);
+    async categoryCountCheck(
+        purchase: PurchaseEntity,
+        category: CategoryEntity,
+        product: Product,
+    ): Promise<ServiceResponse<void>> {
+        const ticketCountRes = await this.ticketsService.getTicketCount(category.id, purchase.id);
 
         if (ticketCountRes.error) {
             return {

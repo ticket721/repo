@@ -31,6 +31,59 @@ export class StripeInterfacesPaymentHandler implements PaymentHandlerBaseService
         };
     }
 
+    async onComplete(user: UserDto, payment: Payment, paymentInterfaceId): Promise<ServiceResponse<void>> {
+        try {
+            const stripe: Stripe = this.stripeService.get();
+
+            const stripeInterfaceEntityRes = await this.stripeInterfacesService.search({
+                id: paymentInterfaceId,
+            });
+
+            if (stripeInterfaceEntityRes.error) {
+                return {
+                    error: stripeInterfaceEntityRes.error,
+                    response: null,
+                };
+            }
+
+            if (stripeInterfaceEntityRes.response.length === 0) {
+                return {
+                    error: 'stripe_interface_not_found',
+                    response: null,
+                };
+            }
+
+            const stripeInterfaceEntity: StripeInterfaceEntity = stripeInterfaceEntityRes.response[0];
+
+            const paymentIntent = await stripe.paymentIntents.retrieve(payment.id, {
+                stripeAccount: stripeInterfaceEntity.connect_account,
+            });
+
+            if (paymentIntent.status === 'requires_capture') {
+                const capturedPaymentIntent = await stripe.paymentIntents.capture(paymentIntent.id, {
+                    stripeAccount: stripeInterfaceEntity.connect_account,
+                });
+
+                if (capturedPaymentIntent.status !== 'succeeded') {
+                    return {
+                        error: 'capture_failed',
+                        response: null,
+                    };
+                }
+            }
+
+            return {
+                error: null,
+                response: null,
+            };
+        } catch (e) {
+            return {
+                error: e.message,
+                response: null,
+            };
+        }
+    }
+
     async onCheckout(
         user: UserDto,
         purchase: PurchaseEntity,
@@ -79,7 +132,7 @@ export class StripeInterfacesPaymentHandler implements PaymentHandlerBaseService
                     receipt_email: user.email,
                     payment_method_types: ['card'],
                     application_fee_amount: t721Fees,
-                    capture_method: 'automatic',
+                    capture_method: 'manual',
                     confirmation_method: 'automatic',
                 },
                 {
@@ -116,6 +169,7 @@ export class StripeInterfacesPaymentHandler implements PaymentHandlerBaseService
     computePaymentStatusUpdate(payment: Payment, paymentIntent: Stripe.PaymentIntent): Payment {
         if (payment.status === 'waiting') {
             switch (paymentIntent.status) {
+                case 'requires_capture':
                 case 'succeeded':
                     return {
                         ...payment,

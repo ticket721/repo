@@ -61,6 +61,7 @@ export class PurchaseEntity {
             this.created_at = pe.created_at;
             this.updated_at = pe.updated_at;
             this.closed_at = pe.closed_at;
+            this.checked_out_at = pe.checked_out_at;
             this.products = ECAAG(pe.products);
             this.currency = pe.currency;
             this.payment = pe.payment;
@@ -114,6 +115,12 @@ export class PurchaseEntity {
     })
     currency: string;
 
+    @Column({
+        type: 'timestamp',
+    })
+    // tslint:disable-next-line:variable-name
+    checked_out_at: Date;
+
     /**
      * Purchase completed timestamp
      */
@@ -122,6 +129,7 @@ export class PurchaseEntity {
     })
     // tslint:disable-next-line:variable-name
     closed_at: Date;
+
     /**
      * Creation timestamp
      */

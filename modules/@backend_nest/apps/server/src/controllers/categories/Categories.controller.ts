@@ -34,7 +34,7 @@ import { EventsService } from '@lib/common/events/Events.service';
 import { DatesService } from '@lib/common/dates/Dates.service';
 import { CategoriesDeleteResponseDto } from '@app/server/controllers/categories/dto/CategoriesDeleteResponse.dto';
 import { CategoriesRemoveDateLinkResponseDto } from '@app/server/controllers/categories/dto/CategoriesRemoveDateLinkResponse.dto';
-import { CategoryCreationPayload } from '@common/global';
+import { CategoryCreationPayload, checkCategory } from '@common/global';
 import { CategoriesEditInputDto } from '@app/server/controllers/categories/dto/CategoriesEditInput.dto';
 import { CategoriesEditResponseDto } from '@app/server/controllers/categories/dto/CategoriesEditResponse.dto';
 import { isNil, merge, pickBy } from 'lodash';
@@ -322,6 +322,18 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
             pickBy(body.category, identityNotNil),
         );
 
+        const checkResult = checkCategory(categoryEditionPayload);
+
+        if (checkResult !== null) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'category_payload_validation_error',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
         const ticketCount = await this._serviceCall(
             this.ticketsService.getTicketCount(categoryId),
             StatusCodes.InternalServerError,
@@ -375,6 +387,7 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
             category: updatedCategory,
         };
     }
+
     /**
      * Removes a category
      *

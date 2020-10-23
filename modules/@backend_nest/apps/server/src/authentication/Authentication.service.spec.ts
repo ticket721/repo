@@ -295,6 +295,7 @@ describe('Authentication Service', function() {
                 currency: null,
                 payment: null,
                 payment_interface: null,
+                checked_out_at: null,
                 price: null,
             };
 
@@ -307,6 +308,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -409,6 +411,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -499,6 +502,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -532,6 +536,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -585,6 +590,7 @@ describe('Authentication Service', function() {
                 currency: null,
                 payment: null,
                 payment_interface: null,
+                checked_out_at: null,
                 price: null,
             };
 
@@ -597,6 +603,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -687,6 +694,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -777,6 +785,7 @@ describe('Authentication Service', function() {
                 currency: null,
                 payment: null,
                 payment_interface: null,
+                checked_out_at: null,
                 price: null,
             };
 
@@ -789,6 +798,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -845,6 +855,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -1298,6 +1309,7 @@ describe('Authentication Service', function() {
                 currency: null,
                 payment: null,
                 payment_interface: null,
+                checked_out_at: null,
                 price: null,
             };
 
@@ -1310,6 +1322,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -1411,6 +1424,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -1513,6 +1527,7 @@ describe('Authentication Service', function() {
                 currency: null,
                 payment: null,
                 payment_interface: null,
+                checked_out_at: null,
                 price: null,
             };
 
@@ -1525,6 +1540,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -1614,6 +1630,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -2004,6 +2021,7 @@ describe('Authentication Service', function() {
                 currency: null,
                 payment: null,
                 payment_interface: null,
+                checked_out_at: null,
                 price: null,
             };
 
@@ -2016,6 +2034,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -2070,6 +2089,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -2118,6 +2138,7 @@ describe('Authentication Service', function() {
                 currency: null,
                 payment: null,
                 payment_interface: null,
+                checked_out_at: null,
                 price: null,
             };
 
@@ -2130,6 +2151,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),
@@ -2162,6 +2184,7 @@ describe('Authentication Service', function() {
                         currency: null,
                         payment: null,
                         payment_interface: null,
+                        checked_out_at: null,
                         price: null,
                     }),
                 ),

@@ -14,6 +14,11 @@ export abstract class PaymentHandlerBaseService {
         paymentInterfaceId: string,
         fees: Fee[],
     ): Promise<ServiceResponse<[Payment, Fee[], PaymentError]>>;
+    abstract async onComplete(
+        user: UserDto,
+        payment: Payment,
+        paymentInterfaceId: string,
+    ): Promise<ServiceResponse<void>>;
     abstract async cancel(payment: Payment, paymentInterfaceId: string): Promise<ServiceResponse<void>>;
     abstract async fetch(payment: Payment, paymentInterfaceId: string): Promise<ServiceResponse<Payment>>;
     // on checkout => returns Payment

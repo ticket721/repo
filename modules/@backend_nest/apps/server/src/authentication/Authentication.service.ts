@@ -210,6 +210,7 @@ export class AuthenticationService {
             currency: null,
             payment: null,
             payment_interface: null,
+            checked_out_at: null,
             price: null,
         });
 
@@ -388,6 +389,7 @@ export class AuthenticationService {
             currency: null,
             payment: null,
             payment_interface: null,
+            checked_out_at: null,
             price: null,
         });
 

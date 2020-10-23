@@ -12,6 +12,9 @@ import { PaymentError, PaymentHandlerBaseService } from '@lib/common/purchases/P
 import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
 import { UsersService } from '@lib/common/users/Users.service';
 import { ECAAG } from '@lib/common/utils/ECAAG.helper';
+import { MINUTE } from '@lib/common/utils/time';
+
+const CART_EXPIRATION = 15 * MINUTE;
 
 @Injectable()
 export class PurchasesService extends CRUDExtension<PurchasesRepository, PurchaseEntity> {
@@ -140,22 +143,6 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         purchase: PurchaseEntity,
         payload: any,
     ): Promise<ServiceResponse<[PurchaseEntity, PurchaseError[], PaymentError]>> {
-        const dryCheckResults = await this.drySetCartProducts(user, purchase, purchase.products);
-
-        if (dryCheckResults.error) {
-            return {
-                error: dryCheckResults.error,
-                response: null,
-            };
-        }
-
-        if (dryCheckResults.response[1].filter((err: PurchaseError): boolean => err !== null).length >= 1) {
-            return {
-                error: null,
-                response: [dryCheckResults.response[0], dryCheckResults.response[1], null],
-            };
-        }
-
         const paymentInterfaceIdRes = await this.recoverInterfaceId(purchase);
 
         if (paymentInterfaceIdRes.error) {
@@ -189,11 +176,9 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
             };
         }
 
-        // here we should make a PaymentHandler.base.service extraction
-
         return {
             error: null,
-            response: [checkoutResult.response[0], null, checkoutResult.response[1]],
+            response: [checkoutResult.response[0], checkoutResult.response[1], checkoutResult.response[2]],
         };
     }
 
@@ -355,6 +340,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                     ...edits,
                     payment: null,
                     fees: [],
+                    checked_out_at: null,
                 },
             );
 
@@ -511,14 +497,40 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         return paymentHandler.cancel(payment, paymentInterfaceId);
     }
 
+    async isExpired(purchase: PurchaseEntity): Promise<boolean> {
+        if (purchase.checked_out_at) {
+            const now = this.timeToolService.now();
+
+            return now.getTime() - new Date(purchase.checked_out_at).getTime() > CART_EXPIRATION;
+        }
+
+        return false;
+    }
+
     private async runCheckout(
         user: UserDto,
         purchase: PurchaseEntity,
         payload: any,
         paymentInterfaceId: string,
         feeDescriptions: Fee[],
-    ): Promise<ServiceResponse<[PurchaseEntity, PaymentError]>> {
+    ): Promise<ServiceResponse<[PurchaseEntity, PurchaseError[], PaymentError]>> {
         if (purchase.payment === null) {
+            const dryCheckResults = await this.drySetCartProducts(user, purchase, purchase.products);
+
+            if (dryCheckResults.error) {
+                return {
+                    error: dryCheckResults.error,
+                    response: null,
+                };
+            }
+
+            if (dryCheckResults.response[1].filter((err: PurchaseError): boolean => err !== null).length >= 1) {
+                return {
+                    error: null,
+                    response: [dryCheckResults.response[0], dryCheckResults.response[1], null],
+                };
+            }
+
             const paymentHandler: PaymentHandlerBaseService = this.moduleRef.get(
                 `payment/${purchase.payment_interface}`,
                 {
@@ -544,7 +556,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
             if (paymentRes.response[2] !== null) {
                 return {
                     error: null,
-                    response: [purchase, paymentRes.response[2]],
+                    response: [purchase, null, paymentRes.response[2]],
                 };
             } else {
                 const checkoutUpdateRes = await this.update(
@@ -554,6 +566,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                     {
                         payment: paymentRes.response[0],
                         fees: paymentRes.response[1],
+                        checked_out_at: this.timeToolService.now(),
                     },
                 );
 
@@ -575,13 +588,13 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
 
                 return {
                     error: null,
-                    response: [updatedPurchaseEntityRes.response, null],
+                    response: [updatedPurchaseEntityRes.response, null, null],
                 };
             }
         } else {
             return {
                 error: null,
-                response: [purchase, null],
+                response: [purchase, null, null],
             };
         }
     }
@@ -589,34 +602,85 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
     async close(user: UserDto, purchase: PurchaseEntity): Promise<ServiceResponse<PurchaseError[]>> {
         const errors: PurchaseError[] = [];
 
-        for (let idx = 0; idx < purchase.products.length; ++idx) {
-            const product = purchase.products[idx];
+        const paymentHandler: PaymentHandlerBaseService = this.moduleRef.get(`payment/${purchase.payment_interface}`, {
+            strict: false,
+        });
 
-            const productHandler: ProductCheckerServiceBase = this.moduleRef.get(`product/${product.type}`, {
-                strict: false,
+        const paymentInterfaceIdRes = await this.recoverInterfaceId(purchase);
+
+        if (paymentInterfaceIdRes.error) {
+            return {
+                error: paymentInterfaceIdRes.error,
+                response: null,
+            };
+        }
+
+        if (await this.isExpired(purchase)) {
+            const cancelRes = await paymentHandler.cancel(purchase.payment, paymentInterfaceIdRes.response);
+
+            if (cancelRes.error) {
+                return {
+                    error: cancelRes.error,
+                    response: null,
+                };
+            }
+
+            purchase.products.forEach(() => {
+                errors.push({
+                    reason: 'cart_expired',
+                    context: {},
+                });
             });
+        } else {
+            const paymentCompleteRes = await paymentHandler.onComplete(
+                user,
+                purchase.payment,
+                paymentInterfaceIdRes.response,
+            );
 
-            if (purchase.payment.status === 'confirmed') {
-                const confirmationRes = await productHandler.ok(user, purchase, idx);
-
-                if (confirmationRes.error) {
+            if (paymentCompleteRes.error) {
+                purchase.products.forEach(() => {
                     errors.push({
-                        reason: confirmationRes.error,
+                        reason: 'cart_expired',
                         context: {},
                     });
-                } else {
-                    errors.push(null);
-                }
-            } else if (purchase.payment.status === 'rejected') {
-                const confirmationRes = await productHandler.ko(user, purchase, idx);
+                });
 
-                if (confirmationRes.error) {
-                    errors.push({
-                        reason: confirmationRes.error,
-                        context: {},
-                    });
-                } else {
-                    errors.push(confirmationRes.response);
+                return {
+                    error: null,
+                    response: errors,
+                };
+            }
+
+            for (let idx = 0; idx < purchase.products.length; ++idx) {
+                const product = purchase.products[idx];
+
+                const productHandler: ProductCheckerServiceBase = this.moduleRef.get(`product/${product.type}`, {
+                    strict: false,
+                });
+
+                if (purchase.payment.status === 'confirmed') {
+                    const confirmationRes = await productHandler.ok(user, purchase, idx);
+
+                    if (confirmationRes.error) {
+                        errors.push({
+                            reason: confirmationRes.error,
+                            context: {},
+                        });
+                    } else {
+                        errors.push(null);
+                    }
+                } else if (purchase.payment.status === 'rejected') {
+                    const confirmationRes = await productHandler.ko(user, purchase, idx);
+
+                    if (confirmationRes.error) {
+                        errors.push({
+                            reason: confirmationRes.error,
+                            context: {},
+                        });
+                    } else {
+                        errors.push(confirmationRes.response);
+                    }
                 }
             }
         }
@@ -653,6 +717,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
             currency: null,
             payment: null,
             payment_interface: null,
+            checked_out_at: null,
             price: null,
         });
 
