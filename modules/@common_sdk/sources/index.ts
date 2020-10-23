@@ -38,7 +38,7 @@ import {
     datesAddCategory,
     datesCount, datesDelete, datesEdit,
     datesFuzzySearch,
-    datesHomeSearch,
+    datesHomeSearch, datesOwner,
     datesSearch,
 } from './app/api/dates';
 
@@ -47,7 +47,7 @@ import {
     eventsCount,
     eventsCreate,
     eventsSearch,
-    eventsGuestlist, eventsAddDate, eventsEdit, eventsStatus, eventsBindStripeInterface,
+    eventsGuestlist, eventsAddDate, eventsEdit, eventsStatus, eventsBindStripeInterface, eventsOwner,
 } from './app/api/events';
 
 // TXS
@@ -59,7 +59,7 @@ import { contractsFetch } from './app/api/contracts';
 // CATEGORIES
 import {
     categoriesAddDateLink,
-    categoriesCount, categoriesDelete, categoriesEdit, categoriesRemoveDateLink,
+    categoriesCount, categoriesDelete, categoriesEdit, categoriesOwner, categoriesRemoveDateLink,
     categoriesSearch,
 } from './app/api/categories';
 
@@ -142,6 +142,7 @@ export class T721SDK {
         this.dates.addCategory = this.dates.count.bind(this);
         this.dates.edit = this.dates.edit.bind(this);
         this.dates.delete = this.dates.delete.bind(this);
+        this.dates.owner = this.dates.owner.bind(this);
 
         this.events.create.create = this.events.create.create.bind(this);
         this.events.search = this.events.search.bind(this);
@@ -151,6 +152,7 @@ export class T721SDK {
         this.events.edit = this.events.edit.bind(this);
         this.events.status = this.events.status.bind(this);
         this.events.bindStripeInterface = this.events.bindStripeInterface.bind(this);
+        this.events.owner = this.events.owner.bind(this);
 
         this.categories.count = this.categories.count.bind(this);
         this.categories.search = this.categories.search.bind(this);
@@ -158,6 +160,7 @@ export class T721SDK {
         this.categories.removeDateLink = this.categories.removeDateLink.bind(this);
         this.categories.edit = this.categories.edit.bind(this);
         this.categories.delete = this.categories.delete.bind(this);
+        this.categories.owner = this.categories.owner.bind(this);
 
         this.rights.search = this.rights.search.bind(this);
 
@@ -339,6 +342,7 @@ export class T721SDK {
         search: datesSearch,
         homeSearch: datesHomeSearch,
         fuzzySearch: datesFuzzySearch,
+        owner: datesOwner,
         count: datesCount,
         addCategory: datesAddCategory,
         edit: datesEdit,
@@ -348,6 +352,7 @@ export class T721SDK {
     public events = {
         search: eventsSearch,
         count: eventsCount,
+        owner: eventsOwner,
         create: {
             create: eventsCreate,
         },
@@ -364,6 +369,7 @@ export class T721SDK {
 
     public categories = {
         search: categoriesSearch,
+        owner: categoriesOwner,
         count: categoriesCount,
         addDateLink: categoriesAddDateLink,
         removeDateLink: categoriesRemoveDateLink,

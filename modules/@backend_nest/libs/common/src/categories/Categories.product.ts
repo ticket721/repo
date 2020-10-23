@@ -85,6 +85,22 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
             };
         }
 
+        const categoryTicketCountCheckRes = await this.categoryCountCheck(
+            categoryEntity,
+            purchaseEntity.products[productIdx],
+        );
+        if (categoryTicketCountCheckRes.error) {
+            return {
+                error: null,
+                response: {
+                    reason: categoryTicketCountCheckRes.error,
+                    context: {
+                        category: categoryEntity.id,
+                    },
+                },
+            };
+        }
+
         const categoryCoherenceCheckRes = await this.categoryCoherenceCheck(categoryEntity, purchaseEntity.products);
         if (categoryCoherenceCheckRes.error) {
             return {
@@ -202,6 +218,29 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
                 response: null,
             };
         }
+        return {
+            error: null,
+            response: null,
+        };
+    }
+
+    async categoryCountCheck(category: CategoryEntity, product: Product): Promise<ServiceResponse<void>> {
+        const ticketCountRes = await this.ticketsService.getTicketCount(category.id);
+
+        if (ticketCountRes.error) {
+            return {
+                error: ticketCountRes.error,
+                response: null,
+            };
+        }
+
+        if (product.quantity + ticketCountRes.response > category.seats) {
+            return {
+                error: 'no_tickets_left',
+                response: null,
+            };
+        }
+
         return {
             error: null,
             response: null,

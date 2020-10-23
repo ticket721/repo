@@ -2,6 +2,7 @@ import {
     Body,
     Controller,
     Delete,
+    Get,
     HttpCode,
     HttpException,
     Param,
@@ -54,6 +55,7 @@ import { DatesEditResponseDto } from '@app/server/controllers/dates/dto/DatesEdi
 import { DatesDeleteResponseDto } from '@app/server/controllers/dates/dto/DatesDeleteResponse.dto';
 import { isNil, merge, pickBy } from 'lodash';
 import { closestCity } from '@common/geoloc';
+import { DatesOwnerResponseDto } from '@app/server/controllers/dates/dto/DatesOwnerResponse.dto';
 
 /**
  * Generic Dates controller. Recover Dates linked to all types of events
@@ -259,6 +261,20 @@ export class DatesController extends ControllerBasics<DateEntity> {
         };
     }
 
+    @Get('/owner/:date')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
+    async ownerOf(@Param('date') dateId: string): Promise<DatesOwnerResponseDto> {
+        const date = await this._crudCall(this.datesService.findOne(dateId), StatusCodes.InternalServerError);
+
+        const owner = await this.getDateOwner(date);
+
+        return {
+            owner,
+        };
+    }
+
     /**
      * Count for dates
      *
@@ -274,6 +290,12 @@ export class DatesController extends ControllerBasics<DateEntity> {
         return {
             dates,
         };
+    }
+
+    private async getDateOwner(date: DateEntity): Promise<string> {
+        const event = await this._serviceCall(this.eventsService.findOne(date.event), StatusCodes.InternalServerError);
+
+        return event.owner;
     }
 
     private async isDateOwner(date: DateEntity, user: UserDto): Promise<boolean> {

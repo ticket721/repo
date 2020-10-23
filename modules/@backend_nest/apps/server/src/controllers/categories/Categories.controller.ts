@@ -2,6 +2,7 @@ import {
     Body,
     Controller,
     Delete,
+    Get,
     HttpCode,
     HttpException,
     Injectable,
@@ -37,6 +38,8 @@ import { CategoryCreationPayload } from '@common/global';
 import { CategoriesEditInputDto } from '@app/server/controllers/categories/dto/CategoriesEditInput.dto';
 import { CategoriesEditResponseDto } from '@app/server/controllers/categories/dto/CategoriesEditResponse.dto';
 import { isNil, merge, pickBy } from 'lodash';
+import { TicketsService } from '@lib/common/tickets/Tickets.service';
+import { CategoriesOwnerResponseDto } from '@app/server/controllers/categories/dto/CategoriesOwnerResponse.dto';
 
 /**
  * Generic Categories controller. Recover Categories linked to all types of events
@@ -52,11 +55,13 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
      * @param categoriesService
      * @param eventsService
      * @param datesService
+     * @param ticketsService
      */
     constructor(
         private readonly categoriesService: CategoriesService,
         private readonly eventsService: EventsService,
         private readonly datesService: DatesService,
+        private readonly ticketsService: TicketsService,
     ) {
         super();
     }
@@ -79,6 +84,28 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
     }
 
     /**
+     * Search for category owner
+     *
+     * @param categoryId
+     */
+    @Get('/owner/:category')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
+    async ownerOf(@Param('category') categoryId: string): Promise<CategoriesOwnerResponseDto> {
+        const category = await this._crudCall(
+            this.categoriesService.findOne(categoryId),
+            StatusCodes.InternalServerError,
+        );
+
+        const owner = await this.getCategoryOwner(category);
+
+        return {
+            owner,
+        };
+    }
+
+    /**
      * Count for categories
      *
      * @param body
@@ -93,6 +120,15 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
         return {
             categories,
         };
+    }
+
+    private async getCategoryOwner(category: CategoryEntity): Promise<string> {
+        const event = await this._serviceCall(
+            this.eventsService.findOneFromGroupId(category.group_id),
+            StatusCodes.InternalServerError,
+        );
+
+        return event.owner;
     }
 
     private async isCategoryOwner(category: CategoryEntity, user: UserDto): Promise<boolean> {
@@ -286,7 +322,20 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
             pickBy(body.category, identityNotNil),
         );
 
-        // TODO check if seat is still above or equal to ticket count
+        const ticketCount = await this._serviceCall(
+            this.ticketsService.getTicketCount(categoryId),
+            StatusCodes.InternalServerError,
+        );
+
+        if (ticketCount > categoryEditionPayload.seats) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'invalid_seat_count',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
 
         const identityNotUndef = (val: any): boolean => val !== undefined;
 
@@ -358,9 +407,32 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
                 StatusCodes.Unauthorized,
             );
         }
+        const ticketCount = await this._serviceCall(
+            this.ticketsService.getTicketCount(categoryId),
+            StatusCodes.InternalServerError,
+        );
 
-        if (false) {
-            // TODO check if any emitted tickets
+        if (ticketCount > 0) {
+            await this._crudCall(
+                this.categoriesService.update(
+                    {
+                        id: categoryId,
+                    },
+                    {
+                        seats: ticketCount,
+                    },
+                ),
+                StatusCodes.InternalServerError,
+            );
+
+            const updatedCategoryEntity = await this._crudCall(
+                this.categoriesService.findOne(categoryId),
+                StatusCodes.InternalServerError,
+            );
+
+            return {
+                category: updatedCategoryEntity,
+            };
         } else {
             for (const dateId of category.dates) {
                 await this._crudCall(
@@ -377,8 +449,10 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
                 StatusCodes.InternalServerError,
                 'error_while_deleting_category',
             );
-        }
 
-        return {};
+            return {
+                category: null,
+            };
+        }
     }
 }
