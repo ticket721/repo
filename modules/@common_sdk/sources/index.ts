@@ -60,7 +60,7 @@ import { contractsFetch } from './app/api/contracts';
 import {
     categoriesAddDateLink,
     categoriesCount, categoriesDelete, categoriesEdit, categoriesOwner, categoriesRemoveDateLink,
-    categoriesSearch,
+    categoriesSearch, categoriesTicketCount,
 } from './app/api/categories';
 
 // RIGHTS
@@ -161,6 +161,7 @@ export class T721SDK {
         this.categories.edit = this.categories.edit.bind(this);
         this.categories.delete = this.categories.delete.bind(this);
         this.categories.owner = this.categories.owner.bind(this);
+        this.categories.countTickets = this.categories.countTickets.bind(this);
 
         this.rights.search = this.rights.search.bind(this);
 
@@ -373,6 +374,7 @@ export class T721SDK {
         count: categoriesCount,
         addDateLink: categoriesAddDateLink,
         removeDateLink: categoriesRemoveDateLink,
+        countTickets: categoriesTicketCount,
         edit: categoriesEdit,
         delete: categoriesDelete,
     };

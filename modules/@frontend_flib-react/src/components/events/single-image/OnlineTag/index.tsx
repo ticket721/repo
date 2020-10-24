@@ -1,26 +1,25 @@
 import React from 'react';
 
-import styled             from 'styled-components';
-import Icon               from '../../../icon';
+import styled from 'styled-components';
+import Icon from '../../../icon';
 
 interface OnlineTagProps {
     online: string;
 }
 
 export const OnlineTag: React.FC<OnlineTagProps> = (props: OnlineTagProps) => {
-    return <Tag>
-        <Icon
-            icon={'live'}
-            size={'12px'}
-            color={'white'}/>
-        <Label>{props.online}</Label>
-    </Tag>
+    return (
+        <Tag>
+            <Icon icon={'live'} size={'12px'} color={'white'} />
+            <Label>{props.online}</Label>
+        </Tag>
+    );
 };
 
 const Tag = styled.div`
     display: flex;
     align-items: center;
-    background-color: ${props => props.theme.badgeColor.hex};
+    background-color: ${(props) => props.theme.badgeColor.hex};
     padding: 4px 8px;
     border-radius: 12px;
 `;

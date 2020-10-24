@@ -9,12 +9,6 @@ export default interface Event {
     endTime: string;
     image: string;
     about: string;
-    tags: Tag[];
     resale: boolean;
     photos?: string[];
-}
-
-interface Tag {
-    id: string | number;
-    label: string;
 }

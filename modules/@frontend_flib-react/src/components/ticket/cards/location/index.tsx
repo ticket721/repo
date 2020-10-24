@@ -129,7 +129,7 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
 const MapContainer = styled.div`
     .leaflet-container {
         width: 100vw;
-        height: 300px;
+        height: 50vw;
     }
 
     .leaflet-left {

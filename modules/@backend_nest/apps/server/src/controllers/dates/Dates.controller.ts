@@ -490,11 +490,12 @@ export class DatesController extends ControllerBasics<DateEntity> {
         const identityNotNil = (val: any): boolean => !isNil(val);
 
         const dateEditionPayload: DateCreationPayload = merge({}, existingDateCreationValue, body.date);
-        dateEditionPayload.info = pickBy(dateEditionPayload.info, identityNotNil) as DatePayload;
-        dateEditionPayload.textMetadata = pickBy(dateEditionPayload.textMetadata, identityNotNil) as TextMetadata;
-        dateEditionPayload.imagesMetadata = pickBy(dateEditionPayload.imagesMetadata, identityNotNil) as ImagesMetadata;
+        const dateEditionCheckPayload: DateCreationPayload = merge({}, dateEditionPayload, {});
+        dateEditionCheckPayload.info = pickBy(dateEditionCheckPayload.info, identityNotNil) as DatePayload;
+        dateEditionCheckPayload.textMetadata = pickBy(dateEditionCheckPayload.textMetadata, identityNotNil) as TextMetadata;
+        dateEditionCheckPayload.imagesMetadata = pickBy(dateEditionCheckPayload.imagesMetadata, identityNotNil) as ImagesMetadata;
 
-        const checkResult = checkDate(dateEditionPayload);
+        const checkResult = checkDate(dateEditionCheckPayload);
 
         if (checkResult !== null) {
             throw new HttpException(

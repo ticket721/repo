@@ -75,7 +75,7 @@ function getLocationFromBrowser() {
                             lat,
                             lon,
                             city: resultCity,
-                            online: true
+                            online: false
                         }),
                     );
 

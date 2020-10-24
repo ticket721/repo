@@ -45,7 +45,7 @@ export const HomeEvent: React.FC<HomeEventProps> = (props: HomeEventProps): JSX.
 
     const priceString = getPriceRange([
         ...(categories.response.data?.categories || []),
-    ], t('coming_soon'));
+    ], t('coming_soon'), t('free'));
 
 
     return <SingleImage

@@ -1,22 +1,22 @@
-import * as React    from 'react';
-import styled        from '../../../config/styled';
+import * as React from 'react';
+import styled from '../../../config/styled';
 import { OnlineTag } from './OnlineTag';
 
 export interface SingleImageProps extends React.ComponentProps<any> {
-  price?: string | number;
-  id: string | number;
-  src: string;
-  text?: string;
-  title?: string;
-  mainColor?: string;
-  smaller?: boolean;
-  imgOnly?: boolean;
-  begin?: Date;
-  online?: boolean;
-  online_text?: string;
-  end?: Date;
-  dateLabel?: string;
-  onClick?: () => void;
+    price?: string | number;
+    id: string | number;
+    src: string;
+    text?: string;
+    title?: string;
+    mainColor?: string;
+    smaller?: boolean;
+    imgOnly?: boolean;
+    begin?: Date;
+    online?: boolean;
+    online_text?: string;
+    end?: Date;
+    dateLabel?: string;
+    onClick?: () => void;
 }
 
 const Container = styled.div<SingleImageProps>`
@@ -35,8 +35,8 @@ const Container = styled.div<SingleImageProps>`
     }
 
     ${(props) =>
-  !props.imgOnly &&
-  `
+        !props.imgOnly &&
+        `
     &::after {
       background: linear-gradient(180deg, rgba(10, 8, 18, 0), rgba(10, 8, 18, 0.85));
       content: '';
@@ -101,51 +101,44 @@ const EllipsedTitle = styled.h3`
 `;
 
 const AbsoluteOnlineTagDiv = styled.div`
-  position: absolute;
-  right: ${props => props.theme.regularSpacing};
-  top: ${props => props.theme.regularSpacing};
-`
+    position: absolute;
+    right: ${(props) => props.theme.regularSpacing};
+    top: ${(props) => props.theme.regularSpacing};
+`;
 
 export const SingleImage: React.FunctionComponent<SingleImageProps & { className?: string }> = (
-  props: SingleImageProps,
+    props: SingleImageProps,
 ): JSX.Element => {
-  console.log(props);
-  return (
-    <Container
-      imgOnly={props.imgOnly}
-      smaller={props.smaller}
-      className={props.className}
-      clickable={!!props.onClick}
-      onClick={props.onClick}
-    >
-      {
-        props.online && props.online_text
-
-        ?
-          <AbsoluteOnlineTagDiv>
-            <OnlineTag online={props.online_text}/>
-          </AbsoluteOnlineTagDiv>
-
-          :
-          null
-      }
-      <img src={props.src} />
-      {!props.imgOnly && (
-        <Details mainColor={props.mainColor} smaller={props.smaller}>
-          <EllipsedTitle>{props.title}</EllipsedTitle>
-          {props.dateLabel ? <EllipsedText>{props.dateLabel}</EllipsedText> : null}
-          <EllipsedText>
-            <span>{props.price}</span>
-            {props.text}
-          </EllipsedText>
-        </Details>
-      )}
-    </Container>
-  );
+    return (
+        <Container
+            imgOnly={props.imgOnly}
+            smaller={props.smaller}
+            className={props.className}
+            clickable={!!props.onClick}
+            onClick={props.onClick}
+        >
+            {props.online && props.online_text ? (
+                <AbsoluteOnlineTagDiv>
+                    <OnlineTag online={props.online_text} />
+                </AbsoluteOnlineTagDiv>
+            ) : null}
+            <img src={props.src} />
+            {!props.imgOnly && (
+                <Details mainColor={props.mainColor} smaller={props.smaller}>
+                    <EllipsedTitle>{props.title}</EllipsedTitle>
+                    {props.dateLabel ? <EllipsedText>{props.dateLabel}</EllipsedText> : null}
+                    <EllipsedText>
+                        <span>{props.price}</span>
+                        {props.text}
+                    </EllipsedText>
+                </Details>
+            )}
+        </Container>
+    );
 };
 
 SingleImage.defaultProps = {
-  mainColor: '#079CF0',
+    mainColor: '#079CF0',
 };
 
 export default SingleImage;

@@ -33,7 +33,7 @@ export const EventList: React.FC<EventListProps> = (props: EventListProps): JSX.
             location={location.requesting ? '...' : locationString}
             title={t('browsing_events_in')}
             onFilter={props.enableFilter}
-            online={selectedLocation.online}
+            online={selectedLocation?.online}
         />
         {
             providedLocation
