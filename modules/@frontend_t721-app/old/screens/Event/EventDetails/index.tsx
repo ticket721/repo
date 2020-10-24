@@ -49,7 +49,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props: EventDetailsPro
         return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dateQuery.force}/>
     }
 
-    if (date.status === 'preview') {
+    if (date.parent_type === null || date.status === 'preview') {
         return <Error message={t('error_unavailable_date')}/>
     }
 

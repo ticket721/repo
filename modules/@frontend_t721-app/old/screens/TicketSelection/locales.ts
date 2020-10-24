@@ -12,19 +12,15 @@ i18n.addResourceBundle('en', 'event_ticket_list', {
     left: 'left',
     regular_category_description: 'These categories give you access to one event',
     global_category_description: 'These categories give you access to several events',
-    checkout: 'Add to cart',
+    checkout: 'Checkout',
     available_in: 'Available in',
     sale_ends_in: 'Sale ends in',
-    online: 'Online',
-    free: 'Free',
-    no_categories: 'Ticket sale coming soon.',
 
     error_cannot_fetch_global_categories: 'Cannot fetch event',
     error_cannot_fetch_categories: 'Cannot fetch event',
     error_cannot_fetch_event: 'Cannot fetch event',
     error_cannot_fetch_dates: 'Cannot fetch event',
 });
-
 i18n.addResourceBundle('fr', 'event_ticket_list', {
     title: 'Sélectionnez une catégorie',
     ticket_for_event: 'Ticket pour l\'évènement ',
@@ -37,12 +33,9 @@ i18n.addResourceBundle('fr', 'event_ticket_list', {
     left: 'restant',
     regular_category_description: 'Ces catégories donnent accès à un évènement',
     global_category_description: 'Ces categories donnent accès à plusieurs évènements',
-    checkout: 'Ajouter au panier',
+    checkout: 'Paiement',
     available_in: 'Disponible dans',
     sale_ends_in: 'Fin de la vente dans',
-    online: 'En ligne',
-    free: 'Gratuit',
-    no_categories: 'Vente de billets bientôt disponible.',
 
     error_cannot_fetch_global_categories: 'Informations indisponibles',
     error_cannot_fetch_categories: 'Informations indisponibles',

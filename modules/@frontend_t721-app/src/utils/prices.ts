@@ -1,54 +1,66 @@
-import { Price }          from '@common/sdk/lib/@backend_nest/libs/common/src/currencies/Currencies.service';
 import { CategoryEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import { symbolOf }       from '@common/global';
 
-export const getT721TokenPrice = (prices: Price[]): number => {
-    if (prices.findIndex((price: Price): boolean => price.currency === 'T721Token') !== -1) {
-        return parseInt(prices[prices.findIndex((price: Price): boolean => price.currency === 'T721Token')].value, 10) / 100;
-    } else if (prices.length === 0) {
-        return 0;
-    } else {
-        return null;
+const categoryPriceString = (category: CategoryEntity, free: string): string => {
+    if (category.currency === 'FREE') {
+        return free;
     }
-};
 
-export const getPriceRange = (categories: CategoryEntity[]): [number, number] => {
+    return `${category.price / 100} ${symbolOf(category.currency)}`
+}
 
+export const getPrice = (category: CategoryEntity, free: string): string => {
+
+    return categoryPriceString(category, free);
+
+}
+
+export const getLowestPrice = (categories: CategoryEntity[], fallback: string, free: string): string => {
     if (categories.length === 0) {
-        return [null, null]
+        return fallback;
     }
 
-    const prices = categories
-        .map((category: CategoryEntity): number => getT721TokenPrice(category.prices))
-        .filter((price: number): boolean => price !== null);
+    let minimum = 0
 
-    const sortedPrices = prices.filter((price: number, idx: number): boolean => prices.indexOf(price) === idx)
-        .sort((lprice: number, rprice: number) => lprice - rprice);
+    for (let idx = 0; idx < categories.length; ++idx) {
+        const category = categories[idx];
 
-    if (sortedPrices.length === 1) {
-        return [sortedPrices[0], null]
-    } else if (sortedPrices.length) {
-        return [sortedPrices[0], sortedPrices[sortedPrices.length - 1]];
-    } else {
-        return [null, null];
-    }
-
-};
-
-export const getTotalPrice = (categories: CategoryEntity[]): number => {
-    if (categories.length === 0) {
-        return 0;
-    }
-
-    let total = 0;
-
-    for (const ticket of categories) {
-        const price = getT721TokenPrice(ticket.prices);
-        if (!price) {
-            total += 0;
-        } else {
-            total += price
+        if (category.price < categories[minimum].price) {
+            minimum = idx;
         }
     }
 
-    return total;
+    return categoryPriceString(categories[minimum], free);
+
+}
+
+export const getPriceRange = (categories: CategoryEntity[], fallback: string, free: string): string => {
+    if (categories.length === 0) {
+        return fallback;
+    }
+
+    let minimum = 0
+    let maximum = 0;
+
+    for (let idx = 0; idx < categories.length; ++idx) {
+        const category = categories[idx];
+
+        if (category.price < categories[minimum].price) {
+            minimum = idx;
+        } else if (category.price > categories[maximum].price) {
+            maximum = idx;
+        }
+    }
+
+    if (minimum === maximum) {
+
+        return categoryPriceString(categories[minimum], free);
+
+    } else {
+
+        return `${categoryPriceString(categories[minimum], free)} - ${categoryPriceString(categories[maximum], free)}`;
+
+    }
+
+
 }

@@ -1,4 +1,4 @@
-import Wallet              from '../screens/Wallet';
 import { StatusBarMargin } from '@frontend/core/lib/utils/StatusBarMargin';
+import { WIP }             from './WIP';
 
-export default StatusBarMargin(Wallet);
+export default StatusBarMargin(WIP);

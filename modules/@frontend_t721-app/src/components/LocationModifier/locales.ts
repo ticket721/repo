@@ -4,6 +4,7 @@ i18n.addResourceBundle('en', 'location_modifier', {
     browsing_events_in: 'Browsing events in',
     search_city: 'Search city',
     use_current_location: 'Use current location',
+    use_online_events: 'Show online events',
     cancel: 'Cancel',
     error_location_request_fail: 'Cannot fetch location'
 });
@@ -11,6 +12,7 @@ i18n.addResourceBundle('fr', 'location_modifier', {
     browsing_events_in: 'Liste d\'évènements à',
     search_city: 'Rechercher une ville',
     use_current_location: 'Utiliser position actuelle',
+    use_online_events: 'Événements en ligne',
     cancel: 'Annuler',
     error_location_request_fail: 'Informations indisponibles'
 });

@@ -1,8 +1,8 @@
 import React, { useEffect, useState }                                         from 'react';
-import { CurrentLocation, LocationList, SearchInput, FullPageLoading, Error } from '@frontend/flib-react/lib/components';
-import { useFormik }          from 'formik';
-import { City, MatchingCity } from '@common/global';
-import { useDispatch }        from 'react-redux';
+import { CurrentLocation, LocationList, SearchInput, FullPageLoading, Error, OnlineLocation } from '@frontend/flib-react/lib/components';
+import { useFormik }                                                          from 'formik';
+import { City, MatchingCity }                                                 from '@common/global';
+import { useDispatch }                                                        from 'react-redux';
 import { useTranslation }                                                     from 'react-i18next';
 import { GetLocation, SetCustomLocation }                                     from '../../redux/ducks/location';
 import { v4 }                                                                 from 'uuid';
@@ -101,6 +101,17 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
         coreProps.disableFilter();
     };
 
+    const setOnlineEvents = () => {
+        dispatch(SetCustomLocation({
+            lat: null,
+            lon: null,
+            city: null,
+            online: true
+        }));
+        clearInput();
+        coreProps.disableFilter();
+    }
+
     return <>
         <SearchInput
             onChange={fmk.handleChange}
@@ -113,6 +124,10 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
 
             placeholder={t('search_city')}
             cancelLabel={t('cancel')}
+        />
+        <OnlineLocation
+            label={t('use_online_events')}
+            getOnlineLocation={setOnlineEvents}
         />
         <CurrentLocation
             label={t('use_current_location')}
@@ -130,6 +145,7 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
                             lat: city.coord.lat,
                             lon: city.coord.lon,
                             city,
+                            online: false
                         }));
                         coreProps.disableFilter();
                     }}

@@ -1,9 +1,9 @@
 import { DateEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import React, { useState }             from 'react';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
-import { CategoriesSearchResponseDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { getLowestPrice, getPriceRange } from '../../../utils/prices';
-import { EventContainer }                from './EventContainer';
+import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { getPriceRange }               from '../../../utils/prices';
+import { EventContainer }              from './EventContainer';
 import { EventCta }                    from '@frontend/flib-react/lib/components';
 import { v4 }                          from 'uuid';
 import { useSelector }                 from 'react-redux';
@@ -28,25 +28,38 @@ export const EventCategoryFetcher: React.FC<EventCategoryFetcherProps> = (props:
         args: [token, {
             id: {
                 $in: props.date.categories
-            },
-            status: {
-                $eq: 'live'
             }
         }],
         refreshRate: 100
     }, `HomeEvent@${uuid}`);
 
-    const priceString = getLowestPrice([
-        ...(categories.response.data?.categories || []),
-    ], t('coming_soon'), t('free'));
-
-    const priceRangeString = getPriceRange(
-        [
-            ...(categories.response.data?.categories || []),
+    const globalCategories = useRequest<CategoriesSearchResponseDto>({
+        method: 'categories.search',
+        args: [
+            token,
+            {
+                group_id: {
+                    $eq: props.date.group_id
+                },
+                parent_type: {
+                    $eq: 'event'
+                },
+            }
         ],
-        t('coming_soon'),
-        t('free')
-    );
+        refreshRate: 100
+    }, `HomeEvent@${uuid}`);
+
+    const priceRange = getPriceRange([
+        ...(categories.response.data?.categories || []),
+        ...(globalCategories.response.data?.categories || [])
+    ]);
+
+    const priceString = priceRange[0] === priceRange[1] || priceRange[1] === null
+        ?
+        t('get_ticket_pricing_solo', {price: priceRange[0]})
+
+        :
+        t('get_ticket_pricing_range', {minPrice: priceRange[0], maxPrice: priceRange[1]});
 
     const goToTicketSelection = () => {
         history.push(`/event/${props.date.id}/selection`)
@@ -54,7 +67,7 @@ export const EventCategoryFetcher: React.FC<EventCategoryFetcherProps> = (props:
 
     return <>
         <EventContainer
-            priceString={priceRangeString}
+            priceString={`${t('tickets_from')} ${priceString}`}
             date={props.date}
             setCtaVisibility={setCtaVisibility}
         />

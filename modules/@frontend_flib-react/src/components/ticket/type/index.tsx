@@ -4,9 +4,25 @@ import Icon from '../../icon';
 import Countdown from 'react-countdown';
 import { useEffect, useState } from 'react';
 
+const DTFormatShort = new Intl.DateTimeFormat('default', {
+    month: 'short',
+    day: '2-digit',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false,
+});
+
+export const formatShort = (date: Date | string): string => DTFormatShort.format(new Date(date));
+
+interface DateInfo {
+    name: string;
+    start: Date;
+    online: boolean;
+}
+
 export interface TicketTypeProps extends React.ComponentProps<any> {
     gradient: string[];
-    description: JSX.Element;
+    dates: DateInfo[];
     selected?: boolean;
     price: string;
     title: string;
@@ -93,21 +109,25 @@ const DisabledContainer = styled.div<DisabledContainerProps>`
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 10;
 `;
 
 const CountdownText = styled.h4`
     font-weight: 300;
     font-size: 24px;
+    z-index: 11;
 `;
 
 const NumberText = styled.span`
     font-family: 'Roboto Mono', monospace;
+    z-index: 11;
 `;
 
 const SoldOutText = styled.span`
     text-transform: uppercase;
     font-weight: 900;
     font-size: 24px;
+    z-index: 11;
 `;
 
 interface SoldOutContainerProps {
@@ -176,6 +196,39 @@ const isDisabled = (props: TicketTypeProps): boolean => {
     return isBeforeSale(props.saleBegin) || isAfterSale(props.saleEnd) || isSoldOut(props.ticketsLeft);
 };
 
+interface DescriptionProps {
+    color: string;
+}
+
+const Description = styled.p<DescriptionProps>`
+    color: ${(props) => props.color} !important;
+    margin: 0 !important;
+`;
+
+const Discrete = styled.span`
+    color: ${(props) => props.theme.textColor};
+    font-weight: 200;
+    opacity: 0.7;
+    font-size: 14px;
+`;
+
+const LiveIcon = styled(Icon)`
+    display: inline;
+    margin-right: 5px;
+    margin-left: 5px;
+`;
+
+const DateDescription = (props: { date: DateInfo; theme: string; idx: number }): JSX.Element => {
+    return (
+        <Description color={props.theme}>
+            {props.idx > 0 ? <Discrete>{'+ '}</Discrete> : null}
+            {props.date.online ? <LiveIcon icon={'live'} color={props.theme} size={'16px'} /> : null}
+            {props.date.name}
+            <Discrete>, {formatShort(props.date.start)}</Discrete>
+        </Description>
+    );
+};
+
 export const TicketType: React.FunctionComponent<TicketTypeProps> = (props: TicketTypeProps): JSX.Element => {
     const [, setNow] = useState(Date.now());
 
@@ -215,7 +268,12 @@ export const TicketType: React.FunctionComponent<TicketTypeProps> = (props: Tick
             </div>
             <h4>{props.price}</h4>
 
-            {props.description}
+            <div style={{ marginTop: 12, marginBottom: 12 }}>
+                {props.dates.map((date: DateInfo, idx: number) => (
+                    <DateDescription date={date} theme={props.gradient[0]} idx={idx} key={idx} />
+                ))}
+            </div>
+
             {!isDisabled(props) && !isAfterSale(props.saleEnd) ? (
                 <Countdown date={props.saleEnd.getTime()} renderer={descRenderer.bind(null, props.saleEndsInLabel)} />
             ) : null}

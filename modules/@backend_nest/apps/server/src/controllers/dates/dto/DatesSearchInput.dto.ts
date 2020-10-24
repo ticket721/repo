@@ -14,7 +14,7 @@ import { IsOptional } from 'class-validator';
 /**
  * Input required by the Dates Search
  */
-export class DatesSearchInputDto implements SearchInputType<Omit<DateEntity, 'online_link'>> {
+export class DatesSearchInputDto implements SearchInputType<Omit<DateEntity, 'online_link' | 'status'>> {
     /**
      * Searchable field to search by id
      */

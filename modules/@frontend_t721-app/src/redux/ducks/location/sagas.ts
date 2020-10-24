@@ -51,6 +51,7 @@ function getLocationFromBrowser() {
                             lat: position.coords.latitude,
                             lon: position.coords.longitude,
                             city: resultCity,
+                            online: false
                         }),
                     );
 
@@ -74,6 +75,7 @@ function getLocationFromBrowser() {
                             lat,
                             lon,
                             city: resultCity,
+                            online: false
                         }),
                     );
 

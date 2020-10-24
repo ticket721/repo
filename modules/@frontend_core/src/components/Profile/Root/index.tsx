@@ -67,17 +67,7 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
     const tickets = useRequest<TicketsCountResponseDto>(
         {
             method: 'tickets.count',
-            args: [
-                token,
-                {
-                    owner: {
-                        $eq: user.address,
-                    },
-                    status: {
-                        $ne: 'canceled',
-                    },
-                },
-            ],
+            args: [token, {}],
             refreshRate: 50,
         },
         uuid,

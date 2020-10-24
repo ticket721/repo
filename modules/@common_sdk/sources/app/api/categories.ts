@@ -10,6 +10,7 @@ import { CategoriesEditInputDto }              from '@app/server/controllers/cat
 import { CategoriesEditResponseDto }           from '@app/server/controllers/categories/dto/CategoriesEditResponse.dto';
 import { CategoriesRemoveDateLinkResponseDto } from '@app/server/controllers/categories/dto/CategoriesRemoveDateLinkResponse.dto';
 import { CategoriesOwnerResponseDto }          from '@app/server/controllers/categories/dto/CategoriesOwnerResponse.dto';
+import { CategoriesCountTicketResponseDto }    from '@app/server/controllers/categories/dto/CategoriesCountTicketResponse.dto';
 
 export async function categoriesSearch(
     token: string,
@@ -48,6 +49,19 @@ export async function categoriesCount(
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
+}
+
+export async function categoriesTicketCount(
+    token: string,
+    category: string
+): Promise<AxiosResponse<CategoriesCountTicketResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.get(`/categories/${category}/ticket-count`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    });
 }
 
 export async function categoriesEdit(
