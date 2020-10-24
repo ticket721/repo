@@ -1,4 +1,4 @@
-import Event              from '../screens/Event';
-import { CtaMargin }      from '../utils/CtaMargin';
+import { CtaMargin } from '../utils/CtaMargin';
+import { WIP }       from './WIP';
 
-export default CtaMargin(Event);
+export default CtaMargin(WIP);
