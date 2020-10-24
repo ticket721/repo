@@ -172,56 +172,105 @@ export class DatesController extends ControllerBasics<DateEntity> {
         const now = this.timeToolService.now().getTime();
         const hour = now - (now % HOUR);
 
+        const isOnline = (isNil(body.lat) && isNil(body.lon));
+
         const query = this._esQueryBuilder<DateEntity>({
             status: {
                 $eq: 'live',
             },
-            parent_type: {
-                $eq: 'event',
-            },
             'timestamps.event_begin': {
                 $gt: hour,
             },
+            online: {
+                $eq: isOnline
+            }
         } as SortablePagedSearch);
 
-        query.body.query.bool.filter = {
-            script: {
+        if (!isOnline) {
+            query.body.query.bool.filter = {
                 script: {
-                    source: `
+                    script: {
+                        source: `
+                        if (doc['location.location'].empty) {
+                            return false;
+                        }
+                        
                         double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
                         return distance < params.maxDistance;
                     `,
-                    lang: 'painless',
-                    params: {
-                        maxDistance: 100,
-                        lon: body.lon,
-                        lat: body.lat,
+                        lang: 'painless',
+                        params: {
+                            maxDistance: 100,
+                            lon: body.lon,
+                            lat: body.lat,
+                        },
                     },
                 },
-            },
-        };
+            };
+        } else {
+            query.body.query.bool.filter = {
+                script: {
+                    script: {
+                        source: `
+                        return doc['location.location'].empty;
+                    `,
+                        lang: 'painless',
+                        params: {
+                            maxDistance: 100,
+                            lon: body.lon,
+                            lat: body.lat,
+                        },
+                    },
+                },
+            };
+        }
 
         query.body.sort = [];
 
-        query.body.sort.push({
-            _script: {
-                script: {
-                    source: `
-                        double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
+        if (!isOnline) {
+            query.body.sort.push({
+                _script: {
+                    script: {
+                        source: `
                         double time = (doc['timestamps.event_begin'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
-                        return distance + time;
+                        
+                        if (doc['location.location'].empty) {
+                            return time
+                        } else {
+                            double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
+                            return distance + time;
+                        }
                     `,
-                    params: {
-                        now: hour,
-                        lon: body.lon,
-                        lat: body.lat,
+                        params: {
+                            now: hour,
+                            lon: body.lon,
+                            lat: body.lat,
+                        },
+                        lang: 'painless',
                     },
-                    lang: 'painless',
+                    type: 'number',
+                    order: 'asc',
                 },
-                type: 'number',
-                order: 'asc',
-            },
-        });
+            });
+        } else {
+            query.body.sort.push({
+                _script: {
+                    script: {
+                        source: `
+                        return (doc['timestamps.event_begin'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+                    `,
+                        params: {
+                            now: hour,
+                            lon: body.lon,
+                            lat: body.lat,
+                        },
+                        lang: 'painless',
+                    },
+                    type: 'number',
+                    order: 'asc',
+                },
+            });
+        }
 
         const dates = await this.datesService.searchElastic(query);
 
@@ -414,10 +463,10 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 eventEnd: new Date(date.timestamps.event_end),
                 location: date.location
                     ? {
-                          label: date.location.location_label,
-                          lon: date.location.location.lon,
-                          lat: date.location.location.lat,
-                      }
+                        label: date.location.location_label,
+                        lon: date.location.location.lon,
+                        lat: date.location.location.lat,
+                    }
                     : null,
             },
             textMetadata: {
@@ -466,13 +515,13 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 location: dateEditionPayload.info.online
                     ? null
                     : {
-                          location: {
-                              lat: dateEditionPayload.info.location.lat,
-                              lon: dateEditionPayload.info.location.lon,
-                          },
-                          location_label: dateEditionPayload.info.location.label,
-                          assigned_city: closestCity(dateEditionPayload.info.location).id,
-                      },
+                        location: {
+                            lat: dateEditionPayload.info.location.lat,
+                            lon: dateEditionPayload.info.location.lon,
+                        },
+                        location_label: dateEditionPayload.info.location.label,
+                        assigned_city: closestCity(dateEditionPayload.info.location).id,
+                    },
                 timestamps: {
                     event_begin: new Date(dateEditionPayload.info.eventBegin),
                     event_end: new Date(dateEditionPayload.info.eventEnd),

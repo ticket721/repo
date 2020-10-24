@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import { ApiProperty }          from '@nestjs/swagger';
+import { IsNumber, IsOptional } from 'class-validator';
 
 /**
  * Input required by the Dates home Search
@@ -10,12 +10,14 @@ export class DatesHomeSearchInputDto {
      */
     @ApiProperty()
     @IsNumber()
-    lat: number;
+    @IsOptional()
+    lat?: number;
 
     /**
      * Longitude of the requesting user
      */
     @ApiProperty()
     @IsNumber()
-    lon: number;
+    @IsOptional()
+    lon?: number;
 }

@@ -69,14 +69,7 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
             method: 'tickets.count',
             args: [
                 token,
-                {
-                    owner: {
-                        $eq: user.address,
-                    },
-                    status: {
-                        $ne: 'canceled',
-                    },
-                },
+                {},
             ],
             refreshRate: 50,
         },
