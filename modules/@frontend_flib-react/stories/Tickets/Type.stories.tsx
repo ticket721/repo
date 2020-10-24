@@ -16,7 +16,11 @@ export const showcase = () => (
     <TicketType
         color={text('Color', '#DB535B')}
         gradient={array('Gradient', gradientsValues)}
-        description={<p>Description</p>}
+        dates={[{
+          name: 'Event',
+          start: new Date(),
+          online: false
+        }]}
         feesIncluded={boolean('Fees included ?', false)}
         selected={boolean('Selected ?', false)}
         soldOutLabel={text('Sold out', 'Sold out')}
