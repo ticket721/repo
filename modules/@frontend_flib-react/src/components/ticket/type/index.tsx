@@ -1,15 +1,15 @@
-import * as React              from 'react';
-import styled                  from '../../../config/styled';
-import Icon                    from '../../icon';
-import Countdown               from 'react-countdown';
+import * as React from 'react';
+import styled from '../../../config/styled';
+import Icon from '../../icon';
+import Countdown from 'react-countdown';
 import { useEffect, useState } from 'react';
 
 const DTFormatShort = new Intl.DateTimeFormat('default', {
-  month: 'short',
-  day: '2-digit',
-  hour: 'numeric',
-  minute: 'numeric',
-  hour12: false,
+    month: 'short',
+    day: '2-digit',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false,
 });
 
 export const formatShort = (date: Date | string): string => DTFormatShort.format(new Date(date));
