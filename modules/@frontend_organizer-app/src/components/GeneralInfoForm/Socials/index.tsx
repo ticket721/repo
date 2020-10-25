@@ -8,12 +8,12 @@ import { SocialInput } from './SocialInput';
 import { SocialBtn } from './SocialBtn';
 import { SocialItem, socialItems } from './socialItems';
 import { useFormikContext } from 'formik';
-import { EventCreationPayload } from '@common/global';
+import { DateCreationPayload, EventCreationPayload } from '@common/global';
 
 export const SocialSection: React.FC = () => {
     const [ t ] = useTranslation('socials');
 
-    const formikCtx = useFormikContext<EventCreationPayload>();
+    const formikCtx = useFormikContext<EventCreationPayload | DateCreationPayload>();
 
     return (
         <SocialContainer>
@@ -32,12 +32,9 @@ export const SocialSection: React.FC = () => {
                         name={socialName}
                         color={socialColor}
                         pattern={'[A-Za-z][0-9]'}
-                        options={
+                        prefix={
                             (socialName === 'twitter' || socialName === 'tiktok' || socialName === 'instagram') ?
-                            {
-                                prefix: '@',
-                                noImmediatePrefix: true,
-                            } :
+                            '@' :
                             null
                         }
                     />
@@ -52,7 +49,7 @@ export const SocialSection: React.FC = () => {
                             key={item.name}
                             name={item.name}
                             pic={item.pic}
-                            onClick={() => formikCtx.setFieldValue(`textMetadata[${item.name}]`, '')}
+                            onClick={() => formikCtx.setFieldValue(`textMetadata.${item.name}`, '')}
                         />
                     )
                 }

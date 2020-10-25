@@ -23,7 +23,7 @@ const initialDate: DatePayload = {
     }
 }
 
-export const DatesForm: React.FC = () => {
+export const DatesStep: React.FC = () => {
     const [ t ] = useTranslation('dates_form');
 
     const [ currentEditingDate, setCurrentEditingDate ] = useState<number>(-1);

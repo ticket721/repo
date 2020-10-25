@@ -5,18 +5,17 @@ import { IconColor } from '@frontend/flib-react/lib/components/icon';
 import { useTranslation } from 'react-i18next';
 import './locales';
 import { useField } from 'formik';
-import { evaluateError } from '../../../../../utils/extractError';
+import { evaluateError } from '../../../utils/extractError';
 
 export interface SocialInputProps {
     name: string;
     color: IconColor;
-    options?: any;
+    prefix?: string;
     pattern?: string;
 }
 
-export const SocialInput: React.FC<SocialInputProps> = ({ name, color, options }: SocialInputProps) => {
+export const SocialInput: React.FC<SocialInputProps> = ({ name, color, prefix }: SocialInputProps) => {
     const [ t ] = useTranslation(['socials', 'errors']);
-
 
     const [ field, meta, helper ] = useField<string>(`textMetadata.${name}`);
 
@@ -34,9 +33,9 @@ export const SocialInput: React.FC<SocialInputProps> = ({ name, color, options }
         <SocialInputContainer>
             <TextInput
             {...field}
+            value={prefix ? prefix + field.value : field.value}
             className={name}
-            value={field.value}
-            onChange={options ? (e) => helper.setValue(e.target.value.substring(options.prefix.length)) :
+            onChange={prefix ? (e) => helper.setValue(e.target.value.substring(prefix.length)) :
                 field.onChange
             }
             onBlur={() => {
@@ -46,7 +45,6 @@ export const SocialInput: React.FC<SocialInputProps> = ({ name, color, options }
             placeholder={t(`${name}_placeholder`)}
             icon={name}
             iconColor={color}
-            options={options}
             error={evaluateError(meta)}
             />
             <Close onClick={() => helper.setValue(undefined)}>

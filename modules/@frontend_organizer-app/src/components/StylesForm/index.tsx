@@ -34,11 +34,6 @@ const StylesContainer = styled.div`
     > div {
         margin-bottom: 35px
     }
-
-    & > button {
-        margin: 45px 0;
-        outline: none;
-    }
 `;
 
 const ColorPickerContainer = styled.div<{ disabled: boolean }>`

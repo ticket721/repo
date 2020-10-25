@@ -6,19 +6,19 @@ import { useField, useFormikContext } from 'formik';
 import './locales';
 import { useTranslation }              from 'react-i18next';
 
-import { evaluateError } from '../../../../../../utils/extractError';
 import { getEnv } from '@frontend/core/lib/utils/getEnv';
 import { useState } from 'react';
 import { checkFormatDate } from '@frontend/core/lib/utils/date';
+import { evaluateError } from '../../utils/extractError';
 
-export const useDateCreationFields = (idx: number): {
+export const useDateFields = (parentField: string): {
     eventBeginProps: CustomDatePickerProps,
     eventEndProps: CustomDatePickerProps,
     onlineProps: ToggleProps,
     locationProps?: LocationInputProps,
     onlineLinkProps?: TextInputProps,
 } => {
-    const [ t, i18n ] = useTranslation('date_fields');
+    const [ t, i18n ] = useTranslation('date_and_typology_fields');
 
     const [ storedLink, setStoredLink ] = useState<string>();
     const [ storedLocation, setStoredLocation ] = useState<Location>({
@@ -29,11 +29,11 @@ export const useDateCreationFields = (idx: number): {
 
     const validateForm = useFormikContext().validateForm;
 
-    const [ eventBeginField, eventBeginMeta, eventBeginHelper ] = useField<Date>(`datesConfiguration[${idx}].eventBegin`);
-    const [ eventEndField, eventEndMeta, eventEndHelper ] = useField<Date>(`datesConfiguration[${idx}].eventEnd`);
-    const [ onlineField,, ] = useField<boolean>(`datesConfiguration[${idx}].online`);
-    const [ onlineLinkField, onlineLinkMeta, onlineLinkHelper ] = useField<string>(`datesConfiguration[${idx}].online_link`);
-    const [ locationField, locationMeta, locationHelper ] = useField<Location>(`datesConfiguration[${idx}].location`);
+    const [ eventBeginField, eventBeginMeta, eventBeginHelper ] = useField<Date>(`${parentField}.eventBegin`);
+    const [ eventEndField, eventEndMeta, eventEndHelper ] = useField<Date>(`${parentField}.eventEnd`);
+    const [ onlineField,, ] = useField<boolean>(`${parentField}.online`);
+    const [ onlineLinkField, onlineLinkMeta, onlineLinkHelper ] = useField<string>(`${parentField}.online_link`);
+    const [ locationField, locationMeta, locationHelper ] = useField<Location>(`${parentField}.location`);
 
     return {
         eventBeginProps: {

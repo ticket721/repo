@@ -11,7 +11,6 @@ import {
 import Navbar               from './shared/Navbar';
 import { AppState }         from '@frontend/core/lib/redux';
 import ProtectedRoute       from '@frontend/core/lib/components/ProtectedRoute';
-import ProtectedByRights    from '@frontend/core/lib/components/ProtectedByRights';
 import { useSelector }      from 'react-redux';
 import styled               from 'styled-components';
 import { AppStatus }        from '@frontend/core/lib/redux/ducks/statuses';
@@ -24,6 +23,7 @@ import './core/event_creation/locales';
 import './shared/Translations/global';
 import { UserContextGuard } from '@frontend/core/lib/utils/UserContext';
 import { FeatureFlag }      from '@frontend/core/lib/components/FeatureFlag';
+import { ProtectedByOwnership } from '@frontend/core/lib/components/ProtectedByOwnership';
 
 const App: React.FC = () => {
     const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
@@ -67,15 +67,15 @@ const App: React.FC = () => {
                                             return <ProtectedRoute exact={true} path={route.path} key={idx}>
                                                 <PageWrapper>
                                                     {
-                                                        route.path.match(/^\/group\/:groupId/) ?
-                                                            <ProtectedByRights type={route.entityType} value={route.paramId}>
+                                                        route.entityParam ?
+                                                            <ProtectedByOwnership entityType={route.entityType} entityParam={route.entityParam}>
                                                                 <EventPageWrapper>
-                                                                    <EventMenu/>
+                                                                    {/* <EventMenu/> */}
                                                                     <div>
                                                                         <Page/>
                                                                     </div>
                                                                 </EventPageWrapper>
-                                                            </ProtectedByRights>
+                                                            </ProtectedByOwnership>
                                                             :
                                                             <Page/>
                                                     }

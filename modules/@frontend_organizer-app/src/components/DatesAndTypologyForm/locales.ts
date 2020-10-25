@@ -1,6 +1,6 @@
 import i18n from '@frontend/core/lib/utils/i18n';
 
-i18n.addResourceBundle('en', 'date_fields', {
+i18n.addResourceBundle('en', 'date_and_typology_fields', {
     start_date_label: 'Start Date',
     start_time_input_label: 'Start Time',
     end_date_label: 'End Date',
@@ -14,7 +14,7 @@ i18n.addResourceBundle('en', 'date_fields', {
     date_placeholder: 'Select Date',
 });
 
-i18n.addResourceBundle('fr', 'date_fields', {
+i18n.addResourceBundle('fr', 'date_and_typology_fields', {
     start_date_label: 'Date de début',
     start_time_input_label: 'Heure de début',
     end_date_label: 'Date de fin',

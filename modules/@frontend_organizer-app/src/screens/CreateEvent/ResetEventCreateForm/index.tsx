@@ -47,7 +47,6 @@ export const ResetEventCreateForm: React.FC<ResetEventCreateFormProps> = ({ toke
 
 const ResetLink = styled.span`
     font-size: 12px;
-    color: ${(props) => props.theme.primaryColorGradientEnd.hex};
     text-decoration: underline;
     cursor: pointer;
 `;
