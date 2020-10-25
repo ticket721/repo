@@ -22,7 +22,7 @@ const initialCategory: CategoryWithDatesPayload = {
     dates: [],
 }
 
-export const CategoriesForm: React.FC = () => {
+export const CategoriesStep: React.FC = () => {
     const [ t ] = useTranslation('categories_form');
 
     const allDatesOpt = {

@@ -6,10 +6,10 @@ import '@frontend/core/lib/utils/window';
 
 import { Button } from '@frontend/flib-react/lib/components';
 
-import { GeneralInfoForm }     from './Forms/GeneralInfoForm';
-import { StylesForm }          from './Forms/StylesForm';
-import { DatesForm }           from './Forms/DatesForm';
-import { CategoriesForm }      from './Forms/CategoriesForm';
+import { GeneralInfoForm }     from '../../components/GeneralInfoForm';
+import { StylesForm }          from '../../components/StylesForm';
+import { DatesStep }           from './DatesStep';
+import { CategoriesStep }      from './CategoriesStep';
 
 import { useTranslation }                from 'react-i18next';
 import './locales';
@@ -20,7 +20,7 @@ import { Formik, FormikHelpers } from 'formik';
 import { Persist } from 'formik-persist';
 import { checkEvent, EventCreationPayload } from '@common/global';
 import { DelayedOnMountValidation } from './DelayedOnMountValidation';
-import { Stepper, StepStatus } from './Stepper';
+import { Stepper, StepStatus } from '../../components/Stepper';
 import { AppState } from '@frontend/core/lib/redux';
 
 export interface FormProps {
@@ -103,15 +103,15 @@ const CreateEvent: React.FC = () => {
                 }
             )
         );
-        return checkEvent(eventPayload);
+        return errors;
     };
 
     const buildForm = () => {
         switch (currentStep) {
             case 0: return <GeneralInfoForm/>;
             case 1: return <StylesForm/>;
-            case 2: return <DatesForm/>;
-            case 3: return <CategoriesForm/>;
+            case 2: return <DatesStep/>;
+            case 3: return <CategoriesStep/>;
             default: return <></>;
         }
     };

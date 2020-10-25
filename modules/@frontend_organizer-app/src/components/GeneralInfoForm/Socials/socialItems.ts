@@ -1,11 +1,11 @@
-import websitePic from '../../../../../media/images/social/website.svg';
-import twitterPic from '../../../../../media/images/social/twitter.svg';
-import facebookPic from '../../../../../media/images/social/facebook.svg';
-import emailPic from '../../../../../media/images/social/email.svg';
-import linkedInPic from '../../../../../media/images/social/linkedIn.svg';
-import tiktokPic from '../../../../../media/images/social/tiktok.svg';
-import instagramPic from '../../../../../media/images/social/instagram.svg';
-import spotifyPic from '../../../../../media/images/social/spotify.svg';
+import websitePic from '../../../media/images/social/website.svg';
+import twitterPic from '../../../media/images/social/twitter.svg';
+import facebookPic from '../../../media/images/social/facebook.svg';
+import emailPic from '../../../media/images/social/email.svg';
+import linkedInPic from '../../../media/images/social/linkedIn.svg';
+import tiktokPic from '../../../media/images/social/tiktok.svg';
+import instagramPic from '../../../media/images/social/instagram.svg';
+import spotifyPic from '../../../media/images/social/spotify.svg';
 
 import { IconColor } from '@frontend/flib-react/lib/components';
 

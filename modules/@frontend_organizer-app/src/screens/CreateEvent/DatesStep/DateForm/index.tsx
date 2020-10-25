@@ -8,7 +8,7 @@ import { useFormikContext } from 'formik';
 import { EventCreationPayload } from '@common/global';
 import { OnlineTag } from '../OnlineTag';
 import { Button } from '@frontend/flib-react/lib/components';
-import { DateFields } from './Fields';
+import { DatesAndTypologyForm } from '../../../../components/DatesAndTypologyForm';
 
 export interface DateFormProps {
     idx: number;
@@ -31,7 +31,7 @@ export const DateForm: React.FC<DateFormProps> = ({ idx, newDate, onComplete }) 
                     ) : null}
                 </Title>
             </Header>
-            <DateFields idx={idx} sigColors={sigColors} />
+            <DatesAndTypologyForm parentField={`datesConfiguration[${idx}]`} sigColors={sigColors} />
             <ActionButton>
                 {
                     newDate ?

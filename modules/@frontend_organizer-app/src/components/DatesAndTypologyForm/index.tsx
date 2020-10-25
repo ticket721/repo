@@ -2,17 +2,17 @@ import { CustomDatePicker, TextInput, Toggle } from '@frontend/flib-react/lib/co
 import React from 'react';
 import styled from 'styled-components';
 import { LocationInput } from '@frontend/core/lib/components/LocationInput';
-import { useDateCreationFields } from './useDateCreationFields';
+import { useDateFields } from './useDateFields';
 
-export interface DateFieldsProps {
-    idx: number;
+export interface DatesAndTypologyFormProps {
+    parentField: string;
     sigColors: string[];
 }
 
-export const DateFields: React.FC<DateFieldsProps> = ({ idx, sigColors }) => {
-    const { eventBeginProps, eventEndProps, onlineProps, locationProps, onlineLinkProps } = useDateCreationFields(idx);
+export const DatesAndTypologyForm: React.FC<DatesAndTypologyFormProps> = ({ parentField, sigColors }) => {
+    const { eventBeginProps, eventEndProps, onlineProps, locationProps, onlineLinkProps } = useDateFields(parentField);
 
-    return <>
+    return <DatesAndTypologyContainer>
         <DateRangeInput>
             <CustomDatePicker
             {...eventBeginProps}
@@ -36,8 +36,12 @@ export const DateFields: React.FC<DateFieldsProps> = ({ idx, sigColors }) => {
             {...locationProps}
             iconColor={sigColors[0]} />
         }
-    </>;
+    </DatesAndTypologyContainer>;
 }
+
+const DatesAndTypologyContainer = styled.div`
+    width: 100%;
+`;
 
 const DateRangeInput = styled.div`
     display: flex;
@@ -50,7 +54,6 @@ const DateRangeInput = styled.div`
 `;
 
 const OnlineSwitch = styled.div`
-    width: 100%;
     display: flex;
     justify-content: flex-end;
     margin-bottom: ${props => props.theme.regularSpacing};

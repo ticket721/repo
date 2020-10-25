@@ -7,11 +7,11 @@ import './locales';
 
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { EventCreationCore } from '../../../../core/event_creation/EventCreationCore';
 import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 import Vibrant from 'node-vibrant';
 import { ColorResult } from 'react-color';
 import { AppState } from '@frontend/core/lib/redux';
+import { EventCreationCore } from '../../core/event_creation/EventCreationCore';
 
 export const useStylesCreationFields = (): {
     avatarProps: FilesUploaderProps,

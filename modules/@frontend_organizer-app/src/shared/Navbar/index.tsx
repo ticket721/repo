@@ -42,14 +42,7 @@ const AuthNavBar: React.FC = () => {
         method: 'tickets.count',
         args: [
             token,
-            {
-                owner: {
-                    $eq: user.address
-                },
-                status: {
-                    $ne: 'canceled',
-                }
-            }
+            {}
         ],
         refreshRate: 50,
     }, uuid);

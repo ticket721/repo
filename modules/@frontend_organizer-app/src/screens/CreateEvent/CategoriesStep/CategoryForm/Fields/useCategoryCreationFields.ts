@@ -4,7 +4,7 @@ import './locales';
 import { useTranslation }              from 'react-i18next';
 
 import { useField, useFormikContext } from 'formik';
-import { evaluateError } from '../../../../../../utils/extractError';
+import { evaluateError } from '../../../../../utils/extractError';
 import { EventCreationPayload } from '@common/global';
 import { checkFormatDate, formatShort } from '@frontend/core/lib/utils/date';
 import { useState } from 'react';

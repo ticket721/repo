@@ -14,6 +14,7 @@ import { GlobalStyles }                                                         
 import { customThemes }                                                            from '@frontend/flib-react/lib/config/theme';
 import { EnvValidator }                                                            from '@frontend/core/lib/components/EnvValidator';
 import { OrganizerAppEnvSchema }                                                   from './utils/env';
+import './locales';
 
 export const store: Store<AppState> = configureStore();
 

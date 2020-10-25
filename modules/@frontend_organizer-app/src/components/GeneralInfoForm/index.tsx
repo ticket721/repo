@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import './locales';
 import { useField } from 'formik';
 
-import { SocialSection } from './Socials/SocialSection';
-import { evaluateError } from '../../../../utils/extractError';
+import { SocialSection } from './Socials';
+import { evaluateError } from '../../utils/extractError';
 
 export const GeneralInfoForm: React.FC = () => {
     const [ t ] = useTranslation('general_infos');
@@ -30,7 +30,7 @@ export const GeneralInfoForm: React.FC = () => {
             maxChar={10000}
             error={evaluateError(descMeta)}
             />
-            <SocialSection/>
+            <SocialSection />
         </GeneralInfos>
     );
 };
