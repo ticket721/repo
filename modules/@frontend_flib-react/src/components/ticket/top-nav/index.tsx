@@ -37,8 +37,11 @@ const SafeOffsetContainer = styled.div`
     z-index: 9999;
 
     &.scrolled {
-        background-color: rgba(0, 0, 0, 0);
-        backdrop-filter: blur(16px);
+        background-color: rgba(33, 29, 45, 1);
+        @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+            background-color: rgba(0, 0, 0, 0);
+            backdrop-filter: blur(16px);
+        }
     }
 `;
 

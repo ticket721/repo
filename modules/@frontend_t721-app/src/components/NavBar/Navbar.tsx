@@ -1,17 +1,17 @@
 import React                          from 'react';
-import { Icon, Navbar }               from '@frontend/flib-react/lib/components';
+import { Icon, Navbar as FlibNavbar }               from '@frontend/flib-react/lib/components';
 import { Link, useLocation } from 'react-router-dom';
 import { isNavItemActive }            from '@frontend/core/lib/utils/isNavItemActive';
 
-interface AnonymousNavbarProps {
+interface NavbarProps {
     visible: boolean;
 }
 
-export const AnonymousNavbar: React.FC<AnonymousNavbarProps> = (props: AnonymousNavbarProps): JSX.Element => {
+export const Navbar: React.FC<NavbarProps> = (props: NavbarProps): JSX.Element => {
 
     const location = useLocation();
 
-    return <Navbar iconHeight={'22px'} visible={props.visible}>
+    return <FlibNavbar iconHeight={'22px'} visible={props.visible}>
         <Link replace={true} to={'/'} className={isNavItemActive('/', location)}>
             <Icon icon={'home'} color='#FFFFFF' size={'22px'}/>
         </Link>
@@ -32,5 +32,5 @@ export const AnonymousNavbar: React.FC<AnonymousNavbarProps> = (props: Anonymous
             <Icon icon={'profile'} color='#FFFFFF' size={'22px'}/>
         </Link>
 
-    </Navbar>
+    </FlibNavbar>
 };

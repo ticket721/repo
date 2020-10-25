@@ -18,13 +18,11 @@ export interface DoubleButtonCtaProps extends React.ComponentProps<any> {
 
 const CtaContainer = styled.div<DoubleButtonCtaProps>`
   align-items: center;
-  background-color: ${browser?.name === 'firefox' ? 'rgba(33, 29, 45, 0.95)' : 'rgba(33, 29, 45, 0.6)'};
 
-  ${
-      browser?.name !== 'firefox' &&
-      `
-    backdrop-filter: blur(40px);
-  `
+  background-color: rgba(33, 29, 45, 1);
+  @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+      background-color: rgba(33, 29, 45, 0.6);
+      backdrop-filter: blur(6px);
   }
 
   border-top-left-radius: ${(props) => props.theme.bigRadius};

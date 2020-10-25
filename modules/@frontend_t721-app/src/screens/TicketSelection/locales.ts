@@ -23,6 +23,9 @@ i18n.addResourceBundle('en', 'event_ticket_list', {
     error_cannot_fetch_categories: 'Cannot fetch event',
     error_cannot_fetch_event: 'Cannot fetch event',
     error_cannot_fetch_dates: 'Cannot fetch event',
+
+    ticket_per_cart_limit_reached: 'Ticket limit reached for current cart !',
+    no_tickets_left: 'No tickets left for ticket category !'
 });
 
 i18n.addResourceBundle('fr', 'event_ticket_list', {
@@ -48,4 +51,7 @@ i18n.addResourceBundle('fr', 'event_ticket_list', {
     error_cannot_fetch_categories: 'Informations indisponibles',
     error_cannot_fetch_event: 'Informations indisponibles',
     error_cannot_fetch_dates: 'Informations indisponibles',
+
+    ticket_per_cart_limit_reached: 'Limite de tickets atteinte pour le panier en cours !',
+    no_tickets_left: 'Catégorie epuisée !'
 });

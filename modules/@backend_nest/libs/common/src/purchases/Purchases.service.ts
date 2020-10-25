@@ -130,9 +130,9 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                     !!feeDesc
                         ? feeDesc
                         : {
-                              type: 'none',
-                              price: 0,
-                          },
+                            type: 'none',
+                            price: 0,
+                        },
             ),
             error: null,
         };
@@ -285,41 +285,52 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
             currency: null,
         };
 
-        for (const product of products) {
-            let error: PurchaseError = null;
+        if (products.length === 0) {
+            edits = {
+                products: [],
+                payment_interface: null,
+                price: null,
+                currency: null
+            }
+        } else {
 
-            const productHandler: ProductCheckerServiceBase = this.moduleRef.get(`product/${product.type}`, {
-                strict: false,
-            });
+            for (const product of products) {
+                let error: PurchaseError = null;
 
-            if (isNil(productHandler)) {
-                error = {
-                    reason: 'unknown_product',
-                    context: {
-                        type: product.type,
-                    },
-                };
+                const productHandler: ProductCheckerServiceBase = this.moduleRef.get(`product/${product.type}`, {
+                    strict: false,
+                });
+
+                if (isNil(productHandler)) {
+                    error = {
+                        reason: 'unknown_product',
+                        context: {
+                            type: product.type,
+                        },
+                    };
+                }
+
+                const checkResult: ServiceResponse<Partial<PurchaseEntity>> = await productHandler.add(
+                    user,
+                    editedPurchase,
+                    product,
+                );
+
+                if (checkResult.error) {
+                    error = {
+                        reason: checkResult.error,
+                        context: {
+                            type: product.type,
+                        },
+                    };
+                }
+
+                edits = merge({}, edits, checkResult.response);
+                editedPurchase = merge({}, editedPurchase, checkResult.response);
+
+                errors.push(error);
             }
 
-            const checkResult: ServiceResponse<Partial<PurchaseEntity>> = await productHandler.add(
-                user,
-                editedPurchase,
-                product,
-            );
-
-            if (checkResult.error) {
-                error = {
-                    reason: checkResult.error,
-                    context: {
-                        type: product.type,
-                    },
-                };
-            }
-
-            edits = merge({}, edits, checkResult.response);
-            editedPurchase = merge({}, editedPurchase, checkResult.response);
-
-            errors.push(error);
         }
 
         const errorCount = errors.filter((err: PurchaseError): boolean => err !== null).length;
