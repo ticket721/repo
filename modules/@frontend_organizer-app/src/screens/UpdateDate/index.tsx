@@ -83,7 +83,7 @@ export const UpdateDate: React.FC = () => {
         uuid
     );
 
-    useEffect(() => {console.log('test test');
+    useEffect(() => {
         forceDateReq();
     // eslint-disable-next-line
     }, [subform]);
@@ -149,7 +149,7 @@ export const UpdateDate: React.FC = () => {
                         console.log(formikProps.errors)
                     }
                     {
-                        formikProps.values.info.location ?
+                        subform === 'dates_typology' && formikProps.values.info.location ?
                         <div className={'location-map'}>
                             <LeafletMap
                             width={'600px'}
