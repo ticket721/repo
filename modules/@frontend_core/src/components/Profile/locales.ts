@@ -20,5 +20,5 @@ i18n.addResourceBundle('fr', 'profile', {
     report_bug: 'Signaler un bug',
     cannot_fetch_tickets: 'Tickets non disponibles',
     you_are_an_admin: 'Vous êtes un admin',
-    receive_money_with_stripe: "Recevoir de l'argent avec Stripe",
+    receive_money_with_stripe: 'Recevoir de l\'argent avec Stripe',
 });
