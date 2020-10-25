@@ -92,7 +92,6 @@ export const UpdateDate: React.FC = () => {
         if (dateResp.data?.dates[0]) {
             const date: DateEntity = dateResp.data.dates[0];
             setDateInitialValues(formatDateEntity(date));
-            console.log(date);
         }
     }, [dateResp.data?.dates[0]]);
 
@@ -108,7 +107,6 @@ export const UpdateDate: React.FC = () => {
     };
 
     const submit = (date: DateCreationPayload) => {
-        console.log(date);
         global.window.t721Sdk.dates.edit(
             token,
             dateId,
@@ -144,9 +142,6 @@ export const UpdateDate: React.FC = () => {
                     <Title>{t(subFormsTitle[subform] || subFormsTitle.textMetadata)}</Title>
                     {
                         buildForm()
-                    }
-                    {
-                        console.log(formikProps.errors)
                     }
                     {
                         subform === 'dates_typology' && formikProps.values.info.location ?
