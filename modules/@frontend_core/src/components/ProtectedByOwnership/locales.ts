@@ -6,5 +6,5 @@ i18n.addResourceBundle('en', 'protected_by_ownership', {
 });
 i18n.addResourceBundle('fr', 'protected_by_ownership', {
     ressource_not_found: 'Ressource inexistante',
-    access_forbidden: 'Vous n\'êtes pas le propriétaire de cetter ressource',
+    access_forbidden: "Vous n'êtes pas le propriétaire de cetter ressource",
 });

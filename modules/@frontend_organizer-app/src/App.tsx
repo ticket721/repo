@@ -15,7 +15,7 @@ import { useSelector }      from 'react-redux';
 import styled               from 'styled-components';
 import { AppStatus }        from '@frontend/core/lib/redux/ducks/statuses';
 import ToastStacker         from '@frontend/core/lib/components/ToastStacker';
-import { EventMenu }        from './screens/Event/EventMenu';
+// import { EventMenu }        from './screens/Event/EventMenu';
 import MediaQuery           from 'react-responsive';
 import { routes }           from './routes';
 import { FullPageLoading }  from '@frontend/flib-react/lib/components';

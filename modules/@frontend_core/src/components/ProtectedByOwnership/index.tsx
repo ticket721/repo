@@ -18,7 +18,11 @@ interface ProtectedByOwnershipProps {
     entityParam: 'eventId' | 'dateId' | 'categoryId';
 }
 
-export const ProtectedByOwnership: React.FC<ProtectedByOwnershipProps> = ({ children, entityType, entityParam }): JSX.Element => {
+export const ProtectedByOwnership: React.FC<ProtectedByOwnershipProps> = ({
+    children,
+    entityType,
+    entityParam,
+}): JSX.Element => {
     const { t } = useTranslation('protected_by_ownership');
 
     const dispatch = useDispatch();
@@ -29,14 +33,14 @@ export const ProtectedByOwnership: React.FC<ProtectedByOwnershipProps> = ({ chil
 
     const { id } = useContext(UserContext);
 
-    const { response: ownerResp } = useRequest<{ owner: string }>({
-        method: `${entityType}.owner`,
-        args: [
-            token,
-            params[entityParam],
-        ],
-        refreshRate: 0,
-    }, uuid);
+    const { response: ownerResp } = useRequest<{ owner: string }>(
+        {
+            method: `${entityType}.owner`,
+            args: [token, params[entityParam]],
+            refreshRate: 0,
+        },
+        uuid,
+    );
 
     if (ownerResp.loading) {
         return <FullPageLoading />;

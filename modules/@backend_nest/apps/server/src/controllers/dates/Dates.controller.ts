@@ -172,7 +172,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
         const now = this.timeToolService.now().getTime();
         const hour = now - (now % HOUR);
 
-        const isOnline = (isNil(body.lat) && isNil(body.lon));
+        const isOnline = isNil(body.lat) && isNil(body.lon);
 
         const query = this._esQueryBuilder<DateEntity>({
             status: {
@@ -182,8 +182,8 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 $gt: hour,
             },
             online: {
-                $eq: isOnline
-            }
+                $eq: isOnline,
+            },
         } as SortablePagedSearch);
 
         if (!isOnline) {
@@ -194,7 +194,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
                         if (doc['location.location'].empty) {
                             return false;
                         }
-                        
+
                         double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
                         return distance < params.maxDistance;
                     `,
@@ -233,7 +233,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
                     script: {
                         source: `
                         double time = (doc['timestamps.event_begin'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
-                        
+
                         if (doc['location.location'].empty) {
                             return time
                         } else {
@@ -463,10 +463,10 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 eventEnd: new Date(date.timestamps.event_end),
                 location: date.location
                     ? {
-                        label: date.location.location_label,
-                        lon: date.location.location.lon,
-                        lat: date.location.location.lat,
-                    }
+                          label: date.location.location_label,
+                          lon: date.location.location.lon,
+                          lat: date.location.location.lat,
+                      }
                     : null,
             },
             textMetadata: {
@@ -492,8 +492,14 @@ export class DatesController extends ControllerBasics<DateEntity> {
         const dateEditionPayload: DateCreationPayload = merge({}, existingDateCreationValue, body.date);
         const dateEditionCheckPayload: DateCreationPayload = merge({}, dateEditionPayload, {});
         dateEditionCheckPayload.info = pickBy(dateEditionCheckPayload.info, identityNotNil) as DatePayload;
-        dateEditionCheckPayload.textMetadata = pickBy(dateEditionCheckPayload.textMetadata, identityNotNil) as TextMetadata;
-        dateEditionCheckPayload.imagesMetadata = pickBy(dateEditionCheckPayload.imagesMetadata, identityNotNil) as ImagesMetadata;
+        dateEditionCheckPayload.textMetadata = pickBy(
+            dateEditionCheckPayload.textMetadata,
+            identityNotNil,
+        ) as TextMetadata;
+        dateEditionCheckPayload.imagesMetadata = pickBy(
+            dateEditionCheckPayload.imagesMetadata,
+            identityNotNil,
+        ) as ImagesMetadata;
 
         const checkResult = checkDate(dateEditionCheckPayload);
 
@@ -516,13 +522,13 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 location: dateEditionPayload.info.online
                     ? null
                     : {
-                        location: {
-                            lat: dateEditionPayload.info.location.lat,
-                            lon: dateEditionPayload.info.location.lon,
-                        },
-                        location_label: dateEditionPayload.info.location.label,
-                        assigned_city: closestCity(dateEditionPayload.info.location).id,
-                    },
+                          location: {
+                              lat: dateEditionPayload.info.location.lat,
+                              lon: dateEditionPayload.info.location.lon,
+                          },
+                          location_label: dateEditionPayload.info.location.label,
+                          assigned_city: closestCity(dateEditionPayload.info.location).id,
+                      },
                 timestamps: {
                     event_begin: new Date(dateEditionPayload.info.eventBegin),
                     event_end: new Date(dateEditionPayload.info.eventEnd),

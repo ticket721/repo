@@ -1,36 +1,46 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, Injectable, Param, Post, Put, UseFilters, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags }                                                                                       from '@nestjs/swagger';
-import { ControllerBasics }                                                                                             from '@lib/common/utils/ControllerBasics.base';
-import { CategoriesService }                                                                                            from '@lib/common/categories/Categories.service';
-import { StatusCodes }                                                                                                  from '@lib/common/utils/codes.value';
-import { HttpExceptionFilter }                                                                                          from '@app/server/utils/HttpException.filter';
-import { CategoryEntity }                                                                                               from '@lib/common/categories/entities/Category.entity';
-import { CategoriesSearchInputDto }                                                                                     from '@app/server/controllers/categories/dto/CategoriesSearchInput.dto';
-import { CategoriesSearchResponseDto }                                                                                  from '@app/server/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { ApiResponses }                                                                                                 from '@app/server/utils/ApiResponses.controller.decorator';
-import { CategoriesCountInputDto }                                                                                      from '@app/server/controllers/categories/dto/CategoriesCountInput.dto';
-import { CategoriesCountResponseDto }                                                                                   from '@app/server/controllers/categories/dto/CategoriesCountResponse.dto';
 import {
-    Roles,
-    RolesGuard,
-}                                                                                                                       from '@app/server/authentication/guards/RolesGuard.guard';
-import { ValidGuard }                                                                                                   from '@app/server/authentication/guards/ValidGuard.guard';
-import { User }                                                                                                         from '@app/server/authentication/decorators/User.controller.decorator';
-import { UserDto }                                                                                                      from '@lib/common/users/dto/User.dto';
-import { AuthGuard }                                                                                                    from '@nestjs/passport';
-import { CategoriesAddDateLinkInputDto }                                                                                from '@app/server/controllers/categories/dto/CategoriesAddDateLinkInput.dto';
-import { CategoriesAddDateLinkResponseDto }       from '@app/server/controllers/categories/dto/CategoriesAddDateLinkResponse.dto';
-import { EventsService }                          from '@lib/common/events/Events.service';
-import { DatesService }                           from '@lib/common/dates/Dates.service';
-import { CategoriesDeleteResponseDto }            from '@app/server/controllers/categories/dto/CategoriesDeleteResponse.dto';
-import { CategoriesRemoveDateLinkResponseDto }    from '@app/server/controllers/categories/dto/CategoriesRemoveDateLinkResponse.dto';
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpException,
+    Injectable,
+    Param,
+    Post,
+    Put,
+    UseFilters,
+    UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { StatusCodes } from '@lib/common/utils/codes.value';
+import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { CategoriesSearchInputDto } from '@app/server/controllers/categories/dto/CategoriesSearchInput.dto';
+import { CategoriesSearchResponseDto } from '@app/server/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { CategoriesCountInputDto } from '@app/server/controllers/categories/dto/CategoriesCountInput.dto';
+import { CategoriesCountResponseDto } from '@app/server/controllers/categories/dto/CategoriesCountResponse.dto';
+import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { User } from '@app/server/authentication/decorators/User.controller.decorator';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { CategoriesAddDateLinkInputDto } from '@app/server/controllers/categories/dto/CategoriesAddDateLinkInput.dto';
+import { CategoriesAddDateLinkResponseDto } from '@app/server/controllers/categories/dto/CategoriesAddDateLinkResponse.dto';
+import { EventsService } from '@lib/common/events/Events.service';
+import { DatesService } from '@lib/common/dates/Dates.service';
+import { CategoriesDeleteResponseDto } from '@app/server/controllers/categories/dto/CategoriesDeleteResponse.dto';
+import { CategoriesRemoveDateLinkResponseDto } from '@app/server/controllers/categories/dto/CategoriesRemoveDateLinkResponse.dto';
 import { CategoryCreationPayload, checkCategory } from '@common/global';
-import { CategoriesEditInputDto }                 from '@app/server/controllers/categories/dto/CategoriesEditInput.dto';
-import { CategoriesEditResponseDto }              from '@app/server/controllers/categories/dto/CategoriesEditResponse.dto';
-import { isNil, merge, pickBy }                   from 'lodash';
-import { TicketsService }                         from '@lib/common/tickets/Tickets.service';
-import { CategoriesOwnerResponseDto }             from '@app/server/controllers/categories/dto/CategoriesOwnerResponse.dto';
-import { CategoriesCountTicketResponseDto }       from '@app/server/controllers/categories/dto/CategoriesCountTicketResponse.dto';
+import { CategoriesEditInputDto } from '@app/server/controllers/categories/dto/CategoriesEditInput.dto';
+import { CategoriesEditResponseDto } from '@app/server/controllers/categories/dto/CategoriesEditResponse.dto';
+import { isNil, merge, pickBy } from 'lodash';
+import { TicketsService } from '@lib/common/tickets/Tickets.service';
+import { CategoriesOwnerResponseDto } from '@app/server/controllers/categories/dto/CategoriesOwnerResponse.dto';
+import { CategoriesCountTicketResponseDto } from '@app/server/controllers/categories/dto/CategoriesCountTicketResponse.dto';
 
 /**
  * Generic Categories controller. Recover Categories linked to all types of events
@@ -121,16 +131,14 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
-    async countCategory(
-        @Param('category') categoryId: string,
-    ): Promise<CategoriesCountTicketResponseDto> {
+    async countCategory(@Param('category') categoryId: string): Promise<CategoriesCountTicketResponseDto> {
         const count = await this._serviceCall(
             this.ticketsService.getTicketCount(categoryId),
-            StatusCodes.InternalServerError
-        )
+            StatusCodes.InternalServerError,
+        );
 
         return {
-            count
+            count,
         };
     }
 

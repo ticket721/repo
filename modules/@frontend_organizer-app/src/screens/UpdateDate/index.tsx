@@ -101,7 +101,7 @@ export const UpdateDate: React.FC = () => {
             case 'dates_typology':
                 return <DatesAndTypologyForm
                     parentField={'info'}
-                    sigColors={dateInitialValues.imagesMetadata.signatureColors}/>; 
+                    sigColors={dateInitialValues.imagesMetadata.signatureColors}/>;
             case 'styles': return <StylesForm/>;
             default: return <GeneralInfoForm/>;
         }
