@@ -183,7 +183,7 @@ export const ColorPicker: React.FunctionComponent<ColorPickerProps> = (props: Co
                         color={props.color}
                         disableAlpha={true}
                         onChange={props.handleChange}
-                        presetColors={props.presetColors}
+                        presetColors={[...new Set(props.presetColors)]}
                     />
                 </PickerContainer>
             )}
