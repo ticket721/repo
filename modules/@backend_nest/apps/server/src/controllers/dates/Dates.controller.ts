@@ -529,7 +529,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 },
                 metadata: {
                     name: dateEditionPayload.textMetadata.name,
-                    description: dateEditionPayload.textMetadata.name,
+                    description: dateEditionPayload.textMetadata.description,
                     avatar: dateEditionPayload.imagesMetadata.avatar,
                     signature_colors: dateEditionPayload.imagesMetadata.signatureColors,
                     twitter: dateEditionPayload.textMetadata.twitter,
