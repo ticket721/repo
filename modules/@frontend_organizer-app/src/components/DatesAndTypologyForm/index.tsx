@@ -3,13 +3,15 @@ import React from 'react';
 import styled from 'styled-components';
 import { LocationInput } from '@frontend/core/lib/components/LocationInput';
 import { useDateFields } from './useDateFields';
+import { useFormikContext } from 'formik';
+import { DateCreationPayload, EventCreationPayload } from '@common/global';
 
 export interface DatesAndTypologyFormProps {
     parentField: string;
-    sigColors: string[];
 }
 
-export const DatesAndTypologyForm: React.FC<DatesAndTypologyFormProps> = ({ parentField, sigColors }) => {
+export const DatesAndTypologyForm: React.FC<DatesAndTypologyFormProps> = ({ parentField }) => {
+    const sigColors = useFormikContext<EventCreationPayload | DateCreationPayload>().values.imagesMetadata.signatureColors;
     const { eventBeginProps, eventEndProps, onlineProps, locationProps, onlineLinkProps } = useDateFields(parentField);
 
     return <DatesAndTypologyContainer>

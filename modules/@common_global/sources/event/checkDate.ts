@@ -67,7 +67,9 @@ export const checkDate = (date: DateCreationPayload): ErrorNode => {
     // General Check
     const {
         error,
-    } = DateCreationPayloadChecker.validate(date);
+    } = DateCreationPayloadChecker.validate(date, {
+        abortEarly: false,
+    });
 
     if (error) {
         return generateErrorFromJoiError(error);

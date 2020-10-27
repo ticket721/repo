@@ -1,44 +1,23 @@
 import React, { useState } from 'react';
-import styled                                           from 'styled-components';
+import { useParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
+import { Formik, FormikHelpers } from 'formik';
 
-import '@frontend/core/lib/utils/window';
+import { checkDate, DateCreationPayload } from '@common/global';
+
+import { AppState } from '@frontend/core/lib/redux';
+import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 
 import { Button } from '@frontend/flib-react/lib/components';
 
-import { GeneralInfoForm }     from '../../components/GeneralInfoForm';
-import { StylesForm }          from '../../components/StylesForm';
-import { DatesStep }           from './DatesStep';
-import { CategoriesStep }      from './CategoriesStep';
-
-import { useTranslation }                from 'react-i18next';
+import { GeneralInfoForm } from '../../components/GeneralInfoForm';
+import { StylesForm } from '../../components/StylesForm';
+import { eventParam } from '../types';
 import './locales';
-import { ResetEventCreateForm }          from './ResetEventCreateForm';
-import { PushNotification }              from '@frontend/core/lib/redux/ducks/notifications';
-import { useHistory }                    from 'react-router';
-import { Formik, FormikHelpers } from 'formik';
-import { Persist } from 'formik-persist';
-import { checkEvent, EventCreationPayload } from '@common/global';
-import { DelayedOnMountValidation } from './DelayedOnMountValidation';
+import { DatesAndTypologyForm } from '../../components/DatesAndTypologyForm';
 import { Stepper, StepStatus } from '../../components/Stepper';
-import { AppState } from '@frontend/core/lib/redux';
-
-export interface FormProps {
-    onComplete: () => void;
-}
-
-const initialValues: EventCreationPayload = {
-    textMetadata: {
-        name: '',
-        description: '',
-    },
-    imagesMetadata: {
-        avatar: '',
-        signatureColors: ['', ''],
-    },
-    datesConfiguration: [],
-    categoriesConfiguration: [],
-};
 
 interface StepInfos {
     step: string;
@@ -58,29 +37,49 @@ const stepsInfos: StepInfos[] = [
         description: 'styles_description',
     },
     {
-        step: 'datesConfiguration',
+        step: 'info',
         title: 'dates_title',
         description: 'dates_description',
     },
-    {
-        step: 'categoriesConfiguration',
-        title: 'categories_title',
-        description: 'categories_description',
-    },
 ];
 
-const CreateEvent: React.FC = () => {
-    const [ t ] = useTranslation('create_event');
+const initialValues: DateCreationPayload = {
+    info: {
+        online: false,
+        name: '',
+        eventBegin: null,
+        eventEnd: null,
+        location: {
+            label: '',
+            lon: null,
+            lat: null,
+        },
+    },
+    textMetadata: {
+        name: '',
+        description: '',
+    },
+    imagesMetadata: {
+        avatar: '',
+        signatureColors: ['', ''],
+    },
+};
+
+export const NewDate: React.FC = () => {
+    const { t } = useTranslation('create_date');
 
     const [ currentStep, setCurrentStep ] = useState<number>(0);
 
     const [ stepStatuses, setStepStatuses ] = useState<StepStatus[]>([]);
-    const dispatch = useDispatch();
-    const history = useHistory();
-    const token: string = useSelector((state: AppState) => state.auth.token.value);
 
-    const validate = (eventPayload: EventCreationPayload) => {
-        const errors = checkEvent(eventPayload);
+    const dispatch = useDispatch();
+
+    const { eventId } = useParams<eventParam>();
+
+    const token = useSelector((state: AppState): string => state.auth.token.value);
+
+    const validate = (datePayload: DateCreationPayload) => {
+        const errors = checkDate(datePayload);
         const errorKeys = errors ? Object.keys(errors) : [];
         const eventCreationKeys = stepsInfos.map(stepInfos => stepInfos.step);
 
@@ -102,27 +101,24 @@ const CreateEvent: React.FC = () => {
         return errors;
     };
 
-    const buildForm = () => {
+    const buildForm = (setFieldValue: any) => {
         switch (currentStep) {
-            case 0: return <GeneralInfoForm/>;
+            case 0: return <GeneralInfoForm nameUpdate={(name) => setFieldValue('info.name', name)}/>;
             case 1: return <StylesForm/>;
-            case 2: return <DatesStep/>;
-            case 3: return <CategoriesStep/>;
+            case 2: return <DatesAndTypologyForm parentField={'info'}/>;
             default: return <></>;
         }
     };
 
-    const submit = (eventPayload: EventCreationPayload, { resetForm, validateForm }: FormikHelpers<EventCreationPayload>) => {
-        global.window.t721Sdk.events.create.create(
+    const submit = (date: DateCreationPayload, { resetForm }: FormikHelpers<DateCreationPayload>) => {
+        global.window.t721Sdk.events.addDate(
             token,
-            {
-                eventPayload,
-            }
-        ).then((event) => {
-            dispatch(PushNotification(t('event_create_success'), 'success'));
+            eventId,
+            {date}
+        ).then(() => {
+            dispatch(PushNotification(t('date_create_success', { entity: 'date' }), 'success'));
             resetForm();
-            validateForm();
-            history.push('/');
+            setCurrentStep(0);
         }).catch((e) => dispatch(PushNotification(e.message, 'error')));
     };
 
@@ -132,7 +128,8 @@ const CreateEvent: React.FC = () => {
             <Formik
             initialValues={initialValues}
             onSubmit={submit}
-            validate={validate}>
+            validate={validate}
+            validateOnMount={true}>
                 { formikProps =>
                     <>
                         <PositionedStepper>
@@ -152,7 +149,7 @@ const CreateEvent: React.FC = () => {
                                 <Title>{t(stepsInfos[currentStep].title)}</Title>
                                 <Description>{t(stepsInfos[currentStep].description)}</Description>
                                 {
-                                    buildForm()
+                                    buildForm(formikProps.setFieldValue)
                                 }
                                 <StepButtons>
                                     {
@@ -187,20 +184,10 @@ const CreateEvent: React.FC = () => {
                                 <SubmitButton
                                     type={'submit'}
                                     variant={'primary'}
-                                    title={t('create_event_btn')}
+                                    title={t('create_date_and_add_categories')}
                                 /> :
                                 null
                             }
-
-                            <ResetEventCreateForm
-                            token={token}
-                            onReset={() => {
-                                formikProps.resetForm();
-                                formikProps.validateForm();
-                                setCurrentStep(0);
-                            }}/>
-                            <Persist name={'event-creation'} />
-                            <DelayedOnMountValidation/>
                         </Form>
                     </>
                 }
@@ -279,5 +266,3 @@ const StepButtons = styled.div`
 const SubmitButton = styled(Button)`
     margin-top: ${props => props.theme.doubleSpacing};
 `;
-
-export default CreateEvent;

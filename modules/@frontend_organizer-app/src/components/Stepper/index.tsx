@@ -2,7 +2,7 @@ import { Icon } from '@frontend/flib-react/lib/components';
 import React from 'react';
 import styled from 'styled-components';
 
-export type StepStatus = 'complete' | 'edit' | 'invalid' | 'disable';
+export type StepStatus = 'complete' | 'edit' | 'invalid';
 
 interface StepItem {
     label: string;
@@ -34,18 +34,19 @@ export const Stepper: React.FC<StepperProps> = ({ steps, editStep, onStepClick }
                 <Step
                 key={step.label}
                 status={step.status}
+                disabled={idx > editStep}
                 onClick={() => {
                     onStepClick(idx);
                 }}>
                     {
-                        step.status === 'disable' || step.status === 'edit' ?
+                        idx > editStep || !step.status || step.status === 'edit' ?
                             <span className={'step-idx'}>{idx + 1}</span> :
                             <Icon
                             icon={getStatusIcon(step.status)}
                             size={'12px'}
                             color={'white'} />
                     }
-                    <StepLabel status={step.status}>{step.label}</StepLabel>
+                    <StepLabel disabled={idx > editStep}>{step.label}</StepLabel>
                 </Step>
             )
         }
@@ -76,17 +77,17 @@ const Progress = styled.div<{ editStep: number, stepCount: number }>`
     transition: height 500ms;
 `;
 
-const Step = styled.div<{ status: StepStatus }>`
+const Step = styled.div<{ status: StepStatus, disabled: boolean }>`
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 50%;
-    height: ${props => props.status === 'disable' ? props.theme.biggerSpacing : '30px'};
-    width: ${props => props.status === 'disable' ? props.theme.biggerSpacing : '30px'};
+    height: ${props => props.disabled ? props.theme.biggerSpacing : '30px'};
+    width: ${props => props.disabled ? props.theme.biggerSpacing : '30px'};
     background: ${props => {
+        if (props.disabled) return '#181721';
         switch(props.status) {
-            case 'disable': return '#181721';
             case 'invalid': return props.theme.errorColor.hex;
             default: return `linear-gradient(260deg, ${props.theme.primaryColor.hex}, ${props.theme.primaryColorGradientEnd.hex})`;
         }
@@ -96,19 +97,19 @@ const Step = styled.div<{ status: StepStatus }>`
 
     .step-idx {
         margin-top: 4px;
-        font-size: ${props => props.status === 'disable' ? '12px' : '15px'};
-        color: ${props => props.status === 'disable' ? props.theme.textColorDark : props.theme.textColor};
+        font-size: ${props => props.disabled ? '12px' : '15px'};
+        color: ${props => props.disabled ? props.theme.textColorDark : props.theme.textColor};
 
         transition: font-size 300ms, color 300ms;
     }
 `;
 
-const StepLabel = styled.div<{ status: StepStatus }>`
+const StepLabel = styled.div<{ disabled: boolean }>`
     position: absolute;
-    left: ${props => props.status === 'disable' ? '30px' : '40px'};
-    font-size: ${props => props.status === 'disable' ? '12px' : '14px'};
-    font-weight: ${props => props.status === 'disable' ? '400' : '500'};
-    color: ${props => props.status === 'disable' ? props.theme.textColorDark : props.theme.textColor};
+    left: ${props => props.disabled ? '30px' : '40px'};
+    font-size: ${props => props.disabled ? '12px' : '14px'};
+    font-weight: ${props => props.disabled ? '400' : '500'};
+    color: ${props => props.disabled ? props.theme.textColorDark : props.theme.textColor};
 
     transition: left 300ms, font-size 300ms, color 300ms;
 `;
