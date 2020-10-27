@@ -13,24 +13,22 @@ describe('checkEvent', function() {
 
         const error = checkEvent(event as EventCreationPayload);
 
-        expect(error).toEqual({
-            textMetadata: {
-                name: {
-                    reasons: [
-                        {
-                            "context":{
-                                "encoding": undefined,
-                                "key": "name",
-                                "label": "textMetadata.name",
-                                "limit": 3,
-                                "value": "hi",
-                            },
-                            "type": "string.min",
-                        }
-                    ]
-                }
+        expect(error).toHaveProperty('textMetadata', {
+            name: {
+                reasons: [
+                    {
+                        "context":{
+                            "encoding": undefined,
+                            "key": "name",
+                            "label": "textMetadata.name",
+                            "limit": 3,
+                            "value": "hi",
+                        },
+                        "type": "string.min",
+                    }
+                ]
             }
-        })
+        });
 
     });
 
@@ -45,21 +43,17 @@ describe('checkEvent', function() {
 
         const error = checkEvent(event as EventCreationPayload);
 
-        expect(error).toEqual({
-            imagesMetadata: {
-                reasons: [
-
-                    {
-                        "context": {
-                            "key": "imagesMetadata",
-                            "label": "imagesMetadata",
-                        },
-                        "type": "any.required",
+        expect(error).toHaveProperty('imagesMetadata', {
+            reasons: [
+                {
+                    "context": {
+                        "key": "imagesMetadata",
+                        "label": "imagesMetadata",
                     },
-
-                ]
-            }
-        })
+                    "type": "any.required",
+                },
+            ]
+        });
 
     });
 
