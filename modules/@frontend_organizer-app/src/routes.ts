@@ -48,7 +48,7 @@ export const routes: RouteDatum[] = [
         entityParam: 'dateId'
     },
     {
-        path: '/group/:groupId/event/:eventId/date',
+        path: '/event/:eventId/date',
         page: lazy(() => import('./routes/NewDate')),
         protected: true,
         entityType: 'events',

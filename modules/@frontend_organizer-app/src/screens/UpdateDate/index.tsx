@@ -99,8 +99,7 @@ export const UpdateDate: React.FC = () => {
         switch (subform) {
             case 'dates_typology':
                 return <DatesAndTypologyForm
-                    parentField={'info'}
-                    sigColors={dateInitialValues.imagesMetadata.signatureColors}/>;
+                    parentField={'info'}/>;
             case 'styles': return <StylesForm/>;
             default: return <GeneralInfoForm/>;
         }

@@ -52,7 +52,9 @@ export const checkEvent = (event: EventCreationPayload): ErrorNode => {
     // General Check
     const {
         error,
-    } = EventCreationPayloadChecker.validate(event);
+    } = EventCreationPayloadChecker.validate(event, {
+        abortEarly: false,
+    });
 
     if (error) {
         return generateErrorFromJoiError(error);

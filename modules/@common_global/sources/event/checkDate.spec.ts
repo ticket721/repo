@@ -13,27 +13,26 @@ describe('checkDate', function() {
 
         const error = checkDate(event as DateCreationPayload);
 
-        expect(error).toEqual(
-
-            {
-                "info": {
-                    "reasons": [
-                        {
-                            "type": "any.required",
-                            "context": {
-                                "label": "info",
-                                "key": "info"
-                            }
-                        }
-                    ]
-                }
+        expect(error).toHaveProperty('textMetadata', {
+            name: {
+                reasons: [
+                    {
+                        "context":{
+                            "encoding": undefined,
+                            "key": "name",
+                            "label": "textMetadata.name",
+                            "limit": 3,
+                            "value": "hi",
+                        },
+                        "type": "string.min",
+                    }
+                ]
             }
-
-        );
+        });
 
     });
 
-    it('should fail on invalid Joi validation (name missing required)', function() {
+    it('should fail on invalid Joi validation (info missing required)', function() {
 
         const event: Partial<DateCreationPayload> = {
             textMetadata: {
@@ -44,22 +43,17 @@ describe('checkDate', function() {
 
         const error = checkDate(event as DateCreationPayload);
 
-        expect(error).toEqual(
-
-            {
-                "info": {
-                    "reasons": [
-                        {
-                            "type": "any.required",
-                            "context": {
-                                "label": "info",
-                                "key": "info"
-                            }
-                        }
-                    ]
+        expect(error).toHaveProperty('info', {
+            "reasons": [
+                {
+                    "type": "any.required",
+                    "context": {
+                        "label": "info",
+                        "key": "info"
+                    }
                 }
-            }
-        );
+            ]
+        });
 
     });
 

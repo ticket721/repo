@@ -1,4 +1,4 @@
 import { MobileWarning } from '../utils/MobileWarning';
-import NewDate           from '../screens/Event/NewDate';
+import { NewDate }           from '../screens/NewDate';
 
 export default MobileWarning(NewDate);

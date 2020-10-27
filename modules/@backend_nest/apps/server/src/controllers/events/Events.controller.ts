@@ -364,7 +364,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 },
                 metadata: {
                     name: datePayload.textMetadata.name,
-                    description: datePayload.textMetadata.name,
+                    description: datePayload.textMetadata.description,
                     avatar: datePayload.imagesMetadata.avatar,
                     signature_colors: datePayload.imagesMetadata.signatureColors,
                     twitter: datePayload.textMetadata.twitter,

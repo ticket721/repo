@@ -9,7 +9,7 @@ import { useField } from 'formik';
 import { SocialSection } from './Socials';
 import { evaluateError } from '../../utils/extractError';
 
-export const GeneralInfoForm: React.FC = () => {
+export const GeneralInfoForm: React.FC<{nameUpdate?: (name: string) => void}> = ({ nameUpdate }) => {
     const [ t ] = useTranslation('general_infos');
 
     const [nameField, nameMeta] = useField<string>('textMetadata.name');
@@ -19,6 +19,10 @@ export const GeneralInfoForm: React.FC = () => {
         <GeneralInfos>
             <TextInput
             {...nameField}
+            onChange={(e) => {
+                nameField.onChange(e);
+                nameUpdate(e.target.value);
+            }}
             label={t('name_label')}
             placeholder={t('name_placeholder')}
             error={evaluateError(nameMeta)}

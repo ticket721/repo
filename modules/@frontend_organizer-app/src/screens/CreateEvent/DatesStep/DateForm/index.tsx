@@ -31,7 +31,7 @@ export const DateForm: React.FC<DateFormProps> = ({ idx, newDate, onComplete }) 
                     ) : null}
                 </Title>
             </Header>
-            <DatesAndTypologyForm parentField={`datesConfiguration[${idx}]`} sigColors={sigColors} />
+            <DatesAndTypologyForm parentField={`datesConfiguration[${idx}]`} />
             <ActionButton>
                 {
                     newDate ?
