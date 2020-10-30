@@ -18,7 +18,7 @@ export interface EventDashboard {
 }
 
 const formatEventName = (events: EventEntity[]): EventDashboard[] => (
-    events.map((event: EventEntity) => ({
+    events?.map((event: EventEntity) => ({
         groupId: event.group_id,
         name: event.name,
         pastEvent: null,

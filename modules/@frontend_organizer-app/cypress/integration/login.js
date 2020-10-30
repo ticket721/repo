@@ -1,0 +1,72 @@
+import { me, user } from '../data/user';
+import { loginResponse, registerResponse } from '../data/authResponse';
+
+const messages = {
+    wrongCredentials: 'wrong email or password',
+    invalidEmail: 'email must be a valid email',
+    requiredEmail: 'email is required',
+    requiredPassword: 'password is required',
+    register: 'First time using the app ? Register here !'
+}
+
+describe('Login', () => {
+    beforeEach(() => {
+        cy.server();
+        cy.visit('/login');
+        cy.route('GET', 'users/me', me).as('me');
+    });
+    it('successfully loads', () => {
+        cy.get('input[name=email]').should('exist');
+        cy.get('input[name=password]').should('exist');
+        cy.get('button[name=Login]').should('exist');
+    })
+    it('visit register', function () {
+        cy.get('form > div > span').contains(messages.register).click();
+
+        cy.url().should('be', '/register');
+        cy.get('input[name=email]').should('exist');
+        cy.get('input[name=password]').should('exist');
+        cy.get('input[name=username]').should('exist');
+        cy.get('button[name=Register]').should('exist');
+    })
+
+    it('invalid credentials', function () {
+        cy.route('POST', 'authentication/local/login', loginResponse["401"]).as('error');
+
+        const { password } = user;
+        cy.get('input[name=email]').type(`${password}@gmail.com`);
+        cy.get('input[name=password]').type(`${password}{enter}`);
+
+        cy.wait('@error').then((xhr) => {
+            cy.url().should('be', '/login');
+            expect(xhr.response.body.message).to.equal(xhr.response.body.message, loginResponse["401"].message);
+        });
+    })
+    it('success login', function () {
+        cy.route('POST', 'authentication/local/login', loginResponse["200"]).as('success');
+
+        const { email, password, username } = user;
+
+        cy.get('input[name=email]').type(email);
+        cy.get('input[name=password]').type(`${password}{enter}`);
+
+        cy.url().should('be', '/');
+    })
+
+    it('invalid email format', function () {
+        const { password } = user;
+        cy.get('input[name=email]').type(`${password}{enter}`);
+
+        cy.url().should('be', '/login');
+        cy.get('span').should('contain', messages.invalidEmail);
+    })
+
+    it('fields required', function () {
+        cy.get('input[name=email]').type('{enter}')
+        cy.get('input[name=password]').type('{enter}')
+
+        cy.url().should('be', '/login')
+        cy.get('span').should('contain', messages.requiredEmail);
+        cy.get('span').should('contain', messages.requiredPassword);
+    })
+})

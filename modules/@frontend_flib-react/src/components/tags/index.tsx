@@ -217,6 +217,7 @@ export const Tags: React.FunctionComponent<TagsProps> = (props: TagsProps): JSX.
             </LabelsContainer>
             <TagsContainer>
                 <CreatableSelect
+                    name={props.name}
                     id={props.name}
                     components={components}
                     onChange={(val: ITag[]) => {
