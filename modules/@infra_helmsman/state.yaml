@@ -238,12 +238,12 @@ apps:
       config.elasticsearch.port: "9200"
       config.elasticsearch.protocol: "http"
 
-      config.ethereumNode.host: "api.rockside.io"
+      config.ethereumNode.host: "ropsten.infura.io"
       config.ethereumNode.port: "443"
       config.ethereumNode.protocol: "https"
       config.ethereumNode.network_id: "3"
-      config.ethereumNode.path: "/ethereum/ropsten/jsonrpc"
-      config.ethereumNode.headers: '\{"apikey": "${CONFIG_STAGING_ROCKSIDE_APIKEY}"\}'
+      config.ethereumNode.path: "/v3/7f17dc45fc8c4841a82ea1d6766097bb"
+      config.ethereumNode.headers: '\{\}'
 
       config.redis.host: "redis-staging-master"
       config.redis.port: "6379"
