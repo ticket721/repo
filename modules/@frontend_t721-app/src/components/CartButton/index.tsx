@@ -1,10 +1,11 @@
 import React, { useContext, useMemo, useState, useEffect } from 'react';
-import { CartContext } from '../Cart/CartContext';
-import { motion, useAnimation } from 'framer-motion'
-import { useWindowDimensions } from '@frontend/core/lib/hooks/useWindowDimensions';
-import styled, { useTheme } from 'styled-components';
-import { Theme } from '@frontend/flib-react/lib/config/theme';
-import { Icon } from '@frontend/flib-react/lib/components';
+import { CartContext }                                     from '../Cart/CartContext';
+import { motion, useAnimation }                            from 'framer-motion';
+import { useWindowDimensions }                             from '@frontend/core/lib/hooks/useWindowDimensions';
+import styled                                              from 'styled-components';
+import { Icon }                                            from '@frontend/flib-react/lib/components';
+import { PaymentError }                                    from '@backend/nest/libs/common/src/purchases/PaymentHandler.base.service';
+import { isNil }                                           from 'lodash';
 
 interface ContainerProps {
     spacing: number;
@@ -31,20 +32,24 @@ const Container = styled(motion.div) <ContainerProps>`
   display: flex;
   justify-content: center;
   align-items: center;
-`
+`;
 
 const CartIcon = styled(Icon)`
   
-`
+`;
 
-const Badge = styled(motion.div)`
+interface BadgeProps {
+    error: boolean;
+}
+
+const Badge = styled(motion.div)<BadgeProps>`
     position: absolute;
     right: 0;
     top: 0;
     width: 25px;
     height: 25px;
     border-radius: 100%;
-    background-color ${props => props.theme.primaryColor.hex};
+    background-color ${props => props.error ? 'red' : props.theme.primaryColor.hex};
     display flex;
     justify-content: center;
     align-items: center;
@@ -57,14 +62,21 @@ const BadgeNumber = styled.span`
     line-height: 100%;
     font-size: 14px;
     font-weight: 700;
-`
+`;
+
+const checkIfError = (errors: PaymentError[]): boolean => {
+    if (isNil(errors)) {
+        return false;
+    }
+
+    return errors.filter((err: PaymentError): boolean => !isNil(err)).length !== 0;
+};
 
 export const CartButton: React.FC = (): JSX.Element => {
     const cart = useContext(CartContext);
-    const controls = useAnimation()
+    const controls = useAnimation();
     const window = useWindowDimensions();
     const [mouseState, setMouseState] = useState({ down: false, moved: false });
-    const theme = useTheme() as Theme;
     const visible = useMemo(() => cart.cart ? cart.cart.products.length > 0 && !cart.open : false, [cart.last_update, cart.open]);
     const productCount = cart.cart?.products.length ? cart.cart.products
         .map((p) => p.quantity)
@@ -73,13 +85,13 @@ export const CartButton: React.FC = (): JSX.Element => {
     useEffect(() => {
         return () => {
             controls.start({
-                scale: 1.5
+                scale: 1.5,
             }).then(() => {
                 controls.start({
-                    scale: 1
-                })
-            })
-        }
+                    scale: 1,
+                });
+            });
+        };
     }, [productCount]);
 
     const width = 65;
@@ -90,18 +102,19 @@ export const CartButton: React.FC = (): JSX.Element => {
     const amplitudeX = window.width - width - spacing * 2;
     const amplitudeY = window.height - height - spacing * 2 - navbar;
 
+    const isError = checkIfError(cart.errors);
+
     return <Container
         onMouseMove={() => {
             if (mouseState.down && !mouseState.moved) {
                 setMouseState({
                     down: true,
-                    moved: true
-                })
+                    moved: true,
+                });
             }
         }}
         onMouseDown={() => setMouseState({ down: true, moved: false })}
         onMouseUp={() => {
-            console.log(mouseState);
             let cb = false;
             if (!mouseState.moved) {
                 cb = true;
@@ -118,13 +131,12 @@ export const CartButton: React.FC = (): JSX.Element => {
             if (mouseState.down && !mouseState.moved) {
                 setMouseState({
                     down: true,
-                    moved: true
-                })
+                    moved: true,
+                });
             }
         }}
         onTouchStart={() => setMouseState({ down: true, moved: false })}
         onTouchEnd={() => {
-            console.log(mouseState);
             let cb = false;
             if (!mouseState.moved) {
                 cb = true;
@@ -152,42 +164,67 @@ export const CartButton: React.FC = (): JSX.Element => {
                     rotate: {
                         type: 'spring',
                         stiffness: 500,
-                        damping: 10
-                    }
-                }
+                        damping: 10,
+                    },
+                },
             },
             hidden: {
-                right: - (window.width + spacing),
+                right: -(window.width + spacing),
                 rotate: 45,
                 transition: {
                     duration: 0.5,
                     rotate: {
                         type: 'spring',
                         stiffness: 500,
-                        damping: 10
-                    }
-                }
-            }
+                        damping: 10,
+                    },
+                },
+            },
         }}
         drag
         dragConstraints={{
-            top: - amplitudeY,
-            left: - amplitudeX,
+            top: -amplitudeY,
+            left: -amplitudeX,
             right: 0,
             bottom: 0,
         }}
     >
 
-        <CartIcon
-            icon={'shopping-basket'}
-            size={'30px'}
-            color={'white'}
-        />
-        <Badge
-            animate={controls}
-        >
-            <BadgeNumber>{productCount}</BadgeNumber>
-        </Badge>
 
-    </Container>
-}
+        {
+            !isError
+
+                ?
+                <>
+                    <CartIcon
+                        icon={'shopping-basket'}
+                        size={'30px'}
+                        color={'white'}
+                    />
+                    <Badge
+                        error={isError}
+                        animate={controls}
+                    >
+                        <BadgeNumber>{productCount}</BadgeNumber>
+                    </Badge>
+                </>
+
+                :
+                <>
+                    <CartIcon
+                        icon={'shopping-basket'}
+                        size={'30px'}
+                        color={'red'}
+                    />
+                    <Badge
+                        error={isError}
+                        animate={controls}
+                    >
+                        <BadgeNumber>{'!'}</BadgeNumber>
+                    </Badge>
+                </>
+        }
+
+
+    </Container>;
+};

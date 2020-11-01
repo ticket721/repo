@@ -20,6 +20,7 @@ var migration1601551889 = {
             query: `CREATE TYPE IF NOT EXISTS ticket721.payment (
                 type text,
                 id text,
+                client_id text,
                 status text
           );`,
             params: []

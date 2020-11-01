@@ -43,7 +43,7 @@ import { EventsService } from '@lib/common/events/Events.service';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
 import {
-    CategoryCreationPayload,
+    CategoryCreationPayload, checkCategory,
     checkDate,
     DateCreationPayload,
     DatePayload,
@@ -389,6 +389,14 @@ export class DatesController extends ControllerBasics<DateEntity> {
         }
 
         const category: CategoryCreationPayload = body.category;
+
+        const checkRes = checkCategory(category);
+
+        if (checkRes) {
+            return {
+                error: checkRes
+            }
+        }
 
         const categoryId = this.uuidToolService.generate();
 

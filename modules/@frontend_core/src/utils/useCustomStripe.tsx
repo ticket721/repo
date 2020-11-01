@@ -10,7 +10,11 @@ export interface StripeSDK {
     stripe: any;
 }
 
-export const useCustomStripe = (): StripeSDK => {
+export interface StripeSDKOptions {
+    stripe_account: string;
+}
+
+export const useCustomStripe = (options?: StripeSDKOptions): StripeSDK => {
     const [sdk, setSDK] = useState(null);
 
     useEffect(() => {
@@ -25,7 +29,9 @@ export const useCustomStripe = (): StripeSDK => {
             })
             .catch((e: Error) => {
                 console.warn(e);
-                loadStripe(getEnv().REACT_APP_STRIPE_API_KEY).then((stripe) => {
+                loadStripe(getEnv().REACT_APP_STRIPE_API_KEY, {
+                    stripeAccount: options?.stripe_account
+                }).then((stripe) => {
                     setSDK({
                         platform: 'web',
                         stripe,

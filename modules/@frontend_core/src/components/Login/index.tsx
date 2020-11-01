@@ -85,7 +85,9 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                                     if (props.externalRegister) {
                                         window.open(props.externalRegister);
                                     } else {
-                                        history.replace('/register');
+                                        history.replace('/register', {
+                                            from,
+                                        });
                                     }
                                 }
                             }}

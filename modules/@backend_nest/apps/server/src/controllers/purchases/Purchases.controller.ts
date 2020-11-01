@@ -49,7 +49,7 @@ export class PurchasesController extends ControllerBasics<StripeInterfaceEntity>
      */
     @Get('/')
     @UseFilters(new HttpExceptionFilter())
-    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
@@ -88,7 +88,7 @@ export class PurchasesController extends ControllerBasics<StripeInterfaceEntity>
      */
     @Put('/')
     @UseFilters(new HttpExceptionFilter())
-    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('authenticated')
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError])

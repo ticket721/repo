@@ -70,7 +70,6 @@ const LoggedInCartContextManager: React.FC<PropsWithChildren<CartContextManagerP
         last_update: lastUpdate,
         open: isOpen,
         openMenu: () => {
-            console.log('open');
             setOpen(true)
             },
         closeMenu: () => setOpen(false),

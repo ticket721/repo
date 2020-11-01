@@ -1,17 +1,17 @@
 import { CategoryEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { symbolOf }       from '@common/global';
 
-const categoryPriceString = (category: CategoryEntity, free: string): string => {
-    if (category.currency === 'FREE') {
+const categoryPriceString = (category: CategoryEntity, free: string, quantity: number = 1): string => {
+    if (category.currency === 'FREE' || category.currency === null) {
         return free;
     }
 
-    return `${category.price / 100} ${symbolOf(category.currency)}`
+    return `${(category.price * quantity) / 100} ${symbolOf(category.currency)}`
 }
 
-export const getPrice = (category: CategoryEntity, free: string): string => {
+export const getPrice = (category: CategoryEntity, free: string, quantity: number = 1): string => {
 
-    return categoryPriceString(category, free);
+    return categoryPriceString(category, free, quantity);
 
 }
 

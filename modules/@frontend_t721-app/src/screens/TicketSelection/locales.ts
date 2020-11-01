@@ -18,6 +18,7 @@ i18n.addResourceBundle('en', 'event_ticket_list', {
     online: 'Online',
     free: 'Free',
     no_categories: 'Ticket sale coming soon.',
+    login_or_register: 'Login or Register',
 
     error_cannot_fetch_global_categories: 'Cannot fetch event',
     error_cannot_fetch_categories: 'Cannot fetch event',
@@ -46,6 +47,7 @@ i18n.addResourceBundle('fr', 'event_ticket_list', {
     online: 'En ligne',
     free: 'Gratuit',
     no_categories: 'Vente de billets bientôt disponible.',
+    login_or_register: 'Connectez vous',
 
     error_cannot_fetch_global_categories: 'Informations indisponibles',
     error_cannot_fetch_categories: 'Informations indisponibles',

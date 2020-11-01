@@ -1,5 +1,5 @@
-import React, { useEffect, useState, Suspense, useCallback }            from 'react';
-import { Route, Switch, useHistory, useLocation, withRouter, Redirect } from 'react-router-dom';
+import React, { useEffect, useState, Suspense, useCallback, PropsWithChildren, useContext, useMemo } from 'react';
+import { Route, Switch, useHistory, useLocation, withRouter, Redirect }                              from 'react-router-dom';
 import { TopNav, FullPageLoading }                                      from '@frontend/flib-react/lib/components';
 import ProtectedRoute                                                   from '@frontend/core/lib/components/ProtectedRoute';
 import ToastStacker                                                     from '@frontend/core/lib/components/ToastStacker';
@@ -31,9 +31,9 @@ import { UserContextGuard }        from '@frontend/core/lib/utils/UserContext';
 import DeepLinksListener           from './components/DeepLinksListener';
 import MediaQuery                  from 'react-responsive';
 import { useFlag }                 from '@frontend/core/lib/utils/useFlag';
-import { useSelector }             from 'react-redux';
-import { CartContextManager }      from './components/Cart/CartContext';
-import { T721AppState }            from './redux';
+import { useSelector }                     from 'react-redux';
+import { CartContext, CartContextManager } from './components/Cart/CartContext';
+import { T721AppState }                    from './redux';
 import { CartButton }              from './components/CartButton';
 import { CartMenu } from './components/CartMenu';
 
@@ -226,9 +226,50 @@ const MobileApp: React.FC = () => {
     );
 };
 
-const AppContainer = styled.div`
+interface AppContainerDivProps {
+    checkoutOpen: boolean;
+    margin: number;
+}
+
+const AppContainerDiv = styled.div<AppContainerDivProps>`
+    ${props => props.checkoutOpen
+
+    ?
+    `
+        overflow: hidden;
+        margin-top: -${props.margin}px;
+    `
+
+    :
+    `
+    `
+}
+    
     width: 100%;
     height: 100%;
 `;
+
+const AppContainer: React.FC<PropsWithChildren<any>> = (props: PropsWithChildren<any>) => {
+
+    const cart = useContext(CartContext);
+    const [savedPos, setSavedPos] = useState(0);
+
+    useEffect(() => {
+        if (cart.open) {
+            document.getElementsByTagName('body')[0].style.overflow = 'hidden';
+            return () => {
+                document.getElementsByTagName('body')[0].style.overflow = 'auto';
+            }
+        }
+    }, [cart.open])
+
+    return <AppContainerDiv
+        checkoutOpen={false}
+        margin={savedPos}
+    >
+        {props.children}
+    </AppContainerDiv>
+}
+
 
 export default withRouter(MobileApp);

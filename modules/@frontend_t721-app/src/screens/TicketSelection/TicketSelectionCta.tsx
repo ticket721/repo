@@ -3,17 +3,16 @@ import React, { useContext, useEffect, useState } from 'react';
 import { FullButtonCta } from '@frontend/flib-react/lib/components';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { AddTicket, CartState } from '../../redux/ducks/cart';
-import { useHistory } from 'react-router';
-import { T721AppState } from '../../redux';
-import { CartContext } from '../../components/Cart/CartContext';
-import { isNil } from 'lodash';
-import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
-import { v4 } from 'uuid';
+import { useHistory, useLocation }                      from 'react-router';
+import { T721AppState }                    from '../../redux';
+import { CartContext }                     from '../../components/Cart/CartContext';
+import { isNil }                           from 'lodash';
+import { useLazyRequest }                  from '@frontend/core/lib/hooks/useLazyRequest';
+import { v4 }                              from 'uuid';
 import { PurchasesSetProductsResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
-import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
-import { PurchaseError } from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
-import { Product } from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/entities/Purchase.entity';
+import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
+import { PurchaseError }                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
+import { UserContext }                     from '@frontend/core/lib/utils/UserContext';
 
 export interface TicketSelectionCtaProps {
     category: CategoryEntity;
@@ -22,7 +21,6 @@ export interface TicketSelectionCtaProps {
 }
 
 const generateErrorMessage = (t: any, error: PurchaseError): string => {
-    console.log(error);
     return t(error.reason, error.context);
 }
 
@@ -31,10 +29,12 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
     const [t] = useTranslation('event_ticket_list');
     const dispatch = useDispatch();
     const history = useHistory();
+    const location = useLocation();
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
     const [uuid] = useState(v4());
     const addToCartLazyRequest = useLazyRequest<PurchasesSetProductsResponseDto>('purchases.setProducts', `TicketSelectionCta@${uuid}`);
     const cart = useContext(CartContext);
+    const user = useContext(UserContext);
     const [capturedTimesstamp, setTimestamp] = useState(null);
 
     const disabled = isNil(cart.cart);
@@ -69,8 +69,6 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
             ], {
                 force: true
             });
-
-            console.log(products);
         }
     }
 
@@ -99,13 +97,32 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
 
     const loading = capturedTimesstamp !== null && capturedTimesstamp === cart.last_update;
 
-    return <FullButtonCta
-        loading={loading}
-        gradients={props.gradients}
-        ctaLabel={t('checkout')}
-        variant={disabled ? 'disabled' : 'custom'}
-        onClick={onAddToCart}
-        show={props.category !== null}
-    />;
+    if (user === null) {
+
+        const redirectToLogin = () => {
+            history.push('/login', {
+                from: `${location.pathname}${location.search}`,
+            })
+        }
+
+        return <FullButtonCta
+            loading={loading}
+            gradients={props.gradients}
+            ctaLabel={t('login_or_register')}
+            variant={'custom'}
+            onClick={redirectToLogin}
+            show={props.category !== null}
+        />;
+    } else {
+        return <FullButtonCta
+            loading={loading}
+            gradients={props.gradients}
+            ctaLabel={t('checkout')}
+            variant={disabled ? 'disabled' : 'custom'}
+            onClick={onAddToCart}
+            show={props.category !== null}
+        />;
+    }
+
 
 };
