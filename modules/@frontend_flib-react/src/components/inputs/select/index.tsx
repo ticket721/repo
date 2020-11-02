@@ -79,6 +79,7 @@ const customStyles = {
 export interface SelectOption {
     label: string;
     value: string;
+    [key: string]: any;
 }
 
 export interface GroupedSelectOption {

@@ -1,5 +1,19 @@
 import * as React from 'react';
+import { Icon } from '../../icon';
 import styled from '../../../config/styled';
+
+interface CustomToggle {
+    on: {
+        char?: string;
+        icon?: string;
+        size: string;
+    };
+    off: {
+        char?: string;
+        icon?: string;
+        size: string;
+    };
+}
 
 export interface ToggleProps extends React.ComponentProps<any> {
     label: string;
@@ -8,6 +22,7 @@ export interface ToggleProps extends React.ComponentProps<any> {
     onChange: (checked: boolean, id: string, e: React.ChangeEvent<HTMLElement>) => void;
     gradient?: string[];
     checked?: boolean;
+    custom?: CustomToggle;
 }
 
 const StyledLabel = styled.label`
@@ -32,40 +47,39 @@ const StyledLabel = styled.label`
     }
 `;
 
-const ToggleSwitch = styled.span`
+const ToggleSwitch = styled.div<ToggleProps>`
     align-items: center;
-    background-color: ${(props) => props.theme.componentColorLighter};
+    background: ${(props) =>
+        props.custom
+            ? `linear-gradient(260deg, ${props.gradient?.join(', ')})`
+            : props.checked
+            ? `linear-gradient(260deg, ${props.gradient?.join(', ')})`
+            : props.theme.componentColorLighter};
     border-radius: ${(props) => props.theme.defaultRadius};
-    content: '';
     display: inline-flex;
     height: 24px;
     justify-content: center;
     left: 0;
     position: absolute;
-    transform: translateX(0%);
-    transition: transform 300ms ease;
+    transform: translateX(${(props) => (props.checked ? 100 : 0)}%);
+    transition: transform 300ms ease, opacity 300ms ease;
     top: 0;
     width: 24px;
 
-    &::after {
-        border-bottom: 2px solid #fff;
-        border-right: 2px solid #fff;
-        content: '';
-        display: block;
-        height: 10px;
-        position: relative;
-        opacity: 0;
-        top: -2px;
-        transform: rotate(45deg);
-        transition: opacity 300ms ease;
-        width: 5px;
+    & > span {
+        opacity: ${(props) => (props.custom || props.checked ? 1 : 0)};
+    }
+
+    & > .icon-char {
+        padding-top: 3px;
+        font-weight: 500;
+        font-size: 13px;
     }
 `;
 
 const ToggleSwitchContainer = styled.div`
     background-color: ${(props) => props.theme.componentColorLight};
     border-radius: ${(props) => props.theme.defaultRadius};
-    content: '';
     display: block;
     height: 24px;
     padding-left: ${(props) => props.theme.doubleSpacing};
@@ -75,7 +89,7 @@ const ToggleSwitchContainer = styled.div`
     width: 44px;
 `;
 
-const StyledCheckboxContainer = styled.div<ToggleProps>`
+const StyledCheckboxContainer = styled.div`
     color: ${(props) => props.theme.textColorDark};
     display: flex;
     margin-bottom: ${(props) => props.theme.biggerSpacing};
@@ -84,26 +98,13 @@ const StyledCheckboxContainer = styled.div<ToggleProps>`
     &:last-of-type {
         margin-bottom: 0;
     }
-
-    input:checked {
-        & ~ ${ToggleSwitchContainer} {
-            ${ToggleSwitch} {
-                background: linear-gradient(260deg, ${(props) => props.gradient?.join(', ')});
-                transform: translateX(100%);
-
-                &::after {
-                    opacity: 1;
-                }
-            }
-        }
-    }
 `;
 
 export const Toggle: React.FunctionComponent<ToggleProps & { className?: string }> = (
     props: ToggleProps,
 ): JSX.Element => {
     return (
-        <StyledCheckboxContainer gradient={props.gradient}>
+        <StyledCheckboxContainer>
             <StyledLabel htmlFor={props.name}>
                 {props.label}
                 <input
@@ -116,7 +117,31 @@ export const Toggle: React.FunctionComponent<ToggleProps & { className?: string 
                     }}
                 />
                 <ToggleSwitchContainer>
-                    <ToggleSwitch />
+                    <ToggleSwitch gradient={props.gradient} custom={props.custom} checked={props.checked}>
+                        {props.custom?.on.icon && props.custom?.off.icon ? (
+                            <Icon
+                                size={
+                                    props.custom
+                                        ? props.checked
+                                            ? props.custom.on.size
+                                            : props.custom.off.size
+                                        : '12px'
+                                }
+                                color={'white'}
+                                icon={
+                                    props.custom
+                                        ? props.checked
+                                            ? props.custom.on.icon
+                                            : props.custom.off.icon
+                                        : 'check'
+                                }
+                            />
+                        ) : (
+                            <span className={'icon-char'}>
+                                {props.checked ? props.custom?.on.char : props.custom?.off.char}
+                            </span>
+                        )}
+                    </ToggleSwitch>
                 </ToggleSwitchContainer>
                 {props.description && <p>{props.description}</p>}
             </StyledLabel>
