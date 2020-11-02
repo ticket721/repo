@@ -58,8 +58,8 @@ import { contractsFetch } from './app/api/contracts';
 
 // CATEGORIES
 import {
-    categoriesAddDateLink,
-    categoriesCount, categoriesDelete, categoriesEdit, categoriesOwner, categoriesRemoveDateLink,
+    categoriesAddDateLinks,
+    categoriesCount, categoriesDelete, categoriesEdit, categoriesOwner, categoriesRemoveDateLinks,
     categoriesSearch, categoriesTicketCount,
 } from './app/api/categories';
 
@@ -139,7 +139,7 @@ export class T721SDK {
         this.dates.homeSearch = this.dates.homeSearch.bind(this);
         this.dates.fuzzySearch = this.dates.fuzzySearch.bind(this);
         this.dates.count = this.dates.count.bind(this);
-        this.dates.addCategory = this.dates.count.bind(this);
+        this.dates.addCategory = this.dates.addCategory.bind(this);
         this.dates.edit = this.dates.edit.bind(this);
         this.dates.delete = this.dates.delete.bind(this);
         this.dates.owner = this.dates.owner.bind(this);
@@ -156,8 +156,8 @@ export class T721SDK {
 
         this.categories.count = this.categories.count.bind(this);
         this.categories.search = this.categories.search.bind(this);
-        this.categories.addDateLink = this.categories.addDateLink.bind(this);
-        this.categories.removeDateLink = this.categories.removeDateLink.bind(this);
+        this.categories.addDateLinks = this.categories.addDateLinks.bind(this);
+        this.categories.removeDateLinks = this.categories.removeDateLinks.bind(this);
         this.categories.edit = this.categories.edit.bind(this);
         this.categories.delete = this.categories.delete.bind(this);
         this.categories.owner = this.categories.owner.bind(this);
@@ -372,8 +372,8 @@ export class T721SDK {
         search: categoriesSearch,
         owner: categoriesOwner,
         count: categoriesCount,
-        addDateLink: categoriesAddDateLink,
-        removeDateLink: categoriesRemoveDateLink,
+        addDateLinks: categoriesAddDateLinks,
+        removeDateLinks: categoriesRemoveDateLinks,
         countTickets: categoriesTicketCount,
         edit: categoriesEdit,
         delete: categoriesDelete,
