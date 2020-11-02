@@ -26,7 +26,17 @@ export const DatesAndTypologyForm: React.FC<DatesAndTypologyFormProps> = ({ pare
         <OnlineSwitch>
             <Toggle
             {...onlineProps}
-            gradient={!!sigColors[0] ? sigColors : undefined} />
+            custom={{
+                on: {
+                    icon: 'live',
+                    size: '14px'
+                },
+                off: {
+                    icon: 'pin',
+                    size: '14px'
+                }
+            }}
+            gradient={!!sigColors[0] ? sigColors : undefined}/>
         </OnlineSwitch>
         {
             onlineProps.checked ?

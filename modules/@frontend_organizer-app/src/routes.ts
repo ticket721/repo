@@ -13,43 +13,43 @@ export interface RouteDatum {
 
 export const routes: RouteDatum[] = [
     {
-        path: '/group/:groupId/event/:eventId/category/:categoryId',
-        page: lazy(() => import('./routes/UpdateGlobalCategory')),
-        protected: true,
-        entityType: 'events',
-        entityParam: 'eventId'
-    },
-    {
-        path: '/group/:groupId/event/:eventId/category',
-        page: lazy(() => import('./routes/NewGlobalCategory')),
-        protected: true,
-        entityType: 'events',
-        entityParam: 'eventId'
-    },
-    {
-        path: '/group/:groupId/date/:dateId/category/:categoryId',
-        page: lazy(() => import('./routes/UpdateCategory')),
+        path: '/event/:eventId/category/:categoryId',
+        page: lazy(() => import('./routes/EditCategory')),
         protected: true,
         entityType: 'categories',
         entityParam: 'categoryId'
     },
     {
-        path: '/group/:groupId/date/:dateId/category',
-        page: lazy(() => import('./routes/NewCategory')),
+        path: '/event/:eventId/category',
+        page: lazy(() => import('./routes/CreateCategory')),
+        protected: true,
+        entityType: 'events',
+        entityParam: 'eventId'
+    },
+    {
+        path: '/event/:eventId/date/:dateId/general-infos',
+        page: lazy(() => import('./routes/EditDate')),
         protected: true,
         entityType: 'dates',
         entityParam: 'dateId'
     },
     {
-        path: '/date/:dateId',
-        page: lazy(() => import('./routes/UpdateDate')),
+        path: '/event/:eventId/date/:dateId/styles',
+        page: lazy(() => import('./routes/EditDate')),
+        protected: true,
+        entityType: 'dates',
+        entityParam: 'dateId'
+    },
+    {
+        path: '/event/:eventId/date/:dateId/dates-typology',
+        page: lazy(() => import('./routes/EditDate')),
         protected: true,
         entityType: 'dates',
         entityParam: 'dateId'
     },
     {
         path: '/event/:eventId/date',
-        page: lazy(() => import('./routes/NewDate')),
+        page: lazy(() => import('./routes/CreateDate')),
         protected: true,
         entityType: 'events',
         entityParam: 'eventId'
