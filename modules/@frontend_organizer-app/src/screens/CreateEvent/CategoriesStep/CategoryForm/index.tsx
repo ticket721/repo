@@ -7,7 +7,7 @@ import { Button } from '@frontend/flib-react/lib/components';
 
 import { useTranslation } from 'react-i18next';
 import './locales';
-import { CategoryFields } from './Fields';
+import { CategoryFields } from '../../../../components/CategoryFields';
 import { SaleDeltas } from './Fields/useCategoryCreationFields';
 import { MultiDatesTag } from '../MultiDatesTag';
 
@@ -50,10 +50,21 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ idx, newCategory, on
                     ) : null}
                 </Title>
             </Header>
-            <CategoryFields idx={idx} sigColors={sigColors} onDuplicate={(dateIdxs, newDeltas) => {
-                setDuplicateDateIdxs(dateIdxs);
+            <CategoryFields
+            parentField={`categoriesConfiguration[${idx}]`}
+            dateRanges={formikCtx.values.datesConfiguration.map(date => ({
+                eventBegin: date.eventBegin,
+                eventEnd: date.eventEnd,
+            }))}
+            sigColors={sigColors}
+            onDuplicate={(newDeltas, dateIdxs) => {
                 setRelativeSaleDeltas(newDeltas);
-            }} />
+
+                if (dateIdxs) {
+                    setDuplicateDateIdxs(dateIdxs);
+                }
+            }}
+            />
             <ActionButton>
                 {
                     newCategory ?

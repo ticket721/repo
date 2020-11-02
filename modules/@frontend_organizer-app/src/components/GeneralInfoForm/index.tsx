@@ -21,7 +21,9 @@ export const GeneralInfoForm: React.FC<{nameUpdate?: (name: string) => void}> = 
             {...nameField}
             onChange={(e) => {
                 nameField.onChange(e);
-                nameUpdate(e.target.value);
+                if (nameUpdate) {
+                    nameUpdate(e.target.value);
+                }
             }}
             label={t('name_label')}
             placeholder={t('name_placeholder')}

@@ -4,11 +4,12 @@ import { CategoriesSearchResponseDto }         from '@app/server/controllers/cat
 import { CategoriesSearchInputDto }            from '@app/server/controllers/categories/dto/CategoriesSearchInput.dto';
 import { CategoriesCountInputDto }             from '@app/server/controllers/categories/dto/CategoriesCountInput.dto';
 import { CategoriesCountResponseDto }          from '@app/server/controllers/categories/dto/CategoriesCountResponse.dto';
-import { CategoriesAddDateLinkInputDto }       from '@app/server/controllers/categories/dto/CategoriesAddDateLinkInput.dto';
-import { CategoriesAddDateLinkResponseDto }    from '@app/server/controllers/categories/dto/CategoriesAddDateLinkResponse.dto';
+import { CategoriesAddDateLinksInputDto }       from '@app/server/controllers/categories/dto/CategoriesAddDateLinksInput.dto';
+import { CategoriesAddDateLinksResponseDto }    from '@app/server/controllers/categories/dto/CategoriesAddDateLinksResponse.dto';
 import { CategoriesEditInputDto }              from '@app/server/controllers/categories/dto/CategoriesEditInput.dto';
 import { CategoriesEditResponseDto }           from '@app/server/controllers/categories/dto/CategoriesEditResponse.dto';
-import { CategoriesRemoveDateLinkResponseDto } from '@app/server/controllers/categories/dto/CategoriesRemoveDateLinkResponse.dto';
+import { CategoriesRemoveDateLinksInputDto } from '@app/server/controllers/categories/dto/CategoriesRemoveDateLinksInput.dto';
+import { CategoriesRemoveDateLinksResponseDto } from '@app/server/controllers/categories/dto/CategoriesRemoveDateLinksResponse.dto';
 import { CategoriesOwnerResponseDto }          from '@app/server/controllers/categories/dto/CategoriesOwnerResponse.dto';
 import { CategoriesCountTicketResponseDto }    from '@app/server/controllers/categories/dto/CategoriesCountTicketResponse.dto';
 
@@ -91,29 +92,29 @@ export async function categoriesDelete(
     }, null);
 }
 
-export async function categoriesRemoveDateLink(
+export async function categoriesRemoveDateLinks(
     token: string,
     category: string,
-    date: string
-): Promise<AxiosResponse<CategoriesRemoveDateLinkResponseDto>> {
+    query: Partial<CategoriesRemoveDateLinksInputDto>,
+): Promise<AxiosResponse<CategoriesRemoveDateLinksResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.delete(`/categories/${category}/date/${date}`, {
+    return self.delete<Partial<CategoriesRemoveDateLinksInputDto>>(`/categories/${category}/date`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-    }, null);
+    }, query);
 }
 
-export async function categoriesAddDateLink(
+export async function categoriesAddDateLinks(
     token: string,
     category: string,
-    query: Partial<CategoriesAddDateLinkInputDto>,
-): Promise<AxiosResponse<CategoriesAddDateLinkResponseDto>> {
+    query: Partial<CategoriesAddDateLinksInputDto>,
+): Promise<AxiosResponse<CategoriesAddDateLinksResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<Partial<CategoriesAddDateLinkInputDto>>(`/categories/${category}/date`, {
+    return self.post<Partial<CategoriesAddDateLinksInputDto>>(`/categories/${category}/date`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);

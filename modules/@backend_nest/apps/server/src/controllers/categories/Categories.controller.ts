@@ -28,12 +28,13 @@ import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import { User } from '@app/server/authentication/decorators/User.controller.decorator';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { CategoriesAddDateLinkInputDto } from '@app/server/controllers/categories/dto/CategoriesAddDateLinkInput.dto';
-import { CategoriesAddDateLinkResponseDto } from '@app/server/controllers/categories/dto/CategoriesAddDateLinkResponse.dto';
+import { CategoriesAddDateLinksInputDto } from '@app/server/controllers/categories/dto/CategoriesAddDateLinksInput.dto';
+import { CategoriesAddDateLinksResponseDto } from '@app/server/controllers/categories/dto/CategoriesAddDateLinksResponse.dto';
 import { EventsService } from '@lib/common/events/Events.service';
 import { DatesService } from '@lib/common/dates/Dates.service';
 import { CategoriesDeleteResponseDto } from '@app/server/controllers/categories/dto/CategoriesDeleteResponse.dto';
-import { CategoriesRemoveDateLinkResponseDto } from '@app/server/controllers/categories/dto/CategoriesRemoveDateLinkResponse.dto';
+import { CategoriesRemoveDateLinksInputDto } from '@app/server/controllers/categories/dto/CategoriesRemoveDateLinksInput.dto';
+import { CategoriesRemoveDateLinksResponseDto } from '@app/server/controllers/categories/dto/CategoriesRemoveDateLinksResponse.dto';
 import { CategoryCreationPayload, checkCategory } from '@common/global';
 import { CategoriesEditInputDto } from '@app/server/controllers/categories/dto/CategoriesEditInput.dto';
 import { CategoriesEditResponseDto } from '@app/server/controllers/categories/dto/CategoriesEditResponse.dto';
@@ -178,54 +179,58 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
         StatusCodes.BadRequest,
         StatusCodes.InternalServerError,
     ])
-    async addDateLink(
+    async addDateLinks(
         @Param('category') categoryId: string,
-        @Body() body: CategoriesAddDateLinkInputDto,
+        @Body() body: CategoriesAddDateLinksInputDto,
         @User() user: UserDto,
-    ): Promise<CategoriesAddDateLinkResponseDto> {
-        const category = await this._crudCall(
-            this.categoriesService.findOne(categoryId),
-            StatusCodes.InternalServerError,
-        );
+    ): Promise<CategoriesAddDateLinksResponseDto> {
+        let category: CategoryEntity;
 
-        if (!(await this.isCategoryOwner(category, user))) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.Unauthorized,
-                    message: 'not_category_owner',
-                },
-                StatusCodes.Unauthorized,
+        for (const dateId of body.dates) {
+            category = await this._crudCall(
+                this.categoriesService.findOne(categoryId),
+                StatusCodes.InternalServerError,
             );
+
+            if (!(await this.isCategoryOwner(category, user))) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.Unauthorized,
+                        message: 'not_category_owner',
+                    },
+                    StatusCodes.Unauthorized,
+                );
+            }
+
+            if (category.dates.indexOf(dateId) !== -1) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.Conflict,
+                        message: 'already_linked',
+                    },
+                    StatusCodes.Conflict,
+                );
+            }
+
+            const date = await this._crudCall(this.datesService.findOne(dateId), StatusCodes.InternalServerError);
+
+            if (date.group_id !== category.group_id) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.Unauthorized,
+                        message: 'not_date_owner',
+                    },
+                    StatusCodes.Unauthorized,
+                );
+            }
+
+            await this._crudCall(this.datesService.addCategory(dateId, category), StatusCodes.InternalServerError);
         }
-
-        if (category.dates.indexOf(body.date) !== -1) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.Conflict,
-                    message: 'already_linked',
-                },
-                StatusCodes.Conflict,
-            );
-        }
-
-        const date = await this._crudCall(this.datesService.findOne(body.date), StatusCodes.InternalServerError);
-
-        if (date.group_id !== category.group_id) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.Unauthorized,
-                    message: 'not_date_owner',
-                },
-                StatusCodes.Unauthorized,
-            );
-        }
-
-        await this._crudCall(this.datesService.addCategory(body.date, category), StatusCodes.InternalServerError);
 
         return {
             category: {
                 ...category,
-                dates: [...category.dates, body.date],
+                dates: [...category.dates, body.dates[body.dates.length - 1]],
             },
         };
     }
@@ -237,7 +242,7 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
      * @param dateId
      * @param user
      */
-    @Delete('/:category/date/:date')
+    @Delete('/:category/date')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.Created)
@@ -248,43 +253,52 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
         StatusCodes.BadRequest,
         StatusCodes.InternalServerError,
     ])
-    async removeDateLink(
+    async removeDateLinks(
         @Param('category') categoryId: string,
-        @Param('date') dateId: string,
+        @Body() body: CategoriesRemoveDateLinksInputDto,
         @User() user: UserDto,
-    ): Promise<CategoriesRemoveDateLinkResponseDto> {
-        const category = await this._crudCall(
-            this.categoriesService.findOne(categoryId),
-            StatusCodes.InternalServerError,
-        );
+    ): Promise<CategoriesRemoveDateLinksResponseDto> {
+        let category: CategoryEntity;
 
-        if (!(await this.isCategoryOwner(category, user))) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.Unauthorized,
-                    message: 'not_category_owner',
-                },
-                StatusCodes.Unauthorized,
+        for (const dateId of body.dates) {
+            category = await this._crudCall(
+                this.categoriesService.findOne(categoryId),
+                StatusCodes.InternalServerError,
+            );
+
+            if (!(await this.isCategoryOwner(category, user))) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.Unauthorized,
+                        message: 'not_category_owner',
+                    },
+                    StatusCodes.Unauthorized,
+                );
+            }
+
+            if (category.dates.length <= 1) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.BadRequest,
+                        message: 'date_link_count_too_low',
+                    },
+                    StatusCodes.BadRequest,
+                );
+            }
+
+            await this._crudCall(
+                this.datesService.removeCategory(dateId, category),
+                StatusCodes.InternalServerError,
+                'error_while_removing_link',
             );
         }
 
-        if (category.dates.length <= 1) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.BadRequest,
-                    message: 'date_link_count_too_low',
-                },
-                StatusCodes.BadRequest,
-            );
-        }
-
-        await this._crudCall(
-            this.datesService.removeCategory(dateId, category),
-            StatusCodes.InternalServerError,
-            'error_while_removing_link',
-        );
-
-        return {};
+        return {
+            category: {
+                ...category,
+                dates: category.dates.filter(dateId => dateId !== body.dates[body.dates.length - 1]),
+            },
+        };
     }
 
     /**

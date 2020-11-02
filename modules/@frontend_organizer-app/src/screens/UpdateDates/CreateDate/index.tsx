@@ -1,47 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import styled                                           from 'styled-components';
+import { useHistory, useParams, useLocation } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
+import { FormikProvider, useFormik } from 'formik';
 
-import '@frontend/core/lib/utils/window';
+import { checkDate, DateCreationPayload } from '@common/global';
+
+import { AppState } from '@frontend/core/lib/redux';
+import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 
 import { Button } from '@frontend/flib-react/lib/components';
 
-import { GeneralInfoForm }     from '../../components/GeneralInfoForm';
-import { StylesForm }          from '../../components/StylesForm';
-import { DatesStep }           from './DatesStep';
-import { CategoriesStep }      from './CategoriesStep';
-
-import { useTranslation }                from 'react-i18next';
+import { GeneralInfoForm } from '../../../components/GeneralInfoForm';
+import { StylesForm } from '../../../components/StylesForm';
+import { eventParam } from '../../types';
 import './locales';
-import { ResetEventCreateForm }          from './ResetEventCreateForm';
-import { PushNotification }              from '@frontend/core/lib/redux/ducks/notifications';
-import { useHistory }                    from 'react-router';
-import { FormikProvider, useFormik } from 'formik';
-import { Persist } from 'formik-persist';
-import { checkEvent, EventCreationPayload } from '@common/global';
-import { DelayedOnMountValidation } from './DelayedOnMountValidation';
-import { Stepper, StepStatus } from '../../components/Stepper';
-import { AppState } from '@frontend/core/lib/redux';
+import { DatesAndTypologyForm } from '../../../components/DatesAndTypologyForm';
+import { Stepper, StepStatus } from '../../../components/Stepper';
 import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
-import { EventsBuildResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsBuildResponse.dto';
+import { EventsAddDateResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsAddDateResponse.dto';
 import { v4 } from 'uuid';
-
-export interface FormProps {
-    onComplete: () => void;
-}
-
-const initialValues: EventCreationPayload = {
-    textMetadata: {
-        name: '',
-        description: '',
-    },
-    imagesMetadata: {
-        avatar: '',
-        signatureColors: ['', ''],
-    },
-    datesConfiguration: [],
-    categoriesConfiguration: [],
-};
 
 interface StepInfos {
     step: string;
@@ -61,31 +40,56 @@ const stepsInfos: StepInfos[] = [
         description: 'styles_description',
     },
     {
-        step: 'datesConfiguration',
+        step: 'info',
         title: 'dates_title',
         description: 'dates_description',
     },
-    {
-        step: 'categoriesConfiguration',
-        title: 'categories_title',
-        description: 'categories_description',
-    },
 ];
 
-const CreateEvent: React.FC = () => {
-    const [ t ] = useTranslation('create_event');
+const initialValues: DateCreationPayload = {
+    info: {
+        online: false,
+        name: '',
+        eventBegin: null,
+        eventEnd: null,
+        location: {
+            label: '',
+            lon: null,
+            lat: null,
+        },
+    },
+    textMetadata: {
+        name: '',
+        description: '',
+    },
+    imagesMetadata: {
+        avatar: '',
+        signatureColors: ['', ''],
+    },
+};
+
+export const CreateDate: React.FC = () => {
+    const { t } = useTranslation('create_date');
 
     const [ currentStep, setCurrentStep ] = useState<number>(0);
 
     const [ stepStatuses, setStepStatuses ] = useState<StepStatus[]>([]);
-    const dispatch = useDispatch();
-    const history = useHistory();
-    const [uuid] = useState<string>(v4() + '@event-create');
-    const token: string = useSelector((state: AppState) => state.auth.token.value);
-    const { response, lazyRequest: createEvent } = useLazyRequest<EventsBuildResponseDto>('events.create.create', uuid);
 
-    const validate = (eventPayload: EventCreationPayload) => {
-        const errors = checkEvent(eventPayload);
+    const dispatch = useDispatch();
+
+    const { state: routerState } = useLocation<Partial<DateCreationPayload>>();
+
+    const history = useHistory();
+
+    const { eventId } = useParams<eventParam>();
+
+    const [uuid] = useState(v4() + '@add-date');
+    const token = useSelector((state: AppState): string => state.auth.token.value);
+
+    const { response, lazyRequest: addDate } = useLazyRequest<EventsAddDateResponseDto>('events.addDate', uuid);
+
+    const validate = (datePayload: DateCreationPayload) => {
+        const errors = checkDate(datePayload);
         const errorKeys = errors ? Object.keys(errors) : [];
         const eventCreationKeys = stepsInfos.map(stepInfos => stepInfos.step);
 
@@ -107,51 +111,49 @@ const CreateEvent: React.FC = () => {
         return errors;
     };
 
-    const onSubmit = (eventPayload: EventCreationPayload) => createEvent([
+    const onSubmit = (date: DateCreationPayload) => addDate([
         token,
-        {
-            eventPayload: {
-                ...eventPayload,
-                categoriesConfiguration: eventPayload.categoriesConfiguration.map(category => ({
-                    ...category,
-                    price: category.price * 100,
-                }))
-            },
-        }
+        eventId,
+        {date}
     ], { force: true });
 
     const formik = useFormik({
-        initialValues,
+        initialValues: {
+            ...initialValues,
+            ...routerState,
+        },
         onSubmit,
         validate,
+        validateOnMount: true,
     });
 
-    const buildForm = () => {
+    const buildForm = (setFieldValue: any) => {
         switch (currentStep) {
-            case 0: return <GeneralInfoForm/>;
+            case 0: return <GeneralInfoForm nameUpdate={(name) => setFieldValue('info.name', name)}/>;
             case 1: return <StylesForm/>;
-            case 2: return <DatesStep/>;
-            case 3: return <CategoriesStep/>;
+            case 2: return <DatesAndTypologyForm parentField={'info'}/>;
             default: return <></>;
         }
     };
 
+    /* on added date */
     useEffect(() => {
-        if (response.data?.event) {
-            dispatch(PushNotification(t('event_create_success'), 'success'));
+        if (response.data?.date) {
+            dispatch(PushNotification(t('date_create_success'), 'success'));
             formik.resetForm();
-            formik.validateForm();
-            history.push('/');
+            history.push(`/event/${eventId}/category`, {
+                dates: [response.data?.date.id],
+            });
         }
     // eslint-disable-next-line
-    }, [response.data?.event]);
+    }, [response.data?.date]);
 
     useEffect(() => {
-        if (response.data?.error) {
-            dispatch(PushNotification(t('event_creation_error'), 'error'));
+        if (response.error) {
+            dispatch(PushNotification(t('date_create_failed'), 'error'));
         }
     // eslint-disable-next-line
-    }, [response.data?.error]);
+    }, [response.error]);
 
     return (
         <Container>
@@ -173,7 +175,7 @@ const CreateEvent: React.FC = () => {
                         <Title>{t(stepsInfos[currentStep].title)}</Title>
                         <Description>{t(stepsInfos[currentStep].description)}</Description>
                         {
-                            buildForm()
+                            buildForm(formik.setFieldValue)
                         }
                         <StepButtons>
                             {
@@ -208,20 +210,10 @@ const CreateEvent: React.FC = () => {
                         <SubmitButton
                             type={'submit'}
                             variant={'primary'}
-                            title={t('create_event_btn')}
+                            title={t('create_date_and_add_categories')}
                         /> :
                         null
                     }
-
-                    <ResetEventCreateForm
-                    token={token}
-                    onReset={() => {
-                        formik.resetForm();
-                        formik.validateForm();
-                        setCurrentStep(0);
-                    }}/>
-                    <Persist name={'event-creation'} />
-                    <DelayedOnMountValidation/>
                 </Form>
             </FormikProvider>
         </Container>
@@ -297,5 +289,3 @@ const StepButtons = styled.div`
 const SubmitButton = styled(Button)`
     margin-top: ${props => props.theme.doubleSpacing};
 `;
-
-export default CreateEvent;
