@@ -8,8 +8,12 @@ interface StyledNavbar {
 
 const StyledNavbar = styled.nav<StyledNavbar>`
     align-items: center;
-    background-color: rgba(33, 29, 45, 0.6);
-    backdrop-filter: blur(6px);
+
+    background-color: rgba(33, 29, 45, 1);
+    @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+        background-color: rgba(33, 29, 45, 0.6);
+        backdrop-filter: blur(6px);
+    }
     border-top-left-radius: ${(props) => props.theme.doubleSpacing};
     border-top-right-radius: ${(props) => props.theme.doubleSpacing};
     transition: bottom 500ms ease;

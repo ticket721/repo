@@ -108,7 +108,11 @@ export const TicketCategoryFetcher: React.FC<TicketCategoryFetcherProps> = (prop
                         selection={selection.selection}
                         setSelection={setSelection}
                     />
-                    <TicketSelectionCta gradients={props.date.metadata.signature_colors} category={selection.category}/>
+                    <TicketSelectionCta
+                        gradients={props.date.metadata.signature_colors}
+                        category={selection.category}
+                        clearSelection={() => setSelection({selection: null, category: null})}
+                    />
                 </>
 
                 :

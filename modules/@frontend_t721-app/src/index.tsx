@@ -20,7 +20,6 @@ import MobileApp                                                           from 
 import { LocationReducer, locationInitialState, locationSaga }             from './redux/ducks/location';
 import { T721AppState }                                                    from './redux';
 import { searchInitialState, SearchReducer }                               from './redux/ducks/search';
-import { cartInitialState, CartReducer, cartSaga }                         from './redux/ducks/cart';
 import { deviceWalletInitialState, DeviceWalletReducer, deviceWalletSaga } from './redux/ducks/device_wallet';
 import MediaQuery                                                          from 'react-responsive';
 import styled                                                              from 'styled-components';
@@ -31,16 +30,13 @@ import { useTranslation }        from 'react-i18next';
 const store: Store<T721AppState> = configureStore<any>({
     location: LocationReducer,
     search: SearchReducer,
-    cart: CartReducer,
     deviceWallet: DeviceWalletReducer,
 }, {
     location: locationInitialState,
     search: searchInitialState,
-    cart: cartInitialState,
     deviceWallet: deviceWalletInitialState,
 }, [
     locationSaga,
-    cartSaga,
     deviceWalletSaga,
 ]);
 
@@ -52,6 +48,7 @@ interface ScaleOffsetProps {
 }
 
 const Inception = styled.iframe<ScaleOffsetProps>`
+  cursor: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/9632/heart.png"), auto;
   transform: scale(${props => props.scale});
   transform-origin: bottom right;
   position: absolute;

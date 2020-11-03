@@ -13,19 +13,23 @@ export interface DoubleButtonCtaProps extends React.ComponentProps<any> {
     loading?: boolean;
     gradients?: string[];
     onClick: () => void;
+    solid?: boolean;
     onSecondaryClick: () => void;
 }
 
 const CtaContainer = styled.div<DoubleButtonCtaProps>`
   align-items: center;
-  background-color: ${browser?.name === 'firefox' ? 'rgba(33, 29, 45, 0.95)' : 'rgba(33, 29, 45, 0.6)'};
 
-  ${
-      browser?.name !== 'firefox' &&
-      `
-    backdrop-filter: blur(40px);
-  `
+  background-color: rgba(33, 29, 45, 1);
+  ${(props) =>
+      !props.solid
+          ? `
+  @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+      background-color: rgba(33, 29, 45, 0.6);
+      backdrop-filter: blur(6px);
   }
+  `
+          : ``}
 
   border-top-left-radius: ${(props) => props.theme.bigRadius};
   border-top-right-radius: ${(props) => props.theme.bigRadius};
@@ -76,7 +80,7 @@ export const DoubleButtonCta: React.FunctionComponent<DoubleButtonCtaProps & { c
     props: DoubleButtonCtaProps,
 ): JSX.Element => {
     return (
-        <CtaContainer show={props.show} className={props.className}>
+        <CtaContainer show={props.show} className={props.className} solid={props.solid}>
             <TextButton onClick={props.onSecondaryClick}>{props.secondaryLabel}</TextButton>
             <ButtonWrapper>
                 <Button

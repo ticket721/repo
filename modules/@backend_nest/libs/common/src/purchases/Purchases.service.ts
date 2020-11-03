@@ -260,7 +260,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         purchase: PurchaseEntity,
         products: Product[],
     ): Promise<ServiceResponse<[PurchaseEntity, PurchaseError[]]>> {
-        if (purchase.payment && purchase.payment.status !== 'waiting') {
+        if (purchase.payment && purchase.payment.status !== 'waiting' && !(await this.isExpired(purchase))) {
             return {
                 error: 'payment_in_progress',
                 response: null,
@@ -285,41 +285,50 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
             currency: null,
         };
 
-        for (const product of products) {
-            let error: PurchaseError = null;
+        if (products.length === 0) {
+            edits = {
+                products: [],
+                payment_interface: null,
+                price: null,
+                currency: null,
+            };
+        } else {
+            for (const product of products) {
+                let error: PurchaseError = null;
 
-            const productHandler: ProductCheckerServiceBase = this.moduleRef.get(`product/${product.type}`, {
-                strict: false,
-            });
+                const productHandler: ProductCheckerServiceBase = this.moduleRef.get(`product/${product.type}`, {
+                    strict: false,
+                });
 
-            if (isNil(productHandler)) {
-                error = {
-                    reason: 'unknown_product',
-                    context: {
-                        type: product.type,
-                    },
-                };
+                if (isNil(productHandler)) {
+                    error = {
+                        reason: 'unknown_product',
+                        context: {
+                            type: product.type,
+                        },
+                    };
+                }
+
+                const checkResult: ServiceResponse<Partial<PurchaseEntity>> = await productHandler.add(
+                    user,
+                    editedPurchase,
+                    product,
+                );
+
+                if (checkResult.error) {
+                    error = {
+                        reason: checkResult.error,
+                        context: {
+                            type: product.type,
+                        },
+                    };
+                }
+
+                edits = merge({}, edits, checkResult.response);
+                editedPurchase = merge({}, editedPurchase, checkResult.response);
+
+                errors.push(error);
             }
-
-            const checkResult: ServiceResponse<Partial<PurchaseEntity>> = await productHandler.add(
-                user,
-                editedPurchase,
-                product,
-            );
-
-            if (checkResult.error) {
-                error = {
-                    reason: checkResult.error,
-                    context: {
-                        type: product.type,
-                    },
-                };
-            }
-
-            edits = merge({}, edits, checkResult.response);
-            editedPurchase = merge({}, editedPurchase, checkResult.response);
-
-            errors.push(error);
         }
 
         const errorCount = errors.filter((err: PurchaseError): boolean => err !== null).length;
@@ -448,6 +457,18 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
     async checkCartStatus(user: UserDto, purchase: PurchaseEntity): Promise<ServiceResponse<PurchaseError[]>> {
         const errors: PurchaseError[] = [];
 
+        if (await this.isExpired(purchase)) {
+            return {
+                error: null,
+                response: [...new Array(purchase.products.length)].map(
+                    (): PurchaseError => ({
+                        reason: 'cart_expired',
+                        context: {},
+                    }),
+                ),
+            };
+        }
+
         for (let idx = 0; idx < purchase.products.length; ++idx) {
             const productHandler: ProductCheckerServiceBase = this.moduleRef.get(
                 `product/${purchase.products[idx].type}`,
@@ -498,7 +519,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
     }
 
     async isExpired(purchase: PurchaseEntity): Promise<boolean> {
-        if (purchase.checked_out_at) {
+        if (purchase.checked_out_at && purchase.payment && purchase.payment.status === 'waiting') {
             const now = this.timeToolService.now();
 
             return now.getTime() - new Date(purchase.checked_out_at).getTime() > CART_EXPIRATION;

@@ -15,6 +15,7 @@ export class NonePaymentHandler implements PaymentHandlerBaseService {
             response: [
                 {
                     id: null,
+                    client_id: null,
                     type: 'none',
                     status: 'confirmed',
                 },
@@ -36,6 +37,7 @@ export class NonePaymentHandler implements PaymentHandlerBaseService {
             error: null,
             response: {
                 id: null,
+                client_id: null,
                 type: 'none',
                 status: 'confirmed',
             },

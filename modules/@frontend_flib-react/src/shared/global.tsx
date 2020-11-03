@@ -219,21 +219,60 @@ export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
 
   .Toastify__toast {
       border-radius: ${(props) => props.theme.defaultRadius};
-      backdrop-filter: blur(8px);
       box-shadow: none;
   }
 
   .Toastify__toast--info {
-      background: ${(props: ThemeProps<Theme>) => props.theme.primaryColorGradientEnd.hex}20;
+
+      background-color: ${(props: ThemeProps<Theme>) => props.theme.primaryColorGradientEnd.hex}ff;
+
+      @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+          background-color: ${(props: ThemeProps<Theme>) => props.theme.primaryColorGradientEnd.hex}20;
+          backdrop-filter: blur(8px);
+      }
+
   }
+
   .Toastify__toast--success {
-      background: ${(props: ThemeProps<Theme>) => props.theme.successColor.hex}20;
+
+      background-color: ${(props: ThemeProps<Theme>) => props.theme.successColor.hex}ff;
+
+      @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+          background-color: ${(props: ThemeProps<Theme>) => props.theme.successColor.hex}20;
+          backdrop-filter: blur(8px);
+      }
+
   }
+
   .Toastify__toast--warning {
-      background: ${(props: ThemeProps<Theme>) => props.theme.warningColor.hex}20;
+
+      background-color: ${(props: ThemeProps<Theme>) => props.theme.warningColor.hex}ff;
+
+      @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+          background-color: ${(props: ThemeProps<Theme>) => props.theme.warningColor.hex}20;
+          backdrop-filter: blur(6px);
+      }
+
   }
+
   .Toastify__toast--error {
-      background: ${(props: ThemeProps<Theme>) => props.theme.errorColor.hex}20;
+      background-color: ${(props: ThemeProps<Theme>) => props.theme.errorColor.hex}ff;
+
+      @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+          background-color: ${(props: ThemeProps<Theme>) => props.theme.errorColor.hex}20;
+          backdrop-filter: blur(8px);
+      }
+  }
+
+  .sai {
+    --sat: env(safe-area-inset-top);
+    --sar: env(safe-area-inset-right);
+    --sab: env(safe-area-inset-bottom);
+    --sal: env(safe-area-inset-left);
+    --sat: constant(safe-area-inset-top);
+    --sar: constant(safe-area-inset-right);
+    --sab: constant(safe-area-inset-bottom);
+    --sal: constant(safe-area-inset-left);
   }
 
 `;

@@ -19,7 +19,7 @@ const remaining = (elapsed: number, multiplicator: number): number => {
     return multiplicator * 10 - elapsed;
 };
 
-export const ValidateEmail: React.FC = () => {
+export const ValidateEmailComponent = () => {
     const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
     const { t } = useTranslation('validate_email');
     const [uuid, setUUID] = useState(v4());
@@ -40,15 +40,7 @@ export const ValidateEmail: React.FC = () => {
     }, [elapsed]);
 
     useDeepEffect(() => {
-        console.log(
-            'loading',
-            lazyResendEmail.response.loading,
-            lazyResendEmail.response.called,
-            lastCalled,
-            multiplicator,
-        );
         if (!lazyResendEmail.response.loading && lazyResendEmail.response.called && lastCalled === multiplicator) {
-            console.log('resetting uuid');
             setUUID(v4());
             setElapsed(0);
             setMultiplicator(multiplicator + 1);
@@ -64,7 +56,27 @@ export const ValidateEmail: React.FC = () => {
             setLastCalled(multiplicator);
         }
     };
+    return (
+        <ValidateEmailContainer mobile={isTabletOrMobile}>
+            <MailIcon icon={'mail'} color={'#fff'} size={'80px'} />
+            <MessageFirstLine>{t('message')}</MessageFirstLine>
+            <span>{t('check_your_mailbox')}</span>
+            <Button
+                variant={
+                    isElapsed(elapsed, multiplicator) && !lazyResendEmail.response.loading ? 'primary' : 'disabled'
+                }
+                title={
+                    isElapsed(elapsed, multiplicator) ? t('resend_email') : remaining(elapsed, multiplicator).toString()
+                }
+                loadingState={lazyResendEmail.response.loading}
+                onClick={resendEmail}
+            />
+            {multiplicator > 1 ? <MaybeSpam>{t('maybe_spam')}</MaybeSpam> : null}
+        </ValidateEmailContainer>
+    );
+};
 
+export const ValidateEmail: React.FC = () => {
     return (
         <div
             style={{
@@ -75,24 +87,14 @@ export const ValidateEmail: React.FC = () => {
                 justifyContent: 'center',
             }}
         >
-            <ValidateEmailContainer mobile={isTabletOrMobile}>
-                <MailIcon icon={'mail'} color={'#fff'} size={'80px'} />
-                <MessageFirstLine>{t('message')}</MessageFirstLine>
-                <span>{t('check_your_mailbox')}</span>
-                <Button
-                    variant={
-                        isElapsed(elapsed, multiplicator) && !lazyResendEmail.response.loading ? 'primary' : 'disabled'
-                    }
-                    title={
-                        isElapsed(elapsed, multiplicator)
-                            ? t('resend_email')
-                            : remaining(elapsed, multiplicator).toString()
-                    }
-                    loadingState={lazyResendEmail.response.loading}
-                    onClick={resendEmail}
-                />
-                {multiplicator > 1 ? <MaybeSpam>{t('maybe_spam')}</MaybeSpam> : null}
-            </ValidateEmailContainer>
+            <div
+                style={{
+                    width: 450,
+                    padding: 60,
+                }}
+            >
+                <ValidateEmailComponent />
+            </div>
         </div>
     );
 };
@@ -106,11 +108,9 @@ const ValidateEmailContainer = styled.div`
     flex-direction: column;
     align-items: center;
     font-size: 15px;
-    width: 450px;
     max-height: 100vh;
     background: ${(props: IValidateEmailContainerInputProps) =>
         props.mobile ? 'none' : 'linear-gradient(91.44deg, #241f33 0.31%, #1b1726 99.41%)'};
-    padding: 60px;
     border-radius: 15px;
 `;
 

@@ -2,6 +2,14 @@ const {ElasticMigration} = require('elastic-migrate');
 
 class M20201001131552_post_the_great_refactoring extends ElasticMigration {
     async up() {
+
+        await this.createIndex('ticket721_purchase', 'ticket721');
+        await this.putMapping('ticket721_purchase', 'purchase', {
+            "purchase": {
+                "discover": ".*"
+            }
+        });
+        
         await this.createIndex('ticket721_user', 'ticket721');
         await this.putMapping('ticket721_user', 'user', {
             "user": {
@@ -170,6 +178,7 @@ class M20201001131552_post_the_great_refactoring extends ElasticMigration {
         await this.removeIndex('ticket721_date');
         await this.removeIndex('ticket721_category');
         await this.removeIndex('ticket721_ticket');
+        await this.removeIndex('ticket721_purchase');
     }
 }
 

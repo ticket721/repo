@@ -32,6 +32,7 @@ export class Product {
 export interface Payment {
     type: 'stripe' | 'none';
     id: string;
+    client_id: string;
     status: 'waiting' | 'confirmed' | 'rejected';
 }
 
