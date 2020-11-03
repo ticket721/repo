@@ -1,6 +1,6 @@
-import { CategoryEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-import React, { useContext, useEffect, useState } from 'react';
-import { FullButtonCta } from '@frontend/flib-react/lib/components';
+import { CategoryEntity }                                      from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { FullButtonCta }                                       from '@frontend/flib-react/lib/components';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation }                      from 'react-router';
@@ -72,28 +72,32 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
         }
     }
 
+    const force = useCallback(cart.force, [cart]);
+
     useEffect(() => {
-        if (addToCartLazyRequest.response.called) {
-            if (addToCartLazyRequest.response.error) {
-                setTimestamp(null);
-            } else if (addToCartLazyRequest.response.data) {
-
-                const data = addToCartLazyRequest.response.data;
-                if (data.errors.filter((elem): boolean => !isNil(elem)).length > 0) {
-                    const errors = data.errors.filter((elem): boolean => !isNil(elem))
-                    for (const error of errors) {
-                        dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
-                    }
+            if (addToCartLazyRequest.response.called) {
+                if (addToCartLazyRequest.response.error) {
                     setTimestamp(null);
-                    props.clearSelection();
-                } else {
-                    cart.force();
-                    props.clearSelection();
-                }
+                } else if (addToCartLazyRequest.response.data) {
 
+                    const data = addToCartLazyRequest.response.data;
+                    if (data.errors.filter((elem): boolean => !isNil(elem)).length > 0) {
+                        const errors = data.errors.filter((elem): boolean => !isNil(elem))
+                        for (const error of errors) {
+                            dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
+                        }
+                        setTimestamp(null);
+                        props.clearSelection();
+                    } else {
+                        force();
+                        props.clearSelection();
+                    }
+
+                }
             }
-        }
-    }, [addToCartLazyRequest.response.data, addToCartLazyRequest.response.error, addToCartLazyRequest.response.called]);
+        },
+        // eslint-disable-next-line
+        [addToCartLazyRequest.response.data, addToCartLazyRequest.response.error, addToCartLazyRequest.response.called]);
 
     const loading = capturedTimesstamp !== null && capturedTimesstamp === cart.last_update;
 

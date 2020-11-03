@@ -148,7 +148,7 @@ export class StripeInterfacesPaymentHandler implements PaymentHandlerBaseService
                         id: paymentIntent.id,
                         client_id: JSON.stringify({
                             client_secret: paymentIntent.client_secret,
-                            stripe_account: stripeInterfaceEntity.connect_account
+                            stripe_account: stripeInterfaceEntity.connect_account,
                         }),
                         status: 'waiting',
                     },

@@ -130,9 +130,9 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                     !!feeDesc
                         ? feeDesc
                         : {
-                            type: 'none',
-                            price: 0,
-                        },
+                              type: 'none',
+                              price: 0,
+                          },
             ),
             error: null,
         };
@@ -290,10 +290,9 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                 products: [],
                 payment_interface: null,
                 price: null,
-                currency: null
-            }
+                currency: null,
+            };
         } else {
-
             for (const product of products) {
                 let error: PurchaseError = null;
 
@@ -330,7 +329,6 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
 
                 errors.push(error);
             }
-
         }
 
         const errorCount = errors.filter((err: PurchaseError): boolean => err !== null).length;
@@ -462,11 +460,13 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         if (await this.isExpired(purchase)) {
             return {
                 error: null,
-                response: [...(new Array(purchase.products.length))].map((): PurchaseError => ({
-                    reason: 'cart_expired',
-                    context: {}
-                }))
-            }
+                response: [...new Array(purchase.products.length)].map(
+                    (): PurchaseError => ({
+                        reason: 'cart_expired',
+                        context: {},
+                    }),
+                ),
+            };
         }
 
         for (let idx = 0; idx < purchase.products.length; ++idx) {

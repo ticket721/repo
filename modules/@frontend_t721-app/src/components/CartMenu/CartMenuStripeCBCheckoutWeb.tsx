@@ -1,38 +1,14 @@
-import React, { useContext, useState }                              from 'react';
-import { FullPageLoading, PurchaseTotal, TextInput, FullButtonCta } from '@frontend/flib-react/lib/components';
-import styled, { useTheme }                                         from 'styled-components';
-import { Theme }                                                    from '@frontend/flib-react/lib/config/theme';
-import { useTranslation }                                           from 'react-i18next';
-import { useDeepEffect }                                            from '@frontend/core/lib/hooks/useDeepEffect';
-import { useElements }                                              from '@stripe/react-stripe-js';
-import { PushNotification }                                         from '@frontend/core/lib/redux/ducks/notifications';
-import { StripeSDK }                                                from '@frontend/core/lib/utils/useCustomStripe';
-import { CartContext }                                              from '../Cart/CartContext';
-import { useDispatch }                                              from 'react-redux';
-
-const ProceedToCheckoutTitle = styled.h1`
-  margin-top: ${props => props.theme.regularSpacing};
-  margin-left: ${props => props.theme.regularSpacing};
-  margin-bottom: ${props => props.theme.smallSpacing};
-`;
-
-export interface CountdownProps {
-    alert?: string;
-}
-
-const CountdownText = styled.h2<CountdownProps>`
-  font-size: 15px;
-  text-transform: uppercase;
-  font-weight: 300;
-  opacity: ${props => props.alert ? '1' : '0.7'};
-  margin-left: ${props => props.theme.regularSpacing};
-  color: ${props => props.alert ? props.theme[`${props.alert}`].hex : props.theme.textColor};
-`;
-
-const NumberText = styled.span<CountdownProps>`
-  font-size: 17px;
-  font-family: 'Roboto Mono', monospace;
-`;
+import React, { useContext, useState } from 'react';
+import { TextInput, DoubleButtonCta }  from '@frontend/flib-react/lib/components';
+import styled, { useTheme }            from 'styled-components';
+import { Theme }                       from '@frontend/flib-react/lib/config/theme';
+import { useTranslation }              from 'react-i18next';
+import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
+import { useElements }                 from '@stripe/react-stripe-js';
+import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
+import { StripeSDK }                   from '@frontend/core/lib/utils/useCustomStripe';
+import { CartContext }                 from '../Cart/CartContext';
+import { useDispatch }                 from 'react-redux';
 
 const CreditCardWrapper = styled.div`
   margin-bottom: ${props => props.theme.regularSpacing};
@@ -118,6 +94,7 @@ const isSubmittable = (...args: any[]): boolean => {
 
 interface CartMenuStripeCBCheckoutWebProps {
     stripe: StripeSDK;
+    back: () => void;
 }
 
 export const CartMenuStripeCBCheckoutWeb: React.FC<CartMenuStripeCBCheckoutWebProps> = (props: CartMenuStripeCBCheckoutWebProps): JSX.Element => {
@@ -249,12 +226,14 @@ export const CartMenuStripeCBCheckoutWeb: React.FC<CartMenuStripeCBCheckoutWebPr
                 }}/>
             </NameInputWrapper>
         </CreditCardWrapper>
-        <FullButtonCta
+        <DoubleButtonCta
+            ctaLabel={t('pay')}
+            secondaryLabel={t('back')}
+            show={cart.open}
+            onClick={handleSubmit}
             loading={submitted}
             variant={submittable ? 'custom' : 'disabled'}
-            ctaLabel={'Pay'}
-            onClick={handleSubmit}
-            show={true}
+            onSecondaryClick={props.back}
         />
     </Container>;
 

@@ -10234,10 +10234,10 @@ capacitor-plugin-ios-swipe-back@silviokennecke/capacitor-plugin-ios-swipe-back#m
   dependencies:
     "@capacitor/core" latest
 
-capacitor-stripe@1.0.0-beta.4:
+"capacitor-stripe@npm:ticket721-capacitor-stripe@1.0.0-beta.4":
   version "1.0.0-beta.4"
-  resolved "https://registry.yarnpkg.com/capacitor-stripe/-/capacitor-stripe-1.0.0-beta.4.tgz#57ebbe7f0b14ff9302790216ffa55406cad544fd"
-  integrity sha512-z2/mG7U3fTJTVaqsO5/4qRAvIf70DsPb9Y8F5hFCboCGtARa1s+h1A12iyGz+jULo3PMlleBYyZy6sbruWKG5w==
+  resolved "https://registry.yarnpkg.com/ticket721-capacitor-stripe/-/ticket721-capacitor-stripe-1.0.0-beta.4.tgz#8521fb6c173f8482034038a238947ce13851861e"
+  integrity sha512-3iI+Id0Ylhts+LX+1xCmXvyiTG+A4s+0spCLGZhIdEQw5koI9w+3CRy+VuZUdMP7xI6q0TJgrnaYi+H465eYiw==
   dependencies:
     "@capacitor/core" latest
 
@@ -27071,6 +27071,11 @@ rxjs@6.5.5, rxjs@^6.4.0, rxjs@^6.5.3, rxjs@^6.5.5:
   integrity sha512-WfQI+1gohdf0Dai/Bbmk5L5ItH5tYqm3ki2c5GdWhKjalzjg93N3avFjVStyZZz+A2Em+ZxKH5bNghw9UeylGQ==
   dependencies:
     tslib "^1.9.0"
+
+safe-area-insets@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/safe-area-insets/-/safe-area-insets-1.4.1.tgz#89309e01a516dcd7d2fe012a9c4115182957bd8b"
+  integrity sha512-r/nRWTjFGhhm3w1Z6Kd/jY11srN+lHt2mNl1E/emQGW8ic7n3Avu4noibklfSM+Y34peNphHD/BSZecav0sXYQ==
 
 safe-buffer@5.1.1:
   version "5.1.1"

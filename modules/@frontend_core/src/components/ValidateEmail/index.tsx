@@ -56,29 +56,27 @@ export const ValidateEmailComponent = () => {
             setLastCalled(multiplicator);
         }
     };
-    return <ValidateEmailContainer mobile={isTabletOrMobile}>
-        <MailIcon icon={'mail'} color={'#fff'} size={'80px'} />
-        <MessageFirstLine>{t('message')}</MessageFirstLine>
-        <span>{t('check_your_mailbox')}</span>
-        <Button
-            variant={
-                isElapsed(elapsed, multiplicator) && !lazyResendEmail.response.loading ? 'primary' : 'disabled'
-            }
-            title={
-                isElapsed(elapsed, multiplicator)
-                    ? t('resend_email')
-                    : remaining(elapsed, multiplicator).toString()
-            }
-            loadingState={lazyResendEmail.response.loading}
-            onClick={resendEmail}
-        />
-        {multiplicator > 1 ? <MaybeSpam>{t('maybe_spam')}</MaybeSpam> : null}
-    </ValidateEmailContainer>
-
-}
+    return (
+        <ValidateEmailContainer mobile={isTabletOrMobile}>
+            <MailIcon icon={'mail'} color={'#fff'} size={'80px'} />
+            <MessageFirstLine>{t('message')}</MessageFirstLine>
+            <span>{t('check_your_mailbox')}</span>
+            <Button
+                variant={
+                    isElapsed(elapsed, multiplicator) && !lazyResendEmail.response.loading ? 'primary' : 'disabled'
+                }
+                title={
+                    isElapsed(elapsed, multiplicator) ? t('resend_email') : remaining(elapsed, multiplicator).toString()
+                }
+                loadingState={lazyResendEmail.response.loading}
+                onClick={resendEmail}
+            />
+            {multiplicator > 1 ? <MaybeSpam>{t('maybe_spam')}</MaybeSpam> : null}
+        </ValidateEmailContainer>
+    );
+};
 
 export const ValidateEmail: React.FC = () => {
-
     return (
         <div
             style={{
@@ -92,10 +90,10 @@ export const ValidateEmail: React.FC = () => {
             <div
                 style={{
                     width: 450,
-                    padding: 60
+                    padding: 60,
                 }}
             >
-                <ValidateEmailComponent/>
+                <ValidateEmailComponent />
             </div>
         </div>
     );

@@ -114,7 +114,6 @@ const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> 
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
     const theme = useTheme() as Theme;
     const cart = useContext(CartContext);
-    const [capturedTimesstamp, setTimestamp] = useState(null);
     const dispatch = useDispatch();
 
     const datesFetch = useRequest<DatesSearchResponseDto>({
@@ -190,7 +189,6 @@ const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> 
             }
         }
         props.setChildrenLoading(true);
-        setTimestamp(cart.last_update);
         setProductsLazyRequest.lazyRequest([
             token,
             {
@@ -206,27 +204,27 @@ const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> 
     const onDeleteProducts = onEditProducts.bind(null, 'delete');
 
     useEffect(() => {
-        if (setProductsLazyRequest.response.called) {
-            if (setProductsLazyRequest.response.error) {
-                props.setChildrenLoading(false);
-                setTimestamp(null);
-            } else if (setProductsLazyRequest.response.data) {
-                props.setChildrenLoading(false);
+            if (setProductsLazyRequest.response.called) {
+                if (setProductsLazyRequest.response.error) {
+                    props.setChildrenLoading(false);
+                } else if (setProductsLazyRequest.response.data) {
+                    props.setChildrenLoading(false);
 
-                const data = setProductsLazyRequest.response.data;
-                if (data.errors.filter((elem): boolean => !isNil(elem)).length > 0) {
-                    const errors = data.errors.filter((elem): boolean => !isNil(elem))
-                    for (const error of errors) {
-                        dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
+                    const data = setProductsLazyRequest.response.data;
+                    if (data.errors.filter((elem): boolean => !isNil(elem)).length > 0) {
+                        const errors = data.errors.filter((elem): boolean => !isNil(elem))
+                        for (const error of errors) {
+                            dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
+                        }
+                    } else {
+                        cart.force();
                     }
-                    setTimestamp(null);
-                } else {
-                    cart.force();
-                }
 
+                }
             }
-        }
-    }, [setProductsLazyRequest.response.data, setProductsLazyRequest.response.error, setProductsLazyRequest.response.called]);
+        },
+        // eslint-disable-next-line
+        [setProductsLazyRequest.response.data, setProductsLazyRequest.response.error, setProductsLazyRequest.response.called]);
 
     if (datesFetch.response.loading) {
         return <FullPageLoading
@@ -277,7 +275,15 @@ const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> 
                         <div style={{
                             marginLeft: 8
                         }}>
-                            <DateTitle color={date.metadata.signature_colors[0]}>{date.online ? <OnlineIcon icon={'live'} color={date.metadata.signature_colors[0]} size={'16px'} /> : null}{date.metadata.name}</DateTitle>
+                            <DateTitle
+                                color={date.metadata.signature_colors[0]}
+                            >
+                                {date.online ? <OnlineIcon
+                                    icon={'live'}
+                                    color={date.metadata.signature_colors[0]}
+                                    size={'16px'}
+                                /> : null}{date.metadata.name}
+                            </DateTitle>
                             <DateDate>{formatShort(date.timestamps.event_end)}</DateDate>
                         </div>
                     </div>
@@ -357,6 +363,13 @@ const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> 
     </CartElementContainer>;
 };
 
+const CartContentContainer = styled.div`
+  overflow: scroll;
+  height: calc(100% - 50px - env(safe-area-inset-bottom));
+  height: calc(100% - 50px - constant(safe-area-inset-bottom));
+  padding-bottom: 80px;
+`
+
 interface CartMenuCategoryPreview {
     category: Product;
     error: PurchaseError;
@@ -391,7 +404,12 @@ const CartMenuCategoryPreview: React.FC<CartMenuCategoryPreview> = (props: CartM
 
     const category = categoryFetch.response.data.categories[0];
 
-    return <CartMenuCategoryDatesPreview category={category} product={props.category} error={props.error} setChildrenLoading={props.setChildrenLoading}/>;
+    return <CartMenuCategoryDatesPreview
+        category={category}
+        product={props.category}
+        error={props.error}
+        setChildrenLoading={props.setChildrenLoading}
+    />;
 };
 
 interface CartMenuProductDisplay {
@@ -421,28 +439,30 @@ export const CartMenuPreview: React.FC<CartMenuPreview> = (props: CartMenuPrevie
     const cartContentRef = useRef(null)
 
     useEffect(() => {
-        if (cart.open && cartContentRef.current) {
-            cartContentRef.current.scrollTop = 0;
-        }
-    }, [cart.open, cartContentRef]);
+            if (cart.open && cartContentRef.current) {
+                cartContentRef.current.scrollTop = 0;
+            }
+        },
+        // eslint-disable-next-line
+        [cart.open, cartContentRef]);
 
     if (!cart.cart || cart.cart.products.length === 0) {
         return null;
     } else {
-        return <div
+        return <CartContentContainer
             ref={cartContentRef}
-            id={'cart-content'}
-            style={{
-                overflow: 'scroll',
-                height: 'calc(100% - 50px)',
-                paddingBottom: 80
-            }}>
-            {cart.cart.products.map((product: Product, idx: number) => <CartMenuProductPreview product={product} error={cart.errors[idx]} key={idx} setChildrenLoading={props.setChildrenLoading}/>)}
+        >
+            {cart.cart.products.map((product: Product, idx: number) => <CartMenuProductPreview
+                product={product}
+                error={cart.errors[idx]}
+                key={idx}
+                setChildrenLoading={props.setChildrenLoading}
+            />)}
             <TotalContainer>
                 <TotalTitle>{t('total')}</TotalTitle>
                 <p>{getPrice(cart.cart as any, t('free'))}</p>
             </TotalContainer>
-        </div>;
+        </CartContentContainer>;
     }
 
 };

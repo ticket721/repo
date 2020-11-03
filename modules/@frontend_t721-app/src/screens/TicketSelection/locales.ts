@@ -25,8 +25,13 @@ i18n.addResourceBundle('en', 'event_ticket_list', {
     error_cannot_fetch_event: 'Cannot fetch event',
     error_cannot_fetch_dates: 'Cannot fetch event',
 
-    ticket_per_cart_limit_reached: 'Ticket limit reached for current cart !',
-    no_tickets_left: 'No tickets left for ticket category !'
+    category_limit_reached: 'You reached the maximum amount of tickets for this category !',
+    online_category_limit_reached: 'You reached the maximum amount of tickets for this category !',
+    ticket_per_cart_limit_reached: 'You reached the maximum amount of tickets allowed in a cart !',
+    no_tickets_left: 'There are no tickets left for this category !',
+    sale_ended: 'The sale for this category ended !',
+    category_not_live: 'This category is not available at the moment !',
+    multiple_group_ids: 'You cannot add tickets from different events in the cart !'
 });
 
 i18n.addResourceBundle('fr', 'event_ticket_list', {
@@ -54,6 +59,11 @@ i18n.addResourceBundle('fr', 'event_ticket_list', {
     error_cannot_fetch_event: 'Informations indisponibles',
     error_cannot_fetch_dates: 'Informations indisponibles',
 
-    ticket_per_cart_limit_reached: 'Limite de tickets atteinte pour le panier en cours !',
-    no_tickets_left: 'Catégorie epuisée !'
+    category_limit_reached: 'Vous avez atteint la limite de tickets pour cette catégorie !',
+    online_category_limit_reached: 'Vous avez atteint la limite de tickets pour cette catégorie !',
+    ticket_per_cart_limit_reached: 'Vous avez atteint la limite de tickets que peut contenir un panier !',
+    no_tickets_left: 'Aucun ticket disponible pour cette catégorie !',
+    sale_ended: 'La vente pour cette catégorie est finie !',
+    category_not_live: 'Cette catégorie n\'est pas disponible !',
+    multiple_group_ids: 'Vous ne pouvez pas ajouter de tickets d\'événements differents dans le panier !'
 });

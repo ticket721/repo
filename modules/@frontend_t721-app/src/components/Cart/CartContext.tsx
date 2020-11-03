@@ -12,7 +12,6 @@ export interface CartState {
     cart: PurchaseEntity;
     errors: PurchaseError[];
     last_update: Date;
-    refresh: number;
     open: boolean;
     openMenu: () => void;
     closeMenu: () => void;
@@ -22,62 +21,62 @@ export interface CartState {
 export const CartContext = React.createContext<CartState>({
     cart: null,
     last_update: new Date(),
-    refresh: null,
     errors: null,
     open: false,
-    openMenu: () => {},
-    closeMenu: () => {},
-    force: () => {}
+    openMenu: () => null,
+    closeMenu: () => null,
+    force: () => null
 });
 
 export interface CartContextManagerProps {
     token: string;
 }
 
-const LoggedInCartContextManager: React.FC<PropsWithChildren<CartContextManagerProps>> = (props: PropsWithChildren<CartContextManagerProps>): JSX.Element => {
+const LoggedInCartContextManager: React.FC<PropsWithChildren<CartContextManagerProps>> =
+    (props: PropsWithChildren<CartContextManagerProps>): JSX.Element => {
 
-    const [uuid] = useState(v4());
-    const [refresh, setRefresh] = useState(5);
-    const [lastUpdate, setLastUpdate] = useState(new Date());
-    const [lastResp, setLastResp] = useState<PurchaseEntity>(null);
-    const [lastErrors, setLastErrors] = useState<PurchaseError[]>(null);
-    const [isOpen, setOpen] = useState<boolean>(false);
+        const [uuid] = useState(v4());
+        const [lastUpdate, setLastUpdate] = useState(new Date());
+        const [lastResp, setLastResp] = useState<PurchaseEntity>(null);
+        const [lastErrors, setLastErrors] = useState<PurchaseError[]>(null);
+        const [isOpen, setOpen] = useState<boolean>(false);
 
-    const purchaseFetch = useRequest<PurchasesFetchResponseDto>({
-        method: 'purchases.fetch',
-        args: [props.token],
-        refreshRate: refresh,
-    }, `CartContext@${uuid}`);
+        const purchaseFetch = useRequest<PurchasesFetchResponseDto>({
+            method: 'purchases.fetch',
+            args: [props.token],
+            refreshRate: 10,
+        }, `CartContext@${uuid}`);
 
-    useDeepEffect(() => {
-        if (!isNil(purchaseFetch.response.data) && (!eq(purchaseFetch.response.data.cart, lastResp) || !eq(purchaseFetch.response.data.errors, lastErrors))) {
-            setLastResp(purchaseFetch.response.data.cart);
-            setLastErrors(purchaseFetch.response.data.errors);
-            setLastUpdate(new Date());
-        }
-    }, [purchaseFetch.response.data]);
+        useDeepEffect(() => {
+            if (!isNil(purchaseFetch.response.data)
+                && (!eq(purchaseFetch.response.data.cart, lastResp)
+                    || !eq(purchaseFetch.response.data.errors, lastErrors))) {
+                setLastResp(purchaseFetch.response.data.cart);
+                setLastErrors(purchaseFetch.response.data.errors);
+                setLastUpdate(new Date());
+            }
+        }, [purchaseFetch.response.data]);
 
-    useDeepEffect(() => {
-        if (lastResp && lastResp.products.length === 0 && isOpen) {
-            setOpen(false);
-        }
-    }, [lastResp]);
+        useDeepEffect(() => {
+            if (lastResp && lastResp.products.length === 0 && isOpen) {
+                setOpen(false);
+            }
+        }, [lastResp]);
 
-    return <CartContext.Provider value={{
-        cart: lastResp,
-        errors: lastErrors,
-        refresh,
-        last_update: lastUpdate,
-        open: isOpen,
-        openMenu: () => {
-            setOpen(true)
+        return <CartContext.Provider value={{
+            cart: lastResp,
+            errors: lastErrors,
+            last_update: lastUpdate,
+            open: isOpen,
+            openMenu: () => {
+                setOpen(true)
             },
-        closeMenu: () => setOpen(false),
-        force: purchaseFetch.force
-    }}>
-        {props.children}
-    </CartContext.Provider>;
-}
+            closeMenu: () => setOpen(false),
+            force: purchaseFetch.force
+        }}>
+            {props.children}
+        </CartContext.Provider>;
+    }
 
 const LoggedOutCartContextManager: React.FC<PropsWithChildren<any>> = (props: PropsWithChildren<any>): JSX.Element => {
     return <>
@@ -85,17 +84,18 @@ const LoggedOutCartContextManager: React.FC<PropsWithChildren<any>> = (props: Pr
     </>;
 }
 
-export const CartContextManager: React.FC<PropsWithChildren<CartContextManagerProps>> = (props: PropsWithChildren<CartContextManagerProps>): JSX.Element => {
+export const CartContextManager: React.FC<PropsWithChildren<CartContextManagerProps>> =
+    (props: PropsWithChildren<CartContextManagerProps>): JSX.Element => {
 
-    const user = useContext(UserContext);
+        const user = useContext(UserContext);
 
-    if (props.token && !isNil(user)) {
-        return <LoggedInCartContextManager token={props.token}>
-            {props.children}
-        </LoggedInCartContextManager>
-    } else {
-        return <LoggedOutCartContextManager>
-            {props.children}
-        </LoggedOutCartContextManager>
-    }
-};
+        if (props.token && !isNil(user)) {
+            return <LoggedInCartContextManager token={props.token}>
+                {props.children}
+            </LoggedInCartContextManager>
+        } else {
+            return <LoggedOutCartContextManager>
+                {props.children}
+            </LoggedOutCartContextManager>
+        }
+    };

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import styled, { keyframes, useTheme }            from 'styled-components';
+import styled, { useTheme }            from 'styled-components';
 import { Theme }                                  from '@frontend/flib-react/lib/config/theme';
 import { Icon }                            from '@frontend/flib-react/lib/components';
 import { useTranslation }                  from 'react-i18next';
@@ -32,7 +32,7 @@ const PaymentButtonDiv = styled.div<PaymentButtonDivProps>`
   justify-content: center;
   align-items: center;
   flex-direction: row;
-  
+
   & span {
     color: ${props => props.textColor};
   }
@@ -67,16 +67,26 @@ const PaymentButtonIcon = styled(Icon)<PaymentButtonIconProps>`
 
     :
     ``
-    }
-  
+}
   margin-left: ${props => props.theme.smallSpacing};
   display: inline;
 `;
+
+const ButtonContainer = styled.div`
+  height: calc(100% - 120px - env(safe-area-inset-bottom));
+  height: calc(100% - 120px - constant(safe-area-inset-bottom));
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`
 
 const generateErrorMessage = (t: any, error: PurchaseError): string => {
     return t(error.reason, error.context);
 }
 
+// tslint:disable-next-line:no-empty-interface
 export interface CartMenuStripeCheckoutProps {
 }
 
@@ -94,25 +104,27 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
     const setProductsLazyRequest = useLazyRequest<PurchasesSetProductsResponseDto>('purchases.setProducts', uuid);
 
     useEffect(() => {
-        if (setProductsLazyRequest.response.called) {
-            if (setProductsLazyRequest.response.error) {
-                setTimestamp(null);
-            } else if (setProductsLazyRequest.response.data) {
-
-                const data = setProductsLazyRequest.response.data;
-                if (data.errors.filter((elem): boolean => !isNil(elem)).length > 0) {
-                    const errors = data.errors.filter((elem): boolean => !isNil(elem))
-                    for (const error of errors) {
-                        dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
-                    }
+            if (setProductsLazyRequest.response.called) {
+                if (setProductsLazyRequest.response.error) {
                     setTimestamp(null);
-                } else {
-                    cart.force();
-                }
+                } else if (setProductsLazyRequest.response.data) {
 
+                    const data = setProductsLazyRequest.response.data;
+                    if (data.errors.filter((elem): boolean => !isNil(elem)).length > 0) {
+                        const errors = data.errors.filter((elem): boolean => !isNil(elem))
+                        for (const error of errors) {
+                            dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
+                        }
+                        setTimestamp(null);
+                    } else {
+                        cart.force();
+                    }
+
+                }
             }
-        }
-    }, [setProductsLazyRequest.response.data, setProductsLazyRequest.response.error, setProductsLazyRequest.response.called]);
+        },
+        // eslint-disable-next-line
+        [setProductsLazyRequest.response.data, setProductsLazyRequest.response.error, setProductsLazyRequest.response.called]);
 
     const onClear = () => {
         setProductsLazyRequest.lazyRequest([
@@ -141,20 +153,12 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
 
             return <CartMenuStripeCBCheckout
                 stripeAccount={paymentInfos.stripe_account}
+                back={() => setPaymentMethod(null)}
             />;
         }
 
         case null: {
-            return <div
-                style={{
-                    height: 'calc(100% - 70px)',
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexDirection: 'column'
-                }}
-            >
+            return <ButtonContainer>
                 <PaymentButtonDiv
                     disabled={true}
                     color={'#000000'}
@@ -214,7 +218,7 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
 
                 <ComingSoonText>{t('coming_soon')}</ComingSoonText>
 
-            </div>
+            </ButtonContainer>
         }
     }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense, useCallback, PropsWithChildren, useContext, useMemo } from 'react';
+import React, { useEffect, useState, Suspense, useCallback, PropsWithChildren, useContext } from 'react';
 import { Route, Switch, useHistory, useLocation, withRouter, Redirect }                              from 'react-router-dom';
 import { TopNav, FullPageLoading }                                      from '@frontend/flib-react/lib/components';
 import ProtectedRoute                                                   from '@frontend/core/lib/components/ProtectedRoute';
@@ -243,8 +243,7 @@ const AppContainerDiv = styled.div<AppContainerDivProps>`
     :
     `
     `
-}
-    
+    }
     width: 100%;
     height: 100%;
 `;
@@ -252,7 +251,7 @@ const AppContainerDiv = styled.div<AppContainerDivProps>`
 const AppContainer: React.FC<PropsWithChildren<any>> = (props: PropsWithChildren<any>) => {
 
     const cart = useContext(CartContext);
-    const [savedPos, setSavedPos] = useState(0);
+    const [savedPos] = useState(0);
 
     useEffect(() => {
         if (cart.open) {

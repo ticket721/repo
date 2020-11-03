@@ -21,7 +21,13 @@ export const useCustomStripe = (options?: StripeSDKOptions): StripeSDK => {
         Stripe.setPublishableKey({
             key: getEnv().REACT_APP_STRIPE_API_KEY,
         })
-            .then((e: Error) => {
+            .then(async (e: Error) => {
+                console.log(Stripe.setStripeAccount);
+                if (options.stripe_account) {
+                    await Stripe.setStripeAccount({
+                        stripe_account: options.stripe_account,
+                    });
+                }
                 setSDK({
                     platform: 'native',
                     stripe: Stripe,
@@ -30,7 +36,7 @@ export const useCustomStripe = (options?: StripeSDKOptions): StripeSDK => {
             .catch((e: Error) => {
                 console.warn(e);
                 loadStripe(getEnv().REACT_APP_STRIPE_API_KEY, {
-                    stripeAccount: options?.stripe_account
+                    stripeAccount: options?.stripe_account,
                 }).then((stripe) => {
                     setSDK({
                         platform: 'web',

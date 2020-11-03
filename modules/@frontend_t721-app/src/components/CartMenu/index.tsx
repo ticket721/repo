@@ -21,7 +21,8 @@ import { useTranslation }                  from 'react-i18next';
 import { CartMenuCheckout }                from './CartMenuCheckout';
 import { CartMenuExpired }                 from './CartMenuExpired';
 import Countdown from 'react-countdown';
-
+// tslint:disable-next-line:no-var-requires
+const SAI = require('safe-area-insets');
 
 interface ShadowProps {
     width: number;
@@ -49,6 +50,11 @@ const MenuContainer = styled(motion.div) <MenuContainerProps>`
     position: fixed;
     width: ${props => props.width}px;
     height: ${props => props.height}px;
+    bottom: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: constant(safe-area-inset-bottom);
+    left: 0;
+    z-index: 100000;
 
     background-color: rgba(33, 29, 45, 1);
     @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
@@ -56,9 +62,6 @@ const MenuContainer = styled(motion.div) <MenuContainerProps>`
         backdrop-filter: blur(8px);
     }
 
-    top: ${props => props.height}px;
-    left: 0;
-    z-index: 100000;
 `;
 
 const MenuContainerHeaderContainer = styled.div`
@@ -121,7 +124,10 @@ export const CartMenu: React.FC = (): JSX.Element => {
     const window = useWindowDimensions();
     const cart = useContext(CartContext);
     const user = useContext(UserContext);
-    const menuHeight = Math.floor(window.height * 0.7) < 500 ? 500 : Math.floor(window.height * 0.7);
+    const menuHeight = useMemo(
+        () => (Math.floor(window.height * 0.7) < 500 ? window.height : Math.floor(window.height * 0.7)) + SAI.bottom - SAI.top,
+        [window.height]
+    );
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
     const [uuid] = useState(v4());
     const clearCartLazyRequest = useLazyRequest<PurchasesSetProductsResponseDto>('purchases.setProducts', uuid);
@@ -131,7 +137,14 @@ export const CartMenu: React.FC = (): JSX.Element => {
     const dispatch = useDispatch();
     const [childrenLoading, setChildrenLoading] = useState(false);
     const disabled = isNil(cart.cart) || cart.errors.filter((err) => !isNil(err)).length > 0;
-    const underCountdown = useMemo(() => cart.cart && cart.cart.checked_out_at && cart.cart.payment && cart.cart.payment.status === 'waiting', [cart]);
+    const [ctaOpen, setCtaOpen] = useState(false);
+    const underCountdown = useMemo(
+        () => cart.cart
+            && cart.cart.checked_out_at
+            && cart.cart.payment
+            && cart.cart.payment.status === 'waiting',
+        [cart]
+    );
 
     const onClearCart = () => {
 
@@ -162,61 +175,81 @@ export const CartMenu: React.FC = (): JSX.Element => {
     }
 
     useEffect(() => {
-        if (checkoutLazyRequest.response.called) {
-            if (checkoutLazyRequest.response.error) {
-                setCheckoutTimestamp(null);
-            } else if (checkoutLazyRequest.response.data) {
 
-                const data = checkoutLazyRequest.response.data;
-
-                if (
-                    (data.product_errors && data.product_errors.filter((elem): boolean => !isNil(elem)).length > 0)
-                    || data.payment_error
-                ) {
-                    const errors = data.product_errors.filter((elem): boolean => !isNil(elem))
-                    for (const error of errors) {
-                        dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
-                    }
-                    if (data.payment_error) {
-                        dispatch(PushNotification(generateErrorMessage(t, data.payment_error), 'error'))
-                    }
-                    setCheckoutTimestamp(null);
-                } else {
-                    cart.force();
+            if (cart.open) {
+                const iid = setTimeout(() => {
+                    setCtaOpen(true)
+                }, 1000);
+                return () => {
+                    clearInterval(iid);
                 }
-
-
+            } else {
+                setCtaOpen(false)
             }
-        }
-    }, [checkoutLazyRequest.response.data, checkoutLazyRequest.response.error, checkoutLazyRequest.response.called]);
+        },
+        // eslint-disable-next-line
+        [cart.open]);
 
     useEffect(() => {
-        if (clearCartLazyRequest.response.called) {
-            if (clearCartLazyRequest.response.error) {
-                setClearTimestamp(null);
-            } else if (clearCartLazyRequest.response.data) {
+            if (checkoutLazyRequest.response.called) {
+                if (checkoutLazyRequest.response.error) {
+                    setCheckoutTimestamp(null);
+                } else if (checkoutLazyRequest.response.data) {
 
-                const data = clearCartLazyRequest.response.data;
-                if (data.errors.filter((elem): boolean => !isNil(elem)).length > 0) {
-                    const errors = data.errors.filter((elem): boolean => !isNil(elem))
-                    for (const error of errors) {
-                        dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
+                    const data = checkoutLazyRequest.response.data;
+
+                    if (
+                        (data.product_errors && data.product_errors.filter((elem): boolean => !isNil(elem)).length > 0)
+                        || data.payment_error
+                    ) {
+                        const errors = data.product_errors.filter((elem): boolean => !isNil(elem))
+                        for (const error of errors) {
+                            dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
+                        }
+                        if (data.payment_error) {
+                            dispatch(PushNotification(generateErrorMessage(t, data.payment_error), 'error'))
+                        }
+                        setCheckoutTimestamp(null);
+                    } else {
+                        cart.force();
                     }
-                    setClearTimestamp(null);
-                } else {
-                    cart.force();
-                }
 
+
+                }
             }
-        }
-    }, [clearCartLazyRequest.response.data, clearCartLazyRequest.response.error, clearCartLazyRequest.response.called]);
+        },
+        // eslint-disable-next-line
+        [checkoutLazyRequest.response.data, checkoutLazyRequest.response.error, checkoutLazyRequest.response.called]);
+
+    useEffect(() => {
+            if (clearCartLazyRequest.response.called) {
+                if (clearCartLazyRequest.response.error) {
+                    setClearTimestamp(null);
+                } else if (clearCartLazyRequest.response.data) {
+
+                    const data = clearCartLazyRequest.response.data;
+                    if (data.errors.filter((elem): boolean => !isNil(elem)).length > 0) {
+                        const errors = data.errors.filter((elem): boolean => !isNil(elem))
+                        for (const error of errors) {
+                            dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
+                        }
+                        setClearTimestamp(null);
+                    } else {
+                        cart.force();
+                    }
+
+                }
+            }
+        },
+        // eslint-disable-next-line
+        [clearCartLazyRequest.response.data, clearCartLazyRequest.response.error, clearCartLazyRequest.response.called]);
 
     const loading =
         (clearCapturedTimesstamp !== null && clearCapturedTimesstamp === cart.last_update)
         || (checkoutCapturedTimesstamp !== null && checkoutCapturedTimesstamp === cart.last_update)
         || childrenLoading;
 
-    const ctaVisible = !isNil(cart.cart) && !isNil(user) && cart.cart.products.length > 0;
+    const ctaVisible = !isNil(cart.cart) && !isNil(user) && cart.cart.products.length > 0 && ctaOpen;
 
     const expired = useMemo(() => {
         if (cart.cart && cart.cart.products.length > 0) {
@@ -225,6 +258,8 @@ export const CartMenu: React.FC = (): JSX.Element => {
         }
         return false;
     }, [cart.cart, cart.errors])
+
+    const isFree = cart.cart ? isNil(cart.cart.price) || cart.cart.price === 0 : false;
 
     return <>
         <Shadow
@@ -265,10 +300,10 @@ export const CartMenu: React.FC = (): JSX.Element => {
             }}
             variants={{
                 visible: {
-                    top: window.height - menuHeight,
+                    bottom: 0
                 },
                 hidden: {
-                    top: window.height * 2,
+                    bottom: - window.height * 2,
                 },
             }}
             initial={'hidden'}
@@ -276,7 +311,11 @@ export const CartMenu: React.FC = (): JSX.Element => {
         >
             <MenuContainerHeaderContainer>
                 <MenuContainerHeaderTitle>{t('cart')}</MenuContainerHeaderTitle>
-                {underCountdown ? <Countdown onComplete={cart.force} renderer={renderer} date={new Date(cart.cart.checked_out_at).getTime() + 15 * 60 * 1000}/> : null}
+                {underCountdown ? <Countdown
+                    onComplete={cart.force}
+                    renderer={renderer}
+                    date={new Date(cart.cart.checked_out_at).getTime() + 15 * 60 * 1000}
+                /> : null}
                 <MenuContainerHeaderClose
                     onClick={cart.closeMenu}
                 >{t('close')}</MenuContainerHeaderClose>
@@ -308,7 +347,7 @@ export const CartMenu: React.FC = (): JSX.Element => {
                                         show={ctaVisible}
                                         loading={loading}
                                         variant={disabled ? 'disabled' : 'custom'}
-                                        ctaLabel={t('checkout')}
+                                        ctaLabel={isFree ? t('checkout_free') : t('checkout')}
                                         secondaryLabel={t('empty')}
                                         onClick={onCheckout}
                                         onSecondaryClick={onClearCart}

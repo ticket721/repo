@@ -1,20 +1,31 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useTranslation }                         from 'react-i18next';
-import { Button }                                 from '@frontend/flib-react/lib/components';
-import { v4 }                                     from 'uuid';
-import { useDispatch, useSelector }               from 'react-redux';
-import { T721AppState }                           from '../../redux';
-import { useLazyRequest }                         from '@frontend/core/lib/hooks/useLazyRequest';
-import { PurchasesSetProductsResponseDto }        from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
-import { isNil }                                  from 'lodash';
-import { PushNotification }                       from '@frontend/core/lib/redux/ducks/notifications';
-import { PurchaseError }                          from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
-import { CartContext }                            from '../Cart/CartContext';
+import { useTranslation }                  from 'react-i18next';
+import { Button }                          from '@frontend/flib-react/lib/components';
+import { v4 }                              from 'uuid';
+import { useDispatch, useSelector }        from 'react-redux';
+import { T721AppState }                    from '../../redux';
+import { useLazyRequest }                  from '@frontend/core/lib/hooks/useLazyRequest';
+import { PurchasesSetProductsResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
+import { isNil }                           from 'lodash';
+import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
+import { PurchaseError }                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
+import { CartContext }                     from '../Cart/CartContext';
+import styled                              from 'styled-components';
+
+const CartExpiredContainer = styled.div`
+  width: 100%;
+  height: calc(100% - 50px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`
 
 const generateErrorMessage = (t: any, error: PurchaseError): string => {
     return t(error.reason, error.context);
 }
 
+// tslint:disable-next-line:no-empty-interface
 export interface CartMenuExpiredProps {
 
 }
@@ -49,7 +60,9 @@ export const CartMenuExpired: React.FC<CartMenuExpiredProps> = (props: CartMenuE
 
             }
         }
-    }, [setProductsLazyRequest.response.data, setProductsLazyRequest.response.error, setProductsLazyRequest.response.called]);
+    },
+        // eslint-disable-next-line
+        [setProductsLazyRequest.response.data, setProductsLazyRequest.response.error, setProductsLazyRequest.response.called]);
 
     const onClear = () => {
         setProductsLazyRequest.lazyRequest([
@@ -66,16 +79,7 @@ export const CartMenuExpired: React.FC<CartMenuExpiredProps> = (props: CartMenuE
 
     const loading = (capturedTimesstamp !== null && capturedTimesstamp === cart.last_update);
 
-    return <div
-        style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column'
-        }}
-    >
+    return <CartExpiredContainer>
         <p>{t('expiration_notice')}</p>
         <Button
             style={{
@@ -86,5 +90,5 @@ export const CartMenuExpired: React.FC<CartMenuExpiredProps> = (props: CartMenuE
             variant={'danger'}
             onClick={onClear}
         />
-    </div>
+    </CartExpiredContainer>
 }

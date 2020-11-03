@@ -24,5 +24,8 @@
       "type": "react",
       "root": "modules/@frontend_organizer-app"
     }
+  },
+  "integrations": {
+    "capacitor": {}
   }
 }

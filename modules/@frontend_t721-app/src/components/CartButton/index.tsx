@@ -16,7 +16,8 @@ interface ContainerProps {
 
 const Container = styled(motion.div) <ContainerProps>`
   right: ${props => props.spacing}px;
-  bottom: ${props => props.spacing + props.navbar}px;
+  bottom: calc(${props => props.spacing + props.navbar}px + env(safe-area-inset-bottom));
+  bottom: calc(${props => props.spacing + props.navbar}px + constant(safe-area-inset-bottom));
   position: fixed;
   width: ${props => props.width}px;
   height: ${props => props.height}px;
@@ -28,15 +29,13 @@ const Container = styled(motion.div) <ContainerProps>`
     background-color: rgba(43, 39, 55, 0.6);
     backdrop-filter: blur(4px);
   }
-  
+
   display: flex;
   justify-content: center;
   align-items: center;
 `;
 
-const CartIcon = styled(Icon)`
-  
-`;
+const CartIcon = styled(Icon)``;
 
 interface BadgeProps {
     error: boolean;
@@ -77,10 +76,11 @@ export const CartButton: React.FC = (): JSX.Element => {
     const controls = useAnimation();
     const window = useWindowDimensions();
     const [mouseState, setMouseState] = useState({ down: false, moved: false });
-    const visible = useMemo(() => cart.cart ? cart.cart.products.length > 0 && !cart.open : false, [cart.last_update, cart.open]);
-    const productCount = cart.cart?.products.length ? cart.cart.products
+    const visible = useMemo(() => cart.cart ? cart.cart.products.length > 0 && !cart.open : false, [cart]);
+    const productCount = useMemo(() => cart.cart?.products.length ? cart.cart.products
         .map((p) => p.quantity)
-        .reduce((p1, p2) => p1 + p2) : 0;
+        .reduce((p1, p2) => p1 + p2) : 0,
+    [cart]);
 
     useEffect(() => {
         return () => {
@@ -92,15 +92,17 @@ export const CartButton: React.FC = (): JSX.Element => {
                 });
             });
         };
-    }, [productCount]);
+    }, [productCount, controls]);
 
-    const width = 65;
-    const height = 65;
-    const navbar = 80;
-    const spacing = 8;
+    const width = useMemo(() => 65, []);
+    const height = useMemo(() => 65, []);
+    const navbar = useMemo(() => 80, []);
+    const spacing = useMemo(() => 8, []);
 
-    const amplitudeX = window.width - width - spacing * 2;
-    const amplitudeY = window.height - height - spacing * 2 - navbar;
+    // const insets = useMemo(() => SAI.bottom + SAI.top, [SAI.bottom, SAI.top]);
+
+    // const amplitudeX = useMemo(() => window.width - width - spacing * 2, [window.width, width, spacing]);
+    // const amplitudeY = useMemo(() => window.height - height - spacing * 2 - navbar - insets, [window.height, height, navbar, insets]);
 
     const isError = checkIfError(cart.errors);
 
@@ -182,9 +184,12 @@ export const CartButton: React.FC = (): JSX.Element => {
             },
         }}
         drag
+        dragMomentum={true}
         dragConstraints={{
-            top: -amplitudeY,
-            left: -amplitudeX,
+            // top: -amplitudeY,
+            // left: -amplitudeX,
+            top: 0,
+            left: 0,
             right: 0,
             bottom: 0,
         }}

@@ -3,6 +3,7 @@ import i18n from '@frontend/core/lib/utils/i18n'
 i18n.addResourceBundle('en', 'cart', {
     free: 'Free',
     checkout: 'Checkout',
+    checkout_free: 'Retrieve',
     empty: 'Empty',
     expiration_notice: 'Your cart expired !',
     clear_cart: 'Reinitialize cart',
@@ -16,11 +17,23 @@ i18n.addResourceBundle('en', 'cart', {
     purchase_success: 'Your purchase was successful !',
     purchase_rejected: 'Your purchase was rejected !',
     total: 'TOTAL',
-    including_fees: 'Including {{price}} fee'
+    including_fees: 'Including {{price}} fee',
+    no_fees: 'No fees !',
+    pay: 'Pay',
+    back: 'Back',
+
+    category_limit_reached: 'You reached the maximum amount of tickets for this category !',
+    online_category_limit_reached: 'You reached the maximum amount of tickets for this category !',
+    ticket_per_cart_limit_reached: 'You reached the maximum amount of tickets allowed in a cart !',
+    no_tickets_left: 'There are no tickets left for this category !',
+    sale_ended: 'The sale for this category ended !',
+    category_not_live: 'This category is not available at the moment !',
+    multiple_group_ids: 'You cannot add tickets from different events in the cart !'
 });
 i18n.addResourceBundle('fr', 'cart', {
     free: 'Gratuit',
     checkout: 'Payer',
+    checkout_free: 'Récuperer',
     empty: 'Vider',
     expiration_notice: 'Votre panier a expiré !',
     clear_cart: 'Réinitialiser le panier',
@@ -34,5 +47,16 @@ i18n.addResourceBundle('fr', 'cart', {
     purchase_success: 'Merci pour votre achat !',
     purchase_rejected: 'Votre paiement a été rejeté !',
     total: 'TOTAL',
-    including_fees: 'Incluant {{price}} de frais'
+    including_fees: 'Incluant {{price}} de frais',
+    no_fees: 'Aucuns frais !',
+    pay: 'Payer',
+    back: 'Retour',
+
+    category_limit_reached: 'Vous avez atteint la limite de tickets pour cette catégorie !',
+    online_category_limit_reached: 'Vous avez atteint la limite de tickets pour cette catégorie !',
+    ticket_per_cart_limit_reached: 'Vous avez atteint la limite de tickets que peut contenir un panier !',
+    no_tickets_left: 'Aucun ticket disponible pour cette catégorie !',
+    sale_ended: 'La vente pour cette catégorie est finie !',
+    category_not_live: 'Cette catégorie n\'est pas disponible !',
+    multiple_group_ids: 'Vous ne pouvez pas ajouter de tickets d\'événements differents dans le panier !'
 });

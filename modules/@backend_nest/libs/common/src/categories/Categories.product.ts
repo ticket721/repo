@@ -17,9 +17,12 @@ import { EventEntity } from '@lib/common/events/entities/Event.entity';
 import { ModuleRef } from '@nestjs/core';
 import { EventsService } from '@lib/common/events/Events.service';
 import { OperationsService } from '@lib/common/operations/Operations.service';
+import { isNil } from 'lodash';
+import { DatesService } from '@lib/common/dates/Dates.service';
 
 const TICKETS_PER_CART_LIMIT = 5;
-// const CATEGORY_PER_USER_LIMIT = Infinity;
+const ONLINE_CATEGORY_PER_USER_LIMIT = 1;
+const CATEGORY_PER_USER_LIMIT = 5;
 const STATIC_FEE = 100;
 const PERCENT_FEE = 0.01;
 
@@ -290,6 +293,105 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    async getCategoryType(category: CategoryEntity): Promise<ServiceResponse<'physical' | 'online'>> {
+        const datesService = this.moduleRef.get(DatesService, {
+            strict: false,
+        });
+
+        let type: 'physical' | 'online' = 'online';
+
+        for (const dateId of category.dates) {
+            const dateFetchRes = await datesService.findOne(dateId);
+
+            if (dateFetchRes.error) {
+                return {
+                    error: dateFetchRes.error,
+                    response: null,
+                };
+            }
+
+            if (!dateFetchRes.response.online) {
+                type = 'physical';
+            }
+        }
+
+        return {
+            error: null,
+            response: type,
+        };
+    }
+
+    async checkCategoryLimits(
+        user: UserDto,
+        product: Product,
+        category: CategoryEntity,
+    ): Promise<ServiceResponse<void>> {
+        const categoryTypeRes = await this.getCategoryType(category);
+
+        if (categoryTypeRes.error) {
+            return {
+                error: categoryTypeRes.error,
+                response: null,
+            };
+        }
+
+        const ticketsCountRes = await this.ticketsService.countElastic({
+            body: {
+                query: {
+                    bool: {
+                        must: [
+                            {
+                                term: {
+                                    owner: user.id,
+                                },
+                            },
+                            {
+                                term: {
+                                    category: category.id,
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        });
+
+        if (ticketsCountRes.error) {
+            return {
+                error: ticketsCountRes.error,
+                response: null,
+            };
+        }
+
+        const ticketCount = ticketsCountRes.response.count + product.quantity;
+
+        switch (categoryTypeRes.response) {
+            case 'online': {
+                if (ticketCount > ONLINE_CATEGORY_PER_USER_LIMIT) {
+                    return {
+                        error: 'online_category_limit_reached',
+                        response: null,
+                    };
+                }
+                break;
+            }
+            case 'physical': {
+                if (ticketCount > CATEGORY_PER_USER_LIMIT) {
+                    return {
+                        error: 'category_limit_reached',
+                        response: null,
+                    };
+                }
+                break;
+            }
+        }
+
+        return {
+            error: null,
+            response: null,
+        };
+    }
+
     async add(
         user: UserDto,
         purchaseEntity: PurchaseEntity,
@@ -329,6 +431,15 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         if (limitCheckRes.error) {
             return {
                 error: limitCheckRes.error,
+                response: null,
+            };
+        }
+
+        const categoryLimitsCheckRes = await this.checkCategoryLimits(user, product, categoryEntity);
+
+        if (categoryLimitsCheckRes.error) {
+            return {
+                error: categoryLimitsCheckRes.error,
                 response: null,
             };
         }
@@ -550,8 +661,8 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
             };
         }
 
-        const staticFee = eventEntity.custom_static_fee || STATIC_FEE;
-        const percentFee = eventEntity.custom_percent_fee || PERCENT_FEE;
+        const staticFee = isNil(eventEntity.custom_static_fee) ? STATIC_FEE : eventEntity.custom_static_fee;
+        const percentFee = isNil(eventEntity.custom_percent_fee) ? PERCENT_FEE : eventEntity.custom_percent_fee;
 
         return {
             error: null,

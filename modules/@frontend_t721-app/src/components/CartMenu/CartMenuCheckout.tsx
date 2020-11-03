@@ -6,6 +6,7 @@ import styled                          from 'styled-components';
 import { getPrice }                    from '../../utils/prices';
 import { useTranslation }              from 'react-i18next';
 
+// tslint:disable-next-line:no-empty-interface
 interface CartMenuNoneCheckoutProps {
 }
 
@@ -69,17 +70,21 @@ export const CartMenuCheckout = () => {
         case null: {
             return <>
                 <PriceContainer>
-                    <PriceText>TOTAL</PriceText>
+                    <PriceText>{t('total')}</PriceText>
                     <PriceSectionContainer>
                         <PriceText>{getPrice(cart.cart as any, t('free'))}</PriceText>
                         {
                             fee > 0
 
                                 ?
-                                <PriceTextFee>{t('including_fees', {price: getPrice({price: fee, currency: cart.cart.currency} as any, t('free'))})}</PriceTextFee>
+                                <PriceTextFee>
+                                    {t('including_fees', {price: getPrice({price: fee, currency: cart.cart.currency} as any, t('free'))})}
+                                </PriceTextFee>
 
                                 :
-                                null
+                                <PriceTextFee>
+                                    {t('no_fees')}
+                                </PriceTextFee>
                         }
                     </PriceSectionContainer>
                 </PriceContainer>
@@ -89,17 +94,21 @@ export const CartMenuCheckout = () => {
         case 'stripe': {
             return <>
                 <PriceContainer>
-                    <PriceText>TOTAL</PriceText>
+                    <PriceText>{t('total')}</PriceText>
                     <PriceSectionContainer>
                         <PriceText>{getPrice(cart.cart as any, t('free'))}</PriceText>
                         {
                             fee > 0
 
                                 ?
-                                <PriceTextFee>{t('including_fees', {price: getPrice({price: fee, currency: cart.cart.currency} as any, t('free'))})}</PriceTextFee>
+                                <PriceTextFee>
+                                    {t('including_fees', {price: getPrice({price: fee, currency: cart.cart.currency} as any, t('free'))})}
+                                </PriceTextFee>
 
                                 :
-                                null
+                                <PriceTextFee>
+                                    {t('no_fees')}
+                                </PriceTextFee>
                         }
                     </PriceSectionContainer>
                 </PriceContainer>

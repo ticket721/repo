@@ -3,6 +3,6 @@
         "active": false
     },
     "stripe_interface_setup": {
-        "active": false
+        "active": true
     }
 }
