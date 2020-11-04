@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect, useLocation, useParams } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FormikProvider, useFormik } from 'formik';
@@ -13,7 +13,7 @@ import { DateEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/dates/
 
 import { useRequest } from '@frontend/core/lib/hooks/useRequest';
 import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
-import { AppState } from '@frontend/core/lib/redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 
 import { FullPageLoading, Error, Button, LeafletMap } from '@frontend/flib-react/lib/components';
@@ -68,7 +68,7 @@ export const EditDate: React.FC = () => {
 
     const [fetchUuid] = React.useState('@fetch-date' + dateId);
     const [editUuid] = React.useState('@edit-date' + dateId);
-    const token = useSelector((state: AppState): string => state.auth.token.value);
+    const token = useToken();
 
     const [ initialValues, setInitialValues ] = useState<DateCreationPayload>(defaultValues);
     const dateResp = useRequest<DatesSearchResponseDto>(
@@ -96,7 +96,7 @@ export const EditDate: React.FC = () => {
             case 'dates-typology':
                 return <DatesAndTypologyForm
                     parentField={'info'}/>;
-            case 'styles': return <StylesForm/>;
+            case 'styles': return <StylesForm parentField={'imagesMetadata'}/>;
             default: return <Redirect to={'/'}/>;
         }
     };

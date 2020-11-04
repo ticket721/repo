@@ -1,12 +1,12 @@
 import React, { useState }             from 'react';
 import { useParams, useHistory }       from 'react-router';
 import { useTranslation }           from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { v4 }                       from 'uuid';
 
 import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
-import { AppState }                    from '@frontend/core/src/redux/ducks';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 
 import '../../../shared/Translations/global';
@@ -18,7 +18,7 @@ import { EventsSearchResponseDto }     from '@common/sdk/lib/@backend_nest/apps/
 const FetchEvent = (): JSX.Element => {
     const [ t ] = useTranslation(['fetch_event', 'global']);
     const [uuid] = useState(v4() + '@fetchDate');
-    const token = useSelector((state: AppState): string => state.auth.token.value);
+    const token = useToken();
     const { groupId } = useParams();
     const history = useHistory();
     const dispatch = useDispatch();

@@ -1,8 +1,7 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { AppState } from '@frontend/core/lib/redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { FormikProvider } from 'formik';
 
 import { Button } from '@frontend/flib-react/lib/components';
@@ -25,7 +24,7 @@ export interface CreateCategoryFormProps {
 export const CreateCategoryForm: React.FC<CreateCategoryFormProps> = ({ dates }) => {
     const { t } = useTranslation(['create_category', 'common']);
 
-    const token = useSelector((state: AppState): string => state.auth.token.value);
+    const token = useToken();
 
     const { onDuplicate, formik } = useCategoryCreation(token, dates);
 

@@ -7,7 +7,6 @@ import { useHistory, useParams } from 'react-router';
 import { DateSelect } from './DateSelect';
 import { useRequest }                   from '@frontend/core/lib/hooks/useRequest';
 import { useLazyRequest }               from '@frontend/core/lib/hooks/useLazyRequest';
-import { useSelector }                  from 'react-redux';
 import { DatesSearchResponseDto }       from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { v4 }                           from 'uuid';
 import { useDeepEffect }                from '@frontend/core/lib/hooks/useDeepEffect';
@@ -15,7 +14,7 @@ import { checkFormatDate, displayCompleteDate } from '@frontend/core/lib/utils/d
 import { DateEntity }                   from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 
 import { EventsSearchResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
-import { AppState } from '@frontend/core/lib/redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import './locales';
 
@@ -31,7 +30,7 @@ export const Dropdown: React.FC = () => {
     const [t] = useTranslation('options');
     const history = useHistory();
     const [uuid] = useState<string>(v4() + '@event-menu');
-    const token = useSelector((state: AppState) => state.auth.token.value);
+    const token = useToken();
     const { groupId, dateId, eventId } = useParams();
 
     const [ selectableDates, setSelectableDates ] = useState<DateOption[]>([]);

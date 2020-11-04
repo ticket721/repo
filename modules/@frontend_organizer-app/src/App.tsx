@@ -87,16 +87,13 @@ const App: React.FC = () => {
                                             <Page/>
                                         </Route>;
                                     })
-
                                     :
                                     null
                             }
                             <Redirect to={'/'}/>
                         </Switch>
                     </Suspense>
-                    <ToastStacker additionalLocales={[
-                        'organizer_error_notifications',
-                    ]}/>
+                    <ToastStacker />
                 </AppContainer>
             </UserContextGuard>
         </Suspense>

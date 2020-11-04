@@ -6,20 +6,20 @@ import { Button }  from '@frontend/flib-react/lib/components';
 
 import { useTranslation }           from 'react-i18next';
 import './locales';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useDeepEffect }            from '@frontend/core/lib/hooks/useDeepEffect';
 import { useRequest }               from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { v4 }                       from 'uuid';
 import { PushNotification }         from '@frontend/core/lib/redux/ducks/notifications';
 import { useLazyRequest }           from '@frontend/core/lib/hooks/useLazyRequest';
-import { AppState } from '@frontend/core/lib/redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 export const DateActions: React.FC = () => {
     const [ t ] = useTranslation('date_actions');
     const history = useHistory();
     const dispatch = useDispatch();
-    const token = useSelector((state: AppState): string => state.auth.token.value);
+    const token = useToken();
     const [uuid] = useState<string>(v4() + '@date-actions');
     const { groupId, dateId } = useParams();
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled                                           from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import '@frontend/core/lib/utils/window';
 
@@ -21,10 +21,10 @@ import { Persist } from 'formik-persist';
 import { checkEvent, EventCreationPayload } from '@common/global';
 import { DelayedOnMountValidation } from './DelayedOnMountValidation';
 import { Stepper, StepStatus } from '../../components/Stepper';
-import { AppState } from '@frontend/core/lib/redux';
 import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 import { EventsBuildResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsBuildResponse.dto';
 import { v4 } from 'uuid';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 export interface FormProps {
     onComplete: () => void;
@@ -81,7 +81,7 @@ const CreateEvent: React.FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
     const [uuid] = useState<string>(v4() + '@event-create');
-    const token: string = useSelector((state: AppState) => state.auth.token.value);
+    const token = useToken();
     const { response, lazyRequest: createEvent } = useLazyRequest<EventsBuildResponseDto>('events.create.create', uuid);
 
     const validate = (eventPayload: EventCreationPayload) => {
@@ -129,7 +129,7 @@ const CreateEvent: React.FC = () => {
     const buildForm = () => {
         switch (currentStep) {
             case 0: return <GeneralInfoForm/>;
-            case 1: return <StylesForm/>;
+            case 1: return <StylesForm parentField={'imagesMetadata'}/>;
             case 2: return <DatesStep/>;
             case 3: return <CategoriesStep/>;
             default: return <></>;

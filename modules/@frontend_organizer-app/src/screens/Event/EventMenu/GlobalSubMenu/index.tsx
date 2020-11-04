@@ -4,8 +4,7 @@ import styled                         from 'styled-components';
 import { useHistory, useParams } from 'react-router';
 import Icon                      from '@frontend/flib-react/lib/components/icon';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
-import { useSelector }                 from 'react-redux';
-import { AppState } from '@frontend/core/lib/redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { v4 }                          from 'uuid';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { CategoryEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
@@ -24,7 +23,7 @@ export const GlobalSubMenu: React.FC = () => {
     const [ showingGlobalCategories, setShowingGlobalCategories ] = useState<boolean>(false);
 
     const [ globalCategories, setGlobalCategories ] = useState<CategoryEntity[]>([]);
-    const token = useSelector((state: AppState) => state.auth.token.value);
+    const token = useToken();
 
     const { response: eventResp } = useRequest<EventsSearchResponseDto>(
         {

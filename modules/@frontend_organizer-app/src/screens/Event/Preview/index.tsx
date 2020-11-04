@@ -3,7 +3,6 @@ import styled                         from 'styled-components';
 import { useTranslation }              from 'react-i18next';
 import { useParams, useHistory }       from 'react-router';
 import { v4 }                          from 'uuid';
-import { useSelector }                 from 'react-redux';
 
 import {
     Gradient,
@@ -28,8 +27,7 @@ import {
 }                                      from '@frontend/core/lib/utils/date';
 import { getImgPath }                  from '@frontend/core/lib/utils/images';
 
-import { AppState } from '@frontend/core/lib/redux';
-// import { getPriceRange }  from '../../../utils/functions';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 import './locales';
 
@@ -72,7 +70,7 @@ const Preview: React.FC = () => {
     const { dateId } = useParams();
     const history = useHistory();
     const [uuid] = useState(v4() + '@event-preview');
-    const token = useSelector((state: AppState) => state.auth.token.value);
+    const token = useToken();
     const [ datePreview, setDatePreview ] = useState<DatePreview>(null);
     const [ priceRange, ] = useState<number[]>([]);
     const [ hideBanner, setHideBanner ] = useState<boolean>(false);

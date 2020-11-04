@@ -5,8 +5,7 @@ import { useTranslation } from 'react-i18next';
 import './locales';
 import { useMediaQuery } from 'react-responsive';
 import { useLazyRequest } from '../../hooks/useLazyRequest';
-import { useSelector } from 'react-redux';
-import { AppState } from '@frontend-core/redux';
+import { useToken } from '../../hooks/useToken';
 import { v4 } from 'uuid';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
 import { getEnv } from '../../utils/getEnv';
@@ -26,7 +25,7 @@ export const ValidateEmailComponent = () => {
     const [multiplicator, setMultiplicator] = useState(1);
     const [lastCalled, setLastCalled] = useState(0);
     const [elapsed, setElapsed] = useState(0);
-    const token = useSelector((state: AppState) => state.auth.token);
+    const token = useToken();
 
     const lazyResendEmail = useLazyRequest<{}>('resendValidation', uuid);
 

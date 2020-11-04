@@ -5,8 +5,8 @@ import { TopNavMargin } from '../../utils/TopNavMargin';
 import { InvisibleStatusBarMargin } from '../../utils/InvisibleStatusBarMargin';
 import styled from 'styled-components';
 import './StripeSetupCreateStripeInterfaceManager.locales';
-import { AppState } from '../../redux/ducks/index';
-import { useSelector, useDispatch } from 'react-redux';
+import { useToken } from '../../hooks/useToken';
+import { useDispatch } from 'react-redux';
 import { v4 } from 'uuid';
 import { useLazyRequest } from '../../hooks/useLazyRequest';
 import { useDeepEffect } from '../../hooks/useDeepEffect/index';
@@ -38,7 +38,7 @@ export interface StripeSetupCreateStripeInterfaceManagerProps {
 export const StripeSetupCreateStripeInterfaceManager: React.FC<StripeSetupCreateStripeInterfaceManagerProps> = TopNavMargin(
     InvisibleStatusBarMargin((props: StripeSetupCreateStripeInterfaceManagerProps) => {
         const [t] = useTranslation('stripe_setup_create_stripe_interface_manager');
-        const token = useSelector((state: AppState) => state.auth.token?.value);
+        const token = useToken();
         const [uuid, setUUID] = useState(v4());
         const stripeInterfaceLazyRequest = useLazyRequest('payment.stripe.createInterface', uuid);
         const dispatch = useDispatch();
