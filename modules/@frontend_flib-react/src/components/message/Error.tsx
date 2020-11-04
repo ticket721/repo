@@ -63,9 +63,13 @@ export const Error: React.FC<ErrorProps> = (props: ErrorProps): JSX.Element => {
         if (props.onRefresh) {
             props.onRefresh();
         }
-        setTimeout(() => {
+        const tid = setTimeout(() => {
             onPressed(false);
         }, 5000);
+
+        return () => {
+          clearTimeout(tid);
+        }
     }, [props]);
 
     return (
