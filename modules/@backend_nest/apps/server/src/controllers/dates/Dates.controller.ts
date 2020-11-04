@@ -119,6 +119,46 @@ export class DatesController extends ControllerBasics<DateEntity> {
             },
         ];
 
+        query.body.sort = [];
+
+        if (!online) {
+            query.body.sort.push({
+                _script: {
+                    script: {
+                        source: `
+                        double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
+                        double time = (doc['timestamps.event_end'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+                        return distance + time;
+                    `,
+                        params: {
+                            now: hour,
+                            lon: body.lon,
+                            lat: body.lat,
+                        },
+                        lang: 'painless',
+                    },
+                    type: 'number',
+                    order: 'asc',
+                },
+            });
+        } else {
+            query.body.sort.push({
+                _script: {
+                    script: {
+                        source: `
+                        return (doc['timestamps.event_end'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+                    `,
+                        params: {
+                            now: hour,
+                        },
+                        lang: 'painless',
+                    },
+                    type: 'number',
+                    order: 'asc',
+                },
+            });
+        }
+
         const dates = await this.datesService.searchElastic(query);
 
         if (dates.error) {
