@@ -6,8 +6,8 @@ import { ComponentsPreview } from './ComponentsPreview';
 
 import { useStylesCreationFields } from './useStylesCreationFields';
 
-export const StylesForm: React.FC = () => {
-    const { avatarProps, primaryColorProps, secondaryColorProps, preview } = useStylesCreationFields();
+export const StylesForm: React.FC<{ parentField?: string }> = ({ parentField }) => {
+    const { avatarProps, primaryColorProps, secondaryColorProps, preview } = useStylesCreationFields(parentField);
 
     return (
         <StylesContainer>

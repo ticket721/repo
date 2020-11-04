@@ -1,4 +1,4 @@
-export { checkEvent, EventCreationPayload, CategoryWithDatesPayload }                                                      from './checkEvent';
+export { checkEvent, checkEventGenericInfos, EventCreationPayload, EventGenericInfosPayload, CategoryWithDatesPayload }                                                      from './checkEvent';
 export { checkDate, DatePayloadChecker, DateCreationPayload, DatePayload, DateCreationPayloadChecker }                     from './checkDate';
 export { checkCategory, CategoryPayload, CategoryPayloadChecker, CategoryCreationPayloadChecker, CategoryCreationPayload } from './checkCategory';
 export {
