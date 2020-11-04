@@ -68,8 +68,8 @@ export const Error: React.FC<ErrorProps> = (props: ErrorProps): JSX.Element => {
         }, 5000);
 
         return () => {
-          clearTimeout(tid);
-        }
+            clearTimeout(tid);
+        };
     }, [props]);
 
     return (
