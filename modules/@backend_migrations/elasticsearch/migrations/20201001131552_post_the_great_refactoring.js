@@ -9,6 +9,13 @@ class M20201001131552_post_the_great_refactoring extends ElasticMigration {
                 "discover": ".*"
             }
         });
+
+        await this.createIndex('ticket721_operation', 'ticket721');
+        await this.putMapping('ticket721_operation', 'operation', {
+            "operation": {
+                "discover": ".*"
+            }
+        });
         
         await this.createIndex('ticket721_user', 'ticket721');
         await this.putMapping('ticket721_user', 'user', {
@@ -179,6 +186,7 @@ class M20201001131552_post_the_great_refactoring extends ElasticMigration {
         await this.removeIndex('ticket721_category');
         await this.removeIndex('ticket721_ticket');
         await this.removeIndex('ticket721_purchase');
+        await this.removeIndex('ticket721_operation');
     }
 }
 
