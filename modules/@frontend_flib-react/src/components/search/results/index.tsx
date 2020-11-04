@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 import Icon from '../../icon';
+import { OnlineTag } from '../../events/single-image/OnlineTag';
 
 export interface SearchResultsProps extends React.ComponentProps<any> {
     noResultsLabel: string;
@@ -20,7 +21,7 @@ interface Event {
     color: string;
     name: string;
     id: string | number;
-    price: number;
+    price: string;
     date: string;
     image: string;
     onClick?: () => void;
@@ -44,6 +45,7 @@ const ImgContainer = styled.div`
     margin-right: ${(props) => props.theme.regularSpacing};
     overflow: hidden;
     width: 80px;
+    position: relative;
 
     &.icon {
         align-items: center;
@@ -62,6 +64,10 @@ const ImgContainer = styled.div`
         height: 100%;
         object-fit: cover;
         width: 100%;
+    }
+
+    span {
+        margin-top: 0 !important;
     }
 `;
 
@@ -117,16 +123,27 @@ const InfoContainer = styled.div`
     width: calc(90% - 80px);
 `;
 
-export const SingleEvent = (props: Event & { customMarginBottom?: string }) => {
+const AbsoluteOnlineTagDiv = styled.div`
+    position: absolute;
+    right: 2px;
+    top: 2px;
+`;
+
+export const SingleEvent = (props: Event & { customMarginBottom?: string; online?: boolean }) => {
     return (
         <SingleResult clickable={!!props.onClick} onClick={props.onClick} customMarginBottom={props.customMarginBottom}>
             <ImgContainer>
                 <img src={props.image} />
+                {props.online ? (
+                    <AbsoluteOnlineTagDiv>
+                        <OnlineTag online={null} />
+                    </AbsoluteOnlineTagDiv>
+                ) : null}
             </ImgContainer>
             <InfoContainer>
                 <EllipsedTitle className={'uppercase'}>{props.name}</EllipsedTitle>
                 <span>{props.date}</span>
-                <span style={{ color: props.color }}>{props.price}€</span>
+                <span style={{ color: props.color }}>{props.price}</span>
             </InfoContainer>
         </SingleResult>
     );

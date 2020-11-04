@@ -21,7 +21,11 @@ export const SearchResultList: React.FC<SearchResultListProps> = (props: SearchR
     let locationString = null;
 
     if (selectedLocation) {
-        locationString = `${selectedLocation.city.name}, ${selectedLocation.city.country}`;
+        if (selectedLocation.online) {
+            locationString = t('online_events');
+        } else {
+            locationString = `${selectedLocation.city.name}, ${selectedLocation.city.country}`;
+        }
     }
 
     const providedLocation = location.customLocation || location.location;
@@ -52,6 +56,7 @@ export const SearchResultList: React.FC<SearchResultListProps> = (props: SearchR
             location={location.requesting ? '...' : locationString}
             title={t('searching_in')}
             onFilter={props.enableFilter}
+            online={selectedLocation?.online}
         />
         {
             query !== ''
