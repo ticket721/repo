@@ -22,7 +22,6 @@ export const EventList: React.FC<EventListProps> = (props: EventListProps): JSX.
         if (selectedLocation.online) {
             locationString = t('online_events');
         } else {
-            console.log(JSON.stringify(selectedLocation, null, 4));
             locationString = `${selectedLocation.city.name}, ${selectedLocation.city.country}`;
         }
     }

@@ -3,9 +3,9 @@ import { CurrentLocation, LocationList, SearchInput, FullPageLoading, Error, Onl
 import { useFormik }                                                          from 'formik';
 import { City, MatchingCity }                                                 from '@common/global';
 import { useDispatch }                                                        from 'react-redux';
-import { useTranslation }                                                     from 'react-i18next';
-import { GetLocation, SetCustomLocation }                                     from '../../redux/ducks/location';
-import { v4 }                                                                 from 'uuid';
+import { useTranslation }                              from 'react-i18next';
+import { GetLocation, SetCustomLocation, SetLocation } from '../../redux/ducks/location';
+import { v4 }                                          from 'uuid';
 import { useRequest }                                                         from '@frontend/core/lib/hooks/useRequest';
 import { GeolocFuzzySearchResponseDto }                                       from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/geoloc/dto/GeolocFuzzySearchResponse.dto';
 import './locales';
@@ -102,7 +102,7 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
     };
 
     const setOnlineEvents = () => {
-        dispatch(SetCustomLocation({
+        dispatch(SetLocation({
             lat: null,
             lon: null,
             city: null,

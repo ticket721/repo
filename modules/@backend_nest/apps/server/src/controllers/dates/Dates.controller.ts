@@ -97,12 +97,14 @@ export class DatesController extends ControllerBasics<DateEntity> {
         const now = this.timeToolService.now().getTime();
         const hour = now - (now % HOUR);
 
+        const online = isNil(body.lat) && isNil(body.lon);
+
         const query = this._esQueryBuilder<DateEntity>({
             status: {
                 $eq: 'live',
             },
-            parent_type: {
-                $eq: 'event',
+            online: {
+                $eq: online,
             },
         } as SortablePagedSearch);
 
@@ -119,25 +121,43 @@ export class DatesController extends ControllerBasics<DateEntity> {
 
         query.body.sort = [];
 
-        query.body.sort.push({
-            _script: {
-                script: {
-                    source: `
+        if (!online) {
+            query.body.sort.push({
+                _script: {
+                    script: {
+                        source: `
                         double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
                         double time = (doc['timestamps.event_end'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
                         return distance + time;
                     `,
-                    params: {
-                        now: hour,
-                        lon: body.lon,
-                        lat: body.lat,
+                        params: {
+                            now: hour,
+                            lon: body.lon,
+                            lat: body.lat,
+                        },
+                        lang: 'painless',
                     },
-                    lang: 'painless',
+                    type: 'number',
+                    order: 'asc',
                 },
-                type: 'number',
-                order: 'asc',
-            },
-        });
+            });
+        } else {
+            query.body.sort.push({
+                _script: {
+                    script: {
+                        source: `
+                        return (doc['timestamps.event_end'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+                    `,
+                        params: {
+                            now: hour,
+                        },
+                        lang: 'painless',
+                    },
+                    type: 'number',
+                    order: 'asc',
+                },
+            });
+        }
 
         const dates = await this.datesService.searchElastic(query);
 

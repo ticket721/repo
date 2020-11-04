@@ -10,6 +10,7 @@ import { SingleEvent }                 from '@frontend/flib-react/lib/components
 import { formatShort }                 from '@frontend/core/lib/utils/date';
 import { useHistory }                  from 'react-router';
 import { getImgPath }                  from '@frontend/core/lib/utils/images';
+import { useTranslation }              from 'react-i18next';
 
 interface SearchViewAllResultEventProps {
     date: DateEntity;
@@ -22,6 +23,7 @@ export const SearchViewAllResultEvent: React.FC<SearchViewAllResultEventProps> =
     const [uuid] = useState(v4());
     const token = useSelector((state: AppState): string => state.auth.token?.value);
     const history = useHistory();
+    const [t] = useTranslation(['search_view_all', 'common']);
 
     const categories = useRequest<CategoriesSearchResponseDto>({
         method: 'categories.search',
@@ -33,34 +35,9 @@ export const SearchViewAllResultEvent: React.FC<SearchViewAllResultEventProps> =
         refreshRate: 100
     }, `HomeEvent@${uuid}`);
 
-    const globalCategories = useRequest<CategoriesSearchResponseDto>({
-        method: 'categories.search',
-        args: [
-            token,
-            {
-                group_id: {
-                    $eq: props.date.group_id
-                },
-                parent_type: {
-                    $eq: 'event'
-                },
-            }
-        ],
-        refreshRate: 100
-    }, `SearchResultEvent@${uuid}`);
-
-    const priceRange = getPriceRange([
+    const priceString = getPriceRange([
         ...(categories.response.data?.categories || []),
-        ...(globalCategories.response.data?.categories || [])
-    ]);
-
-    let priceString;
-
-    if (priceRange[0] && priceRange[1]) {
-        priceString = `${priceRange[0] || 'FREE'} - ${priceRange[1]}`
-    } else if (priceRange[0]) {
-        priceString = `${priceRange[0]}`
-    }
+    ], t('coming_soon'), t('free'));
 
     return <SingleEvent
         onClick={() => history.push(`/event/${props.date.id}`)}
@@ -68,6 +45,7 @@ export const SearchViewAllResultEvent: React.FC<SearchViewAllResultEventProps> =
         color={props.date.metadata.signature_colors[0]}
         id={props.idx}
         price={priceString}
+        online={props.date.online}
         date={formatShort(new Date(props.date.timestamps.event_begin))}
         image={imageUrl}
     />;

@@ -4,14 +4,14 @@ import styled from 'styled-components';
 import Icon from '../../../icon';
 
 interface OnlineTagProps {
-    online: string;
+    online: string | null;
 }
 
 export const OnlineTag: React.FC<OnlineTagProps> = (props: OnlineTagProps) => {
     return (
         <Tag>
-            <Icon icon={'live'} size={'12px'} color={'white'} />
-            <Label>{props.online}</Label>
+            <Icon icon={'live'} size={'16px'} color={'white'} />
+            {props.online ? <Label>{props.online}</Label> : null}
         </Tag>
     );
 };
@@ -19,8 +19,9 @@ export const OnlineTag: React.FC<OnlineTagProps> = (props: OnlineTagProps) => {
 const Tag = styled.div`
     display: flex;
     align-items: center;
+    justify-content: center;
     background-color: ${(props) => props.theme.badgeColor.hex};
-    padding: 4px 8px;
+    padding: 6px;
     border-radius: 12px;
 `;
 

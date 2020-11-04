@@ -1,4 +1,4 @@
 import { StatusBarMargin } from '@frontend/core/lib/utils/StatusBarMargin';
-import { WIP }             from './WIP';
+import Search              from '../screens/Search';
 
-export default StatusBarMargin(WIP);
+export default StatusBarMargin(Search);
