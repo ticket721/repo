@@ -22,7 +22,6 @@ export const useCustomStripe = (options?: StripeSDKOptions): StripeSDK => {
             key: getEnv().REACT_APP_STRIPE_API_KEY,
         })
             .then(async (e: Error) => {
-                console.log(Stripe.setStripeAccount);
                 if (options.stripe_account) {
                     await Stripe.setStripeAccount({
                         stripe_account: options.stripe_account,

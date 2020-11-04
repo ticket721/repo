@@ -33,7 +33,7 @@
         "@types/react-router": "5.1.5",
         "@types/react-router-dom": "5.1.4",
         "capacitor-plugin-ios-swipe-back": "silviokennecke/capacitor-plugin-ios-swipe-back#master",
-        "capacitor-stripe": "npm:ticket721-capacitor-stripe@1.0.0-beta.4",
+        "capacitor-stripe": "npm:ticket721-capacitor-stripe@1.0.0-beta.5",
         "connected-react-router": "6.8.0",
         "cordova-plugin-brightness": "0.2.0",
         "cordova-plugin-inappbrowser": "4.0.0",
