@@ -9,6 +9,7 @@ import { PushNotification }            from '@frontend/core/lib/redux/ducks/noti
 import { StripeSDK }                   from '@frontend/core/lib/utils/useCustomStripe';
 import { CartContext }                 from '../Cart/CartContext';
 import { useDispatch }                 from 'react-redux';
+import { UserContext }                 from '@frontend/core/lib/utils/UserContext';
 
 const CreditCardWrapper = styled.div`
   margin-bottom: ${props => props.theme.regularSpacing};
@@ -111,6 +112,7 @@ export const CartMenuStripeCBCheckoutWeb: React.FC<CartMenuStripeCBCheckoutWebPr
     const elements = useElements();
     const submittable = isSubmittable(elements, fullName, cardNumberComplete, cardCcvComplete, cardExpiryComplete, cart.cart);
     const dispatch = useDispatch();
+    const user = useContext(UserContext);
 
     useDeepEffect(() => {
 
@@ -189,6 +191,7 @@ export const CartMenuStripeCBCheckoutWeb: React.FC<CartMenuStripeCBCheckoutWebPr
                 card: cardNumber,
                 billing_details: {
                     name: fullName,
+                    email: user.email
                 },
             },
         });

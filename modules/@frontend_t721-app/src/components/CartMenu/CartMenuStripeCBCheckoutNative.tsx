@@ -2,12 +2,13 @@ import { StripeSDK }                   from '@frontend/core/lib/utils/useCustomS
 import React, { useContext, useState } from 'react';
 import styled, { useTheme }            from 'styled-components';
 import { useTranslation }              from 'react-i18next';
-import { useDispatch }    from 'react-redux';
+import { useDispatch }                 from 'react-redux';
 import { Theme }                       from '@frontend/flib-react/lib/config/theme';
 import { TextInput, DoubleButtonCta }  from '@frontend/flib-react/lib/components';
 import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
 import { CartContext }                 from '../Cart/CartContext';
 import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
+import { UserContext }                 from '@frontend/core/lib/utils/UserContext';
 
 const CreditCardWrapper = styled.div`
   padding: ${props => props.theme.regularSpacing};
@@ -45,6 +46,7 @@ export const CartMenuStripeCBCheckoutNative: React.FC<CartMenuStripeCBCheckoutNa
         const submittable = isSubmittable(fullName, cardNumber, cardCcv, cardExpiry, cardNumberValid, cardCcvValid, cardExpiryValid);
         const theme = useTheme() as Theme;
         const cart = useContext(CartContext);
+        const user = useContext(UserContext);
 
         useDeepEffect(() => {
 
@@ -113,20 +115,32 @@ export const CartMenuStripeCBCheckoutNative: React.FC<CartMenuStripeCBCheckoutNa
             const paymentInfos = JSON.parse(cart.cart.payment.client_id);
             setSubmitted(true);
 
-            const { error } = await stripe.confirmPaymentIntent({
-                stripeAccountId: paymentInfos.stripe_account,
-                clientSecret: paymentInfos.client_secret,
-                card: {
-                    number: cardNumber.split(' ').join(''),
-                    exp_month: cardExpiry.slice(0, 2),
-                    exp_year: cardExpiry.slice(3),
-                    cvc: cardCcv,
+            try {
+                const { error } = await stripe.confirmPaymentIntent({
+                    stripeAccountId: paymentInfos.stripe_account,
+                    clientSecret: paymentInfos.client_secret,
+                    card: {
+                        number: cardNumber.split(' ').join(''),
+                        exp_month: cardExpiry.slice(0, 2),
+                        exp_year: cardExpiry.slice(3),
+                        cvc: cardCcv,
+                        name: fullName,
+                        email: user.email
+                    },
                     name: fullName,
-                },
-            });
+                    email: user.email
+                });
 
-            if (error) {
-                dispatch(PushNotification(error.message, 'error'));
+                console.log(error, 'error');
+
+                if (error) {
+                    dispatch(PushNotification(error.message, 'error'));
+                    setSubmitted(false);
+                    return;
+                }
+
+            } catch (e) {
+                dispatch(PushNotification(e.message, 'error'));
                 setSubmitted(false);
                 return;
             }
