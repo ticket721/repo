@@ -87,7 +87,7 @@ const Container = styled.div`
 export const showcase = () => (
     <div>
         <TopNav label={'1 of 2'} />
-        <TicketHeader cover={defaultTicket.image} fullWidth ticketQuantity={defaultTicket.number} />
+        <TicketHeader cover={defaultTicket.image} fullWidth ticketQuantity={defaultTicket.number} datesCount={1} datesIdx={0} mainColors={['red', 'blue']}/>
         <PullUp>
             <Container>
                 <Gradient values={defaultTicket.gradients} />

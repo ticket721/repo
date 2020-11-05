@@ -6,23 +6,11 @@ import { T721AppState }                from '../../redux';
 import { useTranslation }              from 'react-i18next';
 import { Error, FullPageLoading }      from '@frontend/flib-react/lib/components';
 import { DatesFetcher }                from './DatesFetcher';
-import { Ticket }                      from '../../types/ticket';
-import { CategoryEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-
-const formatCategories = (tickets: Ticket[], categories: CategoryEntity[]): Ticket[] =>
-    tickets.map(ticket => {
-        const ticketCategory = categories.find(category => category.id === ticket.categoryId);
-        return {
-            ...ticket,
-            categoryName: ticketCategory.display_name,
-            entityId: ticketCategory.parent_type === 'date' ? ticketCategory.parent_id : ticketCategory.group_id,
-            ticketType: ticketCategory.parent_type === 'date' ? 'date' : 'global',
-        }
-    });
+import { TicketEntity }                     from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
 
 interface CategoriesFetcherProps {
     uuid: string;
-    tickets: Ticket[];
+    tickets: TicketEntity[];
 }
 
 export const CategoriesFetcher: React.FC<CategoriesFetcherProps> = ({ uuid, tickets }: CategoriesFetcherProps) => {
@@ -34,7 +22,7 @@ export const CategoriesFetcher: React.FC<CategoriesFetcherProps> = ({ uuid, tick
             token,
             {
                 id: {
-                    $in: tickets.map(ticket => ticket.categoryId)
+                    $in: tickets.map(ticket => ticket.category)
                 }
             }
         ],
@@ -53,7 +41,8 @@ export const CategoriesFetcher: React.FC<CategoriesFetcherProps> = ({ uuid, tick
     if (categoriesResp.data?.categories?.length > 0) {
         return <DatesFetcher
             uuid={uuid}
-            tickets={formatCategories(tickets, categoriesResp.data.categories)}
+            tickets={tickets}
+            categories={categoriesResp.data.categories}
         />
     }
 };

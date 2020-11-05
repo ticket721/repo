@@ -1,0 +1,61 @@
+import React                      from 'react';
+import { useSelector }            from 'react-redux';
+import { T721AppState }           from '../../redux';
+import { useTranslation }         from 'react-i18next';
+import { useRequest }             from '@frontend/core/lib/hooks/useRequest';
+import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
+import { CategoryEntity }         from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import { TicketEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
+import { EventsFetcher }          from './EventsFetcher';
+
+interface DatesFetcherProps {
+    uuid: string;
+    tickets: TicketEntity[];
+    categories: CategoryEntity[];
+}
+
+export const DatesFetcher: React.FC<DatesFetcherProps> = (
+    {
+        uuid,
+        tickets,
+        categories
+    }: DatesFetcherProps) => {
+
+    const token = useSelector((state: T721AppState) => state.auth.token.value);
+    const [ t ] = useTranslation(['wallet', 'common']);
+
+    const { response: datesResp, force } = useRequest<DatesSearchResponseDto>({
+            method: 'dates.search',
+            args: [
+                token,
+                {
+                    id: {
+                        $in: []
+                            .concat(
+                                ...categories.map(category => category.dates)
+                            )
+                            .filter(
+                                (dateId: string, idx: number, arr: string[]) => arr.indexOf(dateId) === idx
+                            )
+
+                    }
+                }
+            ],
+            refreshRate: 60,
+        },
+        uuid);
+
+    if (datesResp.loading) {
+        return <FullPageLoading/>;
+    }
+
+    if (datesResp.error || datesResp.data?.dates?.length === 0) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
+    }
+
+    const dates = datesResp.data.dates;
+
+    return <EventsFetcher uuid={uuid} tickets={tickets} categories={categories} dates={dates}/>;
+
+};

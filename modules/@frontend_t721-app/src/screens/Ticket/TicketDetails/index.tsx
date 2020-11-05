@@ -72,7 +72,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
     }, [seconds]);
 
     return <>
-        <TicketHeader fullWidth cover={getImgPath(props.image)}/>
+        <TicketHeader fullWidth cover={getImgPath(props.image)} datesCount={1} datesIdx={0} mainColors={['#ffffff', '#000000']}/>
         <TicketContent>
             <Gradient values={props.colors} />
             <Details>

@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Ticket }                     from '../../types/ticket';
-import Flicking            from '@egjs/react-flicking';
-import styled              from 'styled-components';
-import TicketCard                from './TicketCard';
-import { useHistory } from 'react-router';
+import Flicking                       from '@egjs/react-flicking';
+import styled                         from 'styled-components';
+import TicketCard                     from './TicketCard';
+import { useHistory }                 from 'react-router';
+import { CategoryEntity }             from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import { TicketEntity }               from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
+import { DateEntity }                 from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { EventEntity }                 from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
 
 interface TicketsProps {
-    tickets: Ticket[];
+    tickets: TicketEntity[];
+    categories: {[key: string]: CategoryEntity};
+    dates: {[key: string]: DateEntity};
+    events: {[key: string]: EventEntity};
 }
 
-export const Tickets: React.FC<TicketsProps> = ({ tickets }) => {
+export const Tickets: React.FC<TicketsProps> = ({ tickets , categories, dates, events}) => {
     const history = useHistory();
     const [ ticketIdx, setTicketIdx ] = useState<number>(0);
 
@@ -36,15 +42,19 @@ export const Tickets: React.FC<TicketsProps> = ({ tickets }) => {
             bound={true}
             onChange={(e) => history.replace('/wallet?ticketIdx=' + e.index)}>
             {
-                tickets.map(ticket => (
-                    <TicketCard key={ticket.ticketId} ticket={ticket}/>
-                ))
+                tickets.map(ticket => {
+                    const ticketCategory: CategoryEntity = categories[ticket.category];
+                    const ticketDates: DateEntity[] = ticketCategory.dates.map((dateId: string): DateEntity => dates[dateId]);
+                    const event: EventEntity = events[ticketDates[0].event];
+
+                    return <TicketCard key={ticket.id} ticket={ticket} category={ticketCategory} dates={ticketDates} event={event}/>
+                })
             }
         </Flicking>
         <Dots>
             {
                 tickets.map((ticket, idx) => (
-                    <Dot key={ticket.ticketId} selected={idx === ticketIdx}/>
+                    <Dot key={ticket.id} selected={idx === ticketIdx}/>
                 ))
             }
         </Dots>

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import styled                                                       from 'styled-components';
-import { useTranslation }           from 'react-i18next';
+import React, { useEffect, useState }       from 'react';
+import styled                               from 'styled-components';
+import { useTranslation }                   from 'react-i18next';
 import {
     Icon,
     Error,
@@ -16,34 +16,8 @@ import { v4 }                               from 'uuid';
 import { CategoriesFetcher }                from './CategoriesFetcher';
 import { useHistory }                       from 'react-router';
 import { UsersSetDeviceAddressResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersSetDeviceAddressResponse.dto';
-import { PasswordlessUserDto }              from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
-import { UsersMeResponseDto }               from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersMeResponse.dto';
-import { Ticket }                           from '../../types/ticket';
-import { TicketEntity }                     from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
 
-const formatTickets = (tickets: TicketEntity[]): Ticket[] =>
-    tickets.map(ticket => ({
-        name: null,
-        ticketId: ticket.id,
-        categoryId: ticket.category,
-        entityId: null,
-        ticketType: null,
-        location: null,
-        categoryName: null,
-        startDate: null,
-        startTime: null,
-        endDate: null,
-        endTime: null,
-        gradients: null,
-        mainColor: null,
-        image: null,
-    }));
-
-interface WalletProps {
-    user: PasswordlessUserDto;
-}
-
-const Wallet: React.FC<WalletProps> = (props: WalletProps) => {
+const Wallet: React.FC = () => {
     const history = useHistory();
     const { t } = useTranslation(['wallet', 'common']);
     const token = useSelector((state: T721AppState) => state.auth.token.value);
@@ -53,32 +27,26 @@ const Wallet: React.FC<WalletProps> = (props: WalletProps) => {
     const { lazyRequest: postAddress } = useLazyRequest<UsersSetDeviceAddressResponseDto>('users.setDeviceAddress', uuid);
 
     const { response: ticketsResp, force } = useRequest<TicketsSearchResponseDto>({
-        method: 'tickets.search',
-        args: [
-            token,
-            {
-                owner: {
-                    $eq: props.user.address
+            method: 'tickets.search',
+            args: [
+                token,
+                {
+                    $sort: [{
+                        $field_name: 'updated_at',
+                        $order: 'desc',
+                    }],
                 },
-                status: {
-                    $ne: 'canceled',
-                },
-                $sort: [{
-                    $field_name: 'updated_at',
-                    $order: 'desc',
-                }]
-            }
-        ],
-        refreshRate: 60,
-    },
-    uuid);
+            ],
+            refreshRate: 60,
+        },
+        uuid);
 
     useEffect(() => {
         if (devicePk) {
             postAddress([
                 token,
                 {
-                    deviceAddress: localStorage.getItem('deviceAddress')
+                    deviceAddress: localStorage.getItem('deviceAddress'),
                 },
             ]);
         }
@@ -86,7 +54,7 @@ const Wallet: React.FC<WalletProps> = (props: WalletProps) => {
     }, [token, devicePk]);
 
     if (ticketsResp.loading) {
-        return  <FullPageLoading/>;
+        return <FullPageLoading/>;
     }
 
     if (ticketsResp.error) {
@@ -101,18 +69,21 @@ const Wallet: React.FC<WalletProps> = (props: WalletProps) => {
                 </h1>
             </Title>
             {
-                ticketsResp.data?.tickets?.length > 0 ?
+                ticketsResp.data?.tickets?.length > 0
+
+                    ?
                     <CategoriesFetcher
                         uuid={uuid}
-                        tickets={formatTickets(ticketsResp.data.tickets)}
-                    /> :
-                <EmptyWallet>
-                    <span>{t('empty_wallet')}</span>
-                    <div onClick={() => history.push('/search')}>
-                        <span>{t('return_to_search')}</span>
-                        <Icon icon={'chevron'} size={'8px'} color={'#2143AB'}/>
-                    </div>
-                </EmptyWallet>
+                        tickets={ticketsResp.data.tickets}
+                    />
+                    :
+                    <EmptyWallet>
+                        <span>{t('empty_wallet')}</span>
+                        <div onClick={() => history.push('/search')}>
+                            <span>{t('return_to_search')}</span>
+                            <Icon icon={'chevron'} size={'8px'} color={'#2143AB'}/>
+                        </div>
+                    </EmptyWallet>
             }
         </div>
     );
@@ -154,28 +125,4 @@ const EmptyWallet = styled.div`
     }
 `;
 
-const UserFetcher = () => {
-    const token = useSelector((state: T721AppState) => state.auth.token.value);
-    const [uuid] = useState<string>(v4() + '@wallet');
-    const { t } = useTranslation(['wallet', 'common']);
-
-    const userReq = useRequest<UsersMeResponseDto>({
-        method: 'users.me',
-        args: [
-            token
-        ],
-        refreshRate: 10
-    }, uuid);
-
-    if (userReq.response.loading) {
-        return <FullPageLoading/>
-    }
-
-    if (userReq.response.error) {
-        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={userReq.force}/>);
-    }
-
-    return <Wallet user={userReq.response.data.user}/>
-};
-
-export default UserFetcher;
+export default Wallet;
