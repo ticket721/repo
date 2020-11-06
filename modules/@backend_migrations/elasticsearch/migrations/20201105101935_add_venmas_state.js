@@ -25,7 +25,7 @@ class M20201105101935_add_venmas_state extends ElasticMigration {
                             },
                             "points": {
                                 "cql_collection": "set",
-                                "type": "float"
+                                "type": "point"
                             }
                         }
                     }
