@@ -51,11 +51,11 @@ var migration1604571522 = {
 
       try {
 
-          console.log('Venmas Section Type Creation');
-          await db.execute(venmas_section_type_creation.query, venmas_section_type_creation.params, { prepare: true });
-
           console.log('Venmas Map Table Creation');
           await db.execute(venmas_map_table_creation.query, venmas_map_table_creation.params, { prepare: true });
+
+          console.log('Venmas Section Type Creation');
+          await db.execute(venmas_section_type_creation.query, venmas_section_type_creation.params, { prepare: true });
 
       } catch (e) {
           return handler(e, false);
