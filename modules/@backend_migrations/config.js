@@ -90,6 +90,17 @@ module.exports = [
         timestamp: '1600892344'
     },
     {
+        type: 'cassandra',
+        name: 'add_venmas_state',
+        timestamp: '1604571522'
+    },
+    {
+        type: 'elasticsearch',
+        name: 'add_venmas_state',
+        timestamp: '20201105101935'
+    }
+    },
+    {
         type: 'elasticsearch',
         name: 'pre_the_great_refactoring',
         timestamp: '20201001131232'
