@@ -4,7 +4,7 @@ import {
     Entity,
     GeneratedUUidColumn,
     UpdateDateColumn,
-}                 from '@iaminfinity/express-cassandra';
+} from '@iaminfinity/express-cassandra';
 
 export interface Sections {
     id: string;
@@ -29,23 +29,23 @@ export interface Sections {
                 properties: {
                     id: {
                         type: 'integer',
-                        cql_collection: 'singleton'
+                        cql_collection: 'singleton',
                     },
                     type: {
                         type: 'text',
-                        cql_collection: 'singleton'
+                        cql_collection: 'singleton',
                     },
                     owner: {
                         type: 'text',
-                        cql_collection: 'singleton'
+                        cql_collection: 'singleton',
                     },
                     points: {
                         type: 'float',
-                        cql_collection: 'set'
-                    }
-                }
-            }
-        }
+                        cql_collection: 'set',
+                    },
+                },
+            },
+        },
     },
 } as any)
 export class VenmasEntity {
@@ -70,7 +70,7 @@ export class VenmasEntity {
      * Unique ID of Venmas Entity
      */
     @GeneratedUUidColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     id: string;
 
     /**
@@ -79,7 +79,7 @@ export class VenmasEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     name: string;
 
     /**
@@ -88,7 +88,7 @@ export class VenmasEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     owner: string;
 
     /**
@@ -97,7 +97,7 @@ export class VenmasEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     map: string;
 
     /**
@@ -106,20 +106,20 @@ export class VenmasEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     sections: Sections;
 
     /**
      * Creation timestamp
      */
     @CreateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     created_at: Date;
 
     /**
      * Update timestamp
      */
     @UpdateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     updated_at: Date;
 }
