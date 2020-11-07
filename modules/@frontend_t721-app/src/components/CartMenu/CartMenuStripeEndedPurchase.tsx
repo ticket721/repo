@@ -12,6 +12,7 @@ import { isNil }                     from 'lodash';
 import { PushNotification }          from '@frontend/core/lib/redux/ducks/notifications';
 import { PurchaseError }             from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
 import { useTranslation }            from 'react-i18next';
+import { TicketsContext }            from '@frontend/core/lib/utils/TicketsContext';
 
 const Container = styled.div`
   height: calc(100% - 50px);
@@ -88,6 +89,7 @@ export const CartMenuStripeEndedPurchase: React.FC<CartMenuStripeEndedPurchasePr
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
     const closeLazyRequest = useLazyRequest<PurchasesCloseResponseDto>('purchases.close', uuid);
     const dispatch = useDispatch();
+    const tickets = useContext(TicketsContext);
 
     useEffect(() => {
             setTimeout(() => {
@@ -113,6 +115,7 @@ export const CartMenuStripeEndedPurchase: React.FC<CartMenuStripeEndedPurchasePr
                         }
                     } else {
                         cart.force();
+                        tickets.force();
                     }
 
                 }

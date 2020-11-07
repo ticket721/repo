@@ -6,6 +6,7 @@ export interface TicketInfosCardProps extends React.ComponentProps<any> {
     eventName: string;
     ticketType?: string;
     seatInfo?: SeatProps;
+    colors: string[];
 }
 
 interface SeatProps {
@@ -95,9 +96,29 @@ const BottomInfos = styled.div`
 const TicketId = styled.span`
     color: ${(props) => props.theme.textColorDarker};
     display: block;
-    font-size: 10px;
-    margin-bottom: ${(props) => props.theme.regularSpacing};
+    font-weight: 400;
+    font-size: 13px;
+    font-family: 'Roboto Mono', monospace;
     text-transform: uppercase;
+    line-height: 150%;
+    margin-top: ${(props) => props.theme.smallSpacing};
+`;
+
+interface TicketCategoryTitleProps {
+    colors: string[];
+}
+
+const TicketCategoryTitle = styled.h3<TicketCategoryTitleProps>`
+    font-weight: 500;
+    font-size: 16px;
+    background: -webkit-linear-gradient(260deg, ${(props) => props.colors[0]}, ${(props) => props.colors[1]});
+    margin-top: ${(props) => props.theme.smallSpacing};
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+`;
+
+const TicketEventName = styled.h2`
+    font-weight: 500;
 `;
 
 export const TicketInfosCard: React.FunctionComponent<TicketInfosCardProps> = (
@@ -106,9 +127,9 @@ export const TicketInfosCard: React.FunctionComponent<TicketInfosCardProps> = (
     return (
         <Container>
             <TopInfo>
+                <TicketEventName>{props.eventName}</TicketEventName>
+                <TicketCategoryTitle colors={props.colors}>{props.ticketType}</TicketCategoryTitle>
                 <TicketId>{props.ticketID}</TicketId>
-                <h2>{props.eventName}</h2>
-                <h3>{props.ticketType}</h3>
             </TopInfo>
             {props.seatInfo && (
                 <BottomInfos>

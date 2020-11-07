@@ -9,6 +9,19 @@ i18n.addResourceBundle('en', 'ticket_details', {
     price: 'price',
     get_directions: 'Get directions',
     transaction_btn_label: 'View transaction on Etherscan.io',
+    ended: 'Ended {{count}} day ago',
+    ended_plural: 'Ended {{count}} days ago',
+    today: 'Today !',
+    day_left: 'Starts in {{count}} day',
+    day_left_plural: 'Starts in {{count}} days',
+    free: 'Free',
+    live_title: 'live',
+    waiting_link_subtitle: 'Link available soon',
+    ended_subtitle: 'Stream ended',
+    live_subtitle: 'Click to join live',
+    soon_subtitle: 'Stream starting soon',
+    offline_title: 'offline',
+    ip_fetch_error: 'Check your connection and try again'
 });
 i18n.addResourceBundle('fr', 'ticket_details', {
     show_all_dates_label: 'Voir toutes les dates',
@@ -19,4 +32,17 @@ i18n.addResourceBundle('fr', 'ticket_details', {
     price: 'prix',
     get_directions: 'Obtenir l\'itinéraire',
     transaction_btn_label: 'Voir la transaction sur Etherscan.io',
+    ended: 'Fini il y a {{count}} jour',
+    ended_plural: 'Fini il y a {{count}} jours',
+    today: 'Aujourd\'hui !',
+    day_left: 'Commence dans {{count}} jour',
+    day_left_plural: 'Commence dans {{count}} jours',
+    free: 'Gratuit',
+    live_title: 'live',
+    waiting_link_subtitle: 'Lien bientôt disponible',
+    ended_subtitle: 'Stream fini',
+    live_subtitle: 'Cliquez pour rejoindre le live',
+    soon_subtitle: 'Le stream commence bientôt',
+    offline_title: 'offline',
+    ip_fetch_error: 'Verfiez votre connection et réessayez'
 });

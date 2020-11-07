@@ -143,7 +143,7 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
         <CardContainer small={props.small} removeBg={!collapsed || props.removeBg} className={props.className}>
             {collapsed ? (
                 <IconContainer>
-                    <Icon icon={'calendar'} size={'18px'} color={props.iconColor} />
+                    <Icon icon={'calendar'} size={'16px'} color={props.iconColor} />
                 </IconContainer>
             ) : null}
             <TileContainer className={collapsing || collapsed ? 'collapsed' : undefined} datesHeight={datesHeight}>

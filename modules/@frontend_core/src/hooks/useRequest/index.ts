@@ -12,7 +12,7 @@ interface RequestParams {
     options?: Partial<LazyRequestOptions>;
 }
 
-interface RequestResp<ReturnType> {
+export interface RequestResp<ReturnType> {
     data: ReturnType;
     error: any;
     loading: boolean;

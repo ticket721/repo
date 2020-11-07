@@ -21,5 +21,6 @@ export const showcase = () => (
         ticketType={text('Ticket type:', '2 Days pass')}
         ticketID={text('Ticket ID', '00251501AS-D04546SD')}
         seatInfo={seat}
+        colors={['red', 'blue']}
     />
 );

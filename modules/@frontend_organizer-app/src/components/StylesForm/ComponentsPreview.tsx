@@ -53,11 +53,21 @@ export const ComponentsPreview: React.FC<ComponentsPreviewProps> = (props: Compo
                 <ElementLabel>{t('ticket_label')}</ElementLabel>
                 <Ticket>
                     <TicketHeader
-                        cover={props.previewSrc} />
+                        cover={props.previewSrc}
+                        datesCount={1}
+                        datesIdx={0}
+                        mainColors={props.colors}
+                    />
                     <Overlap>
                         <PreviewInfos
                             template={true}
                             bgColor={'rgb(24,22,31)'}
+                            online={false}
+                            online_label={'ONLINE LABEL'}
+                            location_label={'LOCATION LABEL'}
+                            online_sublabel={'ONLINE SUBLABEL'}
+                            event_name={'EVENT NAME'}
+                            gradient={props.colors}
                             ticket={{
                                 ...prevTicket,
                                 name: eventName,

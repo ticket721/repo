@@ -1,36 +1,44 @@
 import React                      from 'react';
-import { useRequest }             from '@frontend/core/lib/hooks/useRequest';
 import { useSelector }            from 'react-redux';
 import { T721AppState }           from '../../redux';
 import { useTranslation }         from 'react-i18next';
-import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
-import { Redirect }               from 'react-router';
+import { useRequest }             from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
 import { CategoryEntity }         from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { TicketEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
-import { EventFetcher }           from './EventFetcher';
+import { EventsFetcher }          from './EventsFetcher';
 
 interface DatesFetcherProps {
     uuid: string;
-    ticket: TicketEntity;
-    category: CategoryEntity;
+    tickets: TicketEntity[];
+    categories: CategoryEntity[];
 }
 
 export const DatesFetcher: React.FC<DatesFetcherProps> = (
     {
         uuid,
-        category,
-        ticket
+        tickets,
+        categories
     }: DatesFetcherProps) => {
+
     const token = useSelector((state: T721AppState) => state.auth.token.value);
-    const [ t ] = useTranslation('ticket_details');
-    const { response: datesResp, force: forceDatesReq } = useRequest<DatesSearchResponseDto>({
+    const [ t ] = useTranslation(['wallet', 'common']);
+
+    const { response: datesResp, force } = useRequest<DatesSearchResponseDto>({
             method: 'dates.search',
             args: [
                 token,
                 {
                     id: {
-                        $in: category.dates
+                        $in: []
+                            .concat(
+                                ...categories.map(category => category.dates)
+                            )
+                            .filter(
+                                (dateId: string, idx: number, arr: string[]) => arr.indexOf(dateId) === idx
+                            )
+
                     }
                 }
             ],
@@ -42,20 +50,12 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
         return <FullPageLoading/>;
     }
 
-    if (datesResp.error) {
-        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={forceDatesReq}/>);
+    if (datesResp.error || datesResp.data?.dates?.length === 0) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
     }
 
     const dates = datesResp.data.dates;
 
-    if (dates) {
-        return <EventFetcher
-            uuid={uuid}
-            ticket={ticket}
-            category={category}
-            dates={dates}
-        />;
-    } else {
-        return <Redirect to={'/'}/>;
-    }
+    return <EventsFetcher uuid={uuid} tickets={tickets} categories={categories} dates={dates}/>;
+
 };

@@ -1,68 +1,294 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     Icon,
-    Button,
     Gradient,
     TicketHeader,
     TicketInfosCard,
     DateTimeCard,
     LocationCard,
-    PurchaseInfosCard
-}                                     from '@frontend/flib-react/lib/components';
-import { formatDay, formatHour } from '@frontend/core/lib/utils/date';
-import { useTranslation }        from 'react-i18next';
+    OnlineCard,
+    PurchaseInfosCard,
+}                                              from '@frontend/flib-react/lib/components';
+import { formatDay, formatHour }               from '@frontend/core/lib/utils/date';
+import { useTranslation }                      from 'react-i18next';
 import './locales';
-import styled                    from 'styled-components';
-import { formatEuro }            from '@frontend/core/lib/utils/price';
-import { useHistory }            from 'react-router';
+import styled                                  from 'styled-components';
+import { useHistory }                          from 'react-router';
+import { motion }                              from 'framer';
+import qrcodePreview                           from '../../../media/images/qrcodePreview.png';
+import qrcodePreview2                          from '../../../media/images/qrcodePreview2.png';
+import { getImgPath }                          from '@frontend/core/lib/utils/images';
+import { useDispatch, useSelector }            from 'react-redux';
+import { T721AppState }                        from '../../../redux';
+import { ResetTicket, StartRegenInterval }     from '../../../redux/ducks/device_wallet';
+import { DynamicQrCode }                       from '../DynamicQrCode';
+import { CategoryEntity }                      from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import { TicketEntity }                        from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
+import { DateEntity }                          from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { EventEntity }                         from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
+import { Sticky, StickyContainer }             from 'react-sticky';
+import { useInView }                           from 'react-intersection-observer';
+import { useWindowDimensions }                 from '@frontend/core/lib/hooks/useWindowDimensions';
+import { getPrice }                            from '../../../utils/prices';
+import { PushNotification }                    from '@frontend/core/lib/redux/ducks/notifications';
+// tslint:disable-next-line:no-var-requires
+const publicIp = require('public-ip');
+// tslint:disable-next-line:no-var-requires
+const safeAreaInsets = require('safe-area-insets');
 
-import qrcodePreview                       from '../../../media/images/qrcodePreview.png';
-import qrcodePreview2                      from '../../../media/images/qrcodePreview2.png';
-import { getImgPath }                      from '@frontend/core/lib/utils/images';
-import { useDispatch, useSelector }        from 'react-redux';
-import { T721AppState }                    from '../../../redux';
-import { ResetTicket, StartRegenInterval } from '../../../redux/ducks/device_wallet';
-import { DynamicQrCode }                   from '../DynamicQrCode';
-import { keccak256 }          from 'ethers/utils';
-import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
-import { decimalToHex }                    from '@common/global/lib/utils';
-
-interface EventDate {
-    id: string;
-    name: string;
-    startDate: Date;
-    endDate: Date;
-    location: string;
+interface TicketDetailsDateHeaderContainerProps {
+    sticky: boolean;
 }
 
+const TicketDetailsDateHeaderContainer = styled.div<TicketDetailsDateHeaderContainerProps>`
+  height: 80px;
+  width: 100%;
+  background-color: ${(props) => (props.theme.darkBg)};
+  box-shadow: ${props => props.sticky ? '0 5px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)' : '0 0 0 rgba(0,0,0,0.19), 0 0 0 rgba(0,0,0,0.23)'};
+  transition: all 1s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: ${props => props.theme.regularSpacing};
+`;
+
+const DateIcon = styled.img`
+  width: 60px;
+  height: 60px;
+  border-radius: ${props => props.theme.defaultRadius};`;
+
+const DateTitle = styled.span`
+  font-size: 16px;
+  font-weight: 500;
+`;
+
+const DateSubtitle = styled.span`
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.5;
+`;
+
+const LinkChevron = styled(Icon)`
+  transform: rotate(-90deg);
+`;
+
+const DAY = 1000 * 60 * 60 * 24;
+
+const getRemainingTime = (date: Date, end: Date): [string, number] => {
+    const now = Date.now();
+
+    if (now > date.getTime() && now < end.getTime()) {
+        return ['today', 0];
+    }
+
+    if (now > end.getTime()) {
+        return ['ended', Math.ceil((end.getTime() - now) / DAY)];
+    }
+
+    return ['day_left', Math.floor((date.getTime() - now) / DAY)];
+
+};
+
+interface TicketDetailsDateHeaderProps {
+    date: DateEntity;
+    setFocused: (date: DateEntity) => void;
+    isSticky: boolean;
+    fromBottom: number;
+}
+
+const TicketDetailsDateHeader: React.FC<TicketDetailsDateHeaderProps> = (props: TicketDetailsDateHeaderProps): JSX.Element => {
+    const [t] = useTranslation('ticket_details');
+    useEffect(() => {
+        if (props.isSticky) {
+            props.setFocused(props.date);
+        }
+        // eslint-disable-next-line
+    }, [props.isSticky, props.date, props.setFocused]);
+    const incoming = useMemo(() =>
+            getRemainingTime(new Date(props.date.timestamps.event_begin), new Date(props.date.timestamps.event_end)),
+        [props.date.timestamps.event_begin, props.date.timestamps.event_end]
+    );
+
+    return <TicketDetailsDateHeaderContainer
+        sticky={props.isSticky && props.fromBottom > 50}
+    >
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+            }}
+        >
+            <DateIcon
+                src={props.date.metadata.avatar}
+            />
+            <div
+                style={{
+                    padding: 8,
+                    height: 60,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-evenly',
+                }}
+            >
+                <DateTitle>{props.date.metadata.name}</DateTitle>
+                <DateSubtitle>
+                    {t(incoming[0], { count: incoming[1] })}
+                </DateSubtitle>
+            </div>
+        </div>
+        <LinkChevron icon={'chevron'} size={'10px'} color={'white'}/>
+    </TicketDetailsDateHeaderContainer>;
+};
+
+const distanceToStart = (date: DateEntity): number => {
+    return Math.abs(Date.now() - new Date(date.timestamps.event_begin).getTime());
+};
+
+const dateSortFn = (date1: DateEntity, date2: DateEntity): number => {
+    return distanceToStart(date1) - distanceToStart(date2);
+};
+
+interface QRHoverContainerProps {
+    spacing: number;
+    navbar: number;
+    width: number;
+    height: number;
+}
+
+const QRHoverContainer = styled(motion.div) <QRHoverContainerProps>`
+  left: ${props => props.spacing}px;
+  bottom: calc(${props => props.spacing + props.navbar}px + env(safe-area-inset-bottom));
+  bottom: calc(${props => props.spacing + props.navbar}px + constant(safe-area-inset-bottom));
+  position: fixed;
+  width: ${props => props.width}px;
+  height: ${props => props.height}px;
+  border-radius: 100%;
+  z-index: 99999;
+  overflow: hidden;
+
+  background-color: ${props => props.theme.textColor};
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const onlineLinkWrapper = async (dispatch, t, onlineLink): Promise<void> => {
+    publicIp
+        .v4()
+        .then(
+            ip => {
+
+                const payload = btoa(JSON.stringify({
+                    ip,
+                    url: onlineLink,
+                }));
+
+                window.location.href = `https://live.ticket721.com/?_=${payload}`;
+            },
+        )
+        .catch(
+            () => {
+                dispatch(PushNotification(t('ip_fetch_error'), 'error'));
+            },
+        );
+};
+
+const isPhysicalChecker = (dates: DateEntity[]): boolean => {
+    return dates.filter((date: DateEntity) => date.online === false).length > 0;
+};
+
+const QRHoverButton = (props: {
+    qrOpened: boolean;
+    inView: boolean;
+    qrPrev: any;
+    onClick: () => void;
+}): JSX.Element => {
+
+    const width = useMemo(() => 65, []);
+    const height = useMemo(() => 65, []);
+    const navbar = useMemo(() => 80, []);
+    const spacing = useMemo(() => 8, []);
+    const window = useWindowDimensions();
+
+    return <QRHoverContainer
+        onClick={props.onClick}
+        initial={'hidden'}
+        animate={!props.inView && !props.qrOpened ? 'visible' : 'hidden'}
+        variants={{
+            visible: {
+                left: spacing,
+                rotate: 0,
+                transition: {
+                    duration: 0.5,
+                    rotate: {
+                        type: 'spring',
+                        stiffness: 500,
+                        damping: 10,
+                    },
+                },
+            },
+            hidden: {
+                left: -(window.width + spacing),
+                rotate: 45,
+                transition: {
+                    duration: 0.5,
+                    rotate: {
+                        type: 'spring',
+                        stiffness: 500,
+                        damping: 10,
+                    },
+                },
+            },
+        }}
+        drag
+        dragMomentum={true}
+        dragConstraints={{
+            // top: -amplitudeY,
+            // left: -amplitudeX,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+        }}
+
+        width={width}
+        height={height}
+        navbar={navbar}
+        spacing={spacing}
+    >
+        <img src={props.qrPrev} alt={'qrPreview'} style={{
+            width: 35,
+            height: 35,
+        }}/>
+    </QRHoverContainer>;
+};
+
 export interface TicketDetailsProps {
-    dateId: string;
-    name: string;
-    image: string;
-    colors: string[];
-    categoryName: string;
-    ticketId: string;
-    transactionHash: string;
-    dates: EventDate[];
-    price: string;
-    purchasedDate: Date;
+    ticket: TicketEntity;
+    category: CategoryEntity;
+    event: EventEntity;
+    dates: DateEntity[]
 }
 
 export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetailsProps) => {
     const history = useHistory();
-    const [ t ] = useTranslation('ticket_details');
+    const [t] = useTranslation('ticket_details');
     const seconds = useSelector((state: T721AppState) => state.deviceWallet.seconds);
     const dispatch = useDispatch();
+    const [currentDate, setCurrentDate] = useState<DateEntity>(null);
 
-    const [ qrPrev, setQrPrev ] = useState<string>(qrcodePreview);
-    const [ qrOpened, setQrOpened ] = useState<boolean>(false);
+    const [qrPrev, setQrPrev] = useState<string>(qrcodePreview);
+    const [qrOpened, setQrOpened] = useState<boolean>(false);
+
+    const { ref, inView } = useInView();
 
     useEffect(() => {
-        dispatch(StartRegenInterval(props.ticketId));
+        dispatch(StartRegenInterval(props.ticket.id));
 
         return () => dispatch(ResetTicket());
         // eslint-disable-next-line
-    }, [props.ticketId]);
+    }, [props.ticket.id]);
 
     useEffect(() => {
         if (seconds === 0) {
@@ -71,91 +297,187 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
         // eslint-disable-next-line
     }, [seconds]);
 
+    useEffect(() => {
+        if (inView) {
+            setCurrentDate(null);
+        }
+    }, [inView]);
+
+    const isPhysical = useMemo(() => isPhysicalChecker(props.dates), [props.dates]);
+
     return <>
-        <TicketHeader fullWidth cover={getImgPath(props.image)}/>
+        {
+            isPhysical
+
+                ?
+                <QRHoverButton
+                    inView={inView}
+                    qrOpened={qrOpened}
+                    onClick={() => setQrOpened(true)}
+                    qrPrev={qrPrev}
+                />
+
+                :
+                null
+        }
+        <TicketHeader fullWidth cover={getImgPath(props.event.avatar)} datesCount={1} datesIdx={0} mainColors={['#ffffff', '#000000']}/>
         <TicketContent>
-            <Gradient values={props.colors} />
+            <Gradient values={currentDate ? currentDate.metadata.signature_colors : props.event.signature_colors}/>
             <Details>
                 <TicketInfosCard
-                    eventName={props.name}
-                    ticketType={props.categoryName}
-                    ticketID={keccak256(decimalToHex(props.ticketId)).slice(0, 20)}
-                />
-                <Banner>
-                    <QrLink>
-                        <Btn onClick={() => setQrOpened(true)}>
-                            <img src={qrPrev} alt={'qrPreview'}/>
-                            <Timer>
-                                <span>{t('next_gen_label')}</span>
-                                <span>{seconds}</span>
-                            </Timer>
-                        </Btn>
-                    </QrLink>
-                    <EventLink color={props.colors[0]}>
-                        <Button
-                        variant={'custom'}
-                        gradients={props.colors}
-                        title={t('event_link')}
-                        onClick={() => history.push('/event/' + props.dateId)}/>
-                    </EventLink>
-                </Banner>
-                <DateTimeCard
-                    dates={props.dates.map((date) => ({
-                        id: date.id,
-                        name: date.name,
-                        startDate: formatDay(date.startDate),
-                        endDate: formatDay(date.endDate),
-                        startTime: formatHour(date.startDate),
-                        endTime: formatHour(date.endDate),
-                        location: date.location,
-                    }))}
-                    iconColor={props.colors[0]}
-                    label={t('show_all_dates_label')}
-                    labelCollapse={t('collapse_dates_label')}
-                    onClick={(dateId: string) => history.push('/event/' + dateId)}
-                    wSeparator
+                    eventName={props.event.name}
+                    ticketType={props.category.display_name}
+                    ticketID={props.ticket.id}
+                    colors={props.event.signature_colors}
                 />
                 {
-                    props.dates.length === 1 ?
-                        <LocationCard
-                            location={props.dates[0].location}
-                            iconColor={props.colors[0]}
-                            wSeparator
-                            subtitle={t('get_directions')}/> :
+                    isPhysical
+
+                        ?
+                        <Banner>
+                            <QrLink>
+                                <Btn onClick={() => setQrOpened(true)} ref={ref}>
+                                    <img src={qrPrev} alt={'qrPreview'}/>
+                                    <Timer>
+                                        <span>{t('next_gen_label')}</span>
+                                        <span>{seconds}</span>
+                                    </Timer>
+                                    <span
+                                        style={{
+                                            fontWeight: 500,
+                                        }}
+                                    >
+                                Dynamic Ticket
+                            </span>
+                                </Btn>
+                            </QrLink>
+                        </Banner>
+
+                        :
                         null
                 }
                 <PurchaseInfosCard
                     purchasedLabel={t('purchased_date')}
                     priceLabel={t('price')}
-                    date={formatDay(props.purchasedDate)}
-                    iconColor={props.colors[0]}
-                    price={formatEuro(props.price)}
+                    date={formatDay(props.ticket.created_at)}
+                    iconColor={props.event.signature_colors[0]}
+                    price={getPrice(props.category, t('free'))}
                 />
+                {
+                    props.dates
+                        .sort(dateSortFn)
+                        .map((date) => (
+                            <StickyContainer key={date.id}>
+                                <div
+                                    style={{
+                                        zIndex: 1000,
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <Sticky
+                                        topOffset={-(48 + safeAreaInsets.top)}
+                                        bottomOffset={48 + safeAreaInsets.top}
+                                    >
+                                        {({ style, isSticky, distanceFromBottom }) => (
+                                            <div
+                                                style={{
+                                                    ...style,
+                                                    marginTop: isSticky ? (48 + safeAreaInsets.top) : 0,
+                                                    zIndex: 1000,
+                                                }}
+                                                onClick={() => history.push(`/event/${date.id}`)}
+                                            >
+                                                <TicketDetailsDateHeader date={date} setFocused={setCurrentDate} isSticky={isSticky}
+                                                                         fromBottom={distanceFromBottom}/>
+                                            </div>
+                                        )}
+                                    </Sticky>
+
+                                </div>
+                                {
+                                    date.online
+
+                                        ?
+                                        <>
+                                            <DateTimeCard
+                                                dates={[{
+                                                    id: date.id,
+                                                    name: date.metadata.name,
+                                                    startDate: formatDay(date.timestamps.event_begin),
+                                                    endDate: formatDay(date.timestamps.event_end),
+                                                    startTime: formatHour(date.timestamps.event_begin),
+                                                    endTime: formatHour(date.timestamps.event_end),
+                                                    location: date.location?.location_label,
+                                                }]}
+                                                iconColor={date.metadata.signature_colors[0]}
+                                                label={t('show_all_dates_label')}
+                                                labelCollapse={t('collapse_dates_label')}
+                                                onClick={(dateId: string) => history.push('/event/' + dateId)}
+                                                wSeparator
+                                            />
+                                            <OnlineCard
+                                                online={true}
+                                                start={new Date(date.timestamps.event_begin)}
+                                                end={new Date(date.timestamps.event_end)}
+                                                onClick={() => {
+                                                    onlineLinkWrapper(dispatch, t, date.online_link);
+                                                }
+                                                }
+                                                online_link={date.online_link}
+                                                live_title={t('live_title')}
+                                                offline_title={t('offline_title')}
+                                                waiting_link_subtitle={t('waiting_link_subtitle')}
+                                                ended_subtitle={t('ended_subtitle')}
+                                                live_subtitle={t('live_subtitle')}
+                                                soon_subtitle={t('soon_subtitle')}
+                                            />
+                                        </>
+
+                                        :
+                                        <>
+                                            <DateTimeCard
+                                                dates={[{
+                                                    id: date.id,
+                                                    name: date.metadata.name,
+                                                    startDate: formatDay(date.timestamps.event_begin),
+                                                    endDate: formatDay(date.timestamps.event_end),
+                                                    startTime: formatHour(date.timestamps.event_begin),
+                                                    endTime: formatHour(date.timestamps.event_end),
+                                                    location: date.location?.location_label,
+                                                }]}
+                                                iconColor={date.metadata.signature_colors[0]}
+                                                label={t('show_all_dates_label')}
+                                                labelCollapse={t('collapse_dates_label')}
+                                                onClick={(dateId: string) => history.push('/event/' + dateId)}
+                                                wSeparator
+                                            />
+                                            <LocationCard
+                                                location={date.location.location_label}
+                                                coords={date.location.location}
+                                                iconColor={date.metadata.signature_colors[0]}
+                                                wSeparator={false}
+                                                get_directions={t('get_directions')}
+                                            />
+                                        </>
+                                }
+                            </StickyContainer>
+                        ))
+                }
             </Details>
         </TicketContent>
-        {
-            props.transactionHash ?
-              <TransactionBtn
-                target={'_blank'}
-                href={getEnv().REACT_APP_ETHERSCAN_URL + '/' + props.transactionHash}>
-                  <span>{t('transaction_btn_label')}</span>
-                  <Icon icon={'right-chevron'} size={'14px'} color={'rgba(255,255,255,0.9)'}/>
-              </TransactionBtn> :
-              null
-        }
         <DynamicQrCode
-        qrOpened={qrOpened}
-        name={props.name}
-        category={props.categoryName}
-        color={props.colors[0]}
-        onClose={() => setQrOpened(false)}/>
+            qrOpened={qrOpened}
+            name={props.event.name}
+            category={props.category.display_name}
+            color={props.event.signature_colors[0]}
+            onClose={() => setQrOpened(false)}/>
     </>;
 };
 
 const TicketContent = styled.div`
     position: relative;
     top: -${props => props.theme.doubleSpacing};
-    margin-bottom: -${props => props.theme.doubleSpacing};
+    margin-bottom: calc(env(safe-area-inset-bottom) + 80px + 70px + 25px);
     display: flex;
     border-bottom-right-radius: ${props => props.theme.defaultRadius};
     overflow: hidden;
@@ -176,14 +498,16 @@ const Banner = styled.div`
 
 const QrLink = styled.div`
     padding: 12px;
-    width: 50%;
+    width: 100%;
     background-color: rgba(0,0,0,0.6);
 `;
 
 const Btn = styled.div`
     display: flex;
+    width: 100%;
     justify-content: space-around;
     align-items: center;
+    text-align: center;
     padding: 12px;
     background-color: ${props => props.theme.textColor};
     border-radius: ${props => props.theme.defaultRadius};
@@ -213,43 +537,3 @@ const Timer = styled.div`
     }
 `;
 
-const EventLink = styled.div`
-    display: flex;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: capitalize;
-    align-items: center;
-    padding: 0 ${props => props.theme.regularSpacing};
-    width: 50%;
-    background-color: rgba(0,0,0,0.6);
-
-    & > button {
-        height: calc(${props => props.theme.doubleSpacing} * 2);
-        padding-top: 12px;
-        padding-bottom: 12px;
-
-        & > span {
-            font-weight: 600;
-            padding-top: 0 !important;
-        }
-    }
-`;
-
-const TransactionBtn = styled.a`
-    background-color: rgba(255,255,255,0.1);
-    transition: background-color 300ms ease;
-    align-items: center;
-    border-radius: 8px;
-    color: rgba(255,255,255,0.9);
-    display: inline-flex;
-    font-size: 15px;
-    font-weight: 500;
-    justify-content: space-between;
-    line-height: 1em;
-    margin: 32px;
-    overflow: hidden;
-    padding: 16px;
-    position: relative;
-    width: calc(100% - 64px);
-`;

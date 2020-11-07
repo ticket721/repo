@@ -5,7 +5,6 @@ import { T721AppState }        from '../../../redux';
 import QrCode                  from 'qrcode.react';
 import { Icon }                from '@frontend/flib-react/lib/components';
 import { useWindowDimensions } from '@frontend/core/lib/hooks/useWindowDimensions';
-import { keccak256 }           from 'ethers/utils';
 import { Theme }               from '@frontend/flib-react/lib/config/theme';
 import { Brightness } from '@ionic-native/brightness';
 
@@ -108,7 +107,7 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
                 </QrCodeContainer>
                 {
                     ticketId ?
-                        <TicketId>{keccak256(ticketId).slice(0, 20)}</TicketId> :
+                        <TicketId>{ticketId}</TicketId> :
                         null
                 }
             </div>
@@ -128,7 +127,7 @@ const QrCodeWrapper = styled.div<{ offsetTop: number, qrOpened: boolean }>`
     z-index: 9999;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
     background-color: #ffffff;
     backdrop-filter: blur(6px);

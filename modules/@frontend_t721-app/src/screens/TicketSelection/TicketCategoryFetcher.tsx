@@ -18,7 +18,8 @@ export interface TicketCategoryFetcherProps {
 
 const TicketSelectionContainer = styled.div`
     padding-top: ${props => props.theme.regularSpacing};
-    padding-bottom: calc(80px + ${props => props.theme.regularSpacing});
+    padding-bottom: calc(80px + ${props => props.theme.regularSpacing} + env(safe-area-inset-bottom));
+    padding-bottom: calc(80px + ${props => props.theme.regularSpacing} + constant(safe-area-inset-bottom));
 `;
 
 const TicketSelectionTitle = styled.h1`
