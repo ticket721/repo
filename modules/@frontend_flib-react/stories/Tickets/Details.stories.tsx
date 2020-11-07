@@ -104,6 +104,7 @@ export const showcase = () => (
                     ticketType={defaultTicket.ticketType}
                     ticketID={defaultTicket.ticketId}
                     seatInfo={defaultTicket.seat}
+                    colors={['red', 'blue']}
                 />
                 <DateTimeCard
                     dates={[
