@@ -34,12 +34,13 @@ const PreviewContainer = styled.main`
 `;
 
 const TicketHeaderTitle = styled(motion.h2)`
-    font-weight: 400;
+    font-weight: 500;
 `;
 
 const TicketEventTitle = styled.h2`
     margin-top: ${(props) => props.theme.smallSpacing} !important;
     opacity: 0.4;
+    font-size: 12px !important;
     color: #ffffff;
     text-transform: uppercase;
     font-weight: 400;

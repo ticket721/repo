@@ -1,35 +1,26 @@
-import React  from 'react';
-import { useRequest }       from '@frontend/core/lib/hooks/useRequest';
-import { useSelector }    from 'react-redux';
-import { T721AppState }                from '../../redux';
+import React                      from 'react';
+import { useRequest }             from '@frontend/core/lib/hooks/useRequest';
+import { useSelector }            from 'react-redux';
+import { T721AppState }           from '../../redux';
 import { useTranslation }         from 'react-i18next';
 import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
 import { Redirect }               from 'react-router';
-import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
-import { TicketDetails }        from './TicketDetails';
-import { checkFormatDate } from '@frontend/core/lib/utils/date';
+import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { CategoryEntity }         from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import { TicketEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
+import { EventFetcher }           from './EventFetcher';
 
 interface DatesFetcherProps {
     uuid: string;
-    entityType: 'id' | 'group_id';
-    entityId: string;
-    ticketId: string;
-    transactionHash: string;
-    categoryName: string;
-    price: string;
-    purchasedDate: Date;
+    ticket: TicketEntity;
+    category: CategoryEntity;
 }
 
 export const DatesFetcher: React.FC<DatesFetcherProps> = (
     {
         uuid,
-        entityType,
-        entityId,
-        ticketId,
-        transactionHash,
-        categoryName,
-        price,
-        purchasedDate,
+        category,
+        ticket
     }: DatesFetcherProps) => {
     const token = useSelector((state: T721AppState) => state.auth.token.value);
     const [ t ] = useTranslation('ticket_details');
@@ -38,13 +29,9 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
             args: [
                 token,
                 {
-                    [entityType]: {
-                        $eq: entityId
-                    },
-                    $sort: [{
-                        $field_name: 'timestamps.event_begin',
-                        $order: 'asc',
-                    }]
+                    id: {
+                        $in: category.dates
+                    }
                 }
             ],
             refreshRate: 60,
@@ -59,33 +46,15 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
         return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={forceDatesReq}/>);
     }
 
-    if (datesResp.data?.dates?.length > 0) {
-        const filteredDates = datesResp.data.dates.filter((date) => checkFormatDate(date.timestamps.event_end).getTime() > Date.now());
-        let defaultDate;
+    const dates = datesResp.data.dates;
 
-        if (filteredDates.length === 0 ) {
-            defaultDate = datesResp.data.dates[0];
-        } else {
-            defaultDate = filteredDates[0];
-        }
-
-        return <TicketDetails
-            name={defaultDate.metadata.name}
-            image={defaultDate.metadata.avatar}
-            colors={defaultDate.metadata.signature_colors}
-            dateId={defaultDate.id}
-            categoryName={categoryName}
-            ticketId={ticketId}
-            transactionHash={transactionHash}
-            dates={datesResp.data.dates.map(date => ({
-                id: date.id,
-                name: date.metadata.name,
-                startDate: checkFormatDate(date.timestamps.event_begin),
-                endDate: checkFormatDate(date.timestamps.event_end),
-                location: date.location.location_label,
-            }))}
-            price={price}
-            purchasedDate={purchasedDate}/>;
+    if (dates) {
+        return <EventFetcher
+            uuid={uuid}
+            ticket={ticket}
+            category={category}
+            dates={dates}
+        />;
     } else {
         return <Redirect to={'/'}/>;
     }

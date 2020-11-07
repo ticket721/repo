@@ -1,27 +1,23 @@
-import React  from 'react';
-import { useRequest }       from '@frontend/core/lib/hooks/useRequest';
+import React                           from 'react';
+import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { useSelector }    from 'react-redux';
+import { useSelector }                 from 'react-redux';
 import { T721AppState }                from '../../redux';
-import { useTranslation }         from 'react-i18next';
-import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
-import { Redirect }               from 'react-router';
-import { DatesFetcher }                 from './DatesFetcher';
+import { useTranslation }              from 'react-i18next';
+import { Error, FullPageLoading }      from '@frontend/flib-react/lib/components';
+import { Redirect }                    from 'react-router';
+import { DatesFetcher }                from './DatesFetcher';
+import { TicketEntity }          from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
 
 interface CategoryFetcherProps {
     uuid: string;
-    categoryId: string;
-    ticketId: string;
-    transactionHash: string;
-    purchasedDate: Date;
+    ticket: TicketEntity;
 }
 
 export const CategoryFetcher: React.FC<CategoryFetcherProps> = ({
     uuid,
-    categoryId,
-    ticketId,
-    transactionHash,
-    purchasedDate }: CategoryFetcherProps) => {
+    ticket
+}: CategoryFetcherProps) => {
     const token = useSelector((state: T721AppState) => state.auth.token.value);
     const [ t ] = useTranslation('ticket');
     const { response: categoryResp, force: forceCategoryReq } = useRequest<CategoriesSearchResponseDto>({
@@ -30,7 +26,7 @@ export const CategoryFetcher: React.FC<CategoryFetcherProps> = ({
             token,
             {
                 id: {
-                    $eq: categoryId
+                    $eq: ticket.category
                 }
             }
         ],
@@ -46,17 +42,13 @@ export const CategoryFetcher: React.FC<CategoryFetcherProps> = ({
         return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={forceCategoryReq}/>);
     }
 
-    if (categoryResp.data?.categories?.length > 0) {
-        const cat = categoryResp.data.categories[0];
+    const category = categoryResp.data.categories[0];
+
+    if (category) {
         return <DatesFetcher
             uuid={uuid}
-            entityType={cat.parent_type === 'date' ? 'id' : 'group_id'}
-            entityId={cat.parent_type === 'date' ? cat.parent_id : cat.group_id}
-            ticketId={ticketId}
-            transactionHash={transactionHash}
-            categoryName={cat.display_name}
-            price={cat.prices.filter(price => price.currency === 'T721Token')[0].value}
-            purchasedDate={purchasedDate}
+            ticket={ticket}
+            category={category}
         />
     } else {
         return <Redirect to={'/'}/>;

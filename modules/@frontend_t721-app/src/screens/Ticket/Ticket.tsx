@@ -8,7 +8,6 @@ import { v4 }                       from 'uuid';
 import { useTranslation }           from 'react-i18next';
 import { CategoryFetcher }          from './CategoryFetcher';
 import { Error, FullPageLoading }   from '@frontend/flib-react/lib/components';
-import { checkFormatDate }          from '@frontend/core/lib/utils/date';
 
 const Ticket: React.FC = () => {
     const { id } = useParams();
@@ -16,18 +15,18 @@ const Ticket: React.FC = () => {
     const token = useSelector((state: T721AppState) => state.auth.token.value);
     const [uuid] = useState<string>(v4() + '@ticket-details');
     const { response: ticketResp, force } = useRequest<TicketsSearchResponseDto>({
-        method: 'tickets.search',
-        args: [
-            token,
-            {
-                id: {
-                    $eq: id
+            method: 'tickets.search',
+            args: [
+                token,
+                {
+                    id: {
+                        $eq: id
+                    },
                 },
-            },
-        ],
-        refreshRate: 60,
-    },
-    uuid);
+            ],
+            refreshRate: 60,
+        },
+        uuid);
 
     if (ticketResp.loading) {
         return <FullPageLoading/>;
@@ -37,13 +36,13 @@ const Ticket: React.FC = () => {
         return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
     }
 
-    if (ticketResp.data?.tickets?.length > 0) {
+    const ticket = ticketResp.data.tickets[0];
+
+    if (ticket) {
         return <CategoryFetcher
-        uuid={uuid}
-        categoryId={ticketResp.data.tickets[0].category}
-        ticketId={ticketResp.data.tickets[0].id}
-        transactionHash={ticketResp.data.tickets[0].transaction_hash}
-        purchasedDate={checkFormatDate(ticketResp.data.tickets[0].updated_at)}/>;
+            uuid={uuid}
+            ticket={ticket}
+        />;
     } else {
         return <Redirect to={'/'}/>;
     }

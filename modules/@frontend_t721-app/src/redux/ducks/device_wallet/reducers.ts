@@ -1,6 +1,5 @@
 import { Reducer }                                      from 'redux';
 import { DeviceWalletTypes, DeviceWalletState }                                                                                from './types';
-import { decimalToHex }                          from '@common/global/lib/utils';
 
 import {
     DeviceWalletAction,
@@ -37,7 +36,7 @@ const StartRegenIntervalReducer: Reducer<DeviceWalletState, IStartRegenInterval>
     action: IStartRegenInterval,
 ): DeviceWalletState => ({
     ...state,
-    currentTicketId: decimalToHex(action.ticketId),
+    currentTicketId: action.ticketId,
 });
 
 const SetRegenIntervalReducer: Reducer<DeviceWalletState, ISetRegenIntervalId> = (

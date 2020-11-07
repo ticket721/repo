@@ -33,7 +33,7 @@ export default {
         {
             name: 'Online',
             online: true,
-            online_link: 'https://twitch.tv/justice',
+            online_link: 'https://www.youtube.com/embed/tgbNymZ7vqY?autoplay=1&mute=1',
             eventBegin: new Date(Date.now() + 5 * DAY),
             eventEnd: new Date(Date.now() + 6 * DAY),
         }

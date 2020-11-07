@@ -1,5 +1,5 @@
-import React, { useEffect, useState }       from 'react';
-import styled                               from 'styled-components';
+import React, { useContext, useEffect, useState } from 'react';
+import styled                                     from 'styled-components';
 import { useTranslation }                   from 'react-i18next';
 import {
     Icon,
@@ -7,15 +7,14 @@ import {
     FullPageLoading,
 }                                           from '@frontend/flib-react/lib/components';
 import './locales';
-import { useRequest }                       from '@frontend/core/lib/hooks/useRequest';
 import { useLazyRequest }                   from '@frontend/core/lib/hooks/useLazyRequest';
-import { TicketsSearchResponseDto }         from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsSearchResponse.dto';
 import { useSelector }                      from 'react-redux';
 import { T721AppState }                     from '../../redux';
 import { v4 }                               from 'uuid';
 import { CategoriesFetcher }                from './CategoriesFetcher';
 import { useHistory }                       from 'react-router';
 import { UsersSetDeviceAddressResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersSetDeviceAddressResponse.dto';
+import { TicketsContext }                   from '@frontend/core/lib/utils/TicketsContext';
 
 const Wallet: React.FC = () => {
     const history = useHistory();
@@ -26,20 +25,7 @@ const Wallet: React.FC = () => {
 
     const { lazyRequest: postAddress } = useLazyRequest<UsersSetDeviceAddressResponseDto>('users.setDeviceAddress', uuid);
 
-    const { response: ticketsResp, force } = useRequest<TicketsSearchResponseDto>({
-            method: 'tickets.search',
-            args: [
-                token,
-                {
-                    $sort: [{
-                        $field_name: 'updated_at',
-                        $order: 'desc',
-                    }],
-                },
-            ],
-            refreshRate: 60,
-        },
-        uuid);
+    const { response: ticketsResp, force } = useContext(TicketsContext);
 
     useEffect(() => {
         if (devicePk) {
