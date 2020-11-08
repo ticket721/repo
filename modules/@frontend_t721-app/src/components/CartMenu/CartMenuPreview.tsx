@@ -20,6 +20,8 @@ import { PurchasesSetProductsResponseDto } from '@common/sdk/lib/@backend_nest/a
 import { isNil }                           from 'lodash';
 import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
 import { PurchaseError }                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
+import { isRequestError }                  from '@frontend/core/lib/utils/isRequestError';
+import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
 
 const CategoryCount = styled.span`
   margin: 0;
@@ -217,7 +219,7 @@ const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> 
                             dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
                         }
                     } else {
-                        cart.force();
+                        cart.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
                     }
 
                 }
@@ -233,7 +235,7 @@ const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> 
         />;
     }
 
-    if (datesFetch.response.error || datesFetch.response.data.dates.length === 0) {
+    if (isRequestError(datesFetch) || datesFetch.response.data.dates.length === 0) {
         return <Error message={'category_fetch_error'} retryLabel={'common:retrying_in'} onRefresh={datesFetch.force}/>;
     }
 
@@ -398,7 +400,7 @@ const CartMenuCategoryPreview: React.FC<CartMenuCategoryPreview> = (props: CartM
         />;
     }
 
-    if (categoryFetch.response.error || categoryFetch.response.data.categories.length === 0) {
+    if (isRequestError(categoryFetch) || categoryFetch.response.data.categories.length === 0) {
         return <Error message={'category_fetch_error'} retryLabel={'common:retrying_in'} onRefresh={categoryFetch.force}/>;
     }
 

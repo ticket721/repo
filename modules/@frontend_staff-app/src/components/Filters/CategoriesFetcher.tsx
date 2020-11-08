@@ -9,6 +9,7 @@ import { useTranslation }              from 'react-i18next';
 import './locales';
 import { Filters }                     from './Filters';
 import { formatCategories }            from './categoriesFormatter';
+import { isRequestError }              from '@frontend/core/lib/utils/isRequestError';
 
 interface CategoriesFetcherProps {
     open: boolean;
@@ -58,7 +59,7 @@ export const CategoriesFetcher: React.FC<CategoriesFetcherProps> = ({ open, onCl
         return <FullPageLoading/>;
     }
 
-    if (dateCategoriesReq.response.error || globalCategoriesReq.response.error) {
+    if (isRequestError(dateCategoriesReq) || isRequestError(globalCategoriesReq)) {
         return <Error message={t('error_cannot_fetch_categories')} retryLabel={t('common:retrying_in')} onRefresh={() => {
             dateCategoriesReq.force();
             globalCategoriesReq.force();

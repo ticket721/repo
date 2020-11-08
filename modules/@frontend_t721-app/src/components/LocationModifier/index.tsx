@@ -1,14 +1,15 @@
-import React, { useEffect, useState }                                         from 'react';
+import React, { useEffect, useState }                                                         from 'react';
 import { CurrentLocation, LocationList, SearchInput, FullPageLoading, Error, OnlineLocation } from '@frontend/flib-react/lib/components';
-import { useFormik }                                                          from 'formik';
-import { City, MatchingCity }                                                 from '@common/global';
-import { useDispatch }                                                        from 'react-redux';
-import { useTranslation }                              from 'react-i18next';
-import { GetLocation, SetCustomLocation, SetLocation } from '../../redux/ducks/location';
-import { v4 }                                          from 'uuid';
-import { useRequest }                                                         from '@frontend/core/lib/hooks/useRequest';
-import { GeolocFuzzySearchResponseDto }                                       from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/geoloc/dto/GeolocFuzzySearchResponse.dto';
+import { useFormik }                                                                          from 'formik';
+import { City, MatchingCity }                                                                 from '@common/global';
+import { useDispatch }                                                                        from 'react-redux';
+import { useTranslation }                                                                     from 'react-i18next';
+import { GetLocation, SetCustomLocation, SetLocation }                                        from '../../redux/ducks/location';
+import { v4 }                                                                                 from 'uuid';
+import { useRequest }                                                                         from '@frontend/core/lib/hooks/useRequest';
+import { GeolocFuzzySearchResponseDto }                                                       from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/geoloc/dto/GeolocFuzzySearchResponse.dto';
 import './locales';
+import { isRequestError }                                                                     from '@frontend/core/lib/utils/isRequestError';
 
 export interface LocationModifierListProps {
     query: string;
@@ -36,7 +37,7 @@ const LocationModifierList: React.FC<LocationModifierListProps> = (props: Locati
         return <FullPageLoading/>;
     }
 
-    if (locationRequest.response.error) {
+    if (isRequestError(locationRequest)) {
         return <Error message={t('error_location_request_fail')} retryLabel={t('common:retrying_in')} onRefresh={locationRequest.force}/>;
     }
 

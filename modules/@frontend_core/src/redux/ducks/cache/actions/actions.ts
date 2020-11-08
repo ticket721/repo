@@ -22,13 +22,15 @@ export interface IManualFetchItem extends Action<string> {
     key: string;
     method: string;
     args: any[];
+    score: number;
 }
 
-export const ManualFetchItem = (key: string, method: string, args: any[]): IManualFetchItem => ({
+export const ManualFetchItem = (key: string, method: string, args: any[], score: number): IManualFetchItem => ({
     type: CacheActionTypes.ManualFetchItem,
     key,
     method,
     args,
+    score,
 });
 
 export interface IUpdateItemData extends Action<string> {

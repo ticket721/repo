@@ -9,6 +9,7 @@ import { PushNotification }            from '@frontend/core/lib/redux/ducks/noti
 import { CartContext }                 from '../Cart/CartContext';
 import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
 import { UserContext }                 from '@frontend/core/lib/utils/UserContext';
+import { getEnv }                      from '@frontend/core/lib/utils/getEnv';
 
 const CreditCardWrapper = styled.div`
   padding: ${props => props.theme.regularSpacing};
@@ -145,7 +146,7 @@ export const CartMenuStripeCBCheckoutNative: React.FC<CartMenuStripeCBCheckoutNa
                 return;
             }
 
-            cart.force();
+            cart.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
 
         };
 

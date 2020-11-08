@@ -13,6 +13,7 @@ import { PushNotification }                from '@frontend/core/lib/redux/ducks/
 import { PurchaseError }                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
 import { CartContext }                     from '../Cart/CartContext';
 import { CartMenuStripeCBCheckout }        from './CartMenuStripeCBCheckout';
+import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
 
 interface PaymentButtonDivProps {
     color: string;
@@ -117,7 +118,7 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
                         }
                         setTimestamp(null);
                     } else {
-                        cart.force();
+                        cart.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
                     }
 
                 }

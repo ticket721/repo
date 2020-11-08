@@ -7,7 +7,8 @@ import { useTranslation }              from 'react-i18next';
 import { Error, FullPageLoading }      from '@frontend/flib-react/lib/components';
 import { Redirect }                    from 'react-router';
 import { DatesFetcher }                from './DatesFetcher';
-import { TicketEntity }          from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
+import { TicketEntity }                from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
+import { isRequestError }              from '@frontend/core/lib/utils/isRequestError';
 
 interface CategoryFetcherProps {
     uuid: string;
@@ -20,7 +21,7 @@ export const CategoryFetcher: React.FC<CategoryFetcherProps> = ({
 }: CategoryFetcherProps) => {
     const token = useSelector((state: T721AppState) => state.auth.token.value);
     const [ t ] = useTranslation('ticket');
-    const { response: categoryResp, force: forceCategoryReq } = useRequest<CategoriesSearchResponseDto>({
+    const categoryResp = useRequest<CategoriesSearchResponseDto>({
         method: 'categories.search',
         args: [
             token,
@@ -34,15 +35,15 @@ export const CategoryFetcher: React.FC<CategoryFetcherProps> = ({
     },
     uuid);
 
-    if (categoryResp.loading) {
+    if (categoryResp.response.loading) {
         return <FullPageLoading/>;
     }
 
-    if (categoryResp.error) {
-        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={forceCategoryReq}/>);
+    if (isRequestError(categoryResp)) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={categoryResp.force}/>);
     }
 
-    const category = categoryResp.data.categories[0];
+    const category = categoryResp.response.data.categories[0];
 
     if (category) {
         return <DatesFetcher

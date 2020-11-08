@@ -1,14 +1,15 @@
-import React, { useState }              from 'react';
-import styled                           from 'styled-components';
-import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
-import { v4 }                           from 'uuid';
-import { useSelector }                  from 'react-redux';
-import { StaffAppState }                from '../../redux';
-import { useRequest }                   from '@frontend/core/lib/hooks/useRequest';
-import { useTranslation }               from 'react-i18next';
-import { RightsSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/rights/dto/RightsSearchResponse.dto';
-import { EventsDatesFetcher }           from './EventsDatesFetcher';
+import React, { useState }         from 'react';
+import styled                      from 'styled-components';
+import { Error, FullPageLoading }  from '@frontend/flib-react/lib/components';
+import { v4 }                      from 'uuid';
+import { useSelector }             from 'react-redux';
+import { StaffAppState }           from '../../redux';
+import { useRequest }              from '@frontend/core/lib/hooks/useRequest';
+import { useTranslation }          from 'react-i18next';
+import { RightsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/rights/dto/RightsSearchResponse.dto';
+import { EventsDatesFetcher }      from './EventsDatesFetcher';
 import '../locales';
+import { isRequestError }          from '@frontend/core/lib/utils/isRequestError';
 
 const Scan: React.FC = () => {
     const [ t ] = useTranslation(['fetch_errors', 'common']);
@@ -32,7 +33,7 @@ const Scan: React.FC = () => {
         return <FullPageLoading/>;
     }
 
-    if (rightsReq.response.error) {
+    if (isRequestError(rightsReq)) {
         return <Error message={t('error_cannot_fetch_events')} retryLabel={t('common:retrying_in')} onRefresh={rightsReq.force}/>;
     }
 

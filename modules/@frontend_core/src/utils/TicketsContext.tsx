@@ -38,10 +38,6 @@ const LoggedInTicketsGuard: React.FC<PropsWithChildren<LoggedInTicketsGuardProps
         uuid,
     );
 
-    if (ticketsReq.response.data) {
-        console.log(ticketsReq.response.data.tickets.length, 'tickets');
-    }
-
     return <TicketsContext.Provider value={ticketsReq}>{props.children}</TicketsContext.Provider>;
 };
 
@@ -59,6 +55,7 @@ const LoggedOutTicketsGuard: React.FC<PropsWithChildren<LoggedOutTicketsGuardPro
                     data: null,
                     error: null,
                     loading: false,
+                    errors: 0,
                 },
                 registerEntity: () => undefined,
                 unregisterEntity: () => undefined,

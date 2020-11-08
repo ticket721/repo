@@ -14,7 +14,7 @@ const Activities: React.FC = () => {
     }));
     const user = useContext(UserContext);
 
-    const { response, force } = useRequest<MetadatasFetchResponseDto>(
+    const response = useRequest<MetadatasFetchResponseDto>(
         {
             method: 'metadatas.fetch',
             args: [
@@ -42,7 +42,7 @@ const Activities: React.FC = () => {
         uuid,
     );
 
-    return <ActivitiesList loading={response.loading} error={response.error} data={response.data} force={force} />;
+    return <ActivitiesList response={response} />;
 };
 
 export default Activities;

@@ -15,7 +15,7 @@ export interface CartState {
     open: boolean;
     openMenu: () => void;
     closeMenu: () => void;
-    force: () => void;
+    force: (score?: number) => void;
 }
 
 export const CartContext = React.createContext<CartState>({

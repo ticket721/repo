@@ -8,13 +8,14 @@ import { v4 }                       from 'uuid';
 import { useTranslation }           from 'react-i18next';
 import { CategoryFetcher }          from './CategoryFetcher';
 import { Error, FullPageLoading }   from '@frontend/flib-react/lib/components';
+import { isRequestError }           from '@frontend/core/lib/utils/isRequestError';
 
 const Ticket: React.FC = () => {
     const { id } = useParams();
     const [ t ] = useTranslation(['ticket', 'common']);
     const token = useSelector((state: T721AppState) => state.auth.token.value);
     const [uuid] = useState<string>(v4() + '@ticket-details');
-    const { response: ticketResp, force } = useRequest<TicketsSearchResponseDto>({
+    const ticketResp = useRequest<TicketsSearchResponseDto>({
             method: 'tickets.search',
             args: [
                 token,
@@ -28,15 +29,15 @@ const Ticket: React.FC = () => {
         },
         uuid);
 
-    if (ticketResp.loading) {
+    if (ticketResp.response.loading) {
         return <FullPageLoading/>;
     }
 
-    if (ticketResp.error) {
-        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
+    if (isRequestError(ticketResp)) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={ticketResp.force}/>);
     }
 
-    const ticket = ticketResp.data.tickets[0];
+    const ticket = ticketResp.response.data.tickets[0];
 
     if (ticket) {
         return <CategoryFetcher

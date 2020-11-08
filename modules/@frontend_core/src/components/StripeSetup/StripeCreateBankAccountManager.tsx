@@ -9,6 +9,7 @@ import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common
 import { AppState } from '../../redux';
 import { StripeSetupCreateExternalAccountManager } from './StripeSetupCreateExternalAccountManager';
 import { useHistory, Redirect } from 'react-router';
+import { isRequestError } from '../../utils/isRequestError';
 
 const isConnectAccountCreated = (stripeInterface: StripeInterfaceEntity): boolean => {
     return !!stripeInterface.connect_account;
@@ -36,7 +37,7 @@ export const StripeCreateBankAccountManager = (props: StripeCreateBankAccountMan
         return <FullPageLoading />;
     }
 
-    if (stripeInterfaceReq.response.error) {
+    if (isRequestError(stripeInterfaceReq)) {
         return (
             <Error
                 message={'cannot fetch stripe interface'}

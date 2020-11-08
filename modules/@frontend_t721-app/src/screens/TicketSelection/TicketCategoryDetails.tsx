@@ -1,13 +1,14 @@
 import React, { useState }                    from 'react';
 import { Error, FullPageLoading, TicketType } from '@frontend/flib-react/lib/components';
 import { CategoryEntity }                     from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-import { DateEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
-import { useTranslation }              from 'react-i18next';
-import { useSelector }                 from 'react-redux';
-import { T721AppState }                from '../../redux';
-import { v4 }                          from 'uuid';
-import { getPrice }                    from '../../utils/prices';
-import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
+import { DateEntity }                         from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { useTranslation }                     from 'react-i18next';
+import { useSelector }                        from 'react-redux';
+import { T721AppState }                       from '../../redux';
+import { v4 }                                 from 'uuid';
+import { getPrice }                           from '../../utils/prices';
+import { useRequest }                         from '@frontend/core/lib/hooks/useRequest';
+import { isRequestError }                     from '@frontend/core/lib/utils/isRequestError';
 
 export interface TicketCategoryDetailsProps {
     idx: number;
@@ -46,11 +47,11 @@ export const TicketCategoryDetails: React.FC<TicketCategoryDetailsProps> = (prop
         return <FullPageLoading width={250} height={250}/>;
     }
 
-    if (categoriesCount.response.error) {
+    if (isRequestError(categoriesCount)) {
         return <Error message={t('error_cannot_fetch_categories')} retryLabel={t('common:retrying_in')} onRefresh={categoriesCount.force}/>;
     }
 
-    if (relatedDates.response.error) {
+    if (isRequestError(relatedDates)) {
         return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={relatedDates.force}/>;
     }
 

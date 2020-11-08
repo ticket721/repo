@@ -15,6 +15,7 @@ import { BankAccountSelection } from './BankAccountSelection';
 import { CurrencySelector, CurrencyValue, PriceSelectionContainer, PriceSelectionDrawer } from './PriceSelection';
 import { MaxBalanceSelector, PriceIndicationsContainer, TotalBalanceIndication } from './PriceIndications';
 import './StripeWithdrawManager.locales';
+import { isRequestError } from '../../../utils/isRequestError';
 
 const Container = styled.div`
     height: 100%;
@@ -134,7 +135,7 @@ export const StripeWithdrawManager: React.FC = (): JSX.Element => {
                 <WithdrawTitle>{t('title')}</WithdrawTitle>
             </TitleContainer>
             <ConfigurationContainer>
-                {stripeBalanceRequestBag.response.error ? (
+                {isRequestError(stripeBalanceRequestBag) ? (
                     <Error
                         message={t('cannot_fetch_balance')}
                         onRefresh={stripeBalanceRequestBag.force}

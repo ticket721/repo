@@ -1,15 +1,16 @@
 import React, { useContext, useState } from 'react';
-import { TextInput, DoubleButtonCta }  from '@frontend/flib-react/lib/components';
-import styled, { useTheme }            from 'styled-components';
-import { Theme }                       from '@frontend/flib-react/lib/config/theme';
-import { useTranslation }              from 'react-i18next';
-import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
-import { useElements }                 from '@stripe/react-stripe-js';
-import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
-import { StripeSDK }                   from '@frontend/core/lib/utils/useCustomStripe';
-import { CartContext }                 from '../Cart/CartContext';
-import { useDispatch }                 from 'react-redux';
-import { UserContext }                 from '@frontend/core/lib/utils/UserContext';
+import { TextInput, DoubleButtonCta } from '@frontend/flib-react/lib/components';
+import styled, { useTheme }           from 'styled-components';
+import { Theme }                      from '@frontend/flib-react/lib/config/theme';
+import { useTranslation }             from 'react-i18next';
+import { useDeepEffect }              from '@frontend/core/lib/hooks/useDeepEffect';
+import { useElements }                from '@stripe/react-stripe-js';
+import { PushNotification }           from '@frontend/core/lib/redux/ducks/notifications';
+import { StripeSDK }                  from '@frontend/core/lib/utils/useCustomStripe';
+import { CartContext }                from '../Cart/CartContext';
+import { useDispatch }                from 'react-redux';
+import { UserContext }                from '@frontend/core/lib/utils/UserContext';
+import { getEnv }                     from '@frontend/core/lib/utils/getEnv';
 
 const CreditCardWrapper = styled.div`
   margin-bottom: ${props => props.theme.regularSpacing};
@@ -202,7 +203,7 @@ export const CartMenuStripeCBCheckoutWeb: React.FC<CartMenuStripeCBCheckoutWebPr
             return;
         }
 
-        cart.force();
+        cart.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
 
     };
 

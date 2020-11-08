@@ -8,9 +8,10 @@ import { AppState } from '@frontend/core/lib/redux';
 
 import { FullPageLoading, Error } from '@frontend/flib-react/lib/components';
 import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
-import { CreateCategoryForm } from './CreateCategoryForm';
-import { checkFormatDate } from '@frontend/core/lib/utils/date';
-import { eventParam } from '../../types';
+import { CreateCategoryForm }     from './CreateCategoryForm';
+import { checkFormatDate }        from '@frontend/core/lib/utils/date';
+import { eventParam }             from '../../types';
+import { isRequestError }         from '@frontend/core/lib/utils/isRequestError';
 
 export const CreateCategory: React.FC = () => {
     const { t } = useTranslation('common');
@@ -19,7 +20,7 @@ export const CreateCategory: React.FC = () => {
     const [uuid] = React.useState('create-category-prefetch@' + eventId);
     const token = useSelector((state: AppState): string => state.auth.token.value);
 
-    const { response: datesResp, force: forceDatesReq } = useRequest<DatesSearchResponseDto>(
+    const datesResp = useRequest<DatesSearchResponseDto>(
         {
             method: 'dates.search',
             args: [
@@ -39,16 +40,16 @@ export const CreateCategory: React.FC = () => {
         uuid
     );
 
-    if (datesResp.loading) {
+    if (datesResp.response.loading) {
         return <FullPageLoading/>;
     }
 
-    if (datesResp.error) {
-        return <Error message={t('error_cannot_fetch', { entity: 'date'})} retryLabel={t('retrying_in')} onRefresh={forceDatesReq}/>;
+    if (isRequestError(datesResp)) {
+        return <Error message={t('error_cannot_fetch', { entity: 'date'})} retryLabel={t('retrying_in')} onRefresh={datesResp.force}/>;
     }
 
     return <CreateCategoryForm
-    dates={datesResp.data.dates.map(date => ({
+    dates={datesResp.response.data.dates.map(date => ({
         id: date.id,
         eventBegin: checkFormatDate(date.timestamps.event_begin),
         eventEnd: checkFormatDate(date.timestamps.event_end),

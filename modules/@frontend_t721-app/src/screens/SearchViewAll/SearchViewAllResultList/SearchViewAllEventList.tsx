@@ -9,6 +9,7 @@ import { SearchViewAllResultEvent }              from './SearchViewAllResultEven
 import { UserLocation }                          from '../../../redux/ducks/location';
 import { T721AppState }                          from '../../../redux';
 import { useRequest }                            from '@frontend/core/lib/hooks/useRequest';
+import { isRequestError }                        from '@frontend/core/lib/utils/isRequestError';
 
 interface SearchEventListProps {
     location: UserLocation;
@@ -45,7 +46,7 @@ export const SearchViewAllEventList: React.FC<SearchEventListProps> = (props: Se
         />;
     }
 
-    if (dates.response.error) {
+    if (isRequestError(dates)) {
         return <Error message={dates.response.error}/>;
     }
 

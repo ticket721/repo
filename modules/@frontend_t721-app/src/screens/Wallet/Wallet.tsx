@@ -15,6 +15,7 @@ import { CategoriesFetcher }                from './CategoriesFetcher';
 import { useHistory }                       from 'react-router';
 import { UsersSetDeviceAddressResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersSetDeviceAddressResponse.dto';
 import { TicketsContext }                   from '@frontend/core/lib/utils/TicketsContext';
+import { isRequestError }                   from '@frontend/core/lib/utils/isRequestError';
 
 const Wallet: React.FC = () => {
     const history = useHistory();
@@ -25,7 +26,7 @@ const Wallet: React.FC = () => {
 
     const { lazyRequest: postAddress } = useLazyRequest<UsersSetDeviceAddressResponseDto>('users.setDeviceAddress', uuid);
 
-    const { response: ticketsResp, force } = useContext(TicketsContext);
+    const ticketsResp = useContext(TicketsContext);
 
     useEffect(() => {
         if (devicePk) {
@@ -39,12 +40,12 @@ const Wallet: React.FC = () => {
         // eslint-disable-next-line
     }, [token, devicePk]);
 
-    if (ticketsResp.loading) {
+    if (ticketsResp.response.loading) {
         return <FullPageLoading/>;
     }
 
-    if (ticketsResp.error) {
-        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
+    if (isRequestError(ticketsResp)) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={ticketsResp.force}/>);
     }
 
     return (
@@ -55,12 +56,12 @@ const Wallet: React.FC = () => {
                 </h1>
             </Title>
             {
-                ticketsResp.data?.tickets?.length > 0
+                ticketsResp.response.data?.tickets?.length > 0
 
                     ?
                     <CategoriesFetcher
                         uuid={uuid}
-                        tickets={ticketsResp.data.tickets}
+                        tickets={ticketsResp.response.data.tickets}
                     />
                     :
                     <EmptyWallet>

@@ -8,6 +8,7 @@ import { HomeEvent }                  from './HomeEvent';
 import { T721AppState, UserLocation } from '../../../redux';
 import { useRequest }                 from '@frontend/core/lib/hooks/useRequest';
 import { useTranslation }             from 'react-i18next';
+import { isRequestError }             from '@frontend/core/lib/utils/isRequestError';
 
 interface HomeEventListProps {
     location: UserLocation;
@@ -42,7 +43,7 @@ export const HomeEventList: React.FC<HomeEventListProps> = (props: HomeEventList
         />
     }
 
-    if (dates.response.error) {
+    if (isRequestError(dates)) {
         return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dates.force}/>
     }
 

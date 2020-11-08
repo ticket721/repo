@@ -9,6 +9,7 @@ import { useRouteMatch }          from 'react-router';
 import { TicketCategoryFetcher }  from './TicketCategoryFetcher';
 import './locales';
 import { useTranslation }         from 'react-i18next';
+import { isRequestError }         from '@frontend/core/lib/utils/isRequestError';
 
 // tslint:disable-next-line:no-empty-interface
 export interface TicketSelectionProps {
@@ -40,7 +41,7 @@ export const TicketSelection: React.FC<TicketSelectionProps> = (props: TicketSel
         return <FullPageLoading width={250} height={250}/>;
     }
 
-    if (dateQuery.response.error || dateQuery.response.data.dates.length === 0) {
+    if (isRequestError(dateQuery) || dateQuery.response.data.dates.length === 0) {
         return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dateQuery.force}/>;
     }
 
