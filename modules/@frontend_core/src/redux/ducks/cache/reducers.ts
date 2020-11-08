@@ -54,6 +54,7 @@ const RegisterEntityReducer: Reducer<CacheState, IRegisterEntity> = (
                     args: action.args,
                     requestedBy: [action.uid],
                     refreshRates: [action.rate],
+                    score: 1,
                 },
             },
         };
@@ -105,6 +106,7 @@ const ManualFetchItemReducer: Reducer<CacheState, IManualFetchItem> = (
             requestedBy: [...(state.properties[action.key]?.requestedBy || [])],
             refreshRates: [...(state.properties[action.key]?.refreshRates || [])],
             lastFetch: CacheCore.elapsedTicks(state.settings),
+            score: action.score,
         },
     },
 });
@@ -145,6 +147,14 @@ const UpdateItemDataReducer: Reducer<CacheState, IUpdateItemData> = (
             ...state.items[action.key],
             data: action.data,
             error: undefined,
+            errors: 0,
+        },
+    },
+    properties: {
+        ...state.properties,
+        [action.key]: {
+            ...state.properties[action.key],
+            score: 1,
         },
     },
 });
@@ -159,7 +169,14 @@ const UpdateItemErrorReducer: Reducer<CacheState, IUpdateItemError> = (
         [action.key]: {
             ...state.items[action.key],
             error: action.error,
-            data: undefined,
+            errors: (state.items[action.key]?.errors || 0) + (state.properties[action.key]?.score || 1),
+        },
+    },
+    properties: {
+        ...state.properties,
+        [action.key]: {
+            ...state.properties[action.key],
+            score: 1,
         },
     },
 });

@@ -18,13 +18,15 @@ import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 
 import { FullPageLoading, Error, Button, LeafletMap } from '@frontend/flib-react/lib/components';
 
-import { GeneralInfoForm } from '../../../components/GeneralInfoForm';
-import { StylesForm } from '../../../components/StylesForm';
-import { dateParam } from '../../types';
+import { GeneralInfoForm }                                           from '../../../components/GeneralInfoForm';
+import { StylesForm }                                                from '../../../components/StylesForm';
+import { dateParam }                                                 from '../../types';
 import { formatDateEntity, formatDateTypology, nullifyUnsetSocials } from './formatter';
 import './locales';
-import { DatesAndTypologyForm } from '../../../components/DatesAndTypologyForm';
-import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
+import { DatesAndTypologyForm }                                      from '../../../components/DatesAndTypologyForm';
+import { useLazyRequest }                                            from '@frontend/core/lib/hooks/useLazyRequest';
+import { isRequestError }                                            from '@frontend/core/lib/utils/isRequestError';
+import { getEnv }                                                    from '@frontend/core/lib/utils/getEnv';
 
 const subFormsTitle = {
     'dates-typology': 'date_and_typology_title',
@@ -69,7 +71,7 @@ export const EditDate: React.FC = () => {
     const token = useSelector((state: AppState): string => state.auth.token.value);
 
     const [ initialValues, setInitialValues ] = useState<DateCreationPayload>(defaultValues);
-    const { response: dateResp, force: forceDateReq } = useRequest<DatesSearchResponseDto>(
+    const dateResp = useRequest<DatesSearchResponseDto>(
         {
             method: 'dates.search',
             args: [
@@ -120,17 +122,17 @@ export const EditDate: React.FC = () => {
 
     /* on date fetch */
     useEffect(() => {
-        forceDateReq();
+        dateResp.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
     // eslint-disable-next-line
     }, [subform]);
 
     useDeepEffect(() => {
-        if (dateResp.data?.dates[0]) {
-            const date: DateEntity = dateResp.data.dates[0];
+        if (dateResp.response.data?.dates[0]) {
+            const date: DateEntity = dateResp.response.data.dates[0];
             setInitialValues(formatDateEntity(date));
         }
     // eslint-disable-next-line
-    }, [dateResp.data?.dates[0]]);
+    }, [dateResp.response.data?.dates[0]]);
 
     /* on date edit */
     useEffect(() => {
@@ -147,12 +149,12 @@ export const EditDate: React.FC = () => {
     // eslint-disable-next-line
     }, [editResp.error]);
 
-    if (dateResp.loading) {
+    if (dateResp.response.loading) {
         return <FullPageLoading/>;
     }
 
-    if (dateResp.error) {
-        return <Error message={t('common:error_cannot_fetch', { entity: 'date'})} retryLabel={t('common:retrying_in')} onRefresh={forceDateReq}/>;
+    if (isRequestError(dateResp)) {
+        return <Error message={t('common:error_cannot_fetch', { entity: 'date'})} retryLabel={t('common:retrying_in')} onRefresh={dateResp.force}/>;
     }
 
     return <FormikProvider value={formik}>

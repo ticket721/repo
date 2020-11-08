@@ -20,7 +20,8 @@ import { PurchaseError }                   from '@common/sdk/lib/@backend_nest/l
 import { useTranslation }                  from 'react-i18next';
 import { CartMenuCheckout }                from './CartMenuCheckout';
 import { CartMenuExpired }                 from './CartMenuExpired';
-import Countdown from 'react-countdown';
+import Countdown                           from 'react-countdown';
+import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
 // tslint:disable-next-line:no-var-requires
 const SAI = require('safe-area-insets');
 
@@ -211,7 +212,7 @@ export const CartMenu: React.FC = (): JSX.Element => {
                         }
                         setCheckoutTimestamp(null);
                     } else {
-                        cart.force();
+                        cart.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
                     }
 
 
@@ -235,7 +236,7 @@ export const CartMenu: React.FC = (): JSX.Element => {
                         }
                         setClearTimestamp(null);
                     } else {
-                        cart.force();
+                        cart.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
                     }
 
                 }

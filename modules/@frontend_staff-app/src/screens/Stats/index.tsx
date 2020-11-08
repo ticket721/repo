@@ -10,6 +10,7 @@ import { EventsDatesFetcher }      from '../EventsDatesFetcher';
 import '../locales';
 import styled                      from 'styled-components';
 import { StatisticsFetcher }       from './StatisticsFetcher';
+import { isRequestError }          from '@frontend/core/lib/utils/isRequestError';
 
 const Stats: React.FC = () => {
     const [ t ] = useTranslation(['fetch_errors', 'common']);
@@ -33,7 +34,7 @@ const Stats: React.FC = () => {
         return <FullPageLoading/>;
     }
 
-    if (rightsReq.response.error) {
+    if (isRequestError(rightsReq)) {
         return <Error message={t('error_cannot_fetch_events')} retryLabel={t('common:retrying_in')} onRefresh={rightsReq.force}/>;
     }
 

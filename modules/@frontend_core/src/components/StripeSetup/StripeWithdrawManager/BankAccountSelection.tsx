@@ -6,6 +6,7 @@ import { Theme } from '@frontend/flib-react/lib/config/theme';
 import { Error, FullPageLoading, SelectableComponentListElement } from '@frontend/flib-react/lib/components';
 import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
 import { useTranslation } from 'react-i18next';
+import { isRequestError } from '../../../utils/isRequestError';
 
 const TitleContainer = styled.div`
     width: 100%;
@@ -56,7 +57,7 @@ export const BankAccountSelection: React.FC<BankAccountSelectionProps> = (
         return <FullPageLoading />;
     }
 
-    if (props.stripeInterfaceRequestBag.response.error) {
+    if (isRequestError(props.stripeInterfaceRequestBag)) {
         return (
             <Error
                 message={'cannot fetch interface'}

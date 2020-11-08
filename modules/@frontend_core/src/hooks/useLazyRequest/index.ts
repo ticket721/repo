@@ -40,7 +40,7 @@ export const useLazyRequest = <ReturnType>(method: string, initialUuid: string):
     const dispatch = useDispatch();
     const lazyRequest = (lazyArgs: any, options?: Partial<LazyRequestOptions>): void => {
         if (options?.force) {
-            dispatch(ManualFetchItem(CacheCore.key(method, lazyArgs), method, lazyArgs));
+            dispatch(ManualFetchItem(CacheCore.key(method, lazyArgs), method, lazyArgs, 1));
         }
         dispatch(RegisterEntity(method, lazyArgs, initialUuid, 0));
         setArgs(lazyArgs);

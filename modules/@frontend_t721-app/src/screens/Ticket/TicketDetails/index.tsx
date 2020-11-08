@@ -132,7 +132,7 @@ const TicketDetailsDateHeader: React.FC<TicketDetailsDateHeaderProps> = (props: 
             >
                 <DateTitle>{props.date.metadata.name}</DateTitle>
                 <DateSubtitle>
-                    {t(incoming[0], { count: incoming[1] })}
+                    {t(incoming[0], { count: incoming[1], context: `${incoming[1]}` })}
                 </DateSubtitle>
             </div>
         </div>
@@ -370,7 +370,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                             <StickyContainer key={date.id}>
                                 <div
                                     style={{
-                                        zIndex: 1000,
+                                        zIndex: 1001,
                                         position: 'relative',
                                     }}
                                 >

@@ -2,8 +2,8 @@ import { CategoryEntity }                                      from '@common/sdk
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { FullButtonCta }                                       from '@frontend/flib-react/lib/components';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useLocation }                      from 'react-router';
+import { useDispatch, useSelector }        from 'react-redux';
+import { useHistory, useLocation }         from 'react-router';
 import { T721AppState }                    from '../../redux';
 import { CartContext }                     from '../../components/Cart/CartContext';
 import { isNil }                           from 'lodash';
@@ -13,6 +13,7 @@ import { PurchasesSetProductsResponseDto } from '@common/sdk/lib/@backend_nest/a
 import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
 import { PurchaseError }                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
 import { UserContext }                     from '@frontend/core/lib/utils/UserContext';
+import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
 
 export interface TicketSelectionCtaProps {
     category: CategoryEntity;
@@ -89,7 +90,7 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
                         setTimestamp(null);
                         props.clearSelection();
                     } else {
-                        force();
+                        force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
                         props.clearSelection();
                     }
 

@@ -11,6 +11,7 @@ import { Error, FullPageLoading }      from '@frontend/flib-react/lib/components
 import { useSelector }                 from 'react-redux';
 import { T721AppState }                from '../../redux';
 import { v4 }                          from 'uuid';
+import { isRequestError }              from '@frontend/core/lib/utils/isRequestError';
 
 export interface TicketCategoryFetcherProps {
     date: DateEntity;
@@ -28,7 +29,8 @@ const TicketSelectionTitle = styled.h1`
 
 const OnlineTagContainer = styled.div`
   position: fixed;
-  top: 14px;
+  top: calc(14px + env(safe-area-inset-top));
+  top: calc(14px + constant(safe-area-inset-top));
   right: 14px;
   z-index: 9999;
 `;
@@ -77,7 +79,7 @@ export const TicketCategoryFetcher: React.FC<TicketCategoryFetcherProps> = (prop
         return <FullPageLoading width={250} height={250}/>;
     }
 
-    if (categories.response.error) {
+    if (isRequestError(categories)) {
         return <Error message={t('error_cannot_fetch_categories')} retryLabel={t('common:retrying_in')} onRefresh={categories.force}/>;
     }
 

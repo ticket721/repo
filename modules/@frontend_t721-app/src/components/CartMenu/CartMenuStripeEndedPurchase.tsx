@@ -13,6 +13,7 @@ import { PushNotification }          from '@frontend/core/lib/redux/ducks/notifi
 import { PurchaseError }             from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
 import { useTranslation }            from 'react-i18next';
 import { TicketsContext }            from '@frontend/core/lib/utils/TicketsContext';
+import { getEnv }                    from '@frontend/core/lib/utils/getEnv';
 
 const Container = styled.div`
   height: calc(100% - 50px);
@@ -114,8 +115,8 @@ export const CartMenuStripeEndedPurchase: React.FC<CartMenuStripeEndedPurchasePr
                             dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
                         }
                     } else {
-                        cart.force();
-                        tickets.force();
+                        cart.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
+                        tickets.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
                     }
 
                 }

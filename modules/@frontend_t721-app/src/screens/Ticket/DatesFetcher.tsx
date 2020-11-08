@@ -9,6 +9,7 @@ import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/serve
 import { CategoryEntity }         from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { TicketEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
 import { EventFetcher }           from './EventFetcher';
+import { isRequestError }         from '@frontend/core/lib/utils/isRequestError';
 
 interface DatesFetcherProps {
     uuid: string;
@@ -24,7 +25,7 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
     }: DatesFetcherProps) => {
     const token = useSelector((state: T721AppState) => state.auth.token.value);
     const [ t ] = useTranslation('ticket_details');
-    const { response: datesResp, force: forceDatesReq } = useRequest<DatesSearchResponseDto>({
+    const datesResp = useRequest<DatesSearchResponseDto>({
             method: 'dates.search',
             args: [
                 token,
@@ -38,15 +39,15 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
         },
         uuid);
 
-    if (datesResp.loading) {
+    if (datesResp.response.loading) {
         return <FullPageLoading/>;
     }
 
-    if (datesResp.error) {
-        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={forceDatesReq}/>);
+    if (isRequestError(datesResp)) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={datesResp.force}/>);
     }
 
-    const dates = datesResp.data.dates;
+    const dates = datesResp.response.data.dates;
 
     if (dates) {
         return <EventFetcher

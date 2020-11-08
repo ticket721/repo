@@ -1,15 +1,16 @@
 import React                      from 'react';
-import { useRequest }             from '@frontend/core/lib/hooks/useRequest';
-import { useSelector }            from 'react-redux';
+import { useRequest }              from '@frontend/core/lib/hooks/useRequest';
+import { useSelector }             from 'react-redux';
 import { T721AppState }            from '../../redux';
 import { useTranslation }          from 'react-i18next';
 import { Error, FullPageLoading }  from '@frontend/flib-react/lib/components';
 import { Redirect }                from 'react-router';
-import { EventsSearchResponseDto }  from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
+import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 import { TicketDetails }           from './TicketDetails';
 import { CategoryEntity }          from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { TicketEntity }            from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
 import { DateEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { isRequestError }          from '@frontend/core/lib/utils/isRequestError';
 
 interface EventFetcherProps {
     uuid: string;
@@ -27,7 +28,7 @@ export const EventFetcher: React.FC<EventFetcherProps> = (
     }: EventFetcherProps) => {
     const token = useSelector((state: T721AppState) => state.auth.token.value);
     const [ t ] = useTranslation('ticket_details');
-    const { response: eventResp, force: forceEventReq } = useRequest<EventsSearchResponseDto>({
+    const eventResp = useRequest<EventsSearchResponseDto>({
             method: 'events.search',
             args: [
                 token,
@@ -41,15 +42,15 @@ export const EventFetcher: React.FC<EventFetcherProps> = (
         },
         uuid);
 
-    if (eventResp.loading) {
+    if (eventResp.response.loading) {
         return <FullPageLoading/>;
     }
 
-    if (eventResp.error) {
-        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={forceEventReq}/>);
+    if (isRequestError(eventResp)) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={eventResp.force}/>);
     }
 
-    const event = eventResp.data.events[0];
+    const event = eventResp.response.data.events[0];
 
     if (event) {
         return <TicketDetails

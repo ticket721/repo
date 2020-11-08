@@ -12,17 +12,18 @@ import { useLazyRequest }                   from '@frontend/core/lib/hooks/useLa
 import { v4 }                               from 'uuid';
 import { TicketsValidateTicketResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsValidateTicketResponse.dto';
 import { useDispatch }                 from 'react-redux';
-import { useTranslation }              from 'react-i18next';
-import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
+import { useTranslation }                  from 'react-i18next';
+import { useDeepEffect }                   from '@frontend/core/lib/hooks/useDeepEffect';
 import './locales';
-import { ScannerZone }                 from './ScannerZone';
-import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
-import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { CategoriesFetcher }           from '../../components/Filters/CategoriesFetcher';
-import { Icon }                        from '@frontend/flib-react/lib/components';
-import { PushGuest }                   from '../../redux/ducks/current_event';
-import { UpdateItemError, UpdateItemData }             from '@frontend/core/lib/redux/ducks/cache';
-import { CacheCore }                   from '@frontend/core/lib/cores/cache/CacheCore';
+import { ScannerZone }                     from './ScannerZone';
+import { useRequest }                      from '@frontend/core/lib/hooks/useRequest';
+import { CategoriesSearchResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { CategoriesFetcher }               from '../../components/Filters/CategoriesFetcher';
+import { Icon }                            from '@frontend/flib-react/lib/components';
+import { PushGuest }                       from '../../redux/ducks/current_event';
+import { UpdateItemError, UpdateItemData } from '@frontend/core/lib/redux/ducks/cache';
+import { CacheCore }                       from '@frontend/core/lib/cores/cache/CacheCore';
+import { isRequestError }                  from '@frontend/core/lib/utils/isRequestError';
 
 export type Status = 'error' | 'success' | 'verifying' | 'scanning';
 
@@ -241,7 +242,7 @@ export const Scanner: React.FC<ScannerProps> = ({ events, dates }: ScannerProps)
         return <FullPageLoading/>;
     }
 
-    if (categoriesReq.response.error) {
+    if (isRequestError(categoriesReq)) {
         return <Error message={t('error_cannot_fetch_categories')} retryLabel={t('common:retrying_in')} onRefresh={categoriesReq.force}/>;
     }
 

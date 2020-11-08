@@ -20,6 +20,7 @@ import { TicketsCountResponseDto } from '@common/sdk/lib/@backend_nest/apps/serv
 import { UserContext } from '../../../utils/UserContext';
 import { FeatureFlag } from '../../FeatureFlag';
 import { getEnv } from '../../../utils/getEnv';
+import { isRequestError } from '../../../utils/isRequestError';
 
 export interface ProfileRootProps {
     desktop?: boolean;
@@ -36,7 +37,7 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
     const history = useHistory();
     const [t, i18n] = useTranslation(['profile', 'common']);
 
-    const { response: activityResponse, force } = useRequest<MetadatasFetchResponseDto>(
+    const response = useRequest<MetadatasFetchResponseDto>(
         {
             method: 'metadatas.fetch',
             args: [
@@ -82,13 +83,10 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
             <WalletHeader
                 username={user.username}
                 picture={'/favicon.ico'}
-                tickets={tickets.response.error ? '?' : tickets.response.data.tickets.count}
+                tickets={isRequestError(tickets) ? '?' : tickets.response.data.tickets.count}
             />
             <ActivitiesList
-                loading={activityResponse.loading}
-                error={activityResponse.error}
-                data={activityResponse.data}
-                force={force}
+                response={response}
                 limit={3}
                 link={desktop ? history.location.pathname + '?profile=activities' : 'profile/activities'}
             />

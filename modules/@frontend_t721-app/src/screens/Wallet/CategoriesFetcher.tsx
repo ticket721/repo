@@ -6,7 +6,8 @@ import { T721AppState }                from '../../redux';
 import { useTranslation }              from 'react-i18next';
 import { Error, FullPageLoading }      from '@frontend/flib-react/lib/components';
 import { DatesFetcher }                from './DatesFetcher';
-import { TicketEntity }                     from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
+import { TicketEntity }                from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
+import { isRequestError }              from '@frontend/core/lib/utils/isRequestError';
 
 interface CategoriesFetcherProps {
     uuid: string;
@@ -16,7 +17,7 @@ interface CategoriesFetcherProps {
 export const CategoriesFetcher: React.FC<CategoriesFetcherProps> = ({ uuid, tickets }: CategoriesFetcherProps) => {
     const token = useSelector((state: T721AppState) => state.auth.token.value);
     const [ t ] = useTranslation(['wallet', 'common']);
-    const { response: categoriesResp, force } = useRequest<CategoriesSearchResponseDto>({
+    const categoriesResp = useRequest<CategoriesSearchResponseDto>({
         method: 'categories.search',
         args: [
             token,
@@ -30,19 +31,19 @@ export const CategoriesFetcher: React.FC<CategoriesFetcherProps> = ({ uuid, tick
     },
     uuid);
 
-    if (categoriesResp.loading) {
+    if (categoriesResp.response.loading) {
         return <FullPageLoading/>;
     }
 
-    if (categoriesResp.error || categoriesResp.data?.categories?.length === 0) {
-        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
+    if (isRequestError(categoriesResp) || categoriesResp.response.data?.categories?.length === 0) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={categoriesResp.force}/>);
     }
 
-    if (categoriesResp.data?.categories?.length > 0) {
+    if (categoriesResp.response.data?.categories?.length > 0) {
         return <DatesFetcher
             uuid={uuid}
             tickets={tickets}
-            categories={categoriesResp.data.categories}
+            categories={categoriesResp.response.data.categories}
         />
     }
 };

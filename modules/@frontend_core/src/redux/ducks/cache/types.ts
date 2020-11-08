@@ -24,11 +24,13 @@ export interface CachedItemProperties {
     refreshRates: Array<number>;
     method: string;
     args: any;
+    score: number;
 }
 
 export interface CachedItem {
     data: any;
     error: Error;
+    errors: number;
 }
 
 export interface CacheState {

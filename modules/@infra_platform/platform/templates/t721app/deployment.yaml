@@ -59,6 +59,8 @@ spec:
               value: '{{ required "[t721app] Missing config.t721app.appStoreLink value" .Values.config.t721app.appStoreLink }}'
             - name: REACT_APP_PLAYSTORE_LINK
               value: '{{ required "[t721app] Missing config.t721app.playStoreLink value" .Values.config.t721app.playStoreLink }}'
+            - name: REACT_APP_ERROR_THRESHOLD
+              value: '5'
             - name: REACT_APP_SELF
               value: '{{ required "[t721app] Missing config.t721app.self value" .Values.config.t721app.self }}'
           ports:

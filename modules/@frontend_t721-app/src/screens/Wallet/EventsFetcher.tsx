@@ -10,6 +10,7 @@ import { CategoryEntity }          from '@common/sdk/lib/@backend_nest/libs/comm
 import { TicketEntity }            from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
 import { DateEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { EventEntity }             from '@backend/nest/libs/common/src/events/entities/Event.entity';
+import { isRequestError }          from '@frontend/core/lib/utils/isRequestError';
 
 interface EventsFetcherProps {
     uuid: string;
@@ -29,7 +30,7 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = (
     const token = useSelector((state: T721AppState) => state.auth.token.value);
     const [ t ] = useTranslation(['wallet', 'common']);
 
-    const { response: eventsResp, force } = useRequest<EventsSearchResponseDto>({
+    const eventsResp = useRequest<EventsSearchResponseDto>({
             method: 'events.search',
             args: [
                 token,
@@ -50,15 +51,15 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = (
         },
         uuid);
 
-    if (eventsResp.loading) {
+    if (eventsResp.response.loading) {
         return <FullPageLoading/>;
     }
 
-    if (eventsResp.error || eventsResp.data?.events?.length === 0) {
-        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={force}/>);
+    if (isRequestError(eventsResp) || eventsResp.response.data?.events?.length === 0) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={eventsResp.force}/>);
     }
 
-    const events = eventsResp.data.events;
+    const events = eventsResp.response.data.events;
 
     return <Tickets
         tickets={tickets}
