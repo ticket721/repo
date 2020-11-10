@@ -38,6 +38,12 @@ import { PurchasesCloseResponseDto } from '@app/server/controllers/purchases/dto
 @ApiTags('purchases')
 @Controller('purchases')
 export class PurchasesController extends ControllerBasics<StripeInterfaceEntity> {
+    /**
+     * Dependency Injection
+     *
+     * @param usersService
+     * @param purchasesService
+     */
     constructor(private readonly usersService: UsersService, private readonly purchasesService: PurchasesService) {
         super();
     }
@@ -81,7 +87,7 @@ export class PurchasesController extends ControllerBasics<StripeInterfaceEntity>
     }
 
     /**
-     * Search for user cart
+     * Update cart content
      *
      * @param body
      * @param user
@@ -118,7 +124,7 @@ export class PurchasesController extends ControllerBasics<StripeInterfaceEntity>
     }
 
     /**
-     * Search for user cart
+     * Proceed to checkout
      *
      * @param body
      * @param user
@@ -237,8 +243,4 @@ export class PurchasesController extends ControllerBasics<StripeInterfaceEntity>
             errors: purchaseCloseErrors,
         };
     }
-
-    // Checkout - validates cart + create possible payment stuff (PI)
-    // Pay - Provide data to validate the payment
-    // Payment Status - Checks current status until valid or failed
 }

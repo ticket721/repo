@@ -3,7 +3,18 @@ import { UserDto } from '@lib/common/users/dto/User.dto';
 import { Payment, PurchaseEntity, Fee } from '@lib/common/purchases/entities/Purchase.entity';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 
+/**
+ * Class to handle all payments that are free
+ */
 export class NonePaymentHandler implements PaymentHandlerBaseService {
+    /**
+     * On Checkout callback
+     *
+     * @param user
+     * @param purchase
+     * @param payload
+     * @param paymentInterfaceId
+     */
     async onCheckout(
         user: UserDto,
         purchase: PurchaseEntity,
@@ -25,6 +36,13 @@ export class NonePaymentHandler implements PaymentHandlerBaseService {
         };
     }
 
+    /**
+     * On Checkout callback
+     *
+     * @param user
+     * @param payment
+     * @param paymentInterfaceId
+     */
     async onComplete(user: UserDto, payment: Payment, paymentInterfaceId): Promise<ServiceResponse<void>> {
         return {
             error: null,
@@ -32,6 +50,12 @@ export class NonePaymentHandler implements PaymentHandlerBaseService {
         };
     }
 
+    /**
+     * Fetch current payment status
+     *
+     * @param payment
+     * @param paymentInterfaceId
+     */
     async fetch(payment: Payment, paymentInterfaceId: string): Promise<ServiceResponse<Payment>> {
         return {
             error: null,
@@ -44,6 +68,12 @@ export class NonePaymentHandler implements PaymentHandlerBaseService {
         };
     }
 
+    /**
+     * Cancel current payment
+     *
+     * @param payment
+     * @param paymentInterfaceId
+     */
     async cancel(payment: Payment, paymentInterfaceId: string): Promise<ServiceResponse<void>> {
         return;
     }

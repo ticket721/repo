@@ -39,6 +39,11 @@ export class EventsService extends CRUDExtension<EventsRepository, EventEntity> 
         );
     }
 
+    /**
+     * Find events by group id
+     *
+     * @param groupId
+     */
     async findOneFromGroupId(groupId: string): Promise<ServiceResponse<EventEntity>> {
         // Recover Event
         const eventRes = await this.searchElastic({
@@ -75,6 +80,11 @@ export class EventsService extends CRUDExtension<EventsRepository, EventEntity> 
         };
     }
 
+    /**
+     * Find event by its id
+     *
+     * @param eventId
+     */
     async findOne(eventId: string): Promise<ServiceResponse<EventEntity>> {
         // Recover Event
         const eventRes = await this.search({
@@ -101,6 +111,12 @@ export class EventsService extends CRUDExtension<EventsRepository, EventEntity> 
         };
     }
 
+    /**
+     * Add date to event
+     *
+     * @param eventId
+     * @param date
+     */
     async addDate(eventId: string, date: DateEntity): Promise<CRUDResponse<EventEntity>> {
         const eventRes = await this.findOne(eventId);
 

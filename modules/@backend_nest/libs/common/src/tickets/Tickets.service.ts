@@ -69,6 +69,13 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
         );
     }
 
+    /**
+     * Count tickets that have been created
+     *
+     * @param purchases
+     * @param category
+     * @private
+     */
     private countPurchasesTickets(purchases: PurchaseEntity[], category: string): number {
         let ret = 0;
 
@@ -83,6 +90,12 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
         return ret;
     }
 
+    /**
+     * Recover global ticket count for a category counting created and cart tickets
+     *
+     * @param category
+     * @param currentPurchaseId
+     */
     async getTicketCount(category: string, currentPurchaseId?: string): Promise<ServiceResponse<number>> {
         const countRes = await this.countElastic({
             body: {

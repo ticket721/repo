@@ -8,13 +8,28 @@ import Stripe from 'stripe';
 import { StripeInterfacesService } from '@lib/common/stripeinterface/StripeInterfaces.service';
 import { StripeInterfaceEntity } from '@lib/common/stripeinterface/entities/StripeInterface.entity';
 
+/**
+ * Class to handle all payments with stripe
+ */
 @Injectable()
 export class StripeInterfacesPaymentHandler implements PaymentHandlerBaseService {
+    /**
+     * Dependency injection
+     *
+     * @param stripeService
+     * @param stripeInterfacesService
+     */
     constructor(
         private readonly stripeService: StripeService,
         private readonly stripeInterfacesService: StripeInterfacesService,
     ) {}
 
+    /**
+     * Merge all fees
+     *
+     * @param fees
+     * @private
+     */
     private async computeFee(fees: Fee[]): Promise<ServiceResponse<number>> {
         if (fees.length === 0) {
             return {
@@ -31,6 +46,13 @@ export class StripeInterfacesPaymentHandler implements PaymentHandlerBaseService
         };
     }
 
+    /**
+     * On payment complete callback
+     *
+     * @param user
+     * @param payment
+     * @param paymentInterfaceId
+     */
     async onComplete(user: UserDto, payment: Payment, paymentInterfaceId): Promise<ServiceResponse<void>> {
         try {
             const stripe: Stripe = this.stripeService.get();
@@ -84,6 +106,14 @@ export class StripeInterfacesPaymentHandler implements PaymentHandlerBaseService
         }
     }
 
+    /**
+     * On Checkout callback
+     * @param user
+     * @param purchase
+     * @param payload
+     * @param paymentInterfaceId
+     * @param fees
+     */
     async onCheckout(
         user: UserDto,
         purchase: PurchaseEntity,
@@ -170,6 +200,12 @@ export class StripeInterfacesPaymentHandler implements PaymentHandlerBaseService
         }
     }
 
+    /**
+     * Computes if a payment status update is required
+     *
+     * @param payment
+     * @param paymentIntent
+     */
     computePaymentStatusUpdate(payment: Payment, paymentIntent: Stripe.PaymentIntent): Payment {
         if (payment.status === 'waiting') {
             switch (paymentIntent.status) {
@@ -192,6 +228,12 @@ export class StripeInterfacesPaymentHandler implements PaymentHandlerBaseService
         return null;
     }
 
+    /**
+     * Recover updated payment details
+     *
+     * @param payment
+     * @param paymentInterfaceId
+     */
     async fetch(payment: Payment, paymentInterfaceId: string): Promise<ServiceResponse<Payment>> {
         const stripe: Stripe = this.stripeService.get();
 
@@ -227,6 +269,12 @@ export class StripeInterfacesPaymentHandler implements PaymentHandlerBaseService
         };
     }
 
+    /**
+     * Cancel a stripe payment
+     *
+     * @param payment
+     * @param paymentInterfaceId
+     */
     async cancel(payment: Payment, paymentInterfaceId: string): Promise<ServiceResponse<void>> {
         try {
             const stripe: Stripe = this.stripeService.get();

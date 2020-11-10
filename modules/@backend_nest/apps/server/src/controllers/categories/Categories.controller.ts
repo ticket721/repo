@@ -143,6 +143,12 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
         };
     }
 
+    /**
+     * Internal helper to recover category owner
+     *
+     * @param category
+     * @private
+     */
     private async getCategoryOwner(category: CategoryEntity): Promise<string> {
         const event = await this._serviceCall(
             this.eventsService.findOneFromGroupId(category.group_id),
@@ -152,6 +158,13 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
         return event.owner;
     }
 
+    /**
+     * Internal helper to check if user is category owner
+     *
+     * @param category
+     * @param user
+     * @private
+     */
     private async isCategoryOwner(category: CategoryEntity, user: UserDto): Promise<boolean> {
         const event = await this._serviceCall(
             this.eventsService.findOneFromGroupId(category.group_id),
@@ -162,7 +175,7 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
     }
 
     /**
-     * Links a category to a new date
+     * Links a category to new dates
      *
      * @param categoryId
      * @param body
@@ -239,7 +252,7 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
      * Removes a category link
      *
      * @param categoryId
-     * @param dateId
+     * @param body
      * @param user
      */
     @Delete('/:category/date')

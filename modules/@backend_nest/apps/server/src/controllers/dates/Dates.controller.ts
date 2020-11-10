@@ -331,6 +331,11 @@ export class DatesController extends ControllerBasics<DateEntity> {
         };
     }
 
+    /**
+     * Recover date owner
+     *
+     * @param dateId
+     */
     @Get('/owner/:date')
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
@@ -362,12 +367,25 @@ export class DatesController extends ControllerBasics<DateEntity> {
         };
     }
 
+    /**
+     * Interval helper to recover a date owner
+     *
+     * @param date
+     * @private
+     */
     private async getDateOwner(date: DateEntity): Promise<string> {
         const event = await this._serviceCall(this.eventsService.findOne(date.event), StatusCodes.InternalServerError);
 
         return event.owner;
     }
 
+    /**
+     * Internal helper to check if user is the date owner
+     *
+     * @param date
+     * @param user
+     * @private
+     */
     private async isDateOwner(date: DateEntity, user: UserDto): Promise<boolean> {
         const event = await this._serviceCall(this.eventsService.findOne(date.event), StatusCodes.InternalServerError);
 

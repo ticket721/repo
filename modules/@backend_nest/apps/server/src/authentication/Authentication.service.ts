@@ -11,6 +11,9 @@ import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
 import { PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
 import { CRUDResponse } from '@lib/common/crud/CRUDExtension.base';
 
+/**
+ * Placeholder address until Ethereum is reintegrated
+ */
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 /**

@@ -54,6 +54,7 @@ export class AuthenticationController {
      *
      * @param authenticationService
      * @param jwtService
+     * @param emailService
      * @param configService
      */
     constructor /* instanbul ignore next */(
@@ -93,6 +94,12 @@ export class AuthenticationController {
         }
     }
 
+    /**
+     * Helper to send mail for account creation
+     *
+     * @param user
+     * @param redirectUrl
+     */
     async sendAccountCreationMail(user: PasswordlessUserDto, redirectUrl: string): Promise<void> {
         const data = {
             email: user.email,
@@ -129,6 +136,11 @@ export class AuthenticationController {
         }
     }
 
+    /**
+     * Helper to send mail for password reset
+     * @param user
+     * @param redirectUrl
+     */
     async sendPasswordResetMail(user: PasswordlessUserDto, redirectUrl: string): Promise<void> {
         const data = {
             email: user.email,
@@ -421,6 +433,7 @@ export class AuthenticationController {
             return resp.response;
         }
     }
+
     /**
      * [POST /authentication/validate] : Validates a user's email address
      */

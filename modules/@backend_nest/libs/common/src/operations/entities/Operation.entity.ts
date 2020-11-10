@@ -7,6 +7,9 @@ import {
 } from '@iaminfinity/express-cassandra';
 import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 
+/**
+ * Operation entity
+ */
 @Entity<OperationEntity>({
     table_name: 'operation',
     key: ['id'],
@@ -46,30 +49,45 @@ export class OperationEntity {
     @GeneratedUUidColumn('timeuuid')
     id: string;
 
+    /**
+     * Purchase ID
+     */
     @Column({
         type: 'uuid',
     })
     // tslint:disable-next-line:variable-name
     purchase_id: string;
 
+    /**
+     * Client ID
+     */
     @Column({
         type: 'uuid',
     })
     // tslint:disable-next-line:variable-name
     client_id: string;
 
+    /**
+     * Group ID
+     */
     @Column({
         type: 'text',
     })
     // tslint:disable-next-line:variable-name
     group_id: string;
 
+    /**
+     * Category ID
+     */
     @Column({
         type: 'uuid',
     })
     // tslint:disable-next-line:variable-name
     category_id: string;
 
+    /**
+     * Ticket IDs
+     */
     @Column({
         type: 'list',
         typeDef: '<uuid>',
@@ -77,30 +95,45 @@ export class OperationEntity {
     // tslint:disable-next-line:variable-name
     ticket_ids: string[];
 
+    /**
+     * Operation Type
+     */
     @Column({
         type: 'text',
     })
     // tslint:disable-next-line:variable-name
     type: 'sell' | 'cancel';
 
+    /**
+     * Operation status
+     */
     @Column({
         type: 'text',
     })
     // tslint:disable-next-line:variable-name
     status: 'confirmed' | 'cancelled';
 
+    /**
+     * Ticket quantity
+     */
     @Column({
         type: 'int',
     })
     // tslint:disable-next-line:variable-name
     quantity: number;
 
+    /**
+     * Fee
+     */
     @Column({
         type: 'int',
     })
     // tslint:disable-next-line:variable-name
     fee: number;
 
+    /**
+     * Price
+     */
     @Column({
         type: 'int',
     })

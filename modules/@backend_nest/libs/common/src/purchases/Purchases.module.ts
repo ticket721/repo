@@ -7,6 +7,9 @@ import { UsersModule } from '@lib/common/users/Users.module';
 import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 import { NonePaymentHandler } from '@lib/common/purchases/None.paymenthandler';
 
+/**
+ * Module to manage and handle all the purchases
+ */
 @Module({
     imports: [ExpressCassandraModule.forFeature([PurchaseEntity, PurchasesRepository]), UsersModule, ToolBoxModule],
     providers: [
