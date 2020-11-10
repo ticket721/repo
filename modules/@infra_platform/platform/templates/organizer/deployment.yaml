@@ -43,8 +43,6 @@ spec:
               value: '{{ required "[organizer] Missing config.serverEndpoint.protocol value" .Values.config.serverEndpoint.protocol }}'
             - name: REACT_APP_STRIPE_API_KEY
               value: '{{ required "[organizer] Missing config.organizer.publishableStripeApiKey value" .Values.config.organizer.publishableStripeApiKey }}'
-            - name: REACT_APP_ARTIFACT_PATH
-              value: '../../artifacts/{{ required "[organizer] Missing config.artifact value" .Values.config.artifact }}'
             - name: REACT_APP_GOOGLE_PLACES_API_KEY
               value: '{{ required "[organizer] Missing config.googleGeocodingApiKey value" .Values.config.googleGeocodingApiKey }}'
             - name: REACT_APP_SEGMENT_API_KEY
