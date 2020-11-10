@@ -6,7 +6,6 @@ import { MailjetDriver } from '@lib/common/email/drivers/Mailjet.driver';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
 import { ShutdownModule } from '@lib/common/shutdown/Shutdown.module';
 import { EmailService } from '@lib/common/email/Email.service';
-import { BullModule, BullModuleOptions } from '@nestjs/bull';
 import { NestError } from '@lib/common/utils/NestError';
 
 /**
@@ -14,20 +13,7 @@ import { NestError } from '@lib/common/utils/NestError';
  */
 @Global()
 @Module({
-    imports: [
-        ShutdownModule,
-        BullModule.registerQueueAsync({
-            inject: [ConfigService],
-            name: 'mailing',
-            useFactory: (configService: ConfigService): BullModuleOptions => ({
-                name: 'mailing',
-                redis: {
-                    host: configService.get('BULL_REDIS_HOST'),
-                    port: parseInt(configService.get('BULL_REDIS_PORT'), 10),
-                },
-            }),
-        }),
-    ],
+    imports: [ShutdownModule],
     providers: [
         {
             provide: EmailDriver,

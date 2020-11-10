@@ -9,13 +9,8 @@ import { AxiosResponse } from 'axios';
 import { LocalRegisterResponseDto } from '@app/server/authentication/dto/LocalRegisterResponse.dto';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
-import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { ActionsSearchResponseDto } from '@app/server/controllers/actionsets/dto/ActionsSearchResponse.dto';
 import CassandraDriver from 'cassandra-driver';
 import { EventDto } from '@app/server/controllers/events/dto/Event.dto';
-import FormData from 'form-data';
-import { ImagesUploadResponseDto } from '@app/server/controllers/images/dto/ImagesUploadResponse.dto';
-import { ActionSet } from '@lib/common/actionsets/helper/ActionSet.class';
 import { anything, instance, mock, when } from 'ts-mockito';
 import { Stripe } from 'stripe';
 import Crypto from 'crypto';
@@ -559,37 +554,37 @@ export const waitForCategory = async (
     return category.data.categories[0];
 };
 
-export const waitForActionSet = async (
-    sdk: T721SDK,
-    token: string,
-    id: string,
-    checker: (as: ActionSetEntity) => boolean,
-): Promise<ActionSetEntity> => {
-    let actionSet: AxiosResponse<ActionsSearchResponseDto>;
-
-    do {
-        actionSet = await sdk.actions.search(token, {
-            id: {
-                $eq: id,
-            },
-        });
-        if (actionSet.data.actionsets[0]) {
-            const actionSetClass = new ActionSet().load(actionSet.data.actionsets[0]);
-
-            switch (actionSetClass.actions[actionSetClass.current_action].status) {
-                case 'error':
-                case 'input:error':
-                case 'event:error': {
-                    // console.log(`Received ActionSet with status ${actionSetClass.actions[actionSetClass.current_action].status}`);
-                    // console.log(`=> ${JSON.stringify(actionSetClass.actions[actionSetClass.current_action].error, null, 4)}`)
-                }
-            }
-        }
-        await pause(10);
-    } while (!checker(actionSet.data.actionsets[0]));
-
-    return actionSet.data.actionsets[0];
-};
+// export const waitForActionSet = async (
+//     sdk: T721SDK,
+//     token: string,
+//     id: string,
+//     checker: (as: ActionSetEntity) => boolean,
+// ): Promise<ActionSetEntity> => {
+//     let actionSet: AxiosResponse<ActionsSearchResponseDto>;
+//
+//     do {
+//         actionSet = await sdk.actions.search(token, {
+//             id: {
+//                 $eq: id,
+//             },
+//         });
+//         if (actionSet.data.actionsets[0]) {
+//             const actionSetClass = new ActionSet().load(actionSet.data.actionsets[0]);
+//
+//             switch (actionSetClass.actions[actionSetClass.current_action].status) {
+//                 case 'error':
+//                 case 'input:error':
+//                 case 'event:error': {
+//                     // console.log(`Received ActionSet with status ${actionSetClass.actions[actionSetClass.current_action].status}`);
+//                     // console.log(`=> ${JSON.stringify(actionSetClass.actions[actionSetClass.current_action].error, null, 4)}`)
+//                 }
+//             }
+//         }
+//         await pause(10);
+//     } while (!checker(actionSet.data.actionsets[0]));
+//
+//     return actionSet.data.actionsets[0];
+// };
 
 export const admin_setAdmin = async (user: string): Promise<void> => {
     const client = new CassandraDriver.Client({
@@ -1978,15 +1973,15 @@ export const gemFail = async (sdk: T721SDK, token: string, id: string, body: any
     expect(true).toEqual(false);
 };
 
-export const getPIFromCart = async (sdk: T721SDK, token: string, cart: string): Promise<string> => {
-    const cartActionSetBeforeRes = await sdk.actions.search(token, {
-        id: {
-            $eq: cart,
-        },
-    });
-    const cartEntity = cartActionSetBeforeRes.data.actionsets[0];
-    return JSON.parse(cartEntity.actions[2].data).paymentIntentId;
-};
+// export const getPIFromCart = async (sdk: T721SDK, token: string, cart: string): Promise<string> => {
+//     const cartActionSetBeforeRes = await sdk.actions.search(token, {
+//         id: {
+//             $eq: cart,
+//         },
+//     });
+//     const cartEntity = cartActionSetBeforeRes.data.actionsets[0];
+//     return JSON.parse(cartEntity.actions[2].data).paymentIntentId;
+// };
 
 export const invalidateCardPayment = async (pi: string): Promise<void> => {
     const storedPi = await instance(getMocks()[1]).retrieve(pi);

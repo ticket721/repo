@@ -9,7 +9,6 @@ import AdminRoutePage                                                           
 import LoginPage                                                                            from './routes/Login';
 import RegisterPage                                                                         from './routes/Register';
 import HomePage                                                                             from './routes/Home';
-import ProfileActivitiesPage                                                                from './routes/Activities';
 import ProfileLanguagePage                                                                  from './routes/Language';
 import ProfilePage                                                                          from './routes/Profile';
 import SearchViewAllPage                                                                    from './routes/SearchViewAll';
@@ -158,13 +157,6 @@ const MobileApp: React.FC = () => {
                                 <Route path={'/'} exact={true}>
                                     <HomePage/>
                                 </Route>
-
-                                <ProtectedRoute
-                                    path={'/profile/activities'}
-                                    exact={true}
-                                >
-                                    <ProfileActivitiesPage/>
-                                </ProtectedRoute>
 
                                 <ProtectedRoute path={'/profile/language'} exact={true}>
                                     <ProfileLanguagePage/>

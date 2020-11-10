@@ -18,13 +18,8 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { LocalLoginResponseDto } from './dto/LocalLoginResponse.dto';
 import { HttpExceptionFilter } from '../utils/HttpException.filter';
-import { Web3RegisterInputDto } from '@app/server/authentication/dto/Web3RegisterInput.dto';
-import { Web3RegisterResponseDto } from '@app/server/authentication/dto/Web3RegisterResponse.dto';
-import { Web3LoginResponseDto } from '@app/server/authentication/dto/Web3LoginResponse.dto';
 import { EmailValidationInputDto } from '@app/server/authentication/dto/EmailValidationInput.dto';
 import { EmailValidationResponseDto } from '@app/server/authentication/dto/EmailValidationResponse.dto';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
 import { EmailValidationTaskDto } from '@app/server/authentication/dto/EmailValidationTask.dto';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { StatusCodes } from '@lib/common/utils/codes.value';
@@ -44,6 +39,8 @@ import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import parse from 'parse-duration';
 import { ResendValidationResponseDto } from '@app/server/authentication/dto/ResendValidationResponse.dto';
 import { ResendValidationInputDto } from '@app/server/authentication/dto/ResendValidationInput.dto';
+import { EmailService } from '@lib/common/email/Email.service';
+import { b64Encode } from '@common/global';
 
 /**
  * Controller exposing the authentication routes
@@ -57,45 +54,14 @@ export class AuthenticationController {
      *
      * @param authenticationService
      * @param jwtService
-     * @param mailingQueue
      * @param configService
      */
     constructor /* instanbul ignore next */(
         private readonly authenticationService: AuthenticationService,
         private readonly jwtService: JwtService,
-        @InjectQueue('mailing') private readonly mailingQueue: Queue,
+        private readonly emailService: EmailService,
         private readonly configService: ConfigService,
     ) {}
-
-    /**
-     * [POST /authentication/web3/login] : Login with web3 account
-     */
-    @Post('/web3/login')
-    @UseGuards(AuthGuard('web3'))
-    @UseFilters(new HttpExceptionFilter())
-    @HttpCode(StatusCodes.OK)
-    @ApiResponses([StatusCodes.OK, StatusCodes.InternalServerError])
-    /* istanbul ignore next */
-    async web3Login(@Request() req): Promise<Web3LoginResponseDto> {
-        try {
-            return {
-                user: req.user,
-                token: this.jwtService.sign({
-                    username: req.user.username,
-                    sub: req.user.id,
-                }),
-                expiration: new Date(Date.now() + parse(this.configService.get('JWT_EXPIRATION'))),
-            };
-        } catch (e) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: 'token_signature_error',
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-    }
 
     /**
      * [POST /authentication/local/login] : Login with local account
@@ -127,6 +93,77 @@ export class AuthenticationController {
         }
     }
 
+    async sendAccountCreationMail(user: PasswordlessUserDto, redirectUrl: string): Promise<void> {
+        const data = {
+            email: user.email,
+            locale: user.locale,
+            username: user.username,
+            id: user.id,
+            redirectUrl,
+        };
+
+        const signature = await this.jwtService.signAsync(data, {
+            expiresIn: '1 day',
+        });
+
+        const validationLink = `${redirectUrl}?token=${encodeURIComponent(b64Encode(signature))}`;
+
+        const emailResp = await this.emailService.send({
+            template: 'validate',
+            to: data.email,
+            locale: data.locale,
+            locals: {
+                validationLink,
+                token: signature,
+            },
+        });
+
+        if (emailResp.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: 'mail_error',
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+    }
+
+    async sendPasswordResetMail(user: PasswordlessUserDto, redirectUrl: string): Promise<void> {
+        const data = {
+            email: user.email,
+            locale: user.locale,
+            id: user.id,
+            redirectUrl,
+        };
+
+        const signature = await this.jwtService.signAsync(data, {
+            expiresIn: '1 day',
+        });
+
+        const validationLink = `${redirectUrl}?token=${encodeURIComponent(b64Encode(signature))}`;
+
+        const emailResp = await this.emailService.send({
+            template: 'passwordReset',
+            to: data.email,
+            locale: data.locale,
+            locals: {
+                validationLink,
+                token: signature,
+            },
+        });
+
+        if (emailResp.error) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: 'mail_error',
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+    }
+
     /**
      *
      * [POST /authentication/resend-validation] : Generates a new validation email
@@ -141,20 +178,7 @@ export class AuthenticationController {
         @User() user: UserDto,
     ): Promise<ResendValidationResponseDto> {
         if (!user.valid) {
-            await this.mailingQueue.add(
-                '@@mailing/validationEmail',
-                {
-                    email: user.email,
-                    username: user.username,
-                    locale: user.locale,
-                    id: user.id,
-                    redirectUrl: body.redirectUrl || this.configService.get('VALIDATION_URL'),
-                } as EmailValidationTaskDto,
-                {
-                    attempts: 5,
-                    backoff: 5000,
-                },
-            );
+            await this.sendAccountCreationMail(user, body.redirectUrl || this.configService.get('VALIDATION_URL'));
         }
 
         return {};
@@ -211,124 +235,9 @@ export class AuthenticationController {
                     );
             }
         } else {
-            await this.mailingQueue.add(
-                '@@mailing/validationEmail',
-                {
-                    email: resp.response.email,
-                    username: resp.response.username,
-                    locale: resp.response.locale,
-                    id: resp.response.id,
-                    redirectUrl: body.redirectUrl || this.configService.get('VALIDATION_URL'),
-                } as EmailValidationTaskDto,
-                {
-                    attempts: 5,
-                    backoff: 5000,
-                },
-            );
-
-            return {
-                user: resp.response,
-                token: this.jwtService.sign({
-                    username: resp.response.username,
-                    sub: resp.response.id,
-                }),
-                expiration: new Date(Date.now() + parse(this.configService.get('JWT_EXPIRATION'))),
-                validationToken:
-                    this.configService.get('NODE_ENV') === 'development'
-                        ? this.jwtService.sign(
-                              {
-                                  email: resp.response.email,
-                                  username: resp.response.username,
-                                  locale: resp.response.locale,
-                                  id: resp.response.id,
-                              },
-                              {
-                                  expiresIn: '1 day',
-                              },
-                          )
-                        : undefined,
-            };
-        }
-    }
-
-    /**
-     * [POST /authentication/web3/register] : Create a new web3 account
-     */
-    @Post('/web3/register')
-    @UseFilters(new HttpExceptionFilter())
-    @HttpCode(StatusCodes.Created)
-    @ApiResponses([
-        StatusCodes.Created,
-        StatusCodes.Conflict,
-        StatusCodes.Unauthorized,
-        StatusCodes.UnprocessableEntity,
-        StatusCodes.InternalServerError,
-    ])
-    async web3Register(@Body() body: Web3RegisterInputDto): Promise<Web3RegisterResponseDto> {
-        const resp: ServiceResponse<PasswordlessUserDto> = await this.authenticationService.createWeb3User(
-            body.email,
-            body.username,
-            body.timestamp,
-            body.address,
-            body.signature,
-            body.locale || 'en',
-        );
-        if (resp.error) {
-            switch (resp.error) {
-                case 'email_already_in_use':
-                case 'username_already_in_use':
-                case 'address_already_in_use':
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.Conflict,
-                            message: resp.error,
-                        },
-                        StatusCodes.Conflict,
-                    );
-
-                case 'invalid_signature':
-                case 'signature_timed_out':
-                case 'signature_is_in_the_future':
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.Unauthorized,
-                            message: resp.error,
-                        },
-                        StatusCodes.Unauthorized,
-                    );
-
-                case 'signature_check_fail':
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.UnprocessableEntity,
-                            message: resp.error,
-                        },
-                        StatusCodes.UnprocessableEntity,
-                    );
-
-                default:
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.InternalServerError,
-                            message: resp.error,
-                        },
-                        StatusCodes.InternalServerError,
-                    );
-            }
-        } else {
-            await this.mailingQueue.add(
-                '@@mailing/validationEmail',
-                {
-                    email: resp.response.email,
-                    username: resp.response.username,
-                    locale: resp.response.locale,
-                    id: resp.response.id,
-                    redirectUrl: body.redirectUrl || this.configService.get('VALIDATION_URL'),
-                } as EmailValidationTaskDto,
-                {
-                    attempts: 5,
-                    backoff: 5000,
-                },
+            await this.sendAccountCreationMail(
+                resp.response,
+                body.redirectUrl || this.configService.get('VALIDATION_URL'),
             );
 
             return {
@@ -379,18 +288,9 @@ export class AuthenticationController {
                 StatusCodes.InternalServerError,
             );
         } else if (resp.response !== null) {
-            await this.mailingQueue.add(
-                '@@mailing/resetPasswordEmail',
-                {
-                    id: resp.response.id,
-                    email: resp.response.email,
-                    locale: resp.response.locale,
-                    redirectUrl: body.redirectUrl || this.configService.get('RESET_PASSWORD_URL'),
-                } as ResetPasswordTaskDto,
-                {
-                    attempts: 5,
-                    backoff: 5000,
-                },
+            await this.sendPasswordResetMail(
+                resp.response,
+                body.redirectUrl || this.configService.get('RESET_PASSWORD_URL'),
             );
         }
         return {

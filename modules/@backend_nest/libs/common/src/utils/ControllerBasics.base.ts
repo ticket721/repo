@@ -12,10 +12,6 @@ import {
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { fromES } from '@lib/common/utils/fromES.helper';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import { RightsService } from '@lib/common/rights/Rights.service';
-import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
-import { RightEntity } from '@lib/common/rights/entities/Right.entity';
 import { ESCountReturn } from '@lib/common/utils/ESCountReturn.type';
 import { SearchInputType } from '@lib/common/utils/SearchInput.type';
 
@@ -79,165 +75,165 @@ export class ControllerBasics<EntityType> {
         return res.response;
     }
 
-    /**
-     * Generic search query, able to throw HttpExceptions
-     *
-     * @param service
-     * @param rightsService
-     * @param user
-     * @param field
-     * @param query
-     */
-    public async _countRestricted<CustomEntityType = EntityType>(
-        service: CRUDExtension<Repository<CustomEntityType>, CustomEntityType>,
-        rightsService: RightsService,
-        user: UserDto,
-        field: string,
-        query: SearchInputType<CustomEntityType>,
-    ): Promise<ESCountReturn> {
-        const entityName = service.name;
-
-        const restrictionEsQuery = {
-            body: {
-                size: 2147483647, // int max value
-                query: {
-                    bool: {
-                        must: [
-                            {
-                                term: {
-                                    entity_type: entityName,
-                                },
-                            },
-                            {
-                                term: {
-                                    grantee_id: user.id,
-                                },
-                            },
-                        ],
-                    },
-                },
-            },
-        };
-
-        const restrictionsRes = await rightsService.searchElastic(restrictionEsQuery);
-
-        if (restrictionsRes.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: restrictionsRes.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        const aggregatedFields = restrictionsRes.response.hits.hits.map(
-            (esh: ESSearchHit<RightEntity>): any => esh._source.entity_value,
-        );
-
-        if (query[field] && query[field].$in) {
-            for (const value of query[field].$in) {
-                if (aggregatedFields.findIndex((agg: any): boolean => agg === value) === -1) {
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.Unauthorized,
-                            message: 'unauthorized_value_in_filter',
-                        },
-                        StatusCodes.Unauthorized,
-                    );
-                }
-            }
-        }
-        if (!query[field]) {
-            query[field] = {
-                $in: aggregatedFields,
-            };
-        } else {
-            query[field].$in = aggregatedFields;
-        }
-
-        return this._count<CustomEntityType>(service, query);
-    }
-
-    /**
-     * Generic search query, able to throw HttpExceptions
-     *
-     * @param service
-     * @param rightsService
-     * @param user
-     * @param field
-     * @param query
-     */
-    public async _searchRestricted<CustomEntityType = EntityType>(
-        service: CRUDExtension<Repository<CustomEntityType>, CustomEntityType>,
-        rightsService: RightsService,
-        user: UserDto,
-        field: string,
-        query: SearchInputType<CustomEntityType>,
-    ): Promise<CustomEntityType[]> {
-        const entityName = service.name;
-
-        const restrictionEsQuery = {
-            body: {
-                size: 2147483647, // int max value
-                query: {
-                    bool: {
-                        must: [
-                            {
-                                term: {
-                                    entity_type: entityName,
-                                },
-                            },
-                            {
-                                term: {
-                                    grantee_id: user.id,
-                                },
-                            },
-                        ],
-                    },
-                },
-            },
-        };
-
-        const restrictionsRes = await rightsService.searchElastic(restrictionEsQuery);
-
-        if (restrictionsRes.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.InternalServerError,
-                    message: restrictionsRes.error,
-                },
-                StatusCodes.InternalServerError,
-            );
-        }
-
-        const aggregatedFields = restrictionsRes.response.hits.hits.map(
-            (esh: ESSearchHit<RightEntity>): any => esh._source.entity_value,
-        );
-
-        if (query[field] && query[field].$in) {
-            for (const value of query[field].$in) {
-                if (aggregatedFields.findIndex((agg: any): boolean => agg === value) === -1) {
-                    throw new HttpException(
-                        {
-                            status: StatusCodes.Unauthorized,
-                            message: 'unauthorized_value_in_filter',
-                        },
-                        StatusCodes.Unauthorized,
-                    );
-                }
-            }
-        }
-        if (!query[field]) {
-            query[field] = {
-                $in: aggregatedFields,
-            };
-        } else {
-            query[field].$in = aggregatedFields;
-        }
-
-        return this._search<CustomEntityType>(service, query);
-    }
+    // /**
+    //  * Generic search query, able to throw HttpExceptions
+    //  *
+    //  * @param service
+    //  * @param rightsService
+    //  * @param user
+    //  * @param field
+    //  * @param query
+    //  */
+    // public async _countRestricted<CustomEntityType = EntityType>(
+    //     service: CRUDExtension<Repository<CustomEntityType>, CustomEntityType>,
+    //     rightsService: RightsService,
+    //     user: UserDto,
+    //     field: string,
+    //     query: SearchInputType<CustomEntityType>,
+    // ): Promise<ESCountReturn> {
+    //     const entityName = service.name;
+    //
+    //     const restrictionEsQuery = {
+    //         body: {
+    //             size: 2147483647, // int max value
+    //             query: {
+    //                 bool: {
+    //                     must: [
+    //                         {
+    //                             term: {
+    //                                 entity_type: entityName,
+    //                             },
+    //                         },
+    //                         {
+    //                             term: {
+    //                                 grantee_id: user.id,
+    //                             },
+    //                         },
+    //                     ],
+    //                 },
+    //             },
+    //         },
+    //     };
+    //
+    //     const restrictionsRes = await rightsService.searchElastic(restrictionEsQuery);
+    //
+    //     if (restrictionsRes.error) {
+    //         throw new HttpException(
+    //             {
+    //                 status: StatusCodes.InternalServerError,
+    //                 message: restrictionsRes.error,
+    //             },
+    //             StatusCodes.InternalServerError,
+    //         );
+    //     }
+    //
+    //     const aggregatedFields = restrictionsRes.response.hits.hits.map(
+    //         (esh: ESSearchHit<RightEntity>): any => esh._source.entity_value,
+    //     );
+    //
+    //     if (query[field] && query[field].$in) {
+    //         for (const value of query[field].$in) {
+    //             if (aggregatedFields.findIndex((agg: any): boolean => agg === value) === -1) {
+    //                 throw new HttpException(
+    //                     {
+    //                         status: StatusCodes.Unauthorized,
+    //                         message: 'unauthorized_value_in_filter',
+    //                     },
+    //                     StatusCodes.Unauthorized,
+    //                 );
+    //             }
+    //         }
+    //     }
+    //     if (!query[field]) {
+    //         query[field] = {
+    //             $in: aggregatedFields,
+    //         };
+    //     } else {
+    //         query[field].$in = aggregatedFields;
+    //     }
+    //
+    //     return this._count<CustomEntityType>(service, query);
+    // }
+    //
+    // /**
+    //  * Generic search query, able to throw HttpExceptions
+    //  *
+    //  * @param service
+    //  * @param rightsService
+    //  * @param user
+    //  * @param field
+    //  * @param query
+    //  */
+    // public async _searchRestricted<CustomEntityType = EntityType>(
+    //     service: CRUDExtension<Repository<CustomEntityType>, CustomEntityType>,
+    //     rightsService: RightsService,
+    //     user: UserDto,
+    //     field: string,
+    //     query: SearchInputType<CustomEntityType>,
+    // ): Promise<CustomEntityType[]> {
+    //     const entityName = service.name;
+    //
+    //     const restrictionEsQuery = {
+    //         body: {
+    //             size: 2147483647, // int max value
+    //             query: {
+    //                 bool: {
+    //                     must: [
+    //                         {
+    //                             term: {
+    //                                 entity_type: entityName,
+    //                             },
+    //                         },
+    //                         {
+    //                             term: {
+    //                                 grantee_id: user.id,
+    //                             },
+    //                         },
+    //                     ],
+    //                 },
+    //             },
+    //         },
+    //     };
+    //
+    //     const restrictionsRes = await rightsService.searchElastic(restrictionEsQuery);
+    //
+    //     if (restrictionsRes.error) {
+    //         throw new HttpException(
+    //             {
+    //                 status: StatusCodes.InternalServerError,
+    //                 message: restrictionsRes.error,
+    //             },
+    //             StatusCodes.InternalServerError,
+    //         );
+    //     }
+    //
+    //     const aggregatedFields = restrictionsRes.response.hits.hits.map(
+    //         (esh: ESSearchHit<RightEntity>): any => esh._source.entity_value,
+    //     );
+    //
+    //     if (query[field] && query[field].$in) {
+    //         for (const value of query[field].$in) {
+    //             if (aggregatedFields.findIndex((agg: any): boolean => agg === value) === -1) {
+    //                 throw new HttpException(
+    //                     {
+    //                         status: StatusCodes.Unauthorized,
+    //                         message: 'unauthorized_value_in_filter',
+    //                     },
+    //                     StatusCodes.Unauthorized,
+    //                 );
+    //             }
+    //         }
+    //     }
+    //     if (!query[field]) {
+    //         query[field] = {
+    //             $in: aggregatedFields,
+    //         };
+    //     } else {
+    //         query[field].$in = aggregatedFields;
+    //     }
+    //
+    //     return this._search<CustomEntityType>(service, query);
+    // }
 
     /**
      * Builds an ESQuery body
@@ -344,90 +340,90 @@ export class ControllerBasics<EntityType> {
         return [];
     }
 
-    /**
-     * Helper to authorizer on a global entity scale
-     *
-     * @param rightsService
-     * @param service
-     * @param user
-     * @param entityValue
-     * @param requiredRights
-     * @private
-     */
-    public async _authorizeGlobal<AuthorizeEntity = EntityType>(
-        rightsService: RightsService,
-        service: CRUDExtension<Repository<AuthorizeEntity>, AuthorizeEntity>,
-        user: UserDto,
-        entityValue: string,
-        requiredRights: string[],
-    ): Promise<void> {
-        const hasRights = await rightsService.hasGlobalRightsUpon<Repository<AuthorizeEntity>, AuthorizeEntity>(
-            service,
-            user,
-            entityValue,
-            requiredRights,
-        );
-
-        if (hasRights.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.Unauthorized,
-                    message: 'unauthorized_action',
-                },
-                StatusCodes.Unauthorized,
-            );
-        }
-    }
-
-    /**
-     * Helper to authorize on a single entity
-     *
-     * @param rightsService
-     * @param service
-     * @param user
-     * @param query
-     * @param field
-     * @param requiredRights
-     * @private
-     */
-    public async _authorizeOne<AuthorizeEntity = EntityType>(
-        rightsService: RightsService,
-        service: CRUDExtension<Repository<AuthorizeEntity>, AuthorizeEntity>,
-        user: UserDto,
-        query: SearchQuery<AuthorizeEntity>,
-        field: string,
-        requiredRights: string[],
-    ): Promise<AuthorizeEntity> {
-        const hasRights = await rightsService.hasRightsUpon<Repository<AuthorizeEntity>, AuthorizeEntity>(
-            service,
-            user,
-            query,
-            field,
-            requiredRights,
-        );
-
-        if (hasRights.error) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.Unauthorized,
-                    message: 'unauthorized_action',
-                },
-                StatusCodes.Unauthorized,
-            );
-        }
-
-        if (hasRights.response.length > 1) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.Conflict,
-                    message: 'multiple_entities_found',
-                },
-                StatusCodes.Conflict,
-            );
-        }
-
-        return hasRights.response[0];
-    }
+    // /**
+    //  * Helper to authorizer on a global entity scale
+    //  *
+    //  * @param rightsService
+    //  * @param service
+    //  * @param user
+    //  * @param entityValue
+    //  * @param requiredRights
+    //  * @private
+    //  */
+    // public async _authorizeGlobal<AuthorizeEntity = EntityType>(
+    //     rightsService: RightsService,
+    //     service: CRUDExtension<Repository<AuthorizeEntity>, AuthorizeEntity>,
+    //     user: UserDto,
+    //     entityValue: string,
+    //     requiredRights: string[],
+    // ): Promise<void> {
+    //     const hasRights = await rightsService.hasGlobalRightsUpon<Repository<AuthorizeEntity>, AuthorizeEntity>(
+    //         service,
+    //         user,
+    //         entityValue,
+    //         requiredRights,
+    //     );
+    //
+    //     if (hasRights.error) {
+    //         throw new HttpException(
+    //             {
+    //                 status: StatusCodes.Unauthorized,
+    //                 message: 'unauthorized_action',
+    //             },
+    //             StatusCodes.Unauthorized,
+    //         );
+    //     }
+    // }
+    //
+    // /**
+    //  * Helper to authorize on a single entity
+    //  *
+    //  * @param rightsService
+    //  * @param service
+    //  * @param user
+    //  * @param query
+    //  * @param field
+    //  * @param requiredRights
+    //  * @private
+    //  */
+    // public async _authorizeOne<AuthorizeEntity = EntityType>(
+    //     rightsService: RightsService,
+    //     service: CRUDExtension<Repository<AuthorizeEntity>, AuthorizeEntity>,
+    //     user: UserDto,
+    //     query: SearchQuery<AuthorizeEntity>,
+    //     field: string,
+    //     requiredRights: string[],
+    // ): Promise<AuthorizeEntity> {
+    //     const hasRights = await rightsService.hasRightsUpon<Repository<AuthorizeEntity>, AuthorizeEntity>(
+    //         service,
+    //         user,
+    //         query,
+    //         field,
+    //         requiredRights,
+    //     );
+    //
+    //     if (hasRights.error) {
+    //         throw new HttpException(
+    //             {
+    //                 status: StatusCodes.Unauthorized,
+    //                 message: 'unauthorized_action',
+    //             },
+    //             StatusCodes.Unauthorized,
+    //         );
+    //     }
+    //
+    //     if (hasRights.response.length > 1) {
+    //         throw new HttpException(
+    //             {
+    //                 status: StatusCodes.Conflict,
+    //                 message: 'multiple_entities_found',
+    //             },
+    //             StatusCodes.Conflict,
+    //         );
+    //     }
+    //
+    //     return hasRights.response[0];
+    // }
 
     /**
      * CQL Search Query Helper

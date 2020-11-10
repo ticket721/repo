@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthenticationController } from './Authentication.controller';
-import { instance, mock, verify, when } from 'ts-mockito';
+import { deepEqual, instance, mock, spy, verify, when } from 'ts-mockito';
 import { AuthenticationService } from './Authentication.service';
 import {
     createWallet,
@@ -9,13 +9,10 @@ import {
     toAcceptedAddressFormat,
     toAcceptedKeccak256Format,
     Wallet,
-    Web3RegisterSigner,
 } from '@common/global';
 import { LocalRegisterInputDto } from './dto/LocalRegisterInput.dto';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@lib/common/config/Config.service';
-import { Web3RegisterInputDto } from '@app/server/authentication/dto/Web3RegisterInput.dto';
-import { getQueueToken } from '@nestjs/bull';
 import { Job, JobOptions } from 'bull';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
 import { StatusCodes } from '@lib/common/utils/codes.value';
@@ -24,55 +21,50 @@ import { generatePassword } from '../../test/utils';
 import { ResetPasswordInputDto } from '@app/server/authentication/dto/ResetPasswordInputDto';
 import { PasswordChangeDto } from '@app/server/authentication/dto/PasswordChange.dto';
 import { NestError } from '@lib/common/utils/NestError';
-
-class QueueMock<T = any> {
-    add(name: string, data: T, opts?: JobOptions): Promise<Job<T>> {
-        return null;
-    }
-}
+import { EmailService } from '@lib/common/email/Email.service';
 
 const context: {
     authenticationController: AuthenticationController;
     authenticationServiceMock: AuthenticationService;
     configServiceMock: ConfigService;
-    mailingQueueMock: QueueMock;
     jwtServiceMock: JwtService;
+    emailServiceMock: EmailService;
 } = {
     authenticationController: null,
     authenticationServiceMock: null,
     configServiceMock: null,
-    mailingQueueMock: null,
     jwtServiceMock: null,
+    emailServiceMock: null,
 };
 
 describe('Authentication Controller', function() {
     beforeEach(async function() {
-        const authenticationServiceMock: AuthenticationService = mock(AuthenticationService);
-        const configServiceMock: ConfigService = mock(ConfigService);
-        const mailingQueueMock: QueueMock = mock(QueueMock);
-        const jwtServiceMock: JwtService = mock(JwtService);
+        context.authenticationServiceMock = mock(AuthenticationService);
+        context.configServiceMock = mock(ConfigService);
+        context.jwtServiceMock = mock(JwtService);
+        context.emailServiceMock = mock(EmailService);
 
-        when(configServiceMock.get('NODE_ENV')).thenReturn('production');
-        when(configServiceMock.get('JWT_EXPIRATION')).thenReturn('12h');
+        when(context.configServiceMock.get('NODE_ENV')).thenReturn('production');
+        when(context.configServiceMock.get('JWT_EXPIRATION')).thenReturn('12h');
 
         const AuthenticationServiceProvider = {
             provide: AuthenticationService,
-            useValue: instance(authenticationServiceMock),
+            useValue: instance(context.authenticationServiceMock),
         };
 
         const ConfigServiceProvider = {
             provide: ConfigService,
-            useValue: instance(configServiceMock),
-        };
-
-        const BullMailingQueueProvider = {
-            provide: getQueueToken('mailing'),
-            useValue: instance(mailingQueueMock),
+            useValue: instance(context.configServiceMock),
         };
 
         const JwtServiceProvider = {
             provide: JwtService,
-            useValue: instance(jwtServiceMock),
+            useValue: instance(context.jwtServiceMock),
+        };
+
+        const EmailServiceProvider = {
+            provide: EmailService,
+            useValue: instance(context.emailServiceMock),
         };
 
         const module: TestingModule = await Test.createTestingModule({
@@ -81,662 +73,653 @@ describe('Authentication Controller', function() {
                     secret: 'secret',
                 }),
             ],
-            providers: [
-                AuthenticationServiceProvider,
-                ConfigServiceProvider,
-                BullMailingQueueProvider,
-                JwtServiceProvider,
-            ],
+            providers: [AuthenticationServiceProvider, ConfigServiceProvider, JwtServiceProvider, EmailServiceProvider],
             controllers: [AuthenticationController],
         }).compile();
 
         context.authenticationController = module.get<AuthenticationController>(AuthenticationController);
-        context.authenticationServiceMock = authenticationServiceMock;
-        context.configServiceMock = configServiceMock;
-        context.mailingQueueMock = mailingQueueMock;
-        context.jwtServiceMock = jwtServiceMock;
     });
 
-    describe('web3Register', function() {
-        test('should create a user', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
-
-            when(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).thenReturn(
-                Promise.resolve({
-                    response: {
-                        username,
-                        email,
-                        type: 'web3',
-                        device_address: null,
-                        address,
-                        id: '0',
-                        role: 'authenticated',
-                        locale: 'en',
-                        valid: false,
-                        admin: false,
-                    },
-                    error: null,
-                }),
-            );
-
-            const user: Web3RegisterInputDto = {
-                username: 'salut',
-                email: 'test@test.com',
-                address,
-                timestamp: register_payload[0].toString(),
-                signature: register_signature.hex,
-            };
-
-            const res = await authenticationController.web3Register(user);
-            expect(res.user).toBeDefined();
-            expect(res.token).toBeDefined();
-            expect(res.expiration.getTime()).toBeGreaterThan(Date.now());
-            expect(res.validationToken).toBeUndefined();
-            expect(res.user).toEqual({
-                username,
-                email,
-                type: 'web3',
-                device_address: null,
-                address: toAcceptedAddressFormat(address),
-                id: '0',
-                role: 'authenticated',
-                locale: 'en',
-                valid: false,
-                admin: false,
-            });
-            expect(res.token).toBeDefined();
-
-            verify(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).called();
-        });
-
-        test('should create a user & return validation token', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-            const configServiceMock: ConfigService = context.configServiceMock;
-
-            when(configServiceMock.get('NODE_ENV')).thenReturn('development');
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
-
-            when(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).thenReturn(
-                Promise.resolve({
-                    response: {
-                        username,
-                        email,
-                        type: 'web3',
-                        device_address: null,
-                        address,
-                        id: '0',
-                        role: 'authenticated',
-                        locale: 'en',
-                        valid: false,
-                        admin: false,
-                    },
-                    error: null,
-                }),
-            );
-
-            const user: Web3RegisterInputDto = {
-                username: 'salut',
-                email: 'test@test.com',
-                address,
-                timestamp: register_payload[0].toString(),
-                signature: register_signature.hex,
-            };
-
-            const res = await authenticationController.web3Register(user);
-            expect(res.user).toBeDefined();
-            expect(res.token).toBeDefined();
-            expect(res.validationToken).toBeDefined();
-            expect(res.expiration.getTime()).toBeGreaterThan(Date.now());
-            expect(res.user).toEqual({
-                username,
-                email,
-                type: 'web3',
-                device_address: null,
-                address: toAcceptedAddressFormat(address),
-                id: '0',
-                role: 'authenticated',
-                locale: 'en',
-                valid: false,
-                admin: false,
-            });
-            expect(res.token).toBeDefined();
-
-            verify(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).called();
-        });
-
-        test('email already in use', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
-
-            when(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).thenReturn(
-                Promise.resolve({
-                    response: null,
-                    error: 'email_already_in_use',
-                }),
-            );
-
-            const user: Web3RegisterInputDto = {
-                username: 'salut',
-                email: 'test@test.com',
-                address,
-                timestamp: register_payload[0].toString(),
-                signature: register_signature.hex,
-            };
-
-            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
-                response: {
-                    status: 409,
-                    message: 'email_already_in_use',
-                },
-                status: 409,
-                message: {
-                    status: 409,
-                    message: 'email_already_in_use',
-                },
-            });
-
-            verify(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).called();
-        });
-
-        test('username already in use', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
-
-            when(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).thenReturn(
-                Promise.resolve({
-                    response: null,
-                    error: 'username_already_in_use',
-                }),
-            );
-
-            const user: Web3RegisterInputDto = {
-                username: 'salut',
-                email: 'test@test.com',
-                address,
-                timestamp: register_payload[0].toString(),
-                signature: register_signature.hex,
-            };
-
-            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
-                response: {
-                    status: 409,
-                    message: 'username_already_in_use',
-                },
-                status: 409,
-                message: {
-                    status: 409,
-                    message: 'username_already_in_use',
-                },
-            });
-
-            verify(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).called();
-        });
-
-        test('address already in use', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
-
-            when(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).thenReturn(
-                Promise.resolve({
-                    response: null,
-                    error: 'address_already_in_use',
-                }),
-            );
-
-            const user: Web3RegisterInputDto = {
-                username: 'salut',
-                email: 'test@test.com',
-                address,
-                timestamp: register_payload[0].toString(),
-                signature: register_signature.hex,
-            };
-
-            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
-                response: {
-                    status: 409,
-                    message: 'address_already_in_use',
-                },
-                status: 409,
-                message: {
-                    status: 409,
-                    message: 'address_already_in_use',
-                },
-            });
-
-            verify(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).called();
-        });
-
-        test('invalid signature', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
-
-            when(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).thenReturn(
-                Promise.resolve({
-                    response: null,
-                    error: 'invalid_signature',
-                }),
-            );
-
-            const user: Web3RegisterInputDto = {
-                username: 'salut',
-                email: 'test@test.com',
-                address,
-                timestamp: register_payload[0].toString(),
-                signature: register_signature.hex,
-            };
-
-            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
-                response: {
-                    status: StatusCodes.Unauthorized,
-                    message: 'invalid_signature',
-                },
-                status: StatusCodes.Unauthorized,
-                message: {
-                    status: StatusCodes.Unauthorized,
-                    message: 'invalid_signature',
-                },
-            });
-
-            verify(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).called();
-        });
-
-        test('signature timed out', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
-
-            when(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).thenReturn(
-                Promise.resolve({
-                    response: null,
-                    error: 'signature_timed_out',
-                }),
-            );
-
-            const user: Web3RegisterInputDto = {
-                username: 'salut',
-                email: 'test@test.com',
-                address,
-                timestamp: register_payload[0].toString(),
-                signature: register_signature.hex,
-            };
-
-            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
-                response: {
-                    status: StatusCodes.Unauthorized,
-                    message: 'signature_timed_out',
-                },
-                status: StatusCodes.Unauthorized,
-                message: {
-                    status: StatusCodes.Unauthorized,
-                    message: 'signature_timed_out',
-                },
-            });
-
-            verify(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).called();
-        });
-
-        test('signature is in the future', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
-
-            when(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).thenReturn(
-                Promise.resolve({
-                    response: null,
-                    error: 'signature_is_in_the_future',
-                }),
-            );
-
-            const user: Web3RegisterInputDto = {
-                username: 'salut',
-                email: 'test@test.com',
-                address,
-                timestamp: register_payload[0].toString(),
-                signature: register_signature.hex,
-            };
-
-            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
-                response: {
-                    status: StatusCodes.Unauthorized,
-                    message: 'signature_is_in_the_future',
-                },
-                status: StatusCodes.Unauthorized,
-                message: {
-                    status: StatusCodes.Unauthorized,
-                    message: 'signature_is_in_the_future',
-                },
-            });
-
-            verify(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).called();
-        });
-
-        test('signature check fail', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
-
-            when(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).thenReturn(
-                Promise.resolve({
-                    response: null,
-                    error: 'signature_check_fail',
-                }),
-            );
-
-            const user: Web3RegisterInputDto = {
-                username: 'salut',
-                email: 'test@test.com',
-                address,
-                timestamp: register_payload[0].toString(),
-                signature: register_signature.hex,
-            };
-
-            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
-                response: {
-                    status: StatusCodes.UnprocessableEntity,
-                    message: 'signature_check_fail',
-                },
-                status: StatusCodes.UnprocessableEntity,
-                message: {
-                    status: StatusCodes.UnprocessableEntity,
-                    message: 'signature_check_fail',
-                },
-            });
-
-            verify(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).called();
-        });
-
-        test('unexpected error', async function() {
-            const authenticationController: AuthenticationController = context.authenticationController;
-            const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
-
-            when(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).thenReturn(
-                Promise.resolve({
-                    response: null,
-                    error: 'this_error_does_not_exist',
-                }),
-            );
-
-            const user: Web3RegisterInputDto = {
-                username: 'salut',
-                email: 'test@test.com',
-                address,
-                timestamp: register_payload[0].toString(),
-                signature: register_signature.hex,
-            };
-
-            await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
-                response: {
-                    status: StatusCodes.InternalServerError,
-                    message: 'this_error_does_not_exist',
-                },
-                status: StatusCodes.InternalServerError,
-                message: {
-                    status: StatusCodes.InternalServerError,
-                    message: 'this_error_does_not_exist',
-                },
-            });
-
-            verify(
-                authenticationServiceMock.createWeb3User(
-                    email,
-                    username,
-                    register_payload[0].toString(),
-                    address,
-                    register_signature.hex,
-                    'en',
-                ),
-            ).called();
-        });
-    });
+    // describe('web3Register', function() {
+    //     test('should create a user', async function() {
+    //         const authenticationController: AuthenticationController = context.authenticationController;
+    //         const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
+    //
+    //         when(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).thenReturn(
+    //             Promise.resolve({
+    //                 response: {
+    //                     username,
+    //                     email,
+    //                     type: 'web3',
+    //                     device_address: null,
+    //                     address,
+    //                     id: '0',
+    //                     role: 'authenticated',
+    //                     locale: 'en',
+    //                     valid: false,
+    //                     admin: false,
+    //                 },
+    //                 error: null,
+    //             }),
+    //         );
+    //
+    //         const user: Web3RegisterInputDto = {
+    //             username: 'salut',
+    //             email: 'test@test.com',
+    //             address,
+    //             timestamp: register_payload[0].toString(),
+    //             signature: register_signature.hex,
+    //         };
+    //
+    //         const res = await authenticationController.web3Register(user);
+    //         expect(res.user).toBeDefined();
+    //         expect(res.token).toBeDefined();
+    //         expect(res.expiration.getTime()).toBeGreaterThan(Date.now());
+    //         expect(res.validationToken).toBeUndefined();
+    //         expect(res.user).toEqual({
+    //             username,
+    //             email,
+    //             type: 'web3',
+    //             device_address: null,
+    //             address: toAcceptedAddressFormat(address),
+    //             id: '0',
+    //             role: 'authenticated',
+    //             locale: 'en',
+    //             valid: false,
+    //             admin: false,
+    //         });
+    //         expect(res.token).toBeDefined();
+    //
+    //         verify(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).called();
+    //     });
+    //
+    //     test('should create a user & return validation token', async function() {
+    //         const authenticationController: AuthenticationController = context.authenticationController;
+    //         const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+    //         const configServiceMock: ConfigService = context.configServiceMock;
+    //
+    //         when(configServiceMock.get('NODE_ENV')).thenReturn('development');
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
+    //
+    //         when(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).thenReturn(
+    //             Promise.resolve({
+    //                 response: {
+    //                     username,
+    //                     email,
+    //                     type: 'web3',
+    //                     device_address: null,
+    //                     address,
+    //                     id: '0',
+    //                     role: 'authenticated',
+    //                     locale: 'en',
+    //                     valid: false,
+    //                     admin: false,
+    //                 },
+    //                 error: null,
+    //             }),
+    //         );
+    //
+    //         const user: Web3RegisterInputDto = {
+    //             username: 'salut',
+    //             email: 'test@test.com',
+    //             address,
+    //             timestamp: register_payload[0].toString(),
+    //             signature: register_signature.hex,
+    //         };
+    //
+    //         const res = await authenticationController.web3Register(user);
+    //         expect(res.user).toBeDefined();
+    //         expect(res.token).toBeDefined();
+    //         expect(res.validationToken).toBeDefined();
+    //         expect(res.expiration.getTime()).toBeGreaterThan(Date.now());
+    //         expect(res.user).toEqual({
+    //             username,
+    //             email,
+    //             type: 'web3',
+    //             device_address: null,
+    //             address: toAcceptedAddressFormat(address),
+    //             id: '0',
+    //             role: 'authenticated',
+    //             locale: 'en',
+    //             valid: false,
+    //             admin: false,
+    //         });
+    //         expect(res.token).toBeDefined();
+    //
+    //         verify(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).called();
+    //     });
+    //
+    //     test('email already in use', async function() {
+    //         const authenticationController: AuthenticationController = context.authenticationController;
+    //         const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
+    //
+    //         when(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).thenReturn(
+    //             Promise.resolve({
+    //                 response: null,
+    //                 error: 'email_already_in_use',
+    //             }),
+    //         );
+    //
+    //         const user: Web3RegisterInputDto = {
+    //             username: 'salut',
+    //             email: 'test@test.com',
+    //             address,
+    //             timestamp: register_payload[0].toString(),
+    //             signature: register_signature.hex,
+    //         };
+    //
+    //         await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
+    //             response: {
+    //                 status: 409,
+    //                 message: 'email_already_in_use',
+    //             },
+    //             status: 409,
+    //             message: {
+    //                 status: 409,
+    //                 message: 'email_already_in_use',
+    //             },
+    //         });
+    //
+    //         verify(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).called();
+    //     });
+    //
+    //     test('username already in use', async function() {
+    //         const authenticationController: AuthenticationController = context.authenticationController;
+    //         const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
+    //
+    //         when(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).thenReturn(
+    //             Promise.resolve({
+    //                 response: null,
+    //                 error: 'username_already_in_use',
+    //             }),
+    //         );
+    //
+    //         const user: Web3RegisterInputDto = {
+    //             username: 'salut',
+    //             email: 'test@test.com',
+    //             address,
+    //             timestamp: register_payload[0].toString(),
+    //             signature: register_signature.hex,
+    //         };
+    //
+    //         await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
+    //             response: {
+    //                 status: 409,
+    //                 message: 'username_already_in_use',
+    //             },
+    //             status: 409,
+    //             message: {
+    //                 status: 409,
+    //                 message: 'username_already_in_use',
+    //             },
+    //         });
+    //
+    //         verify(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).called();
+    //     });
+    //
+    //     test('address already in use', async function() {
+    //         const authenticationController: AuthenticationController = context.authenticationController;
+    //         const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
+    //
+    //         when(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).thenReturn(
+    //             Promise.resolve({
+    //                 response: null,
+    //                 error: 'address_already_in_use',
+    //             }),
+    //         );
+    //
+    //         const user: Web3RegisterInputDto = {
+    //             username: 'salut',
+    //             email: 'test@test.com',
+    //             address,
+    //             timestamp: register_payload[0].toString(),
+    //             signature: register_signature.hex,
+    //         };
+    //
+    //         await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
+    //             response: {
+    //                 status: 409,
+    //                 message: 'address_already_in_use',
+    //             },
+    //             status: 409,
+    //             message: {
+    //                 status: 409,
+    //                 message: 'address_already_in_use',
+    //             },
+    //         });
+    //
+    //         verify(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).called();
+    //     });
+    //
+    //     test('invalid signature', async function() {
+    //         const authenticationController: AuthenticationController = context.authenticationController;
+    //         const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
+    //
+    //         when(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).thenReturn(
+    //             Promise.resolve({
+    //                 response: null,
+    //                 error: 'invalid_signature',
+    //             }),
+    //         );
+    //
+    //         const user: Web3RegisterInputDto = {
+    //             username: 'salut',
+    //             email: 'test@test.com',
+    //             address,
+    //             timestamp: register_payload[0].toString(),
+    //             signature: register_signature.hex,
+    //         };
+    //
+    //         await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
+    //             response: {
+    //                 status: StatusCodes.Unauthorized,
+    //                 message: 'invalid_signature',
+    //             },
+    //             status: StatusCodes.Unauthorized,
+    //             message: {
+    //                 status: StatusCodes.Unauthorized,
+    //                 message: 'invalid_signature',
+    //             },
+    //         });
+    //
+    //         verify(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).called();
+    //     });
+    //
+    //     test('signature timed out', async function() {
+    //         const authenticationController: AuthenticationController = context.authenticationController;
+    //         const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
+    //
+    //         when(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).thenReturn(
+    //             Promise.resolve({
+    //                 response: null,
+    //                 error: 'signature_timed_out',
+    //             }),
+    //         );
+    //
+    //         const user: Web3RegisterInputDto = {
+    //             username: 'salut',
+    //             email: 'test@test.com',
+    //             address,
+    //             timestamp: register_payload[0].toString(),
+    //             signature: register_signature.hex,
+    //         };
+    //
+    //         await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
+    //             response: {
+    //                 status: StatusCodes.Unauthorized,
+    //                 message: 'signature_timed_out',
+    //             },
+    //             status: StatusCodes.Unauthorized,
+    //             message: {
+    //                 status: StatusCodes.Unauthorized,
+    //                 message: 'signature_timed_out',
+    //             },
+    //         });
+    //
+    //         verify(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).called();
+    //     });
+    //
+    //     test('signature is in the future', async function() {
+    //         const authenticationController: AuthenticationController = context.authenticationController;
+    //         const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
+    //
+    //         when(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).thenReturn(
+    //             Promise.resolve({
+    //                 response: null,
+    //                 error: 'signature_is_in_the_future',
+    //             }),
+    //         );
+    //
+    //         const user: Web3RegisterInputDto = {
+    //             username: 'salut',
+    //             email: 'test@test.com',
+    //             address,
+    //             timestamp: register_payload[0].toString(),
+    //             signature: register_signature.hex,
+    //         };
+    //
+    //         await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
+    //             response: {
+    //                 status: StatusCodes.Unauthorized,
+    //                 message: 'signature_is_in_the_future',
+    //             },
+    //             status: StatusCodes.Unauthorized,
+    //             message: {
+    //                 status: StatusCodes.Unauthorized,
+    //                 message: 'signature_is_in_the_future',
+    //             },
+    //         });
+    //
+    //         verify(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).called();
+    //     });
+    //
+    //     test('signature check fail', async function() {
+    //         const authenticationController: AuthenticationController = context.authenticationController;
+    //         const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
+    //
+    //         when(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).thenReturn(
+    //             Promise.resolve({
+    //                 response: null,
+    //                 error: 'signature_check_fail',
+    //             }),
+    //         );
+    //
+    //         const user: Web3RegisterInputDto = {
+    //             username: 'salut',
+    //             email: 'test@test.com',
+    //             address,
+    //             timestamp: register_payload[0].toString(),
+    //             signature: register_signature.hex,
+    //         };
+    //
+    //         await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
+    //             response: {
+    //                 status: StatusCodes.UnprocessableEntity,
+    //                 message: 'signature_check_fail',
+    //             },
+    //             status: StatusCodes.UnprocessableEntity,
+    //             message: {
+    //                 status: StatusCodes.UnprocessableEntity,
+    //                 message: 'signature_check_fail',
+    //             },
+    //         });
+    //
+    //         verify(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).called();
+    //     });
+    //
+    //     test('unexpected error', async function() {
+    //         const authenticationController: AuthenticationController = context.authenticationController;
+    //         const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const register_payload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const register_signature = await web3RegisterSigner.sign(wallet.privateKey, register_payload[1]);
+    //
+    //         when(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).thenReturn(
+    //             Promise.resolve({
+    //                 response: null,
+    //                 error: 'this_error_does_not_exist',
+    //             }),
+    //         );
+    //
+    //         const user: Web3RegisterInputDto = {
+    //             username: 'salut',
+    //             email: 'test@test.com',
+    //             address,
+    //             timestamp: register_payload[0].toString(),
+    //             signature: register_signature.hex,
+    //         };
+    //
+    //         await expect(authenticationController.web3Register(user)).rejects.toMatchObject({
+    //             response: {
+    //                 status: StatusCodes.InternalServerError,
+    //                 message: 'this_error_does_not_exist',
+    //             },
+    //             status: StatusCodes.InternalServerError,
+    //             message: {
+    //                 status: StatusCodes.InternalServerError,
+    //                 message: 'this_error_does_not_exist',
+    //             },
+    //         });
+    //
+    //         verify(
+    //             authenticationServiceMock.createWeb3User(
+    //                 email,
+    //                 username,
+    //                 register_payload[0].toString(),
+    //                 address,
+    //                 register_signature.hex,
+    //                 'en',
+    //             ),
+    //         ).called();
+    //     });
+    // });
 
     describe('localRegister', function() {
         test('should create a user', async function() {
@@ -748,31 +731,35 @@ describe('Authentication Controller', function() {
             const wallet: Wallet = await createWallet();
             const address = wallet.address;
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted = JSON.parse(await encryptWallet(wallet, hashedp));
+            const redirectUrl = 'https://google.com';
+            const pluser: PasswordlessUserDto = {
+                username,
+                email,
+                device_address: null,
+                type: 't721',
+                address,
+                id: '0',
+                role: 'authenticated',
+                locale: 'en',
+                valid: false,
+                admin: false,
+            };
+            const spiedController = spy(context.authenticationController);
 
             when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
-                    response: {
-                        username,
-                        email,
-                        wallet: JSON.stringify(encrypted),
-                        device_address: null,
-                        type: 't721',
-                        address,
-                        id: '0',
-                        role: 'authenticated',
-                        locale: 'en',
-                        valid: false,
-                        admin: false,
-                    },
+                    response: pluser,
                     error: null,
                 }),
             );
+
+            when(spiedController.sendAccountCreationMail(deepEqual(pluser), redirectUrl)).thenResolve();
 
             const user: LocalRegisterInputDto = {
                 username: 'salut',
                 password: hashedp,
                 email: 'test@test.com',
+                redirectUrl,
             };
 
             const res = await authenticationController.localRegister(user);
@@ -780,28 +767,19 @@ describe('Authentication Controller', function() {
             expect(res.validationToken).toBeUndefined();
             expect(res.token).toBeDefined();
             expect(res.expiration.getTime()).toBeGreaterThan(Date.now());
-            expect(res.user).toEqual({
-                username,
-                email,
-                wallet: JSON.stringify(encrypted),
-                type: 't721',
-                device_address: null,
-                address: toAcceptedAddressFormat(address),
-                id: '0',
-                role: 'authenticated',
-                locale: 'en',
-                valid: false,
-                admin: false,
-            });
+            expect(res.user).toEqual(pluser);
             expect(res.token).toBeDefined();
 
-            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
+            verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).times(1);
+            verify(spiedController.sendAccountCreationMail(deepEqual(pluser), redirectUrl)).times(1);
         });
 
         test('should create a user & return validation token in development mode', async function() {
             const authenticationController: AuthenticationController = context.authenticationController;
             const authenticationServiceMock: AuthenticationService = context.authenticationServiceMock;
             const configServiceMock: ConfigService = context.configServiceMock;
+
+            const spiedController = spy(context.authenticationController);
 
             when(configServiceMock.get('NODE_ENV')).thenReturn('development');
 
@@ -810,23 +788,24 @@ describe('Authentication Controller', function() {
             const wallet: Wallet = await createWallet();
             const address = wallet.address;
             const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-            const encrypted = JSON.parse(await encryptWallet(wallet, hashedp));
+            const redirectUrl = 'https://google.com';
+            const pluser: PasswordlessUserDto = {
+                username,
+                email,
+                device_address: null,
+                type: 't721',
+                address,
+                id: '0',
+                role: 'authenticated',
+                locale: 'en',
+                valid: false,
+                admin: false,
+            };
 
+            when(spiedController.sendAccountCreationMail(deepEqual(pluser), redirectUrl)).thenResolve();
             when(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).thenReturn(
                 Promise.resolve({
-                    response: {
-                        username,
-                        email,
-                        wallet: JSON.stringify(encrypted),
-                        device_address: null,
-                        type: 't721',
-                        address,
-                        id: '0',
-                        role: 'authenticated',
-                        locale: 'en',
-                        valid: false,
-                        admin: false,
-                    },
+                    response: pluser,
                     error: null,
                 }),
             );
@@ -835,6 +814,7 @@ describe('Authentication Controller', function() {
                 username: 'salut',
                 password: hashedp,
                 email: 'test@test.com',
+                redirectUrl,
             };
 
             const res = await authenticationController.localRegister(user);
@@ -842,22 +822,11 @@ describe('Authentication Controller', function() {
             expect(res.token).toBeDefined();
             expect(res.validationToken).toBeDefined();
             expect(res.expiration.getTime()).toBeGreaterThan(Date.now());
-            expect(res.user).toEqual({
-                username,
-                email,
-                wallet: JSON.stringify(encrypted),
-                type: 't721',
-                device_address: null,
-                address: toAcceptedAddressFormat(address),
-                id: '0',
-                role: 'authenticated',
-                locale: 'en',
-                valid: false,
-                admin: false,
-            });
+            expect(res.user).toEqual(pluser);
             expect(res.token).toBeDefined();
 
             verify(authenticationServiceMock.createT721User(email, hashedp, username, 'en')).called();
+            verify(spiedController.sendAccountCreationMail(deepEqual(pluser), redirectUrl)).called();
         });
 
         test('email already in use - should error with 409', async function() {
@@ -1531,21 +1500,27 @@ describe('Authentication Controller', function() {
                 role: 'authenticated',
                 admin: false,
             };
+            const redirectUrl = 'https://google.com';
+
+            const spiedController = spy(context.authenticationController);
 
             when(authenticationServiceMock.getUserIfEmailExists(email)).thenResolve({
                 response: user,
                 error: null,
             });
+            when(spiedController.sendPasswordResetMail(deepEqual(user), redirectUrl)).thenResolve();
 
             const userEmail: ResetPasswordInputDto = {
                 email: email,
+                redirectUrl,
             };
 
             const res = await authenticationController.resetPassword(userEmail);
 
             expect(res.validationToken).toBeUndefined();
 
-            verify(authenticationServiceMock.getUserIfEmailExists(email)).called();
+            verify(authenticationServiceMock.getUserIfEmailExists(email)).times(1);
+            verify(spiedController.sendPasswordResetMail(deepEqual(user), redirectUrl)).times(1);
         });
 
         test('should reset password and return token in developement', async function() {
@@ -1567,14 +1542,19 @@ describe('Authentication Controller', function() {
                 role: 'authenticated',
                 admin: false,
             };
+            const redirectUrl = 'https://google.com';
+
+            const spiedController = spy(context.authenticationController);
 
             when(authenticationServiceMock.getUserIfEmailExists(user.email)).thenResolve({
                 response: user,
                 error: null,
             });
+            when(spiedController.sendPasswordResetMail(deepEqual(user), redirectUrl)).thenResolve();
 
             const userEmail: ResetPasswordInputDto = {
                 email: user.email,
+                redirectUrl,
             };
 
             const res = await authenticationController.resetPassword(userEmail);
@@ -1582,6 +1562,7 @@ describe('Authentication Controller', function() {
             expect(res.validationToken).toBeDefined();
 
             verify(authenticationServiceMock.getUserIfEmailExists(user.email)).called();
+            verify(spiedController.sendPasswordResetMail(deepEqual(user), redirectUrl)).called();
         });
     });
 

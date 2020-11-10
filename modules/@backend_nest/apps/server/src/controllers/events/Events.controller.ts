@@ -38,7 +38,6 @@ import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import { EventsCountInputDto } from '@app/server/controllers/events/dto/EventsCountInput.dto';
 import { EventsCountResponseDto } from '@app/server/controllers/events/dto/EventsCountResponse.dto';
 import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
-import { RocksideCreateEOAResponse, RocksideService } from '@lib/common/rockside/Rockside.service';
 import { closestCity } from '@common/geoloc';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
@@ -55,6 +54,8 @@ import { EventsStatusResponseDto } from '@app/server/controllers/events/dto/Even
 import { isNil } from '@nestjs/common/utils/shared.utils';
 import { StripeInterfaceEntity } from '@lib/common/stripeinterface/entities/StripeInterface.entity';
 import { EventsOwnerResponseDto } from '@app/server/controllers/events/dto/EventsOwnerResponse.dto';
+
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 /**
  * Events controller to create and fetch events
@@ -78,7 +79,6 @@ export class EventsController extends ControllerBasics<EventEntity> {
         private readonly datesService: DatesService,
         private readonly categoriesService: CategoriesService,
         private readonly uuidToolsService: UUIDToolService,
-        private readonly rocksideService: RocksideService,
         private readonly stripeInterfacesService: StripeInterfacesService,
     ) {
         super();
@@ -259,10 +259,13 @@ export class EventsController extends ControllerBasics<EventEntity> {
         const eventId = this.uuidToolsService.generate();
 
         // Generate Ethereum Identity
-        const rocksideEOA = await this._serviceCall<RocksideCreateEOAResponse>(
-            this.rocksideService.createEOA(),
-            StatusCodes.InternalServerError,
-        );
+        // const rocksideEOA = await this._serviceCall<RocksideCreateEOAResponse>(
+        //     this.rocksideService.createEOA(),
+        //     StatusCodes.InternalServerError,
+        // );
+        const rocksideEOA = {
+            address: ZERO_ADDRESS,
+        };
 
         // Compute address and groupId
         const eventAddress = toAcceptedAddressFormat(rocksideEOA.address);

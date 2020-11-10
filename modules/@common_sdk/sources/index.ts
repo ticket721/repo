@@ -21,14 +21,14 @@ import {
     resendValidation,
 } from './app/api/authentication';
 
-// ACTIONS
-import {
-    actionsConsumeUpdate,
-    actionsCreate,
-    actionsSearch,
-    actionsCount,
-    actionsUpdate,
-} from './app/api/actions';
+// // ACTIONS
+// import {
+//     actionsConsumeUpdate,
+//     actionsCreate,
+//     actionsSearch,
+//     actionsCount,
+//     actionsUpdate,
+// } from './app/api/actions';
 
 // IMAGES
 import { uploadImage } from './app/api/images';
@@ -50,11 +50,11 @@ import {
     eventsGuestlist, eventsAddDate, eventsEdit, eventsStatus, eventsBindStripeInterface, eventsOwner,
 } from './app/api/events';
 
-// TXS
-import { txsCount, txsInfos, txsSearch, txsSubscribe } from './app/api/txs';
+// // TXS
+// import { txsCount, txsInfos, txsSearch, txsSubscribe } from './app/api/txs';
 
-// CONTRACTS
-import { contractsFetch } from './app/api/contracts';
+// // CONTRACTS
+// import { contractsFetch } from './app/api/contracts';
 
 // CATEGORIES
 import {
@@ -63,11 +63,11 @@ import {
     categoriesSearch, categoriesTicketCount,
 } from './app/api/categories';
 
-// RIGHTS
-import { rightsSearch } from './app/api/rights';
+// // RIGHTS
+// import { rightsSearch } from './app/api/rights';
 
-// METADATAS
-import { metadatasFetch } from './app/api/metadatas';
+// // METADATAS
+// import { metadatasFetch } from './app/api/metadatas';
 
 // TICKETS
 import {
@@ -129,11 +129,11 @@ export class T721SDK {
         this.users.me = this.users.me.bind(this);
         this.users.setDeviceAddress = this.users.setDeviceAddress.bind(this);
 
-        this.actions.search = this.actions.search.bind(this);
-        this.actions.count = this.actions.count.bind(this);
-        this.actions.update = this.actions.update.bind(this);
-        this.actions.create = this.actions.create.bind(this);
-        this.actions.consumeUpdate = this.actions.consumeUpdate.bind(this);
+        // this.actions.search = this.actions.search.bind(this);
+        // this.actions.count = this.actions.count.bind(this);
+        // this.actions.update = this.actions.update.bind(this);
+        // this.actions.create = this.actions.create.bind(this);
+        // this.actions.consumeUpdate = this.actions.consumeUpdate.bind(this);
 
         this.dates.search = this.dates.search.bind(this);
         this.dates.homeSearch = this.dates.homeSearch.bind(this);
@@ -163,18 +163,18 @@ export class T721SDK {
         this.categories.owner = this.categories.owner.bind(this);
         this.categories.countTickets = this.categories.countTickets.bind(this);
 
-        this.rights.search = this.rights.search.bind(this);
+        // this.rights.search = this.rights.search.bind(this);
 
         this.images.upload = this.images.upload.bind(this);
 
-        this.txs.search = this.txs.search.bind(this);
-        this.txs.count = this.txs.count.bind(this);
-        this.txs.subscribe = this.txs.subscribe.bind(this);
-        this.txs.infos = this.txs.infos.bind(this);
+        // this.txs.search = this.txs.search.bind(this);
+        // this.txs.count = this.txs.count.bind(this);
+        // this.txs.subscribe = this.txs.subscribe.bind(this);
+        // this.txs.infos = this.txs.infos.bind(this);
 
-        this.contracts.fetch = this.contracts.fetch.bind(this);
+        // this.contracts.fetch = this.contracts.fetch.bind(this);
 
-        this.metadatas.fetch = this.metadatas.fetch.bind(this);
+        // this.metadatas.fetch = this.metadatas.fetch.bind(this);
 
         this.tickets.search = this.tickets.search.bind(this);
         this.tickets.count = this.tickets.count.bind(this);
@@ -331,13 +331,13 @@ export class T721SDK {
         setDeviceAddress: usersSetDeviceAddress,
     };
 
-    public actions = {
-        search: actionsSearch,
-        count: actionsCount,
-        update: actionsUpdate,
-        create: actionsCreate,
-        consumeUpdate: actionsConsumeUpdate,
-    };
+    // public actions = {
+    //     search: actionsSearch,
+    //     count: actionsCount,
+    //     update: actionsUpdate,
+    //     create: actionsCreate,
+    //     consumeUpdate: actionsConsumeUpdate,
+    // };
 
     public dates = {
         search: datesSearch,
@@ -364,9 +364,9 @@ export class T721SDK {
         bindStripeInterface: eventsBindStripeInterface,
     };
 
-    public rights = {
-        search: rightsSearch,
-    };
+    // public rights = {
+    //     search: rightsSearch,
+    // };
 
     public categories = {
         search: categoriesSearch,
@@ -383,20 +383,20 @@ export class T721SDK {
         upload: uploadImage,
     };
 
-    public txs = {
-        search: txsSearch,
-        count: txsCount,
-        subscribe: txsSubscribe,
-        infos: txsInfos,
-    };
+    // public txs = {
+    //     search: txsSearch,
+    //     count: txsCount,
+    //     subscribe: txsSubscribe,
+    //     infos: txsInfos,
+    // };
 
-    public contracts = {
-        fetch: contractsFetch,
-    };
+    // public contracts = {
+    //     fetch: contractsFetch,
+    // };
 
-    public metadatas = {
-        fetch: metadatasFetch,
-    };
+    // public metadatas = {
+    //     fetch: metadatasFetch,
+    // };
 
     public tickets = {
         search: ticketsSearch,

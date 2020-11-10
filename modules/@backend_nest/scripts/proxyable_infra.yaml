@@ -5,12 +5,3 @@ services:
         ports:
             - "32702:9042"
             - "32610:9200"
-    redis:
-        image: "redis:5.0.7"
-        ports:
-            - "32412:6379"
-    ganache:
-        image: "trufflesuite/ganache-cli:v6.7.0"
-        ports:
-            - "8545:8545"
-        command: ganache-cli -i 2702 -m "cross uniform panic climb universe awful surprise list dutch ability label cat" -l 8000000 -e 0xffffffffffffffff

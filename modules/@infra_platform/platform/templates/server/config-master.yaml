@@ -22,26 +22,8 @@ data:
     ELASTICSEARCH_PORT={{ required "[server] Missing config.elasticsearch.port value" .Values.config.elasticsearch.port }}
     ELASTICSEARCH_PROTOCOL={{ required "[server] Missing config.elasticsearch.protocol value" .Values.config.elasticsearch.protocol }}
 
-    ETHEREUM_NODE_HOST={{ required "[server] Missing config.ethereumNode.host value" .Values.config.ethereumNode.host }}
-    ETHEREUM_NODE_PORT={{ required "[server] Missing config.ethereumNode.port value" .Values.config.ethereumNode.port }}
-    ETHEREUM_NODE_PROTOCOL={{ required "[server] Missing config.ethereumNode.protocol value" .Values.config.ethereumNode.protocol }}
-    ETHEREUM_NODE_NETWORK_ID={{ required "[server] Missing config.ethereumNode.network_id value" .Values.config.ethereumNode.network_id }}
-    ETHEREUM_NODE_PATH={{ required "[server] Missing config.ethereumNode.path value" .Values.config.ethereumNode.path }}
-
-    TXS_BLOCK_THRESHOLD={{ required "[server] Missing config.txs.blockThreshold value" .Values.config.txs.blockThreshold }}
-    TXS_BLOCK_POLLING_REFRESH_RATE={{ required "[server] Missing config.txs.blockPollingRate value" .Values.config.txs.blockPollingRate }}
-    TXS_TARGET_GAS_PRICE={{ required "[server] Missing config.txs.targetGasPrice value" .Values.config.txs.targetGasPrice }}
-    TXS_GAS_LIMIT={{ required "[server] Missing config.txs.gasLimit value" .Values.config.txs.gasLimit }}
-
-    TICKETFORGE_SCOPE={{ required "[server] Missing config.ticketScope value" .Values.config.ticketScope }}
-
-    CONTRACTS_ARTIFACTS_PATH=../../artifacts/{{ required "[server] Missing config.artifact value" .Values.config.artifact }}
-
     BCRYPT_SALT_ROUNDS={{ required "[server] Missing config.jwt.rounds value" .Values.config.jwt.rounds }}
     JWT_EXPIRATION={{ required "[server] Missing config.jwt.expiration value" .Values.config.jwt.expiration }}
-
-    BULL_REDIS_HOST={{ required "[server] Missing config.redis.host value" .Values.config.redis.host }}
-    BULL_REDIS_PORT={{ required "[server] Missing config.redis.port value" .Values.config.redis.port }}
 
     AUTH_SIGNATURE_TIMEOUT=30000
 
@@ -54,18 +36,5 @@ data:
     IMAGE_S3_ACCESS_KEY_ID={{ required "[server] Missing config.s3.accessKeyId value" .Values.config.s3.accessKeyId }}
     IMAGE_S3_SECRET_ACCESS_KEY={{ required "[server] Missing config.s3.secretAccessKey value" .Values.config.s3.secretAccessKey }}
     IMAGE_S3_BUCKET_NAME={{ required "[server] Missing config.s3.bucketName value" .Values.config.s3.bucketName }}
-
-    GLOBAL_CONFIG_BLOCK_NUMBER_FETCHING_RATE={{ required "[server] Missing config.globalConfig.blockNumberFetchingRate value" .Values.config.globalConfig.blockNumberFetchingRate }}
-    GLOBAL_CONFIG_ETHEREUM_PRICE_FETCHING_RATE={{ required "[server] Missing config.globalConfig.ethereumPriceFetchingRate value" .Values.config.globalConfig.ethereumPriceFetchingRate }}
-    GLOBAL_CONFIG_BINANCE_MOCK={{ required "[server] Missing config.globalConfig.binanceMock value" .Values.config.globalConfig.binanceMock }}
-
-    CART_MAX_TICKET_PER_CART=5
-
-    ROCKSIDE_OPTS_BASE_URL={{ required "[server] Missing config.rockside.baseUrl value" .Values.config.rockside.baseUrl }}
-    ROCKSIDE_OPTS_NETWORK_ID={{ required "[server] Missing config.rockside.network_id value" .Values.config.rockside.network_id }}
-    ROCKSIDE_OPTS_NETWORK_NAME={{ required "[server] Missing config.rockside.network_name value" .Values.config.rockside.network_name }}
-    ROCKSIDE_FORWARDER_ADDRESS={{ required "[server] Missing config.rockside.forwarder_address value" .Values.config.rockside.forwarder_address }}
-
-    MINTER_INDEX=0
 
     FEATURE_FLAGS_CONFIG=/config/feature-flags.json

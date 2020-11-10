@@ -15,8 +15,6 @@
     "dependencies": {
         "@common/global": "1.0.0",
         "@common/sdk": "1.0.0",
-        "@embarklabs/subspace": "2.0.3",
-        "@embarklabs/subspace-react": "1.0.4",
         "@frontend/flib-react": "1.0.0",
         "@hapi/joi": "17.1.0",
         "@types/jest": "25.2.1",
@@ -55,7 +53,6 @@
         "styled-components": "5.1.0",
         "typescript": "3.7.5",
         "uuid": "8.0.0",
-        "web3": "1.2.6",
         "yup": "0.28.5"
     },
     "devDependencies": {
