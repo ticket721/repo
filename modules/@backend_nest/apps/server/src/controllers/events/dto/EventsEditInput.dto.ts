@@ -2,7 +2,8 @@ import { EventEntity } from '@lib/common/events/entities/Event.entity';
 import { ArrayMinSize, IsHexColor, IsOptional, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-export class EventsEditInputDto implements Partial<Pick<EventEntity, 'avatar' | 'name' | 'description' | 'signature_colors'>> {
+export class EventsEditInputDto
+    implements Partial<Pick<EventEntity, 'avatar' | 'name' | 'description' | 'signature_colors'>> {
     @ApiPropertyOptional({
         description: 'Event avatar',
     })

@@ -425,6 +425,32 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
             StatusCodes.InternalServerError,
         );
 
+        if (body.dates) {
+            const addDates = body.dates.filter(dateId => !category.dates.includes(dateId));
+
+            if (addDates.length > 0) {
+                await this.addDateLinks(
+                    category.id,
+                    {
+                        dates: addDates,
+                    },
+                    user,
+                );
+            }
+
+            const removeDates = category.dates.filter(dateId => !body.dates.includes(dateId));
+
+            if (removeDates.length > 0) {
+                await this.removeDateLinks(
+                    category.id,
+                    {
+                        dates: removeDates,
+                    },
+                    user,
+                );
+            }
+        }
+
         const updatedCategory = await this._crudCall(
             this.categoriesService.findOne(categoryId),
             StatusCodes.InternalServerError,
