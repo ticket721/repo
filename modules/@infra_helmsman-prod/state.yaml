@@ -192,7 +192,7 @@ apps:
     name: "redis"
     description: "Redis, Storage layer for the distributed tasks"
     namespace: "production"
-    enabled: true
+    enabled: false
     group: "critical"
     chart: "../@infra_redis/redis"
     version: "0.1.0"
@@ -221,9 +221,6 @@ apps:
 
       server.fsName: "${CONFIG_PRODUCTION_EFS_ID}"
 
-      config.ticketScope: "ticket721_0"
-      config.artifact: "live_ropsten"
-
       config.stripe.apiKey: "${CONFIG_PRODUCTION_STRIPE_APIKEY}"
 
       config.cassandra.host: "elassandra-cassandra"
@@ -236,39 +233,12 @@ apps:
       config.elasticsearch.port: "9200"
       config.elasticsearch.protocol: "http"
 
-      config.ethereumNode.host: "api.rockside.io"
-      config.ethereumNode.port: "443"
-      config.ethereumNode.protocol: "https"
-      config.ethereumNode.network_id: "3"
-      config.ethereumNode.path: "/ethereum/ropsten/jsonrpc"
-      config.ethereumNode.headers: '\{"apikey": "${CONFIG_PRODUCTION_ROCKSIDE_APIKEY}"\}'
-
-      config.redis.host: "redis-master"
-      config.redis.port: "6379"
-
       config.jwt.rounds: "9"
       config.jwt.secret: "${CONFIG_PRODUCTION_JWT_SECRET}"
       config.jwt.expiration: "30d"
 
-      config.txs.blockThreshold: "0"
-      config.txs.blockPollingRate: "1000"
-      config.txs.targetGasPrice: "15"
-      config.txs.gasLimit: "1000000"
-
-      config.globalConfig.blockNumberFetchingRate: "1000"
-      config.globalConfig.ethereumPriceFetchingRate: "1000"
-      config.globalConfig.binanceMock: "false"
-
-      config.bull.board: "true"
-
       config.mailjet.apiKey: "${CONFIG_PRODUCTION_MAILJET_APIKEY}"
       config.mailjet.apiSecret: "${CONFIG_PRODUCTION_MAILJET_APISECRET}"
-
-      config.rockside.baseUrl: "https://api.rockside.io"
-      config.rockside.apiKey: "${CONFIG_PRODUCTION_ROCKSIDE_APIKEY}"
-      config.rockside.network_id: "3"
-      config.rockside.network_name: "ropsten"
-      config.rockside.forwarder_address: "${CONFIG_PRODUCTION_FORWARDER_ADDRESS}"
 
       config.googleGeocodingApiKey: "${CONFIG_PRODUCTION_GCLOUD_GEOLOC_APIKEY}"
       config.serverEndpoint.host: "api.ticket721.com"
@@ -293,7 +263,6 @@ apps:
       config.staff.organizerUrl: "https://organizer.ticket721.com"
       config.staff.self: "https://staff.ticket721.com"
 
-      config.etherscanUrl: "${CONFIG_PRODUCTION_ETHERSCAN_URL}"
       config.bugReportLink: "${CONFIG_BUG_REPORT_LINK}"
 
       config.s3.region: "${CONFIG_PRODUCTION_IMAGE_S3_REGION}"
@@ -303,9 +272,6 @@ apps:
 
       server.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/server"
       server.image.tag: "${TAG}"
-
-      worker.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/worker"
-      worker.image.tag: "${TAG}"
 
       migrations.image.repository: "097558125954.dkr.ecr.eu-west-3.amazonaws.com/ticket721/migrations"
       migrations.image.tag: "${TAG}"

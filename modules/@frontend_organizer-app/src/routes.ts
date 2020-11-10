@@ -111,10 +111,5 @@ export const routes: RouteDatum[] = [
     {
         path: '/_/redirect/close',
         page: lazy(() => import('./routes/CloseRedirect')),
-    },
-    {
-        path: '/',
-        page: lazy(() => import('./routes/Dashboard')),
-        protected: true,
     }
 ];

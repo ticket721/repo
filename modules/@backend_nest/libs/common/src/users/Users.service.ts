@@ -104,6 +104,11 @@ export class UsersService {
         }
     }
 
+    /**
+     * Recover user cart
+     *
+     * @param id
+     */
     async recoverUserCart(id: string): Promise<ServiceResponse<string>> {
         try {
             const user: UserEntity = await this.usersRepository
@@ -120,7 +125,6 @@ export class UsersService {
                 error: null,
             };
         } catch (e) {
-            console.log(e);
             return {
                 response: null,
                 error: 'unexpected_error',

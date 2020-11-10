@@ -50,12 +50,18 @@ export class EventEntity {
     @GeneratedUUidColumn()
     id: string;
 
+    /**
+     * Custom fee to override static fees
+     */
     @Column({
         type: 'int',
     })
     // tslint:disable-next-line:variable-name
     custom_static_fee: number;
 
+    /**
+     * Custom fee to override percent fee
+     */
     @Column({
         type: 'double',
     })

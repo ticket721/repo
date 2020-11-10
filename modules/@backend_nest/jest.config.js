@@ -4,6 +4,11 @@ module.exports = {
     testMatch: [
         "**/*.spec.ts"
     ],
+    modulePathIgnorePatterns: [
+        '<rootDir>/libs/common/archive',
+        '<rootDir>/apps/worker/archive',
+        '<rootDir>/apps/server/archive',
+    ],
     moduleNameMapper: {
         '^@lib/common/(.*)$': '<rootDir>/libs/common/src/$1',
         '^@app/server/(.*)$': '<rootDir>/apps/server/src/$1',

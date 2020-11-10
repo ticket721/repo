@@ -35,5 +35,5 @@
             ]
         }
     },
-    "exclude": ["node_modules", "lib"]
+    "exclude": ["node_modules", "lib", "sources/app/archive"]
 }

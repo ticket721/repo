@@ -1,18 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PasswordlessUserDto } from './dto/PasswordlessUser.dto';
 import { compare, hash } from 'bcrypt';
-import { toAcceptedAddressFormat, isKeccak256, Web3LoginSigner, Web3RegisterSigner } from '@common/global';
+import { isKeccak256 } from '@common/global';
 import { UsersService } from '@lib/common/users/Users.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { Web3Service } from '@lib/common/web3/Web3.service';
-import { RocksideService } from '@lib/common/rockside/Rockside.service';
-import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
 import { PurchasesService } from '@lib/common/purchases/Purchases.service';
 import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
 import { PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
 import { CRUDResponse } from '@lib/common/crud/CRUDExtension.base';
+
+/**
+ * Placeholder address until Ethereum is reintegrated
+ */
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 /**
  * Authentication services and utilities
@@ -24,65 +26,15 @@ export class AuthenticationService {
      *
      * @param usersService
      * @param configService
-     * @param web3Service
-     * @param rocksideService
-     * @param metadatasService
      * @param purchasesService
      * @param uuidToolService
      */
     constructor /* instanbul ignore next */(
         private readonly usersService: UsersService,
         private readonly configService: ConfigService,
-        private readonly web3Service: Web3Service,
-        private readonly rocksideService: RocksideService,
-        private readonly metadatasService: MetadatasService,
         private readonly purchasesService: PurchasesService,
         private readonly uuidToolService: UUIDToolService,
     ) {}
-
-    /**
-     * Utility to verify if provided signature is bound to an account and is valid
-     *
-     * @param timestamp
-     * @param signature
-     */
-    async validateWeb3User(timestamp: string, signature: string): Promise<ServiceResponse<PasswordlessUserDto>> {
-        const networkId: number = await this.web3Service.net();
-
-        const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(networkId);
-
-        const verification: [boolean, string] = await web3LoginSigner.verifyAuthenticationProof(
-            signature,
-            parseInt(timestamp, 10),
-            parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT'), 10) * 1000,
-        );
-
-        if (verification[0] === false) {
-            return {
-                error: verification[1],
-                response: null,
-            };
-        }
-
-        const resp: ServiceResponse<UserDto> = await this.usersService.findByAddress(verification[1]);
-
-        if (resp.error) {
-            return resp;
-        }
-
-        if (resp.response !== null) {
-            const { password, ...ret } = resp.response;
-            return {
-                response: ret as PasswordlessUserDto,
-                error: null,
-            };
-        }
-
-        return {
-            response: null,
-            error: 'invalid_signature',
-        };
-    }
 
     /**
      * Utility to verify if any user exists with given email, and if provided
@@ -113,175 +65,6 @@ export class AuthenticationService {
         return {
             response: null,
             error: 'invalid_credentials',
-        };
-    }
-
-    /**
-     * Create new web3 account
-     *
-     * @param email
-     * @param username
-     * @param timestamp
-     * @param address Expected signing address
-     * @param signature Signature of a Web3Register payload
-     * @param locale
-     */
-    async createWeb3User(
-        email: string,
-        username: string,
-        timestamp: string,
-        address: string,
-        signature: string,
-        locale: string,
-    ): Promise<ServiceResponse<PasswordlessUserDto>> {
-        address = toAcceptedAddressFormat(address);
-
-        const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
-        if (emailUserResp.error) {
-            return emailUserResp;
-        }
-
-        const emailUser: UserDto = emailUserResp.response;
-        if (emailUser !== null) {
-            return {
-                response: null,
-                error: 'email_already_in_use',
-            };
-        }
-
-        const usernameUserResp: ServiceResponse<UserDto> = await this.usersService.findByUsername(username);
-        if (usernameUserResp.error) {
-            return usernameUserResp;
-        }
-
-        const usernameUser: UserDto = usernameUserResp.response;
-        if (usernameUser !== null) {
-            return {
-                response: null,
-                error: 'username_already_in_use',
-            };
-        }
-
-        const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(address);
-        if (addressUserResp.error) {
-            return addressUserResp;
-        }
-
-        const addressUser: UserDto = addressUserResp.response;
-        if (addressUser !== null) {
-            return {
-                response: null,
-                error: 'address_already_in_use',
-            };
-        }
-
-        const networkId: number = await this.web3Service.net();
-
-        const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(networkId);
-
-        const verification: [boolean, string] = await web3RegisterSigner.verifyRegistrationProof(
-            signature,
-            parseInt(timestamp, 10),
-            email,
-            username,
-            parseInt(this.configService.get('AUTH_SIGNATURE_TIMEOUT'), 10) * 1000,
-        );
-
-        if (verification[0] === false) {
-            return {
-                response: null,
-                error: verification[1],
-            };
-        }
-
-        if (verification[1] !== address) {
-            return {
-                response: null,
-                error: 'invalid_signature',
-            };
-        }
-
-        const id = this.uuidToolService.generate();
-
-        const initialPurchase: CRUDResponse<PurchaseEntity> = await this.purchasesService.create({
-            owner: id,
-            fees: [],
-            products: [],
-            currency: null,
-            payment: null,
-            payment_interface: null,
-            checked_out_at: null,
-            price: null,
-        });
-
-        if (initialPurchase.error) {
-            return {
-                error: initialPurchase.error,
-                response: null,
-            };
-        }
-
-        const purchase: PurchaseEntity = initialPurchase.response;
-
-        const newUser: ServiceResponse<UserDto> = await this.usersService.create({
-            id: UUIDToolService.fromString(id),
-            current_purchase: UUIDToolService.fromString(purchase.id),
-            email,
-            password: null,
-            username,
-            address,
-            device_address: null,
-            type: 'web3',
-            role: 'authenticated',
-            locale,
-            admin: false,
-        });
-
-        if (newUser.error) {
-            return newUser;
-        }
-
-        newUser.response.id = newUser.response.id.toString();
-
-        const creationMetadataRes = await this.metadatasService.attach(
-            'history',
-            'web3_user_create',
-            [
-                {
-                    type: 'user',
-                    id: newUser.response.id.toString(),
-                    field: 'id',
-                },
-            ],
-            [
-                {
-                    type: 'user',
-                    id: newUser.response.id.toString(),
-                    field: 'id',
-                },
-            ],
-            [],
-            {
-                date: {
-                    at: new Date(Date.now()),
-                },
-            },
-            newUser.response,
-            null,
-        );
-
-        if (creationMetadataRes.error) {
-            return {
-                error: 'cannot_create_activity_item',
-                response: null,
-            };
-        }
-
-        delete newUser.response.password;
-
-        return {
-            response: newUser.response,
-            error: null,
         };
     }
 
@@ -348,7 +131,13 @@ export class AuthenticationService {
             };
         }
 
-        const rocksideFinalAddress = await this.rocksideService.createIdentity();
+        // const rocksideFinalAddress = await this.rocksideService.createIdentity();
+        const rocksideFinalAddress = {
+            error: null,
+            response: {
+                address: ZERO_ADDRESS,
+            },
+        };
 
         if (rocksideFinalAddress.error) {
             return {
@@ -360,13 +149,14 @@ export class AuthenticationService {
         const addressUserResp: ServiceResponse<UserDto> = await this.usersService.findByAddress(
             rocksideFinalAddress.response.address,
         );
+
         if (addressUserResp.error) {
             return addressUserResp;
         }
 
         const addressUser: UserDto = addressUserResp.response;
 
-        if (addressUser !== null) {
+        if (rocksideFinalAddress.response.address !== ZERO_ADDRESS && addressUser !== null) {
             return {
                 response: null,
                 error: 'address_already_in_use',
@@ -422,41 +212,9 @@ export class AuthenticationService {
 
         newUser.response.id = newUser.response.id.toString();
 
-        const creationMetadataRes = await this.metadatasService.attach(
-            'history',
-            't721_user_create',
-            [
-                {
-                    type: 'user',
-                    id: newUser.response.id.toString(),
-                    field: 'id',
-                },
-            ],
-            [
-                {
-                    type: 'user',
-                    id: newUser.response.id.toString(),
-                    field: 'id',
-                },
-            ],
-            [],
-            {
-                date: {
-                    at: new Date(Date.now()),
-                },
-            },
-            newUser.response,
-            null,
-        );
-
-        if (creationMetadataRes.error) {
-            return {
-                error: 'cannot_create_activity_item',
-                response: null,
-            };
-        }
-
         delete newUser.response.password;
+        delete (newUser.response as any).current_purchase;
+        delete (newUser.response as any).past_purchases;
 
         return {
             response: newUser.response,
@@ -471,17 +229,19 @@ export class AuthenticationService {
      */
     async getUserIfEmailExists(email: string): Promise<ServiceResponse<PasswordlessUserDto>> {
         const emailUserResp: ServiceResponse<UserDto> = await this.usersService.findByEmail(email);
-        if (emailUserResp.error)
+        if (emailUserResp.error) {
             return {
                 response: null,
                 error: emailUserResp.error,
             };
-        else if (emailUserResp.response === null)
+        } else if (emailUserResp.response === null) {
             return {
                 response: null,
                 error: null,
             };
-        else delete emailUserResp.response.password;
+        } else {
+            delete emailUserResp.response.password;
+        }
         return {
             response: emailUserResp.response,
             error: null,

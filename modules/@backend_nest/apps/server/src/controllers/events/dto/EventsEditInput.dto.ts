@@ -2,7 +2,13 @@ import { EventEntity } from '@lib/common/events/entities/Event.entity';
 import { ArrayMinSize, IsHexColor, IsOptional, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
+/**
+ * Data model required when updating an event
+ */
 export class EventsEditInputDto implements Partial<Pick<EventEntity, 'avatar' | 'name' | 'description'>> {
+    /**
+     * Event avatar url
+     */
     @ApiPropertyOptional({
         description: 'Event avatar',
     })
@@ -10,6 +16,9 @@ export class EventsEditInputDto implements Partial<Pick<EventEntity, 'avatar' | 
     @IsOptional()
     avatar?: string;
 
+    /**
+     * Event name
+     */
     @ApiPropertyOptional({
         description: 'Event name',
     })
@@ -19,6 +28,9 @@ export class EventsEditInputDto implements Partial<Pick<EventEntity, 'avatar' | 
     @IsOptional()
     name?: string;
 
+    /**
+     * Event signature colors
+     */
     @ApiPropertyOptional({
         description: 'Signature colors',
     })
@@ -27,6 +39,9 @@ export class EventsEditInputDto implements Partial<Pick<EventEntity, 'avatar' | 
     // tslint:disable-next-line:variable-name
     signature_colors?: [string, string];
 
+    /**
+     * Event description
+     */
     @ApiPropertyOptional({
         description: 'Event description',
     })

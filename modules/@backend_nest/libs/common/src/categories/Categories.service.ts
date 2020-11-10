@@ -35,6 +35,11 @@ export class CategoriesService extends CRUDExtension<CategoriesRepository, Categ
         );
     }
 
+    /**
+     * Find all categories by group id
+     *
+     * @param groupId
+     */
     public async findAllByGroupId(groupId: string): Promise<ServiceResponse<CategoryEntity[]>> {
         // Recover Event
         const categoriesCountRes = await this.countElastic({
@@ -88,6 +93,11 @@ export class CategoriesService extends CRUDExtension<CategoriesRepository, Categ
         };
     }
 
+    /**
+     * Find a category by id
+     *
+     * @param categoryId
+     */
     async findOne(categoryId: string): Promise<ServiceResponse<CategoryEntity>> {
         // Recover Event
         const categoryRes = await this.search({
@@ -114,6 +124,12 @@ export class CategoriesService extends CRUDExtension<CategoriesRepository, Categ
         };
     }
 
+    /**
+     * Recover payment interface from currency and price
+     *
+     * @param currency
+     * @param price
+     */
     public static interfaceFromCurrencyAndPrice(currency: string, price: number): 'stripe' | 'none' {
         switch (currency) {
             case 'FREE': {

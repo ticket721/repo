@@ -161,8 +161,6 @@ const IsLive = (props: { subtitle: string; live: string; online_link: string }):
 };
 
 const getStatus = (start: Date, end: Date, onlineLink: string): string => {
-    return 'live';
-
     const now = Date.now();
 
     if (!onlineLink) {

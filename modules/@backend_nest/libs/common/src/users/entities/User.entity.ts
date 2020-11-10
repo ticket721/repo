@@ -23,12 +23,18 @@ export class UserEntity {
     @GeneratedUUidColumn()
     id: string;
 
+    /**
+     * Current purchase id
+     */
     @Column({
         type: 'uuid',
     })
     // tslint:disable-next-line:variable-name
     current_purchase: string;
 
+    /**
+     * Past purchases
+     */
     @Column({
         type: 'list',
         typeDef: '<uuid>',

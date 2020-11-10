@@ -5,6 +5,9 @@ import { OperationEntity } from '@lib/common/operations/entities/Operation.entit
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 
+/**
+ * Operation service
+ */
 @Injectable()
 export class OperationsService extends CRUDExtension<OperationsRepository, OperationEntity> {
     /**
@@ -33,6 +36,11 @@ export class OperationsService extends CRUDExtension<OperationsRepository, Opera
         );
     }
 
+    /**
+     * Find an operation by its id
+     *
+     * @param operationId
+     */
     async findOne(operationId: string): Promise<ServiceResponse<OperationEntity>> {
         // Recover Operation
         const operationRes = await this.search({

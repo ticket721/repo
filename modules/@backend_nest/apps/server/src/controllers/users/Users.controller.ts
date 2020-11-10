@@ -1,7 +1,6 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Get, HttpCode, Put, UseFilters, UseGuards } from '@nestjs/common';
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
-import { TxEntity } from '@lib/common/txs/entities/Tx.entity';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
@@ -13,6 +12,7 @@ import { UsersMeResponseDto } from '@app/server/controllers/users/dto/UsersMeRes
 import { UsersSetDeviceAddressInputDto } from '@app/server/controllers/users/dto/UsersSetDeviceAddressInput.dto';
 import { UsersSetDeviceAddressResponseDto } from '@app/server/controllers/users/dto/UsersSetDeviceAddressResponse.dto';
 import { UsersService } from '@lib/common/users/Users.service';
+import { UserEntity } from '@lib/common/users/entities/User.entity';
 
 /**
  * Users Controller. Fetch and recover users related information
@@ -20,7 +20,7 @@ import { UsersService } from '@lib/common/users/Users.service';
 @ApiBearerAuth()
 @ApiTags('users')
 @Controller('users')
-export class UsersController extends ControllerBasics<TxEntity> {
+export class UsersController extends ControllerBasics<UserEntity> {
     /**
      * Dependency Injection
      *

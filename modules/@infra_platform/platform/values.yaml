@@ -60,21 +60,3 @@ server:
     type: LoadBalancer
     port: 80
 
-worker:
-
-  slave:
-    replicas: 1
-
-  master:
-    replicas: 1
-
-  image:
-    repository: worker
-    pullPolicy: IfNotPresent
-    tag: "DEVELOPMENT"
-
-  service:
-    type: ClusterIP
-    port: 80
-
-

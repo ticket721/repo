@@ -6,7 +6,6 @@ import { Drawer as MUIDrawer, DrawerProps as MUIDrawerProps } from '@material-ui
 import { blurAndDarkenBackground }                            from '@frontend/core/lib/utils/style';
 import { useHistory }                                         from 'react-router';
 import { ArrowBackIos }                                       from '@material-ui/icons';
-import Activities                                             from '@frontend/core/lib/components/Profile/Activities';
 import ProfileRoot                                            from '@frontend/core/lib/components/Profile/Root';
 import Language                                               from '@frontend/core/lib/components/Profile/Language';
 import '../Translations/global';
@@ -28,18 +27,6 @@ export const DrawerAccount: React.FC<DrawerAccountProps> = ({route, onClose}: Dr
             {
                 route === 'root' ?
                     <ProfileRoot desktop={true}/> :
-                    null
-            }
-            {
-                route === 'activities' ?
-                    <>
-                        <BackArrow
-                            onClick={() => history.push(history.location.pathname + '?profile=root')}>
-                            <ArrowBackIos />
-                            <span>{t('back')}</span>
-                        </BackArrow>
-                        <Activities/>
-                    </> :
                     null
             }
             {

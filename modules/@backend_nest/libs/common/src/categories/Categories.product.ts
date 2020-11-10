@@ -20,14 +20,42 @@ import { OperationsService } from '@lib/common/operations/Operations.service';
 import { isNil } from 'lodash';
 import { DatesService } from '@lib/common/dates/Dates.service';
 
+/**
+ * Static ticket limit per cart
+ */
 const TICKETS_PER_CART_LIMIT = 5;
+/**
+ * Static online ticket limit per cart
+ */
 const ONLINE_CATEGORY_PER_USER_LIMIT = 1;
+/**
+ * Global limit of category
+ */
 const CATEGORY_PER_USER_LIMIT = 5;
+/**
+ * Static fee
+ */
 const STATIC_FEE = 100;
+/**
+ * Percent fee
+ */
 const PERCENT_FEE = 0.01;
 
+/**
+ * Class to handle all products of category type
+ */
 @Injectable()
 export class CategoriesProduct implements ProductCheckerServiceBase {
+    /**
+     * Dependency Injection
+     *
+     * @param categoriesService
+     * @param timeToolService
+     * @param ticketsService
+     * @param winstonLoggerService
+     * @param operationsService
+     * @param moduleRef
+     */
     constructor(
         private readonly categoriesService: CategoriesService,
         private readonly timeToolService: TimeToolService,
@@ -37,6 +65,13 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         private readonly moduleRef: ModuleRef,
     ) {}
 
+    /**
+     * Check current cart status
+     *
+     * @param user
+     * @param purchaseEntity
+     * @param productIdx
+     */
     async check(
         user: UserDto,
         purchaseEntity: PurchaseEntity,
@@ -124,6 +159,13 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    /**
+     * Internal helper to update the payment method if necessary
+     *
+     * @param purchaseEntity
+     * @param categoryEntity
+     * @param product
+     */
     updatePaymentDetails(
         purchaseEntity: PurchaseEntity,
         categoryEntity: CategoryEntity,
@@ -172,6 +214,13 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         }
     }
 
+    /**
+     * Update cart product list
+     *
+     * @param purchaseEntity
+     * @param categoryEntity
+     * @param product
+     */
     updateProductList(
         purchaseEntity: PurchaseEntity,
         categoryEntity: CategoryEntity,
@@ -202,6 +251,10 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    /**
+     * Checks that the targeted product is available
+     * @param category
+     */
     async categoryStatusCheck(category: CategoryEntity): Promise<ServiceResponse<void>> {
         if (category.status === 'preview') {
             return {
@@ -215,6 +268,10 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    /**
+     * Checks that the sale for the category is live
+     * @param category
+     */
     async categoryDatesCheck(category: CategoryEntity): Promise<ServiceResponse<void>> {
         if (new Date(category.sale_end).getTime() < this.timeToolService.now().getTime()) {
             return {
@@ -228,6 +285,13 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    /**
+     * Check that there are tickets left
+     *
+     * @param purchase
+     * @param category
+     * @param product
+     */
     async categoryCountCheck(
         purchase: PurchaseEntity,
         category: CategoryEntity,
@@ -255,6 +319,12 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    /**
+     * Check if all products are from the same group id
+     *
+     * @param category
+     * @param products
+     */
     async categoryCoherenceCheck(category: CategoryEntity, products: Product[]): Promise<ServiceResponse<void>> {
         const currentGroupId = category.group_id;
 
@@ -273,6 +343,13 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    /**
+     * Check if user isn't breaking the limits
+     *
+     * @param user
+     * @param purchase
+     * @param product
+     */
     async checkLimits(user: UserDto, purchase: PurchaseEntity, product: Product): Promise<ServiceResponse<void>> {
         const ticketList = purchase.products
             .filter((p: Product): boolean => p.type === 'category')
@@ -293,6 +370,11 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    /**
+     * Recover category type between physical or live
+     *
+     * @param category
+     */
     async getCategoryType(category: CategoryEntity): Promise<ServiceResponse<'physical' | 'online'>> {
         const datesService = this.moduleRef.get(DatesService, {
             strict: false,
@@ -321,6 +403,13 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    /**
+     * Check category speciifc limits
+     *
+     * @param user
+     * @param product
+     * @param category
+     */
     async checkCategoryLimits(
         user: UserDto,
         product: Product,
@@ -392,6 +481,13 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    /**
+     * Add a new category to the cart
+     *
+     * @param user
+     * @param purchaseEntity
+     * @param product
+     */
     async add(
         user: UserDto,
         purchaseEntity: PurchaseEntity,
@@ -480,6 +576,15 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    /**
+     * Creates an operation to register a ticket modification or creation
+     *
+     * @param user
+     * @param purchaseEntity
+     * @param productIdx
+     * @param tickets
+     * @param status
+     */
     async createOperation(
         user: UserDto,
         purchaseEntity: PurchaseEntity,
@@ -526,6 +631,13 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    /**
+     * Succesful checkout callback
+     *
+     * @param user
+     * @param purchaseEntity
+     * @param productIdx
+     */
     async ok(
         user: UserDto,
         purchaseEntity: PurchaseEntity,
@@ -580,6 +692,13 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    /**
+     * Invalid checkout callback
+     *
+     * @param user
+     * @param purchaseEntity
+     * @param productIdx
+     */
     async ko(
         user: UserDto,
         purchaseEntity: PurchaseEntity,
@@ -605,6 +724,11 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    /**
+     * Recover payment interface id required
+     *
+     * @param groupId
+     */
     async interfaceId(groupId: string): Promise<ServiceResponse<string>> {
         const eventsService = this.moduleRef.get(EventsService, {
             strict: false,
@@ -627,6 +751,13 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         };
     }
 
+    /**
+     * Compute fees for the provided product
+     *
+     * @param user
+     * @param purchaseEntity
+     * @param product
+     */
     async fees(user: UserDto, purchaseEntity: PurchaseEntity, product: Product): Promise<ServiceResponse<Fee>> {
         const eventsService = this.moduleRef.get(EventsService, {
             strict: false,

@@ -7,6 +7,9 @@ import { IsObject } from 'class-validator';
  * The actionset will be destroyed
  */
 export class EventsBuildInputDto {
+    /**
+     * New event creation payload
+     */
     @ApiProperty({
         description: 'Event creation payload',
     })

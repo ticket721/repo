@@ -38,7 +38,6 @@ import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import { EventsCountInputDto } from '@app/server/controllers/events/dto/EventsCountInput.dto';
 import { EventsCountResponseDto } from '@app/server/controllers/events/dto/EventsCountResponse.dto';
 import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
-import { RocksideCreateEOAResponse, RocksideService } from '@lib/common/rockside/Rockside.service';
 import { closestCity } from '@common/geoloc';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
@@ -57,6 +56,11 @@ import { StripeInterfaceEntity } from '@lib/common/stripeinterface/entities/Stri
 import { EventsOwnerResponseDto } from '@app/server/controllers/events/dto/EventsOwnerResponse.dto';
 
 /**
+ * Placeholder address
+ */
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+/**
  * Events controller to create and fetch events
  */
 @ApiBearerAuth()
@@ -70,7 +74,6 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param datesService
      * @param categoriesService
      * @param uuidToolsService
-     * @param rocksideService
      * @param stripeInterfacesService
      */
     constructor(
@@ -78,7 +81,6 @@ export class EventsController extends ControllerBasics<EventEntity> {
         private readonly datesService: DatesService,
         private readonly categoriesService: CategoriesService,
         private readonly uuidToolsService: UUIDToolService,
-        private readonly rocksideService: RocksideService,
         private readonly stripeInterfacesService: StripeInterfacesService,
     ) {
         super();
@@ -101,6 +103,11 @@ export class EventsController extends ControllerBasics<EventEntity> {
         };
     }
 
+    /**
+     * Recover event owner
+     *
+     * @param eventId
+     */
     @Get('/owner/:event')
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
@@ -130,6 +137,13 @@ export class EventsController extends ControllerBasics<EventEntity> {
         };
     }
 
+    /**
+     * Internal helper to create event dates
+     *
+     * @param body
+     * @param event
+     * @private
+     */
     private async createDates(body: EventsBuildInputDto, event: EventEntity): Promise<DateEntity[]> {
         const dates: DateEntity[] = [];
 
@@ -184,6 +198,14 @@ export class EventsController extends ControllerBasics<EventEntity> {
         return dates;
     }
 
+    /**
+     * Internal helper to create categories
+     *
+     * @param body
+     * @param event
+     * @param dates
+     * @private
+     */
     private async createCategories(
         body: EventsBuildInputDto,
         event: EventEntity,
@@ -258,11 +280,9 @@ export class EventsController extends ControllerBasics<EventEntity> {
         // Generate Event ID
         const eventId = this.uuidToolsService.generate();
 
-        // Generate Ethereum Identity
-        const rocksideEOA = await this._serviceCall<RocksideCreateEOAResponse>(
-            this.rocksideService.createEOA(),
-            StatusCodes.InternalServerError,
-        );
+        const rocksideEOA = {
+            address: ZERO_ADDRESS,
+        };
 
         // Compute address and groupId
         const eventAddress = toAcceptedAddressFormat(rocksideEOA.address);
@@ -299,10 +319,24 @@ export class EventsController extends ControllerBasics<EventEntity> {
         };
     }
 
+    /**
+     * Internal helper to check if user is event owner
+     *
+     * @param event
+     * @param user
+     * @private
+     */
     private static isEventOwner(event: EventEntity, user: UserDto): boolean {
         return event.owner === user.id;
     }
 
+    /**
+     * Add a date to an event
+     *
+     * @param body
+     * @param user
+     * @param eventId
+     */
     @Post('/:event/date')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
@@ -390,6 +424,13 @@ export class EventsController extends ControllerBasics<EventEntity> {
         };
     }
 
+    /**
+     * Edit an event
+     *
+     * @param body
+     * @param user
+     * @param eventId
+     */
     @Put('/:event')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
@@ -441,6 +482,13 @@ export class EventsController extends ControllerBasics<EventEntity> {
         };
     }
 
+    /**
+     * Bind stripe interface to event
+     *
+     * @param body
+     * @param user
+     * @param eventId
+     */
     @Put('/:event/bind-stripe-interface')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
@@ -514,6 +562,14 @@ export class EventsController extends ControllerBasics<EventEntity> {
         };
     }
 
+    /**
+     * Resolve statuses updates
+     *
+     * @param dates
+     * @param categories
+     * @param input
+     * @private
+     */
     private resolveCategoryStatuses(
         dates: DateEntity[],
         categories: CategoryEntity[],
@@ -578,6 +634,13 @@ export class EventsController extends ControllerBasics<EventEntity> {
         return [categories, ret];
     }
 
+    /**
+     * Resolves statuses updates
+     *
+     * @param dates
+     * @param input
+     * @private
+     */
     private resolveDateStatuses(
         dates: DateEntity[],
         input: { [key: string]: boolean },
@@ -615,6 +678,15 @@ export class EventsController extends ControllerBasics<EventEntity> {
         return [dates, ret];
     }
 
+    /**
+     * Update event date and category entities statuses
+     *
+     * @param eventId
+     * @param eventStatus
+     * @param dateEdits
+     * @param categoryEdits
+     * @private
+     */
     private async updateEntities(
         eventId: string,
         eventStatus: boolean,
@@ -667,6 +739,13 @@ export class EventsController extends ControllerBasics<EventEntity> {
         }
     }
 
+    /**
+     * Check the interfaces required by the event
+     *
+     * @param event
+     * @param categories
+     * @private
+     */
     private async verifyEventStripeInterfaceNeeds(event: EventEntity, categories: CategoryEntity[]): Promise<void> {
         const stripeInterfaceRequired: boolean =
             categories.filter((cat: CategoryEntity): boolean => cat.interface === 'stripe').length !== 0;
@@ -716,6 +795,14 @@ export class EventsController extends ControllerBasics<EventEntity> {
         }
     }
 
+    /**
+     * Check if event can be published
+     *
+     * @param event
+     * @param dates
+     * @param categories
+     * @private
+     */
     private async verifyEventPublishability(
         event: EventEntity,
         dates: DateEntity[],
@@ -724,6 +811,13 @@ export class EventsController extends ControllerBasics<EventEntity> {
         await this.verifyEventStripeInterfaceNeeds(event, categories);
     }
 
+    /**
+     * Updated statuses of the event, its dates and its categories
+     *
+     * @param body
+     * @param user
+     * @param eventId
+     */
     @Put('/:event/status')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())

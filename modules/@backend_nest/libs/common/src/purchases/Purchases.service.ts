@@ -14,8 +14,14 @@ import { UsersService } from '@lib/common/users/Users.service';
 import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 import { MINUTE } from '@lib/common/utils/time';
 
+/**
+ * Expiration of the cart
+ */
 const CART_EXPIRATION = 15 * MINUTE;
 
+/**
+ * Service to handle all the purchases logics
+ */
 @Injectable()
 export class PurchasesService extends CRUDExtension<PurchasesRepository, PurchaseEntity> {
     /**
@@ -50,6 +56,11 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         );
     }
 
+    /**
+     * Find one purchase entity by its id
+     *
+     * @param purchaseId
+     */
     async findOne(purchaseId: string): Promise<ServiceResponse<PurchaseEntity>> {
         // Recover Purchase
         const purchaseRes = await this.search({
@@ -76,6 +87,12 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         };
     }
 
+    /**
+     * Check if any duplicates in the products
+     *
+     * @param products
+     * @private
+     */
     private checkDuplicates(products: Product[]): boolean {
         for (let idx = 0; idx < products.length; ++idx) {
             const product: Product = products[idx];
@@ -94,6 +111,12 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         return false;
     }
 
+    /**
+     * Recover interface id linked to the purchase
+     *
+     * @param purchase
+     * @private
+     */
     private async recoverInterfaceId(purchase: PurchaseEntity): Promise<ServiceResponse<string>> {
         const product = purchase.products[0];
 
@@ -104,6 +127,13 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         return productHandler.interfaceId(product.group_id);
     }
 
+    /**
+     * Recover the fees for the purchase
+     *
+     * @param user
+     * @param purchase
+     * @private
+     */
     private async recoverFees(user: UserDto, purchase: PurchaseEntity): Promise<ServiceResponse<Fee[]>> {
         const ret: Fee[] = [];
 
@@ -138,6 +168,13 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         };
     }
 
+    /**
+     * Triggers a checkout on a purchase
+     *
+     * @param user
+     * @param purchase
+     * @param payload
+     */
     async checkout(
         user: UserDto,
         purchase: PurchaseEntity,
@@ -182,6 +219,14 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         };
     }
 
+    /**
+     * Tests if adding a product to the cart generates errors
+     *
+     * @param user
+     * @param purchase
+     * @param products
+     * @private
+     */
     private async drySetCartProducts(
         user: UserDto,
         purchase: PurchaseEntity,
@@ -255,6 +300,13 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         }
     }
 
+    /**
+     * Change current cart products
+     *
+     * @param user
+     * @param purchase
+     * @param products
+     */
     async setCartProducts(
         user: UserDto,
         purchase: PurchaseEntity,
@@ -396,6 +448,12 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         }
     }
 
+    /**
+     * update payment status
+     *
+     * @param user
+     * @param purchase
+     */
     async updatePaymentStatus(user: UserDto, purchase: PurchaseEntity): Promise<ServiceResponse<PurchaseEntity>> {
         if (purchase.payment !== null && purchase.payment.status === 'waiting') {
             const paymentInterfaceIdRes = await this.recoverInterfaceId(purchase);
@@ -454,6 +512,12 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         };
     }
 
+    /**
+     * Check current cart status
+     *
+     * @param user
+     * @param purchase
+     */
     async checkCartStatus(user: UserDto, purchase: PurchaseEntity): Promise<ServiceResponse<PurchaseError[]>> {
         const errors: PurchaseError[] = [];
 
@@ -510,6 +574,13 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         };
     }
 
+    /**
+     * Cancel a payment
+     *
+     * @param payment
+     * @param paymentInterfaceId
+     * @private
+     */
     private async cancelPayment(payment: Payment, paymentInterfaceId: string): Promise<ServiceResponse<void>> {
         const paymentHandler: PaymentHandlerBaseService = this.moduleRef.get(`payment/${payment.type}`, {
             strict: false,
@@ -518,6 +589,11 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         return paymentHandler.cancel(payment, paymentInterfaceId);
     }
 
+    /**
+     * Check if purchase is expired
+     *
+     * @param purchase
+     */
     async isExpired(purchase: PurchaseEntity): Promise<boolean> {
         if (purchase.checked_out_at && purchase.payment && purchase.payment.status === 'waiting') {
             const now = this.timeToolService.now();
@@ -528,6 +604,16 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         return false;
     }
 
+    /**
+     * Run checkout modifications
+     *
+     * @param user
+     * @param purchase
+     * @param payload
+     * @param paymentInterfaceId
+     * @param feeDescriptions
+     * @private
+     */
     private async runCheckout(
         user: UserDto,
         purchase: PurchaseEntity,
@@ -620,6 +706,12 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         }
     }
 
+    /**
+     * Close the purchase entity
+     *
+     * @param user
+     * @param purchase
+     */
     async close(user: UserDto, purchase: PurchaseEntity): Promise<ServiceResponse<PurchaseError[]>> {
         const errors: PurchaseError[] = [];
 

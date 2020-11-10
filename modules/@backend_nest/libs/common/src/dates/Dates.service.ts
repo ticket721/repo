@@ -39,12 +39,22 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> {
         );
     }
 
+    /**
+     * Create a new date entity
+     *
+     * @param date
+     */
     public async createDate(
         date: Omit<DateEntity, 'id' | 'event' | 'created_at' | 'updated_at'>,
     ): Promise<CRUDResponse<DateEntity>> {
         return this.create(date);
     }
 
+    /**
+     * List all dates linked to a groupe ID
+     *
+     * @param groupId
+     */
     public async findAllByGroupId(groupId: string): Promise<ServiceResponse<DateEntity[]>> {
         const datesCountRes = await this.countElastic({
             body: {
@@ -98,6 +108,11 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> {
         };
     }
 
+    /**
+     * Find a date by its id
+     *
+     * @param dateId
+     */
     async findOne(dateId: string): Promise<ServiceResponse<DateEntity>> {
         // Recover Event
         const dateRes = await this.search({
@@ -124,6 +139,12 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> {
         };
     }
 
+    /**
+     * Remove category link from date
+     *
+     * @param dateId
+     * @param category
+     */
     public async removeCategory(dateId: string, category: CategoryEntity): Promise<CRUDResponse<DateEntity>> {
         const dateRes = await this.findOne(dateId);
 
@@ -193,6 +214,12 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> {
         };
     }
 
+    /**
+     * Add category link to date
+     *
+     * @param dateId
+     * @param category
+     */
     public async addCategory(dateId: string, category: CategoryEntity): Promise<CRUDResponse<DateEntity>> {
         const dateRes = await this.findOne(dateId);
 
