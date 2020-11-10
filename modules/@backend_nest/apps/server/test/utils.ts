@@ -24,16 +24,8 @@ let docker_compose_up_proc = null;
 
 const readyLogs = [
     {
-        line: 'Listening on 0.0.0.0:8545',
-        image: 'ganache',
-    },
-    {
         line: 'Elassandra started',
         image: 'elassandra',
-    },
-    {
-        line: 'Ready to accept connections',
-        image: 'redis',
     },
 ];
 

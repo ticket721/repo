@@ -54,7 +54,6 @@ describe('AppController (e2e)', () => {
 
         if (shouldDeploy()) {
             await startDocker();
-            await prepare();
             await runMigrations(cassandraPort, elasticSearchPort);
         }
 
