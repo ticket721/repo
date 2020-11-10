@@ -213,6 +213,8 @@ export class AuthenticationService {
         newUser.response.id = newUser.response.id.toString();
 
         delete newUser.response.password;
+        delete (newUser.response as any).current_purchase;
+        delete (newUser.response as any).past_purchases;
 
         return {
             response: newUser.response,

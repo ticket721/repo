@@ -75,6 +75,8 @@ export class AuthenticationController {
     /* istanbul ignore next */
     async localLogin(@Request() req): Promise<LocalLoginResponseDto> {
         try {
+            delete req.user.current_purchase;
+            delete req.user.past_purchases;
             return {
                 user: req.user,
                 token: this.jwtService.sign({
@@ -156,7 +158,7 @@ export class AuthenticationController {
         const validationLink = `${redirectUrl}?token=${encodeURIComponent(b64Encode(signature))}`;
 
         const emailResp = await this.emailService.send({
-            template: 'passwordReset',
+            template: 'resetPassword',
             to: data.email,
             locale: data.locale,
             locals: {
@@ -379,6 +381,8 @@ export class AuthenticationController {
                 StatusCodes.InternalServerError,
             );
         }
+        delete (validatedUserRes.response as any).current_purchase;
+        delete (validatedUserRes.response as any).past_purchases;
         return {
             user: validatedUserRes.response,
         };
@@ -430,6 +434,8 @@ export class AuthenticationController {
                     );
             }
         } else {
+            delete (resp.response as any).current_purchase;
+            delete (resp.response as any).past_purchases;
             return resp.response;
         }
     }
@@ -489,6 +495,9 @@ export class AuthenticationController {
                 StatusCodes.InternalServerError,
             );
         }
+
+        delete (validatedUserRes.response as any).current_purchase;
+        delete (validatedUserRes.response as any).past_purchases;
 
         return {
             user: validatedUserRes.response,

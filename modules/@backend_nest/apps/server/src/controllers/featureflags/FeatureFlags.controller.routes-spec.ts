@@ -1,28 +1,6 @@
 import { T721SDK } from '@common/sdk';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
-import {
-    admin_setAdmin,
-    createEvent,
-    createEventActionSet,
-    createExpensiveEvent,
-    createPaymentIntent,
-    editEventActionSet,
-    failWithCode,
-    getPIFromCart,
-    getSDKAndUser,
-    getUser,
-    validateCardPayment,
-    waitForActionSet,
-    waitForTickets,
-} from '../../../test/utils';
-import { ActionSetEntity } from '@lib/common/actionsets/entities/ActionSet.entity';
-import { StatusCodes } from '@lib/common/utils/codes.value';
-import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
-import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
-import { DateEntity } from '@lib/common/dates/entities/Date.entity';
-import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
-import { uuidEq } from '@common/global';
-import { Stripe } from 'stripe';
+import { admin_setAdmin, getSDKAndUser } from '../../../test/utils';
 
 export default function(getCtx: () => { ready: Promise<void> }) {
     return function() {
