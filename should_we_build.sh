@@ -1,7 +1,6 @@
 #! /bin/bash
 
    ./find-ecr-image.sh ticket721/server ${TAG} \
-&& ./find-ecr-image.sh ticket721/worker ${TAG} \
 && ./find-ecr-image.sh ticket721/migrations ${TAG} \
 && ./find-ecr-image.sh ticket721/organizer ${TAG} \
 && ./find-ecr-image.sh ticket721/t721app ${TAG} \
