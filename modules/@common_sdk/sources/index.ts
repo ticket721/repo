@@ -21,15 +21,6 @@ import {
     resendValidation,
 } from './app/api/authentication';
 
-// // ACTIONS
-// import {
-//     actionsConsumeUpdate,
-//     actionsCreate,
-//     actionsSearch,
-//     actionsCount,
-//     actionsUpdate,
-// } from './app/api/actions';
-
 // IMAGES
 import { uploadImage } from './app/api/images';
 
@@ -50,24 +41,12 @@ import {
     eventsGuestlist, eventsAddDate, eventsEdit, eventsStatus, eventsBindStripeInterface, eventsOwner,
 } from './app/api/events';
 
-// // TXS
-// import { txsCount, txsInfos, txsSearch, txsSubscribe } from './app/api/txs';
-
-// // CONTRACTS
-// import { contractsFetch } from './app/api/contracts';
-
 // CATEGORIES
 import {
     categoriesAddDateLinks,
     categoriesCount, categoriesDelete, categoriesEdit, categoriesOwner, categoriesRemoveDateLinks,
     categoriesSearch, categoriesTicketCount,
 } from './app/api/categories';
-
-// // RIGHTS
-// import { rightsSearch } from './app/api/rights';
-
-// // METADATAS
-// import { metadatasFetch } from './app/api/metadatas';
 
 // TICKETS
 import {
@@ -129,12 +108,6 @@ export class T721SDK {
         this.users.me = this.users.me.bind(this);
         this.users.setDeviceAddress = this.users.setDeviceAddress.bind(this);
 
-        // this.actions.search = this.actions.search.bind(this);
-        // this.actions.count = this.actions.count.bind(this);
-        // this.actions.update = this.actions.update.bind(this);
-        // this.actions.create = this.actions.create.bind(this);
-        // this.actions.consumeUpdate = this.actions.consumeUpdate.bind(this);
-
         this.dates.search = this.dates.search.bind(this);
         this.dates.homeSearch = this.dates.homeSearch.bind(this);
         this.dates.fuzzySearch = this.dates.fuzzySearch.bind(this);
@@ -163,18 +136,7 @@ export class T721SDK {
         this.categories.owner = this.categories.owner.bind(this);
         this.categories.countTickets = this.categories.countTickets.bind(this);
 
-        // this.rights.search = this.rights.search.bind(this);
-
         this.images.upload = this.images.upload.bind(this);
-
-        // this.txs.search = this.txs.search.bind(this);
-        // this.txs.count = this.txs.count.bind(this);
-        // this.txs.subscribe = this.txs.subscribe.bind(this);
-        // this.txs.infos = this.txs.infos.bind(this);
-
-        // this.contracts.fetch = this.contracts.fetch.bind(this);
-
-        // this.metadatas.fetch = this.metadatas.fetch.bind(this);
 
         this.tickets.search = this.tickets.search.bind(this);
         this.tickets.count = this.tickets.count.bind(this);

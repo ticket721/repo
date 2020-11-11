@@ -7,8 +7,7 @@ module.exports = {
     ],
     moduleNameMapper: {
         '^@lib/common/(.*)$': '<rootDir>/libs/common/src/$1',
-        '^@app/server/(.*)$': '<rootDir>/apps/server/src/$1',
-        '^@app/worker/(.*)$': '<rootDir>/apps/worker/src/$1'
+        '^@app/server/(.*)$': '<rootDir>/apps/server/src/$1'
     },
     coveragePathIgnorePatterns: [
         '<rootDir>/libs/common/src/logger',
@@ -20,7 +19,6 @@ module.exports = {
 
         // Not testing main files
         '<rootDir>/apps/server/src/main.ts',
-        '<rootDir>/apps/worker/src/main.ts',
 
         // Not testing certain types of files
         '<rootDir>(.*).module.ts', // Useless to test modules

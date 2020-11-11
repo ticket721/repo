@@ -4,7 +4,6 @@ import { v4 }                         from 'uuid';
 import { useRequest }              from '@frontend/core/lib/hooks/useRequest';
 
 import { useTranslation }  from 'react-i18next';
-import './locales';
 import { FullPageLoading, Error, Button } from '@frontend/flib-react/lib/components';
 import styled              from 'styled-components';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
@@ -66,6 +65,9 @@ export const EventsDashboard: React.FC = () => {
                 <NoEvent>
                     <NoEventMsg>{t('no_event_msg')}</NoEventMsg>
                     <Button
+                        style={{
+                            width: 200
+                        }}
                     title={t('create_event')}
                     variant={'primary'}
                     onClick={() => history.push('/create-event')}/>
@@ -107,6 +109,10 @@ const EventsDashboardContainer = styled.div`
 const NoEvent = styled.div`
     width: 100%;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 `;
 
 const NoEventMsg = styled.span`

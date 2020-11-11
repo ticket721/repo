@@ -111,6 +111,7 @@ const ValidateEmailContainer = styled.div`
     background: ${(props: IValidateEmailContainerInputProps) =>
         props.mobile ? 'none' : 'linear-gradient(91.44deg, #241f33 0.31%, #1b1726 99.41%)'};
     border-radius: 15px;
+    padding: ${(props) => (props.mobile ? 0 : props.theme.regularSpacing)};
 `;
 
 const MessageFirstLine = styled.span`

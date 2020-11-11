@@ -50,6 +50,7 @@ const SubTitleContainer = styled.div`
     margin-top: ${(props) => props.theme.regularSpacing};
     padding: ${(props) => props.theme.regularSpacing};
     width: 100%;
+    max-width: 500px;
 `;
 
 const SubTitle = styled.span`
@@ -171,6 +172,7 @@ const CurrencySelectInput = styled(SelectInput)`
 
 const CurrencySelectInputContainer = styled.div`
     width: 100%;
+    max-width: 500px;
     padding-left: ${(props) => props.theme.regularSpacing};
     padding-right: ${(props) => props.theme.regularSpacing};
 `;

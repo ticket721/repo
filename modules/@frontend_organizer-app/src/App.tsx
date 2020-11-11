@@ -1,5 +1,5 @@
 import React, {
-    Suspense
+    Suspense, useContext,
 } from 'react';
 import {
     Redirect,
@@ -19,10 +19,24 @@ import MediaQuery           from 'react-responsive';
 import { routes }           from './routes';
 import { FullPageLoading }  from '@frontend/flib-react/lib/components';
 import './shared/Translations/global';
-import { UserContextGuard } from '@frontend/core/lib/utils/UserContext';
-import { FeatureFlag }      from '@frontend/core/lib/components/FeatureFlag';
+import { UserContext, UserContextGuard } from '@frontend/core/lib/utils/UserContext';
+import { FeatureFlag }                   from '@frontend/core/lib/components/FeatureFlag';
 import { ProtectedByOwnership } from '@frontend/core/lib/components/ProtectedByOwnership';
 import { EventsDrawer } from './components/EventsDrawer';
+
+const EventsDrawerWrapper = (): JSX.Element => {
+
+    const location = useLocation();
+    const user  = useContext(UserContext);
+
+    return <>
+        {
+            (location.pathname.startsWith('/event') || location.pathname === '/') && user?.valid === true ?
+                <EventsDrawer/> :
+                null
+        }
+    </>
+}
 
 const App: React.FC = () => {
     const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
@@ -43,11 +57,7 @@ const App: React.FC = () => {
                                 null
                         }
                     </MediaQuery>
-                    {
-                        location.pathname.startsWith('/event') || location.pathname === '/' ?
-                        <EventsDrawer/> :
-                        null
-                    }
+                    <EventsDrawerWrapper/>
                     <Suspense fallback={<FullPageLoading/>}>
                         <Switch location={location} key={location.pathname}>
                             {

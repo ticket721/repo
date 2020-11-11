@@ -6,13 +6,11 @@ module.exports = {
     ],
     modulePathIgnorePatterns: [
         '<rootDir>/libs/common/archive',
-        '<rootDir>/apps/worker/archive',
-        '<rootDir>/apps/server/archive',
+        '<rootDir>/apps/server/archive'
     ],
     moduleNameMapper: {
         '^@lib/common/(.*)$': '<rootDir>/libs/common/src/$1',
-        '^@app/server/(.*)$': '<rootDir>/apps/server/src/$1',
-        '^@app/worker/(.*)$': '<rootDir>/apps/worker/src/$1'
+        '^@app/server/(.*)$': '<rootDir>/apps/server/src/$1'
     },
     // collectCoverageFrom: [
     //     '<rootDir>/libs/common/src/**/*.ts',
@@ -29,7 +27,6 @@ module.exports = {
 
         // Not testing main files
         '<rootDir>/apps/server/src/main.ts',
-        '<rootDir>/apps/worker/src/main.ts',
 
         // Not testing certain types of files
         '<rootDir>(.*).module.ts', // Useless to test modules
