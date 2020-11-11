@@ -7,8 +7,7 @@
     "license": "MIT",
     "scripts": {
         "build:server": "nest build server",
-        "build:worker": "nest build worker",
-        "build": "rimraf dist && yarn build:server && yarn build:worker",
+        "build": "rimraf dist && yarn build:server",
         "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
         "format:check": "prettier --check \"apps/**/*.ts\" \"libs/**/*.ts\"",
         "start": "nest start",

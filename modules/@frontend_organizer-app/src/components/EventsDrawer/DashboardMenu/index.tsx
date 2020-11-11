@@ -10,6 +10,12 @@ import './locales';
 import styled from 'styled-components';
 import { useHistory } from 'react-router';
 
+const NoEventsTitle = styled.span`
+  font-size: 14px;
+  opacity: 0.5;
+  margin-left: 16px;
+`
+
 export const DashboardMenu: React.FC = () => {
     const [ t ] = useTranslation('dashboard_menu');
     const token = useToken();
@@ -51,6 +57,9 @@ export const DashboardMenu: React.FC = () => {
     return <DashboardMenuContainer>
         <Title>{t('dashboard_title')}</Title>
         {
+            eventsResp.data.events.length > 0
+
+            ?
             eventsResp.data.events.map(event => (
                 <Link
                 key={event.id}
@@ -59,6 +68,9 @@ export const DashboardMenu: React.FC = () => {
                     <Icon icon={'arrow'} size={'16px'} color={'white'}/>
                     </Link>
             ))
+
+                :
+                <NoEventsTitle>{t('no_events')}</NoEventsTitle>
         }
     </DashboardMenuContainer>;
 }

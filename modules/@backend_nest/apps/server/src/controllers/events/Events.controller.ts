@@ -746,19 +746,41 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param categories
      * @private
      */
-    private async verifyEventStripeInterfaceNeeds(event: EventEntity, categories: CategoryEntity[]): Promise<void> {
+    private async verifyEventStripeInterfaceNeeds(
+        user: UserDto,
+        event: EventEntity,
+        categories: CategoryEntity[],
+    ): Promise<void> {
         const stripeInterfaceRequired: boolean =
             categories.filter((cat: CategoryEntity): boolean => cat.interface === 'stripe').length !== 0;
 
         if (stripeInterfaceRequired) {
             if (isNil(event.stripe_interface)) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.Unauthorized,
-                        message: 'no_stripe_interface_bound',
-                    },
-                    StatusCodes.Unauthorized,
+                let ownerStripeInterface = await this._crudCall(
+                    this.stripeInterfacesService.recoverUserInterface(user),
+                    StatusCodes.InternalServerError,
                 );
+
+                if (ownerStripeInterface === null) {
+                    ownerStripeInterface = await this._crudCall(
+                        this.stripeInterfacesService.createStripeInterface(user),
+                        StatusCodes.InternalServerError,
+                    );
+                }
+
+                await this._crudCall(
+                    this.eventsService.update(
+                        {
+                            id: event.id,
+                        },
+                        {
+                            stripe_interface: ownerStripeInterface.id,
+                        },
+                    ),
+                    StatusCodes.InternalServerError,
+                );
+
+                event.stripe_interface = ownerStripeInterface.id;
             }
 
             const stripeInterfaceRes = await this._crudCall(
@@ -798,17 +820,19 @@ export class EventsController extends ControllerBasics<EventEntity> {
     /**
      * Check if event can be published
      *
+     * @param user
      * @param event
      * @param dates
      * @param categories
      * @private
      */
     private async verifyEventPublishability(
+        user: UserDto,
         event: EventEntity,
         dates: DateEntity[],
         categories: CategoryEntity[],
     ): Promise<void> {
-        await this.verifyEventStripeInterfaceNeeds(event, categories);
+        await this.verifyEventStripeInterfaceNeeds(user, event, categories);
     }
 
     /**
@@ -860,7 +884,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         if (!isNil(body.event)) {
             if (body.event === true && event.status === 'preview') {
-                await this.verifyEventPublishability(event, dates, categories);
+                await this.verifyEventPublishability(user, event, dates, categories);
 
                 eventStatus = true;
                 event.status = 'live';
