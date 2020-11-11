@@ -1,6 +1,4 @@
 import React                      from 'react';
-import { useSelector }            from 'react-redux';
-import { T721AppState }           from '../../redux';
 import { useTranslation }         from 'react-i18next';
 import { useRequest }             from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
@@ -9,6 +7,7 @@ import { CategoryEntity }         from '@common/sdk/lib/@backend_nest/libs/commo
 import { TicketEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
 import { EventsFetcher }          from './EventsFetcher';
 import { isRequestError }         from '@frontend/core/lib/utils/isRequestError';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 interface DatesFetcherProps {
     uuid: string;
@@ -23,7 +22,7 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
         categories
     }: DatesFetcherProps) => {
 
-    const token = useSelector((state: T721AppState) => state.auth.token.value);
+    const token = useToken();
     const [ t ] = useTranslation(['wallet', 'common']);
 
     const datesResp = useRequest<DatesSearchResponseDto>({

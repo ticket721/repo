@@ -49,7 +49,7 @@ export const ValidateEmailComponent = () => {
 
     const resendEmail = () => {
         if (!lazyResendEmail.response.called) {
-            lazyResendEmail.lazyRequest([token.value, `${getEnv().REACT_APP_SELF}/validate-email`, multiplicator], {
+            lazyResendEmail.lazyRequest([token, `${getEnv().REACT_APP_SELF}/validate-email`, multiplicator], {
                 force: true,
             });
             setLastCalled(multiplicator);
