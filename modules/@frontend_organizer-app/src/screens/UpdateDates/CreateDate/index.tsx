@@ -114,7 +114,8 @@ export const CreateDate: React.FC = () => {
     const onSubmit = (date: DateCreationPayload) => addDate([
         token,
         eventId,
-        {date}
+        {date},
+        v4(),
     ], { force: true });
 
     const formik = useFormik({
@@ -130,7 +131,7 @@ export const CreateDate: React.FC = () => {
     const buildForm = (setFieldValue: any) => {
         switch (currentStep) {
             case 0: return <GeneralInfoForm nameUpdate={(name) => setFieldValue('info.name', name)}/>;
-            case 1: return <StylesForm parentField={'imagesMetadata'}/>;
+            case 1: return <StylesForm eventName={formik.values.textMetadata.name} parentField={'imagesMetadata'}/>;
             case 2: return <DatesAndTypologyForm parentField={'info'}/>;
             default: return <></>;
         }
@@ -229,7 +230,7 @@ const Container = styled.div`
 
 const PositionedStepper = styled.div`
     position: fixed;
-    left: ${props => props.theme.doubleSpacing};
+    left: calc(350px + ${props => props.theme.doubleSpacing});
     top: calc(50vh - 80px + 4 * 8px);
 `;
 

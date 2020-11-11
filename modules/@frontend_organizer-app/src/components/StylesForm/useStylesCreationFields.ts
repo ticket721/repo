@@ -6,47 +6,31 @@ import { useTranslation }              from 'react-i18next';
 import './locales';
 
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 import Vibrant from 'node-vibrant';
 import { ColorResult } from 'react-color';
-import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
-import { v4 } from 'uuid';
 
-import { useToken } from  '@frontend/core/lib/hooks/useToken';
-import { ImagesUploadResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/images/dto/ImagesUploadResponse.dto';
-
-export const useStylesCreationFields = (parentField?: string): {
+export const useStylesCreationFields = (parentField?: string, onCreation?: boolean): {
     avatarProps: FilesUploaderProps,
     primaryColorProps: ColorPickerProps,
     secondaryColorProps: ColorPickerProps,
-    preview: string,
 } => {
-    const dispatch = useDispatch();
     const [ t ] = useTranslation(['event_styles', 'react_dropzone_errors']);
 
-    const token = useToken();
-    const [uploadImgUuid] = useState<string>(v4() + '@upload-img');
- 
-    const [ loadingImg, setLoadingImg ] = useState<boolean>(false);
-    const [ preview, setPreview ] = useState<string>('');
     const [ presetColors, setPresetColors ] = useState<string[]>([]);
+
+    const [ reader ] = useState<FileReader>(new FileReader());
 
     const [ avatarField, avatarMeta, avatarHelper ] = useField<string>(`${parentField ? parentField + '.' : ''}avatar`);
     const [ primaryColorField,, primaryColorHelper ] = useField<string>(`${parentField ? parentField + '.' : ''}signatureColors[0]`);
     const [ secondaryColorField,, secondaryColorHelper ] = useField<string>(`${parentField ? parentField + '.' : ''}signatureColors[1]`);
 
-    const { response: uploadImgResp, lazyRequest: uploadImg } = useLazyRequest<ImagesUploadResponseDto>('images.upload', uploadImgUuid);
+    const uploadImages = async (files: File[], previews: string[]) => {
+        if (onCreation) {
+            reader.readAsDataURL(files[0]);
+        }
 
-    const uploadImages = (files: File[], _: string[]) => {
-        setLoadingImg(true);
-        const formData = new FormData();
-        files.forEach((file) => formData.append('images', file));
-        uploadImg([
-            token,
-            formData,
-            {},
-        ], { force: true });
+        avatarHelper.setValue(previews[0]);
+        generatePresetColors(previews[0]);
     };
 
     const removeImage = () => {
@@ -55,7 +39,11 @@ export const useStylesCreationFields = (parentField?: string): {
         primaryColorHelper.setValue('');
         secondaryColorHelper.setValue('');
         setPresetColors([]);
-        setPreview('');
+
+        if (onCreation) {
+            localStorage.removeItem('event-creation-image-content-type');
+            localStorage.removeItem('event-creation-image');
+        }
     };
 
     const handleDropErrors = (errors: DropError[]) => {
@@ -93,28 +81,14 @@ export const useStylesCreationFields = (parentField?: string): {
         });
 
     useEffect(() => {
-        if (uploadImgResp.data?.urls.length > 0) {
-            avatarHelper.setValue(uploadImgResp.data.urls[0]);
-            setLoadingImg(false);
+        if (onCreation) {
+            reader.onloadend = () => {
+                localStorage.setItem('event-creation-image-content-type', (reader.result as string).split(',')[0].match(/(image\/.+);/)[1]);
+                localStorage.setItem('event-creation-image', (reader.result as string).split(',')[1] as string);
+            };
         }
-        // eslint-disable-next-line
-    }, [uploadImgResp.data]);
-
-    useEffect(() => {
-        if (uploadImgResp.error) {
-            dispatch(PushNotification(t('upload_error'), 'error'));
-            setLoadingImg(false);
-        }
-        // eslint-disable-next-line
-    }, [uploadImgResp.error]);
-
-    useEffect(() => {
-        if (avatarField.value) {
-            setPreview(avatarField.value);
-            generatePresetColors(avatarField.value);
-        }
-        // eslint-disable-next-line
-    }, [avatarField.value]);
+    // eslint-disable-next-line
+    }, [onCreation]);
 
     return {
         avatarProps: {
@@ -128,9 +102,9 @@ export const useStylesCreationFields = (parentField?: string): {
             onRemove: removeImage,
             width: '600px',
             height: '300px',
-            previewPaths: [preview],
+            previewPaths: avatarField.value ? [avatarField.value] : undefined,
             error: handleCoverError(),
-            loading: loadingImg,
+            loading: false,
         },
         primaryColorProps: {
             label: t('primary_color'),
@@ -146,6 +120,5 @@ export const useStylesCreationFields = (parentField?: string): {
             color: secondaryColorField.value,
             handleChange: (color: ColorResult) => secondaryColorHelper.setValue(color.hex),
         },
-        preview,
     }
 };

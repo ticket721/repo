@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -22,6 +22,7 @@ import { checkEventGenericInfos, EventGenericInfosPayload } from '@common/global
 import { eventParam } from '../types';
 import { EventEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
 import { EditEventFields } from './EditEventFields';
+import { v4 } from 'uuid';
 
 const defaultValues: EventGenericInfosPayload = {
     name: '',
@@ -35,13 +36,10 @@ export const EditEvent: React.FC = () => {
 
     const dispatch = useDispatch();
 
-    const { pathname } = useLocation();
-    const subform = pathname.substring(pathname.lastIndexOf('/') + 1);
-
     const { eventId } = useParams<eventParam>();
 
-    const [fetchUuid] = React.useState('@fetch-event' + eventId);
-    const [editUuid] = React.useState('@edit-event' + eventId);
+    const [fetchUuid] = React.useState('@fetch-event' + v4());
+    const [editUuid] = React.useState('@edit-event' + v4());
     const token = useToken();
 
     const [ initialValues, setInitialValues ] = useState<EventGenericInfosPayload>(defaultValues);
@@ -63,11 +61,19 @@ export const EditEvent: React.FC = () => {
 
     const { response: editResp, lazyRequest: editEvent } = useLazyRequest<EventsEditResponseDto>('events.edit', editUuid);
 
-    const onSubmit = (event: EventGenericInfosPayload) => editEvent([
-        token,
-        eventId,
-        {...event}
-    ], { force: true });
+    const onSubmit = (event: EventGenericInfosPayload) => {
+            editEvent([
+            token,
+            eventId,
+            {
+                name: event.name,
+                description: event.description,
+                avatar: event.avatar,
+                signature_colors: event.signatureColors,
+            },
+            v4(),
+        ], { force: true });
+    };
 
     const formik = useFormik({
         initialValues,

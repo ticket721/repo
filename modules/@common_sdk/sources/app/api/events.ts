@@ -76,7 +76,7 @@ export async function eventsStatus(
 ): Promise<AxiosResponse<EventsStatusResponseDto>> {
     const self: T721SDK = this;
 
-    return self.post<EventsStatusInputDto>(`/events/${event}/status`, {
+    return self.put<EventsStatusInputDto>(`/events/${event}/status`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
@@ -114,7 +114,6 @@ export async function eventsEdit(
     query: EventsEditInputDto,
 ): Promise<AxiosResponse<EventsEditResponseDto>> {
     const self: T721SDK = this;
-
     return self.put<EventsEditInputDto>(`/events/${event}`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',

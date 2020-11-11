@@ -30,4 +30,5 @@ const Label = styled.span`
     margin-left: 4px;
     color: white;
     font-size: 10px;
+    white-space: nowrap;
 `;

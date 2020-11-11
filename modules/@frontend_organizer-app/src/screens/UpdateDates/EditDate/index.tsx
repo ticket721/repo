@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Redirect, useLocation, useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -27,6 +27,7 @@ import { DatesAndTypologyForm }                                      from '../..
 import { useLazyRequest }                                            from '@frontend/core/lib/hooks/useLazyRequest';
 import { isRequestError }                                            from '@frontend/core/lib/utils/isRequestError';
 import { getEnv }                                                    from '@frontend/core/lib/utils/getEnv';
+import { v4 } from 'uuid';
 
 const subFormsTitle = {
     'dates-typology': 'date_and_typology_title',
@@ -66,8 +67,8 @@ export const EditDate: React.FC = () => {
 
     const { dateId } = useParams<dateParam>();
 
-    const [fetchUuid] = React.useState('@fetch-date' + dateId);
-    const [editUuid] = React.useState('@edit-date' + dateId);
+    const [fetchUuid] = React.useState('@fetch-date' + v4());
+    const [editUuid] = React.useState('@edit-date' + v4());
     const token = useToken();
 
     const [ initialValues, setInitialValues ] = useState<DateCreationPayload>(defaultValues);
@@ -96,8 +97,8 @@ export const EditDate: React.FC = () => {
             case 'dates-typology':
                 return <DatesAndTypologyForm
                     parentField={'info'}/>;
-            case 'styles': return <StylesForm parentField={'imagesMetadata'}/>;
-            default: return <Redirect to={'/'}/>;
+            case 'styles': return <StylesForm eventName={formik.values.textMetadata.name} parentField={'imagesMetadata'}/>;
+            default: return <DatesAndTypologyForm parentField={'info'}/>;
         }
     };
 
@@ -110,7 +111,8 @@ export const EditDate: React.FC = () => {
                 textMetadata: nullifyUnsetSocials(date.textMetadata),
                 info: formatDateTypology(date.info),
             }
-        }
+        },
+        v4(),
     ], { force: true });
 
     const formik = useFormik({

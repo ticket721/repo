@@ -6,20 +6,21 @@ import { ComponentsPreview } from './ComponentsPreview';
 
 import { useStylesCreationFields } from './useStylesCreationFields';
 
-export const StylesForm: React.FC<{ parentField?: string }> = ({ parentField }) => {
-    const { avatarProps, primaryColorProps, secondaryColorProps, preview } = useStylesCreationFields(parentField);
+export const StylesForm: React.FC<{ eventName: string, parentField?: string, onCreation?: boolean }> = ({ eventName, parentField, onCreation }) => {
+    const { avatarProps, primaryColorProps, secondaryColorProps } = useStylesCreationFields(parentField, onCreation);
 
     return (
         <StylesContainer>
             <FilesUploader {...avatarProps} />
-            <ColorPickerContainer disabled={!preview}>
+            <ColorPickerContainer disabled={!avatarProps.previewPaths}>
                 <ColorPicker {...primaryColorProps} />
                 <ColorPicker {...secondaryColorProps} />
             </ColorPickerContainer>
             {
-                preview && primaryColorProps.color !== '' &&
+                avatarProps.previewPaths && primaryColorProps.color !== '' &&
                 <ComponentsPreview
-                previewSrc={preview}
+                eventName={eventName}
+                previewSrc={avatarProps.previewPaths[0]}
                 colors={[
                     primaryColorProps.color,
                     secondaryColorProps.color

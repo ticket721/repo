@@ -29,7 +29,7 @@ export const EditEventFields: React.FC = () => {
             maxChar={10000}
             error={evaluateError(descMeta)}
             />
-            <StylesForm/>
+            <StylesForm eventName={nameField.value}/>
         </EditEventFieldsContainer>
     );
 };

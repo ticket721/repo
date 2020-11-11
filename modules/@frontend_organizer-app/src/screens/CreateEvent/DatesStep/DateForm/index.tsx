@@ -6,7 +6,7 @@ import './locales';
 import styled from 'styled-components';
 import { useFormikContext } from 'formik';
 import { EventCreationPayload } from '@common/global';
-import { OnlineTag } from '../OnlineTag';
+import { OnlineTag } from '../../../../components/OnlineTag';
 import { Button } from '@frontend/flib-react/lib/components';
 import { DatesAndTypologyForm } from '../../../../components/DatesAndTypologyForm';
 

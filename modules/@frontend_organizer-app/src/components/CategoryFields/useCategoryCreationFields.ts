@@ -8,6 +8,8 @@ import { checkFormatDate, formatShort } from '@frontend/core/lib/utils/date';
 import { useState } from 'react';
 import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
 import { evaluateError } from '../../utils/extractError';
+import { useParams } from 'react-router';
+import { categoryParam } from '../../screens/types';
 
 export interface DateRange {
     eventBegin: Date;
@@ -32,7 +34,6 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
 } => {
     const [ t, i18n ] = useTranslation('category_fields');
     const [ isMultiDates, setIsMultiDates ] = useState<boolean>(false);
-    // const [ selectedDates, setSelectedDates ] = useState<SelectOption[]>([]);
     const [ duplicateOnDates, setDuplicateOnDates ] = useState<SelectOption[]>([]);
     const [ maxDate, setMaxDate ] = useState<Date>(null);
 
@@ -48,6 +49,8 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
         value: dateIdx.toString(),
     }));
 
+    const { categoryId } = useParams<categoryParam>();
+
     useDeepEffect(() => {
         const computedMaxDate = dateRanges
         .filter((_, dateIdx) => datesField.value.includes(dateIdx))
@@ -60,8 +63,10 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
     useDeepEffect(() => {
         if (datesField.value.length > 1) {
             setIsMultiDates(true);
+        } else {
+            setIsMultiDates(false);
         }
-    }, [datesField.value]);
+    }, [datesField.value, categoryId]);
 
     return {
         ticketTypeProps: {

@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import './locales';
 import { CategoryFields } from '../../../../components/CategoryFields';
 import { SaleDeltas } from './Fields/useCategoryCreationFields';
-import { MultiDatesTag } from '../MultiDatesTag';
+import { MultiDatesTag } from '../../../../components/MultiDatesTag';
 
 export interface CategoryFormProps {
     idx: number;

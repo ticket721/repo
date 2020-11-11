@@ -161,9 +161,8 @@ export const checkEventGenericInfos = (infos: EventGenericInfosPayload): ErrorNo
         abortEarly: false,
     });
 
-    const error = merge({}, textMetadataError, imageMetadataError);
-
-    if (error) {
+    if (textMetadataError || imageMetadataError) {
+        const error = merge({}, textMetadataError, imageMetadataError);
         return generateErrorFromJoiError(error);
     }
 

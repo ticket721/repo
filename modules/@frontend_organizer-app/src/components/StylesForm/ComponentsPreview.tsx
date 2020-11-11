@@ -7,10 +7,9 @@ import TicketInterface                from '@frontend/flib-react/lib/shared/tick
 import { useTranslation } from 'react-i18next';
 import './locales';
 import { useRef } from 'react';
-import { useFormikContext } from 'formik';
-import { EventCreationPayload } from '@common/global';
 
 interface ComponentsPreviewProps {
+    eventName: string;
     previewSrc: string;
     colors: string[];
 }
@@ -37,7 +36,6 @@ const Overlap = styled.div`
 `;
 
 export const ComponentsPreview: React.FC<ComponentsPreviewProps> = (props: ComponentsPreviewProps) => {
-    const eventName: string = useFormikContext<EventCreationPayload>().values.textMetadata.name;
     const [ t ] = useTranslation('event_creation_styles_preview');
     const previewRef = useRef(null);
 
@@ -70,7 +68,7 @@ export const ComponentsPreview: React.FC<ComponentsPreviewProps> = (props: Compo
                             gradient={props.colors}
                             ticket={{
                                 ...prevTicket,
-                                name: eventName,
+                                name: props.eventName,
                                 mainColor: props.colors[0],
                                 gradients: [
                                     `${props.colors[0]} 15%`,

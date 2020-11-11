@@ -129,7 +129,7 @@ const CreateEvent: React.FC = () => {
     const buildForm = () => {
         switch (currentStep) {
             case 0: return <GeneralInfoForm/>;
-            case 1: return <StylesForm parentField={'imagesMetadata'}/>;
+            case 1: return <StylesForm eventName={formik.values.textMetadata.name} parentField={'imagesMetadata'}/>;
             case 2: return <DatesStep/>;
             case 3: return <CategoriesStep/>;
             default: return <></>;
