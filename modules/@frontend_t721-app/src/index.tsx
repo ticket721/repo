@@ -40,11 +40,37 @@ const store: Store<T721AppState> = configureStore<any>({
     deviceWalletSaga,
 ]);
 
+function useWindowSize() {
+
+    const [windowSize, setWindowSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight,
+    });
+
+    useEffect(() => {
+
+        function handleResize() {
+            setWindowSize({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            });
+        }
+
+        window.addEventListener('resize', handleResize);
+        handleResize();
+        return () => window.removeEventListener('resize', handleResize);
+
+    }, []);
+    return windowSize;
+
+}
+
 interface ScaleOffsetProps {
     scale: number;
     offsetX: number;
     offsetY: number;
     loaded: boolean;
+    marginRight: number;
 }
 
 const Inception = styled.iframe<ScaleOffsetProps>`
@@ -55,7 +81,7 @@ const Inception = styled.iframe<ScaleOffsetProps>`
   margin: 0;
   bottom: ${props => props.offsetY}px;
   right: ${props => props.offsetX}px;
-  margin-right: 100px;
+  margin-right: ${props => props.marginRight}px;
   opacity: ${props => props.loaded ? '1' : '0'};
 `;
 
@@ -66,9 +92,10 @@ const Loading = styled.div<ScaleOffsetProps>`
   margin: 0;
   bottom: ${props => props.offsetY}px;
   right: ${props => props.offsetX}px;
-  margin-right: 100px;
+  margin-right: ${props => props.marginRight}px;
   opacity: ${props => props.loaded ? '0' : 1};
   display: flex;
+  text-align: center;
   justify-content: center;
   align-items: center;
   flex-direction: column;
@@ -104,18 +131,9 @@ const LoadingText = styled.p`
   font-size: 18px;
 `
 
-const Info = styled.p`
-  font-family: 'Gordita', Arial, Helvetica, sans-serif;
-  color: ${props => props.theme.textColor};
-  font-size: 18px;
-  opacity: 0.3;
-  font-weight: 100;
-  margin: ${props => props.theme.regularSpacing};
-  margin-left: 100px;
-`
-
 interface ScaleProps {
     scale: number;
+    marginRight: number;
 }
 
 const Phone = styled.img<ScaleProps>`
@@ -124,7 +142,7 @@ const Phone = styled.img<ScaleProps>`
   position: absolute;
   bottom: 0;
   right: 0;
-  margin-right: 100px;
+  margin-right: ${props => props.marginRight}px;
 `
 
 const T721Icon = styled(Icon)`
@@ -145,6 +163,8 @@ const Explanation = styled.h1`
 const Warning = styled.h2`
   font-family: 'Gordita', Arial, Helvetica, sans-serif;
   color: ${props => props.theme.textColor};
+  font-size: 20px;
+  opacity: 0.6;
   margin: ${props => props.theme.regularSpacing};
   margin-left: 100px;
   max-width: 600px;
@@ -160,17 +180,26 @@ const HandPhoneGlobalStyled = createGlobalStyle`
 const HandHoldingPhone = () => {
 
     const [loaded, setLoaded] = useState(false);
+    const [rendered, setRendered] = useState(false);
 
     useEffect(() => {
         setTimeout(() => {
             setLoaded(true);
-        }, 1500);
+        }, 2500);
+    }, []);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setRendered(true);
+        }, 2000);
     }, []);
 
     const [t] = useTranslation('handphone')
-    const scale = window.innerHeight * 0.9 / 894;
+    const size = useWindowSize();
+    const scale = size.height * 0.9 / 894;
     const offsetX = 183 * scale;
     const offsetY = 194 * scale;
+    const marginRight = Math.floor((size.width - (598 * scale)) / 2);
 
     return <>
         <HandPhoneGlobalStyled/>
@@ -179,19 +208,20 @@ const HandHoldingPhone = () => {
             <div
                 style={{
                     height: '100vh',
+                    width: marginRight,
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'flex-start',
                     flexDirection: 'column'
                 }}
             >
-                <Explanation>{t('not_available')}</Explanation>
+                <Explanation>{t('use_this')}</Explanation>
                 <Warning>{t('warning')}</Warning>
-                <Info>( {t('lend')} )</Info>
             </div>
             <Phone
                 scale={scale}
                 src={phone}
+                marginRight={marginRight}
                 width={598}
             />
             {
@@ -203,25 +233,35 @@ const HandHoldingPhone = () => {
                     :
                     <Loading
                         loaded={loaded}
+                        marginRight={marginRight}
                         scale={scale}
                         offsetX={offsetX}
                         offsetY={offsetY}
                     >
-                        <LoadingIcon icon={'loader'} size={'30px'} color={'white'}/>
-                        <LoadingText>Loading device simulator</LoadingText>
+                        <LoadingIcon icon={'loader'} size={'50px'} color={'white'}/>
+                        <LoadingText>{t('loading_simulator')}</LoadingText>
                     </Loading>
             }
-            <Inception
-                loaded={loaded}
-                scale={scale}
-                offsetX={offsetX}
-                offsetY={offsetY}
-                src={`${window.location.href}`}
-                seamless
-                width={334}
-                height={662}
-                frameBorder={0}
-            />
+            {
+                rendered
+
+                    ?
+                    <Inception
+                        loaded={loaded}
+                        marginRight={marginRight}
+                        scale={scale}
+                        offsetX={offsetX}
+                        offsetY={offsetY}
+                        src={`${window.location.href}`}
+                        seamless
+                        width={334}
+                        height={662}
+                        frameBorder={0}
+                    />
+
+                    :
+                    null
+            }
         </ThemeProvider>
     </>;
 }

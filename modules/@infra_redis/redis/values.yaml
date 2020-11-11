@@ -2,6 +2,7 @@ redis:
   usePassword: false
 
   master:
+    priorityClassName: redis--priority
     resources:
       requests:
         memory: 256Mi
@@ -11,6 +12,7 @@ redis:
       size: 50Gi
 
   slave:
+    priorityClassName: redis--priority
     resources:
       requests:
         memory: 256Mi
