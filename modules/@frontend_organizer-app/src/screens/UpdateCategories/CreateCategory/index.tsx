@@ -1,10 +1,9 @@
 import React from 'react';
 import { useParams } from 'react-router';
-import { useSelector } from 'react-redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { useTranslation } from 'react-i18next';
 
 import { useRequest } from '@frontend/core/lib/hooks/useRequest';
-import { AppState } from '@frontend/core/lib/redux';
 
 import { FullPageLoading, Error } from '@frontend/flib-react/lib/components';
 import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
@@ -18,7 +17,7 @@ export const CreateCategory: React.FC = () => {
     const { eventId } = useParams<eventParam>();
 
     const [uuid] = React.useState('create-category-prefetch@' + eventId);
-    const token = useSelector((state: AppState): string => state.auth.token.value);
+    const token = useToken();
 
     const datesResp = useRequest<DatesSearchResponseDto>(
         {

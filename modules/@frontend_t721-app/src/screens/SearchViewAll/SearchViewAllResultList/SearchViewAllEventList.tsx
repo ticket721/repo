@@ -1,15 +1,14 @@
 import React, { useState }                       from 'react';
 import { v4 }                                    from 'uuid';
-import { useSelector }                           from 'react-redux';
 import { DatesSearchResponseDto }                from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { Error, FullPageLoading, SearchResults } from '@frontend/flib-react/lib/components';
 import { DateEntity }                            from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { useTranslation }                        from 'react-i18next';
 import { SearchViewAllResultEvent }              from './SearchViewAllResultEvent';
 import { UserLocation }                          from '../../../redux/ducks/location';
-import { T721AppState }                          from '../../../redux';
 import { useRequest }                            from '@frontend/core/lib/hooks/useRequest';
 import { isRequestError }                        from '@frontend/core/lib/utils/isRequestError';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 interface SearchEventListProps {
     location: UserLocation;
@@ -20,7 +19,7 @@ interface SearchEventListProps {
 export const SearchViewAllEventList: React.FC<SearchEventListProps> = (props: SearchEventListProps): JSX.Element => {
 
     const [uuid] = useState(v4());
-    const token = useSelector((state: T721AppState): string => state.auth.token?.value);
+    const token = useToken();
     const [t] = useTranslation('search_view_all');
 
     const dates = useRequest<DatesSearchResponseDto>(

@@ -57,6 +57,7 @@ import { DatesDeleteResponseDto } from '@app/server/controllers/dates/dto/DatesD
 import { isNil, merge, pickBy } from 'lodash';
 import { closestCity } from '@common/geoloc';
 import { DatesOwnerResponseDto } from '@app/server/controllers/dates/dto/DatesOwnerResponse.dto';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 
 /**
  * Generic Dates controller. Recover Dates linked to all types of events
@@ -457,6 +458,56 @@ export class DatesController extends ControllerBasics<DateEntity> {
         );
 
         await this._crudCall(this.datesService.addCategory(dateId, categoryEntity), StatusCodes.InternalServerError);
+
+        if (body.otherDates) {
+            let newCategory: CategoryEntity;
+            const hasDuplicatedDates =
+                new Set([...body.otherDates, dateId]).size !== [...body.otherDates, dateId].length;
+
+            if (hasDuplicatedDates) {
+                throw new HttpException(
+                    {
+                        status: StatusCodes.Conflict,
+                        message: 'has_duplicated_dates',
+                    },
+                    StatusCodes.Conflict,
+                );
+            }
+
+            for (const otherDateId of body.otherDates) {
+                newCategory = await this._crudCall(
+                    this.categoriesService.findOne(categoryId),
+                    StatusCodes.InternalServerError,
+                );
+
+                const updatedDate = await this._crudCall(
+                    this.datesService.findOne(otherDateId),
+                    StatusCodes.InternalServerError,
+                );
+
+                if (updatedDate.group_id !== newCategory.group_id) {
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Unauthorized,
+                            message: 'not_date_owner',
+                        },
+                        StatusCodes.Unauthorized,
+                    );
+                }
+
+                await this._crudCall(
+                    this.datesService.addCategory(otherDateId, newCategory),
+                    StatusCodes.InternalServerError,
+                );
+            }
+
+            return {
+                category: {
+                    ...categoryEntity,
+                    dates: [...body.otherDates, dateId],
+                },
+            };
+        }
 
         return {
             category: {

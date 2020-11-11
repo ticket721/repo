@@ -1,7 +1,5 @@
 import React                      from 'react';
 import { useRequest }             from '@frontend/core/lib/hooks/useRequest';
-import { useSelector }            from 'react-redux';
-import { T721AppState }           from '../../redux';
 import { useTranslation }         from 'react-i18next';
 import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
 import { Redirect }               from 'react-router';
@@ -10,6 +8,7 @@ import { CategoryEntity }         from '@common/sdk/lib/@backend_nest/libs/commo
 import { TicketEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
 import { EventFetcher }           from './EventFetcher';
 import { isRequestError }         from '@frontend/core/lib/utils/isRequestError';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 interface DatesFetcherProps {
     uuid: string;
@@ -23,7 +22,7 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
         category,
         ticket
     }: DatesFetcherProps) => {
-    const token = useSelector((state: T721AppState) => state.auth.token.value);
+    const token = useToken();
     const [ t ] = useTranslation('ticket_details');
     const datesResp = useRequest<DatesSearchResponseDto>({
             method: 'dates.search',

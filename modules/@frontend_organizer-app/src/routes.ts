@@ -13,6 +13,27 @@ export interface RouteDatum {
 
 export const routes: RouteDatum[] = [
     {
+        path: '/event/:eventId/date/:dateId/category/:categoryId',
+        page: lazy(() => import('./routes/EditCategory')),
+        protected: true,
+        entityType: 'categories',
+        entityParam: 'categoryId'
+    },
+    {
+        path: '/event/:eventId/date/:dateId/category',
+        page: lazy(() => import('./routes/CreateCategory')),
+        protected: true,
+        entityType: 'dates',
+        entityParam: 'dateId'
+    },
+    {
+        path: '/event/:eventId/categories',
+        page: lazy(() => import('./routes/CategoriesDashboard')),
+        protected: true,
+        entityType: 'events',
+        entityParam: 'eventId'
+    },
+    {
         path: '/event/:eventId/category/:categoryId',
         page: lazy(() => import('./routes/EditCategory')),
         protected: true,
@@ -41,6 +62,13 @@ export const routes: RouteDatum[] = [
         entityParam: 'dateId'
     },
     {
+        path: '/event/:eventId/date/:dateId/categories',
+        page: lazy(() => import('./routes/CategoriesDateDashboard')),
+        protected: true,
+        entityType: 'dates',
+        entityParam: 'dateId'
+    },
+    {
         path: '/event/:eventId/date/:dateId/dates-typology',
         page: lazy(() => import('./routes/EditDate')),
         protected: true,
@@ -55,8 +83,15 @@ export const routes: RouteDatum[] = [
         entityParam: 'eventId'
     },
     {
-        path: '/group/:groupId',
-        page: lazy(() => import('./routes/FetchEvent')),
+        path: '/event/:eventId/edit',
+        page: lazy(() => import('./routes/EditEvent')),
+        protected: true,
+        entityType: 'events',
+        entityParam: 'eventId'
+    },
+    {
+        path: '/event/:eventId',
+        page: lazy(() => import('./routes/DatesDashboard')),
         protected: true,
         entityType: 'events',
         entityParam: 'eventId'
@@ -111,5 +146,10 @@ export const routes: RouteDatum[] = [
     {
         path: '/_/redirect/close',
         page: lazy(() => import('./routes/CloseRedirect')),
+    },
+    {
+        path: '/',
+        page: lazy(() => import('./routes/EventsDasboard')),
+        protected: true,
     }
 ];

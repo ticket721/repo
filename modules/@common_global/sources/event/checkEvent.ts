@@ -11,6 +11,7 @@ import {
 }                                                  from './common';
 import { DatePayload, DatePayloadChecker }         from './checkDate';
 import { CategoryPayload, CategoryPayloadChecker } from './checkCategory';
+import { merge, pick } from 'lodash';
 
 export interface CategoryWithDatesPayload extends CategoryPayload {
     dates: number[];
@@ -135,6 +136,34 @@ export const checkEvent = (event: EventCreationPayload): ErrorNode => {
             }, `categoriesConfiguration.${categoryIdx}.currency`);
         }
 
+    }
+
+    return null;
+};
+
+export type EventGenericInfosPayload = {
+    name: string;
+    description: string;
+    avatar: string;
+    signatureColors: [string, string];
+};
+
+export const checkEventGenericInfos = (infos: EventGenericInfosPayload): ErrorNode => {
+    const {
+        error: textMetadataError,
+    } = TextMetadataChecker.validate(pick(infos, 'name', 'description'), {
+        abortEarly: false,
+    });
+
+    const {
+        error: imageMetadataError,
+    } = ImagesMetadataChecker.validate(pick(infos, 'avatar', 'signatureColors'), {
+        abortEarly: false,
+    });
+
+    if (textMetadataError || imageMetadataError) {
+        const error = merge({}, textMetadataError, imageMetadataError);
+        return generateErrorFromJoiError(error);
     }
 
     return null;

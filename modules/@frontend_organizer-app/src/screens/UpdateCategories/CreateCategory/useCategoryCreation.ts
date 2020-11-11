@@ -1,4 +1,3 @@
-import { CategoriesAddDateLinksResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesAddDateLinksResponse.dto';
 import { DatesAddCategoryResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesAddCategoryResponse.dto';
 import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 import { useEffect, useState } from 'react';
@@ -37,17 +36,13 @@ export const useCategoryCreation = (token: string, dates: DateItem[]) => {
     const history = useHistory();
 
     const [createUuid] = useState('create-category@' + v4());
-    const [addDateLinksUuid] = useState('add-link-date@' + v4());
     const [duplicateUuid] = useState('duplicate-category@' + v4());
 
     const { response: createCategoryResp, lazyRequest: createCategory } =
         useLazyRequest<DatesAddCategoryResponseDto>('dates.addCategory', createUuid);
-    const { response: addDateLinksResp, lazyRequest: addDateLinks } =
-        useLazyRequest<CategoriesAddDateLinksResponseDto>('categories.addDateLinks', addDateLinksUuid);
     const { response: duplicateCategoryResp, lazyRequest: duplicateCategory } =
         useLazyRequest<DatesAddCategoryResponseDto>('dates.addCategory', duplicateUuid);
 
-    const [ otherDates, setOtherDates ] = useState<string[]>([]);
     const [ duplicateDateIds, setDuplicateDateIds ] = useState<string[]>([]);
     const [ relativeSaleDeltas, setRelativeSaleDeltas ] = useState<SaleDeltas>(null);
 
@@ -102,10 +97,10 @@ export const useCategoryCreation = (token: string, dates: DateItem[]) => {
             concernedDateIds[0],
             {
                 category: categoryWithoutDate,
-            }
+                otherDates: concernedDateIds.length > 1 ? concernedDateIds.slice(1) : undefined,
+            },
+            v4(),
         ], { force: true });
-
-        setOtherDates(concernedDateIds.slice(1));
 
         if (duplicateDateIds.length > 0) {
             onDuplicateCategory(categoryWithoutDate);
@@ -146,27 +141,11 @@ export const useCategoryCreation = (token: string, dates: DateItem[]) => {
 
     useEffect(() => {
         if (createCategoryResp.data?.category) {
-            if (otherDates.length > 0) {
-                addDateLinks([
-                    token,
-                    createCategoryResp.data.category.id,
-                    {dates: otherDates}
-                ], { force: true });
-            } else {
-                dispatch(PushNotification(t('creation_successful'), 'success'));
-                history.push(pathname + '/' + createCategoryResp.data.category.id);
-            }
+            dispatch(PushNotification(t('creation_successful'), 'success'));
+            history.push(pathname + '/' + createCategoryResp.data.category.id);
         }
     // eslint-disable-next-line
     }, [createCategoryResp.data?.category]);
-
-    useEffect(() => {
-        if (addDateLinksResp.data?.category) {
-            dispatch(PushNotification(t('creation_successful'), 'success'));
-            history.push(pathname + '/' + addDateLinksResp.data.category.id);
-        }
-    // eslint-disable-next-line
-    }, [addDateLinksResp.data?.category]);
 
     useEffect(() => {
         if (createCategoryResp.error) {
@@ -174,13 +153,6 @@ export const useCategoryCreation = (token: string, dates: DateItem[]) => {
         }
     // eslint-disable-next-line
     }, [createCategoryResp.error]);
-
-    useEffect(() => {
-        if (addDateLinksResp.error) {
-            dispatch(PushNotification(t('creation_error'), 'error'));
-        }
-    // eslint-disable-next-line
-    }, [addDateLinksResp.error]);
 
     useEffect(() => {
         if (duplicateCategoryResp.error) {
