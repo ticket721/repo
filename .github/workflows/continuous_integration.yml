@@ -1115,14 +1115,7 @@ jobs:
                   NODE_ENV: production
               run: yarn build:server
 
-            - name: "Build @backend_nest @app/worker"
-              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              working-directory: modules/@backend_nest
-              env:
-                  NODE_ENV: production
-              run: yarn build:worker
-
-            - name: "Run @backend_nest @app/server, @app/worker, @lib/common unitary tests (yarn test:cov in modules/@backend_nest)"
+            - name: "Run @backend_nest @app/server, @lib/common unitary tests (yarn test:cov in modules/@backend_nest)"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               working-directory: modules/@backend_nest
               run: yarn test:cov
