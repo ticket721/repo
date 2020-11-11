@@ -1,45 +1,59 @@
-import { Body, Controller, Get, HttpCode, HttpException, Param, Post, Put, UseFilters, UseGuards }       from '@nestjs/common';
 import {
-    Roles,
-    RolesGuard,
-}                                                                                                        from '@app/server/authentication/guards/RolesGuard.guard';
-import { ApiBearerAuth, ApiTags }                                                                        from '@nestjs/swagger';
-import { AuthGuard }                                                                                     from '@nestjs/passport';
-import { User }                                                                                          from '@app/server/authentication/decorators/User.controller.decorator';
-import { UserDto }                                                                                       from '@lib/common/users/dto/User.dto';
-import { ControllerBasics }                                                                              from '@lib/common/utils/ControllerBasics.base';
-import { EventsService }                                                                                 from '@lib/common/events/Events.service';
-import { EventsSearchInputDto }                                                                          from '@app/server/controllers/events/dto/EventsSearchInput.dto';
-import { EventsSearchResponseDto }                                                                       from '@app/server/controllers/events/dto/EventsSearchResponse.dto';
-import { EventEntity }                                                                                   from '@lib/common/events/entities/Event.entity';
-import { StatusCodes }                                                                                   from '@lib/common/utils/codes.value';
-import { EventsBuildResponseDto }                                                                        from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
-import { EventsBuildInputDto }                                                                           from '@app/server/controllers/events/dto/EventsBuildInput.dto';
-import { checkDate, checkEvent, DateCreationPayload, getT721ControllerGroupID, toAcceptedAddressFormat } from '@common/global';
-import { DatesService }                                                                                  from '@lib/common/dates/Dates.service';
-import { DateEntity }                                                                                    from '@lib/common/dates/entities/Date.entity';
-import { HttpExceptionFilter }                                                                           from '@app/server/utils/HttpException.filter';
-import { ApiResponses }                                                                                  from '@app/server/utils/ApiResponses.controller.decorator';
-import { ValidGuard }                                                                                    from '@app/server/authentication/guards/ValidGuard.guard';
-import { EventsCountInputDto }                                                                           from '@app/server/controllers/events/dto/EventsCountInput.dto';
-import { EventsCountResponseDto }                                                                        from '@app/server/controllers/events/dto/EventsCountResponse.dto';
-import { UUIDToolService }                                                                               from '@lib/common/toolbox/UUID.tool.service';
-import { closestCity }                                                                                   from '@common/geoloc';
-import { CategoryEntity }                                                                                from '@lib/common/categories/entities/Category.entity';
-import { CategoriesService }                                                                             from '@lib/common/categories/Categories.service';
-import { EventsAddDateInputDto }                                                                         from '@app/server/controllers/events/dto/EventsAddDateInput.dto';
-import { EventsAddDateResponseDto }                                                                      from '@app/server/controllers/events/dto/EventsAddDateResponse.dto';
-import { SearchInputType }                                                                               from '@lib/common/utils/SearchInput.type';
-import { EventsEditInputDto }                                                                            from '@app/server/controllers/events/dto/EventsEditInput.dto';
-import { EventsEditResponseDto }                                                                         from '@app/server/controllers/events/dto/EventsEditResponse.dto';
-import { EventsBindStripeInterfaceInputDto }                                                             from '@app/server/controllers/events/dto/EventsBindStripeInterfaceInput.dto';
-import { EventsBindStripeInterfaceResponseDto }                                                          from '@app/server/controllers/events/dto/EventsBindStripeInterfaceResponse.dto';
-import { StripeInterfacesService }                                                                       from '@lib/common/stripeinterface/StripeInterfaces.service';
-import { EventsStatusInputDto }                                                                          from '@app/server/controllers/events/dto/EventsStatusInput.dto';
-import { EventsStatusResponseDto }                                                                       from '@app/server/controllers/events/dto/EventsStatusResponse.dto';
-import { isNil }                                                                                         from '@nestjs/common/utils/shared.utils';
-import { StripeInterfaceEntity }                                                                         from '@lib/common/stripeinterface/entities/StripeInterface.entity';
-import { EventsOwnerResponseDto }                                                                        from '@app/server/controllers/events/dto/EventsOwnerResponse.dto';
+    Body,
+    Controller,
+    Get,
+    HttpCode,
+    HttpException,
+    Param,
+    Post,
+    Put,
+    UseFilters,
+    UseGuards,
+} from '@nestjs/common';
+import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from '@app/server/authentication/decorators/User.controller.decorator';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
+import { EventsService } from '@lib/common/events/Events.service';
+import { EventsSearchInputDto } from '@app/server/controllers/events/dto/EventsSearchInput.dto';
+import { EventsSearchResponseDto } from '@app/server/controllers/events/dto/EventsSearchResponse.dto';
+import { EventEntity } from '@lib/common/events/entities/Event.entity';
+import { StatusCodes } from '@lib/common/utils/codes.value';
+import { EventsBuildResponseDto } from '@app/server/controllers/events/dto/EventsBuildResponse.dto';
+import { EventsBuildInputDto } from '@app/server/controllers/events/dto/EventsBuildInput.dto';
+import {
+    checkDate,
+    checkEvent,
+    DateCreationPayload,
+    getT721ControllerGroupID,
+    toAcceptedAddressFormat,
+} from '@common/global';
+import { DatesService } from '@lib/common/dates/Dates.service';
+import { DateEntity } from '@lib/common/dates/entities/Date.entity';
+import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { EventsCountInputDto } from '@app/server/controllers/events/dto/EventsCountInput.dto';
+import { EventsCountResponseDto } from '@app/server/controllers/events/dto/EventsCountResponse.dto';
+import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
+import { closestCity } from '@common/geoloc';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { EventsAddDateInputDto } from '@app/server/controllers/events/dto/EventsAddDateInput.dto';
+import { EventsAddDateResponseDto } from '@app/server/controllers/events/dto/EventsAddDateResponse.dto';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
+import { EventsEditInputDto } from '@app/server/controllers/events/dto/EventsEditInput.dto';
+import { EventsEditResponseDto } from '@app/server/controllers/events/dto/EventsEditResponse.dto';
+import { EventsBindStripeInterfaceInputDto } from '@app/server/controllers/events/dto/EventsBindStripeInterfaceInput.dto';
+import { EventsBindStripeInterfaceResponseDto } from '@app/server/controllers/events/dto/EventsBindStripeInterfaceResponse.dto';
+import { StripeInterfacesService } from '@lib/common/stripeinterface/StripeInterfaces.service';
+import { EventsStatusInputDto } from '@app/server/controllers/events/dto/EventsStatusInput.dto';
+import { EventsStatusResponseDto } from '@app/server/controllers/events/dto/EventsStatusResponse.dto';
+import { isNil } from '@nestjs/common/utils/shared.utils';
+import { StripeInterfaceEntity } from '@lib/common/stripeinterface/entities/StripeInterface.entity';
+import { EventsOwnerResponseDto } from '@app/server/controllers/events/dto/EventsOwnerResponse.dto';
 
 /**
  * Placeholder address
@@ -144,13 +158,13 @@ export class EventsController extends ControllerBasics<EventEntity> {
                     location: date.online
                         ? null
                         : {
-                            location: {
-                                lat: date.location.lat,
-                                lon: date.location.lon,
-                            },
-                            location_label: date.location.label,
-                            assigned_city: closestCity(date.location).id,
-                        },
+                              location: {
+                                  lat: date.location.lat,
+                                  lon: date.location.lon,
+                              },
+                              location_label: date.location.label,
+                              assigned_city: closestCity(date.location).id,
+                          },
                     timestamps: {
                         event_begin: new Date(date.eventBegin),
                         event_end: new Date(date.eventEnd),
@@ -371,13 +385,13 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 location: datePayload.info.online
                     ? null
                     : {
-                        location: {
-                            lat: datePayload.info.location.lat,
-                            lon: datePayload.info.location.lon,
-                        },
-                        location_label: datePayload.info.location.label,
-                        assigned_city: closestCity(datePayload.info.location).id,
-                    },
+                          location: {
+                              lat: datePayload.info.location.lat,
+                              lon: datePayload.info.location.lon,
+                          },
+                          location_label: datePayload.info.location.label,
+                          assigned_city: closestCity(datePayload.info.location).id,
+                      },
                 timestamps: {
                     event_begin: new Date(datePayload.info.eventBegin),
                     event_end: new Date(datePayload.info.eventEnd),
@@ -732,23 +746,26 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param categories
      * @private
      */
-    private async verifyEventStripeInterfaceNeeds(user: UserDto, event: EventEntity, categories: CategoryEntity[]): Promise<void> {
+    private async verifyEventStripeInterfaceNeeds(
+        user: UserDto,
+        event: EventEntity,
+        categories: CategoryEntity[],
+    ): Promise<void> {
         const stripeInterfaceRequired: boolean =
             categories.filter((cat: CategoryEntity): boolean => cat.interface === 'stripe').length !== 0;
 
         if (stripeInterfaceRequired) {
             if (isNil(event.stripe_interface)) {
-
                 let ownerStripeInterface = await this._crudCall(
                     this.stripeInterfacesService.recoverUserInterface(user),
-                    StatusCodes.InternalServerError
+                    StatusCodes.InternalServerError,
                 );
 
                 if (ownerStripeInterface === null) {
                     ownerStripeInterface = await this._crudCall(
                         this.stripeInterfacesService.createStripeInterface(user),
-                        StatusCodes.InternalServerError
-                    )
+                        StatusCodes.InternalServerError,
+                    );
                 }
 
                 await this._crudCall(
