@@ -260,7 +260,7 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
                                             src={twitterImg}
                                             onClick={
                                                 () => {
-                                                    window.location.href = `https://twitter.com/${props.date.metadata.website}`;
+                                                    window.location.href = `https://twitter.com/${props.date.metadata.twitter}`;
                                                 }
                                             }
                                         />

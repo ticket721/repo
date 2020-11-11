@@ -203,9 +203,11 @@ export const CartMenu: React.FC = (): JSX.Element => {
                         (data.product_errors && data.product_errors.filter((elem): boolean => !isNil(elem)).length > 0)
                         || data.payment_error
                     ) {
-                        const errors = data.product_errors.filter((elem): boolean => !isNil(elem))
-                        for (const error of errors) {
-                            dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
+                        if (data.product_errors) {
+                            const errors = data.product_errors.filter((elem): boolean => !isNil(elem))
+                            for (const error of errors) {
+                                dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
+                            }
                         }
                         if (data.payment_error) {
                             dispatch(PushNotification(generateErrorMessage(t, data.payment_error), 'error'))
