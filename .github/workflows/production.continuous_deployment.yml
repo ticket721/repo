@@ -19,7 +19,7 @@ jobs:
             checkName: end
             ref: ${{ github.sha }}
 
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2.3.4
           if: steps.wait-for-build.outputs.conclusion == 'success'
 
         - name: "Use Node.js 12.x"
@@ -90,7 +90,7 @@ jobs:
             checkName: end
             ref: ${{ github.sha }}
 
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2.3.4
           if: steps.wait-for-build.outputs.conclusion == 'success'
         - name: "Use Node.js 12.x"
           if: steps.wait-for-build.outputs.conclusion == 'success'
