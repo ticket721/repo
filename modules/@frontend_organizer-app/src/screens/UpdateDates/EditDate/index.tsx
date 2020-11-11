@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Redirect, useLocation, useParams } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useParams } from 'react-router';
+import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FormikProvider, useFormik } from 'formik';
@@ -13,7 +13,7 @@ import { DateEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/dates/
 
 import { useRequest } from '@frontend/core/lib/hooks/useRequest';
 import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
-import { AppState } from '@frontend/core/lib/redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 
 import { FullPageLoading, Error, Button, LeafletMap } from '@frontend/flib-react/lib/components';
@@ -27,6 +27,7 @@ import { DatesAndTypologyForm }                                      from '../..
 import { useLazyRequest }                                            from '@frontend/core/lib/hooks/useLazyRequest';
 import { isRequestError }                                            from '@frontend/core/lib/utils/isRequestError';
 import { getEnv }                                                    from '@frontend/core/lib/utils/getEnv';
+import { v4 } from 'uuid';
 
 const subFormsTitle = {
     'dates-typology': 'date_and_typology_title',
@@ -66,9 +67,9 @@ export const EditDate: React.FC = () => {
 
     const { dateId } = useParams<dateParam>();
 
-    const [fetchUuid] = React.useState('@fetch-date' + dateId);
-    const [editUuid] = React.useState('@edit-date' + dateId);
-    const token = useSelector((state: AppState): string => state.auth.token.value);
+    const [fetchUuid] = React.useState('@fetch-date' + v4());
+    const [editUuid] = React.useState('@edit-date' + v4());
+    const token = useToken();
 
     const [ initialValues, setInitialValues ] = useState<DateCreationPayload>(defaultValues);
     const dateResp = useRequest<DatesSearchResponseDto>(
@@ -96,8 +97,8 @@ export const EditDate: React.FC = () => {
             case 'dates-typology':
                 return <DatesAndTypologyForm
                     parentField={'info'}/>;
-            case 'styles': return <StylesForm/>;
-            default: return <Redirect to={'/'}/>;
+            case 'styles': return <StylesForm eventName={formik.values.textMetadata.name} parentField={'imagesMetadata'}/>;
+            default: return <DatesAndTypologyForm parentField={'info'}/>;
         }
     };
 
@@ -110,7 +111,8 @@ export const EditDate: React.FC = () => {
                 textMetadata: nullifyUnsetSocials(date.textMetadata),
                 info: formatDateTypology(date.info),
             }
-        }
+        },
+        v4(),
     ], { force: true });
 
     const formik = useFormik({

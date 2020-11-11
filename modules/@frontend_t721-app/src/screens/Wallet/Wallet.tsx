@@ -16,11 +16,12 @@ import { useHistory }                       from 'react-router';
 import { UsersSetDeviceAddressResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersSetDeviceAddressResponse.dto';
 import { TicketsContext }                   from '@frontend/core/lib/utils/TicketsContext';
 import { isRequestError }                   from '@frontend/core/lib/utils/isRequestError';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 const Wallet: React.FC = () => {
     const history = useHistory();
     const { t } = useTranslation(['wallet', 'common']);
-    const token = useSelector((state: T721AppState) => state.auth.token.value);
+    const token = useToken();
     const devicePk = useSelector((state: T721AppState) => state.deviceWallet.pk);
     const [uuid] = useState<string>(v4() + '@wallet');
 

@@ -6,43 +6,31 @@ import { useTranslation }              from 'react-i18next';
 import './locales';
 
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 import Vibrant from 'node-vibrant';
 import { ColorResult } from 'react-color';
-import { AppState } from '@frontend/core/lib/redux';
-import { EventCreationCore } from '../../core/event_creation/EventCreationCore';
 
-export const useStylesCreationFields = (): {
+export const useStylesCreationFields = (parentField?: string, onCreation?: boolean): {
     avatarProps: FilesUploaderProps,
     primaryColorProps: ColorPickerProps,
     secondaryColorProps: ColorPickerProps,
-    preview: string,
 } => {
-    const dispatch = useDispatch();
-    const [ t ] = useTranslation(['event_styles', 'react_dropzone_errors', 'error_notifications']);
+    const [ t ] = useTranslation(['event_styles', 'react_dropzone_errors']);
 
-    const token: string = useSelector((state: AppState) => state.auth.token.value);
-
-    const [ loadingImg, setLoadingImg ] = useState<boolean>(false);
-    const [ preview, setPreview ] = useState<string>('');
     const [ presetColors, setPresetColors ] = useState<string[]>([]);
 
-    const [ avatarField, avatarMeta, avatarHelper ] = useField<string>(`imagesMetadata.avatar`);
-    const [ primaryColorField,, primaryColorHelper ] = useField<string>(`imagesMetadata.signatureColors[0]`);
-    const [ secondaryColorField,, secondaryColorHelper ] = useField<string>(`imagesMetadata.signatureColors[1]`);
+    const [ reader ] = useState<FileReader>(new FileReader());
 
-    const uploadImages = (files: File[], previews: string[]) => {
-        setLoadingImg(true);
-        const formData = new FormData();
-        files.forEach((file) => formData.append('images', file));
-        EventCreationCore.uploadImages(token, formData, {})
-            .then((urls: string[]) => {
-                avatarHelper.setValue(urls[0]);
-                setLoadingImg(false);
-            }).catch((error) => {
-                dispatch(PushNotification(t('error_notifications:' + error.message), 'error'));
-            });
+    const [ avatarField, avatarMeta, avatarHelper ] = useField<string>(`${parentField ? parentField + '.' : ''}avatar`);
+    const [ primaryColorField,, primaryColorHelper ] = useField<string>(`${parentField ? parentField + '.' : ''}signatureColors[0]`);
+    const [ secondaryColorField,, secondaryColorHelper ] = useField<string>(`${parentField ? parentField + '.' : ''}signatureColors[1]`);
+
+    const uploadImages = async (files: File[], previews: string[]) => {
+        if (onCreation) {
+            reader.readAsDataURL(files[0]);
+        }
+
+        avatarHelper.setValue(previews[0]);
+        generatePresetColors(previews[0]);
     };
 
     const removeImage = () => {
@@ -51,7 +39,11 @@ export const useStylesCreationFields = (): {
         primaryColorHelper.setValue('');
         secondaryColorHelper.setValue('');
         setPresetColors([]);
-        setPreview('');
+
+        if (onCreation) {
+            localStorage.removeItem('event-creation-image-content-type');
+            localStorage.removeItem('event-creation-image');
+        }
     };
 
     const handleDropErrors = (errors: DropError[]) => {
@@ -89,12 +81,14 @@ export const useStylesCreationFields = (): {
         });
 
     useEffect(() => {
-        if (avatarField.value) {
-            setPreview(avatarField.value);
-            generatePresetColors(avatarField.value);
+        if (onCreation) {
+            reader.onloadend = () => {
+                localStorage.setItem('event-creation-image-content-type', (reader.result as string).split(',')[0].match(/(image\/.+);/)[1]);
+                localStorage.setItem('event-creation-image', (reader.result as string).split(',')[1] as string);
+            };
         }
-        // eslint-disable-next-line
-    }, [avatarField.value]);
+    // eslint-disable-next-line
+    }, [onCreation]);
 
     return {
         avatarProps: {
@@ -108,9 +102,9 @@ export const useStylesCreationFields = (): {
             onRemove: removeImage,
             width: '600px',
             height: '300px',
-            previewPaths: [preview],
+            previewPaths: avatarField.value ? [avatarField.value] : undefined,
             error: handleCoverError(),
-            loading: loadingImg,
+            loading: false,
         },
         primaryColorProps: {
             label: t('primary_color'),
@@ -126,6 +120,5 @@ export const useStylesCreationFields = (): {
             color: secondaryColorField.value,
             handleChange: (color: ColorResult) => secondaryColorHelper.setValue(color.hex),
         },
-        preview,
     }
 };

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams, useLocation } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FormikProvider, useFormik } from 'formik';
 
 import { checkDate, DateCreationPayload } from '@common/global';
 
-import { AppState } from '@frontend/core/lib/redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 
 import { Button } from '@frontend/flib-react/lib/components';
@@ -84,7 +84,7 @@ export const CreateDate: React.FC = () => {
     const { eventId } = useParams<eventParam>();
 
     const [uuid] = useState(v4() + '@add-date');
-    const token = useSelector((state: AppState): string => state.auth.token.value);
+    const token = useToken();
 
     const { response, lazyRequest: addDate } = useLazyRequest<EventsAddDateResponseDto>('events.addDate', uuid);
 
@@ -114,7 +114,8 @@ export const CreateDate: React.FC = () => {
     const onSubmit = (date: DateCreationPayload) => addDate([
         token,
         eventId,
-        {date}
+        {date},
+        v4(),
     ], { force: true });
 
     const formik = useFormik({
@@ -130,7 +131,7 @@ export const CreateDate: React.FC = () => {
     const buildForm = (setFieldValue: any) => {
         switch (currentStep) {
             case 0: return <GeneralInfoForm nameUpdate={(name) => setFieldValue('info.name', name)}/>;
-            case 1: return <StylesForm/>;
+            case 1: return <StylesForm eventName={formik.values.textMetadata.name} parentField={'imagesMetadata'}/>;
             case 2: return <DatesAndTypologyForm parentField={'info'}/>;
             default: return <></>;
         }
@@ -229,7 +230,7 @@ const Container = styled.div`
 
 const PositionedStepper = styled.div`
     position: fixed;
-    left: ${props => props.theme.doubleSpacing};
+    left: calc(350px + ${props => props.theme.doubleSpacing});
     top: calc(50vh - 80px + 4 * 8px);
 `;
 

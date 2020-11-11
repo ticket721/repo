@@ -8,6 +8,7 @@ i18n.addResourceBundle('en', 'event_styles', {
     primary_color: 'Primary color',
     secondary_color: 'Secondary color',
     color_suggestions: 'Color suggestions',
+    upload_error: 'An error occured during image upload',
 });
 
 i18n.addResourceBundle('fr', 'event_styles', {
@@ -18,6 +19,7 @@ i18n.addResourceBundle('fr', 'event_styles', {
     primary_color: 'Couleur primaire',
     secondary_color: 'Couleur secondaire',
     color_suggestions: 'Suggestions de couleurs',
+    upload_error: 'Une erreur est survenue durant l\'upload',
 });
 
 i18n.addResourceBundle('en', 'react_dropzone_errors', {

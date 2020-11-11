@@ -1,8 +1,6 @@
 import { DateEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import React, { useState }             from 'react';
 import { v4 }                          from 'uuid';
-import { useSelector }                 from 'react-redux';
-import { AppState }                    from '@frontend/core/lib/redux';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { getPriceRange }               from '../../../utils/prices';
@@ -11,6 +9,7 @@ import { formatShort }                 from '@frontend/core/lib/utils/date';
 import { useHistory }                  from 'react-router';
 import { getImgPath }                  from '@frontend/core/lib/utils/images';
 import { useTranslation }              from 'react-i18next';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 interface SearchViewAllResultEventProps {
     date: DateEntity;
@@ -21,7 +20,7 @@ export const SearchViewAllResultEvent: React.FC<SearchViewAllResultEventProps> =
 
     const imageUrl = getImgPath(props.date.metadata.avatar);
     const [uuid] = useState(v4());
-    const token = useSelector((state: AppState): string => state.auth.token?.value);
+    const token = useToken();
     const history = useHistory();
     const [t] = useTranslation(['search_view_all', 'common']);
 

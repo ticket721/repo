@@ -2,13 +2,12 @@ import React                       from 'react';
 import { useRequest }              from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto }  from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
-import { StaffAppState }           from '../../redux';
-import { useSelector }             from 'react-redux';
-import { Error, FullPageLoading }  from '@frontend/flib-react/lib/components';
-import styled                      from 'styled-components';
-import { useTranslation }          from 'react-i18next';
-import { Scanner }                 from './Scanner';
-import { formatDateItems }         from '../../utils/formatDateItems';
+import { useToken }          from '@frontend/core/lib/hooks/useToken';
+import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
+import styled                     from 'styled-components';
+import { useTranslation }         from 'react-i18next';
+import { Scanner }                from './Scanner';
+import { formatDateItems }        from '../../utils/formatDateItems';
 import { isRequestError }          from '@frontend/core/lib/utils/isRequestError';
 
 interface EventsDatesFetcherProps {
@@ -18,7 +17,7 @@ interface EventsDatesFetcherProps {
 
 export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ uuid, entities }: EventsDatesFetcherProps) => {
     const [ t ] = useTranslation(['fetch_errors', 'common']);
-    const token = useSelector((state: StaffAppState) => state.auth.token.value);
+    const token = useToken();
 
     const eventsReq = useRequest<EventsSearchResponseDto>({
         method: 'events.search',

@@ -1,6 +1,6 @@
 import { CategoryCreationPayload } from '@common/global';
-import { IsObject } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsObject, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
  * Data model required when adding acategory to a date
@@ -14,4 +14,13 @@ export class DatesAddCategoryInputDto {
     })
     @IsObject()
     category: CategoryCreationPayload;
+
+    /**
+     * Optional other dates
+     */
+    @ApiPropertyOptional({
+        description: 'Category additional dates',
+    })
+    @IsOptional()
+    otherDates: string[];
 }

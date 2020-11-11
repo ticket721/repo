@@ -1,9 +1,8 @@
 import React from 'react';
 import { useParams } from 'react-router';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { AppState } from '@frontend/core/lib/redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { FormikProvider } from 'formik';
 
 import { FullPageLoading, Error as ErrorComponent, Button } from '@frontend/flib-react/lib/components';
@@ -27,7 +26,7 @@ export interface EditCategoryFormProps {
 export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({ dates }) => {
     const { t } = useTranslation(['edit_category', 'common']);
 
-    const token = useSelector((state: AppState): string => state.auth.token.value);
+    const token = useToken();
     const { categoryId } = useParams<categoryParam>();
 
     const { loading, error, forceCategoryReq, onDuplicate, formik } = useCategoryEdition(token, categoryId, dates);

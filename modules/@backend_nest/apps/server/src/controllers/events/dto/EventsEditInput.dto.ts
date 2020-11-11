@@ -3,11 +3,12 @@ import { ArrayMinSize, IsHexColor, IsOptional, IsString, IsUrl, MaxLength, MinLe
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
- * Data model required when updating an event
+ * Data model required when editing an event
  */
-export class EventsEditInputDto implements Partial<Pick<EventEntity, 'avatar' | 'name' | 'description'>> {
+export class EventsEditInputDto
+    implements Partial<Pick<EventEntity, 'avatar' | 'name' | 'description' | 'signature_colors'>> {
     /**
-     * Event avatar url
+     * Event avatar
      */
     @ApiPropertyOptional({
         description: 'Event avatar',

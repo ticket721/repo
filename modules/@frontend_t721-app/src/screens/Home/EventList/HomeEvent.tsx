@@ -1,8 +1,6 @@
 import React, { useState }             from 'react';
 import { formatShort }                 from '@frontend/core/lib/utils/date';
 import { v4 }                          from 'uuid';
-import { useSelector }                 from 'react-redux';
-import { AppState }                    from '@frontend/core/lib/redux';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { SingleImage }                 from '@frontend/flib-react/lib/components';
@@ -11,6 +9,7 @@ import { useHistory }                  from 'react-router';
 import { getImgPath }                  from '@frontend/core/lib/utils/images';
 import { getPriceRange }               from '../../../utils/prices';
 import { useTranslation }              from 'react-i18next';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 export interface HomeEventProps {
     date: DateEntity;
@@ -23,7 +22,7 @@ export const HomeEvent: React.FC<HomeEventProps> = (props: HomeEventProps): JSX.
     const eventBegin = formatShort(new Date(props.date.timestamps.event_begin));
     const eventEnd = formatShort(new Date(props.date.timestamps.event_end));
     const [uuid] = useState(v4());
-    const token = useSelector((state: AppState): string => state.auth.token?.value);
+    const token = useToken();
     const history = useHistory();
     const [t] = useTranslation(['home', 'common']);
 

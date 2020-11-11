@@ -8,7 +8,7 @@ import { CardInformations } from './CardInformations';
 
 import { useTranslation }     from 'react-i18next';
 import './locales';
-import { MultiDatesTag } from '../MultiDatesTag';
+import { MultiDatesTag } from '../../../../components/MultiDatesTag';
 
 export interface CategoryCardProps {
     idx: number;

@@ -1,6 +1,5 @@
 import './locales';
 import React, { PropsWithChildren, useState } from 'react';
-import { AppState } from '@frontend-core/redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 } from 'uuid';
 import { SetToken, Token } from '../redux/ducks/auth';
@@ -11,6 +10,7 @@ import { PasswordlessUserDto } from '@common/sdk/lib/@backend_nest/apps/server/s
 import { useDeepEffect } from '../hooks/useDeepEffect';
 import { useTranslation } from 'react-i18next';
 import { isRequestError } from '../utils/isRequestError';
+import { AppState } from '@frontend-core/redux';
 
 export const UserContext = React.createContext<PasswordlessUserDto>(undefined);
 

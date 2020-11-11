@@ -30,9 +30,8 @@ import { UserContextGuard }                                                     
 import DeepLinksListener                                                                    from './components/DeepLinksListener';
 import MediaQuery                                                                           from 'react-responsive';
 import { useFlag }                                                                          from '@frontend/core/lib/utils/useFlag';
-import { useSelector }                                                                      from 'react-redux';
+import { useToken }                                                                         from '@frontend/core/lib/hooks/useToken';
 import { CartContext, CartContextManager }                                                  from './components/Cart/CartContext';
-import { T721AppState }                                                                     from './redux';
 import { CartButton }                                                                       from './components/CartButton';
 import { CartMenu }                                                                         from './components/CartMenu';
 import { TicketsContextGuard }                                                              from '@frontend/core/lib/utils/TicketsContext';
@@ -64,7 +63,7 @@ const MobileApp: React.FC = () => {
     const location = useLocation();
     const history = useHistory();
     const keyboardIsVisible = useKeyboardVisibility();
-    const token = useSelector((state: T721AppState) => state.auth.token);
+    const token = useToken();
 
     const goBackOrHome = useCallback(() => {
         if (history.length > 2) {
@@ -84,7 +83,7 @@ const MobileApp: React.FC = () => {
             <UserContextGuard>
                 <TicketsContextGuard>
 
-                    <CartContextManager token={token?.value}>
+                    <CartContextManager token={token}>
                         <CartButton/>
                         <CartMenu
                         />

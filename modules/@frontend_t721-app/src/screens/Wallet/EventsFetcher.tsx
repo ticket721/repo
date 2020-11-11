@@ -1,6 +1,4 @@
 import React                       from 'react';
-import { useSelector }             from 'react-redux';
-import { T721AppState }            from '../../redux';
 import { useTranslation }          from 'react-i18next';
 import { useRequest }              from '@frontend/core/lib/hooks/useRequest';
 import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
@@ -11,6 +9,7 @@ import { TicketEntity }            from '@common/sdk/lib/@backend_nest/libs/comm
 import { DateEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { EventEntity }             from '@backend/nest/libs/common/src/events/entities/Event.entity';
 import { isRequestError }          from '@frontend/core/lib/utils/isRequestError';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 interface EventsFetcherProps {
     uuid: string;
@@ -27,7 +26,7 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = (
         dates
     }: EventsFetcherProps) => {
 
-    const token = useSelector((state: T721AppState) => state.auth.token.value);
+    const token = useToken();
     const [ t ] = useTranslation(['wallet', 'common']);
 
     const eventsResp = useRequest<EventsSearchResponseDto>({

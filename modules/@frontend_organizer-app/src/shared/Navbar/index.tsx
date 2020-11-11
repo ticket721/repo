@@ -4,7 +4,7 @@ import { FullPageLoading, Icon, WalletHeader } from '@frontend/flib-react/lib/co
 
 import { DrawerAccount, ProfileRoute }       from '../DrawerAccount';
 import { useTranslation }                    from 'react-i18next';
-import { blurAndDarkenBackground, truncate } from '@frontend/core/lib/utils';
+import { truncate } from '@frontend/core/lib/utils';
 import { useHistory }                        from 'react-router';
 import { NavLink }                           from 'react-router-dom';
 import { useSelector }                       from 'react-redux';
@@ -91,7 +91,7 @@ const Container = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 8px 24px;
-  ${(props): string => blurAndDarkenBackground('chrome')};
+  background-color: #1a1524;
 `;
 
 const ActionContainer = styled.div`
