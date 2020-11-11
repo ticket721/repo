@@ -15,7 +15,12 @@ export class DatesAddCategoryInputDto {
     @IsObject()
     category: CategoryCreationPayload;
 
-    @ApiPropertyOptional()
+    /**
+     * Optional other dates
+     */
+    @ApiPropertyOptional({
+        description: 'Category additional dates',
+    })
     @IsOptional()
     otherDates: string[];
 }

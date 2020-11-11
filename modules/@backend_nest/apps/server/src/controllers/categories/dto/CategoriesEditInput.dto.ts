@@ -15,7 +15,12 @@ export class CategoriesEditInputDto {
     @IsObject()
     category: Partial<CategoryCreationPayload>;
 
-    @ApiPropertyOptional()
+    /**
+     * Optional dates
+     */
+    @ApiPropertyOptional({
+        description: 'Category dates',
+    })
     @IsOptional()
     dates: string[];
 }
