@@ -15,6 +15,7 @@ i18n.addResourceBundle('en', 'event', {
     free: 'Free',
     coming_soon: 'Coming soon',
     online: 'Online',
+    links: 'Links',
 
     error_cannot_fetch_dates: 'Cannot fetch event',
     error_cannot_fetch_cart: 'Cannot recover cart',
@@ -38,6 +39,7 @@ i18n.addResourceBundle('fr', 'event', {
     free: 'Gratuit',
     coming_soon: 'Bientôt disponible',
     online: 'En ligne',
+    links: 'Liens',
 
     error_cannot_fetch_event: 'Informations indisponibles',
     error_cannot_fetch_dates: 'Informations indisponibles',
