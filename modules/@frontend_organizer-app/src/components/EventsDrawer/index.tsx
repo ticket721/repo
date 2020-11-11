@@ -11,8 +11,8 @@ import './locales';
 const buildMenu = (path: string): JSX.Element => {
     const transition: Spring = {
         type: 'spring',
-        stiffness: 150,
-        damping: 15,
+        stiffness: 200,
+        damping: 26,
     };
 
     if (path.includes('/date') && !path.endsWith('/date')) {

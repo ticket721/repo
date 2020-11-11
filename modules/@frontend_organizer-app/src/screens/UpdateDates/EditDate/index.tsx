@@ -12,6 +12,7 @@ import { DatesEditResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/
 import { DateEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 
 import { useRequest } from '@frontend/core/lib/hooks/useRequest';
+import { useUploadImage } from '@frontend/core/lib/hooks/useUploadImage';
 import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
@@ -71,6 +72,7 @@ export const EditDate: React.FC = () => {
     const [editUuid] = React.useState('@edit-date' + v4());
     const token = useToken();
 
+    const { url: uploadImgUrl, error: uploadImgError, uploadImage } = useUploadImage(token);
     const [ initialValues, setInitialValues ] = useState<DateCreationPayload>(defaultValues);
     const dateResp = useRequest<DatesSearchResponseDto>(
         {
@@ -97,23 +99,28 @@ export const EditDate: React.FC = () => {
             case 'dates-typology':
                 return <DatesAndTypologyForm
                     parentField={'info'}/>;
-            case 'styles': return <StylesForm eventName={formik.values.textMetadata.name} parentField={'imagesMetadata'}/>;
+            case 'styles': return <StylesForm
+            eventName={formik.values.textMetadata.name}
+            parentField={'imagesMetadata'}
+            uploadImage={(file) => uploadImage(file, v4())}/>;
             default: return <DatesAndTypologyForm parentField={'info'}/>;
         }
     };
 
-    const onSubmit = (date: DateCreationPayload) => editDate([
-        token,
-        dateId,
-        {
-            date: {
-                ...date,
-                textMetadata: nullifyUnsetSocials(date.textMetadata),
-                info: formatDateTypology(date.info),
-            }
-        },
-        v4(),
-    ], { force: true });
+    const onSubmit = (date: DateCreationPayload) => {
+        editDate([
+            token,
+            dateId,
+            {
+                date: {
+                    ...date,
+                    textMetadata: nullifyUnsetSocials(date.textMetadata),
+                    info: formatDateTypology(date.info),
+                }
+            },
+            v4(),
+        ], { force: true });
+    };
 
     const formik = useFormik({
         initialValues,
@@ -121,6 +128,20 @@ export const EditDate: React.FC = () => {
         validate: checkDate,
         enableReinitialize: true,
     });
+
+    useEffect(() => {
+        if (uploadImgUrl) {
+            formik.setFieldValue('imagesMetadata.avatar', uploadImgUrl);
+        }
+        // eslint-disable-next-line
+    }, [uploadImgUrl]);
+
+    useEffect(() => {
+        if (uploadImgError) {
+            dispatch(PushNotification(t('upload_error'), 'error'));
+        }
+        // eslint-disable-next-line
+    }, [uploadImgError]);
 
     /* on date fetch */
     useEffect(() => {

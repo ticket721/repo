@@ -21,6 +21,7 @@ import { Stepper, StepStatus } from '../../../components/Stepper';
 import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 import { EventsAddDateResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsAddDateResponse.dto';
 import { v4 } from 'uuid';
+import { useUploadImage } from '@frontend/core/lib/hooks/useUploadImage';
 
 interface StepInfos {
     step: string;
@@ -86,6 +87,7 @@ export const CreateDate: React.FC = () => {
     const [uuid] = useState(v4() + '@add-date');
     const token = useToken();
 
+    const { url: uploadImgUrl, error: uploadImgError, uploadImage } = useUploadImage(token);
     const { response, lazyRequest: addDate } = useLazyRequest<EventsAddDateResponseDto>('events.addDate', uuid);
 
     const validate = (datePayload: DateCreationPayload) => {
@@ -131,11 +133,28 @@ export const CreateDate: React.FC = () => {
     const buildForm = (setFieldValue: any) => {
         switch (currentStep) {
             case 0: return <GeneralInfoForm nameUpdate={(name) => setFieldValue('info.name', name)}/>;
-            case 1: return <StylesForm eventName={formik.values.textMetadata.name} parentField={'imagesMetadata'}/>;
+            case 1: return <StylesForm
+            eventName={formik.values.textMetadata.name}
+            parentField={'imagesMetadata'}
+            uploadImage={(file) => uploadImage(file, v4())}/>;
             case 2: return <DatesAndTypologyForm parentField={'info'}/>;
             default: return <></>;
         }
     };
+
+    useEffect(() => {
+        if (uploadImgUrl) {
+            formik.setFieldValue('imagesMetadata.avatar', uploadImgUrl);
+        }
+        // eslint-disable-next-line
+    }, [uploadImgUrl]);
+
+    useEffect(() => {
+        if (uploadImgError) {
+            dispatch(PushNotification(t('upload_error'), 'error'));
+        }
+        // eslint-disable-next-line
+    }, [uploadImgError]);
 
     /* on added date */
     useEffect(() => {

@@ -19,6 +19,7 @@ i18n.addResourceBundle('en', 'edit_event_fields', {
     description_label: 'Description',
     name_placeholder: 'provide a name',
     description_placeholder: 'provide a description',
+    upload_error: 'An error occured during image upload',
 });
 
 i18n.addResourceBundle('fr', 'edit_event_fields', {
@@ -26,4 +27,5 @@ i18n.addResourceBundle('fr', 'edit_event_fields', {
     description_label: 'Description',
     name_placeholder: 'fournir un nom',
     description_placeholder: 'fournir une description',
+    upload_error: 'Une erreur est survenue durant l\'upload',
 });

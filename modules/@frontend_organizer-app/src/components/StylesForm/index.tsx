@@ -6,8 +6,9 @@ import { ComponentsPreview } from './ComponentsPreview';
 
 import { useStylesCreationFields } from './useStylesCreationFields';
 
-export const StylesForm: React.FC<{ eventName: string, parentField?: string, onCreation?: boolean }> = ({ eventName, parentField, onCreation }) => {
-    const { avatarProps, primaryColorProps, secondaryColorProps } = useStylesCreationFields(parentField, onCreation);
+export const StylesForm: React.FC<{ eventName: string, uploadImage: (files: File) => void, parentField?: string }> =
+    ({ eventName, parentField, uploadImage }) => {
+    const { avatarProps, primaryColorProps, secondaryColorProps } = useStylesCreationFields(uploadImage, parentField);
 
     return (
         <StylesContainer>

@@ -1,5 +1,7 @@
-export const b64toBlob = (b64Data: string, contentType='', sliceSize=512): Blob => {
-    const byteCharacters = atob(b64Data);
+export const b64ImgtoBlob = (b64Data: string, sliceSize=512): Blob => {
+    const contentType = b64Data.split(',')[0].match(/(image\/.+);/)[1];
+    const data = b64Data.split(',')[1];
+    const byteCharacters = atob(data);
     const byteArrays = [];
 
     for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {

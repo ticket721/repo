@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import Vibrant from 'node-vibrant';
 import { ColorResult } from 'react-color';
 
-export const useStylesCreationFields = (parentField?: string, onCreation?: boolean): {
+export const useStylesCreationFields = (uploadImage: (files: File) => void, parentField?: string): {
     avatarProps: FilesUploaderProps,
     primaryColorProps: ColorPickerProps,
     secondaryColorProps: ColorPickerProps,
@@ -18,20 +18,9 @@ export const useStylesCreationFields = (parentField?: string, onCreation?: boole
 
     const [ presetColors, setPresetColors ] = useState<string[]>([]);
 
-    const [ reader ] = useState<FileReader>(new FileReader());
-
     const [ avatarField, avatarMeta, avatarHelper ] = useField<string>(`${parentField ? parentField + '.' : ''}avatar`);
     const [ primaryColorField,, primaryColorHelper ] = useField<string>(`${parentField ? parentField + '.' : ''}signatureColors[0]`);
     const [ secondaryColorField,, secondaryColorHelper ] = useField<string>(`${parentField ? parentField + '.' : ''}signatureColors[1]`);
-
-    const uploadImages = async (files: File[], previews: string[]) => {
-        if (onCreation) {
-            reader.readAsDataURL(files[0]);
-        }
-
-        avatarHelper.setValue(previews[0]);
-        generatePresetColors(previews[0]);
-    };
 
     const removeImage = () => {
         avatarHelper.setTouched(true);
@@ -39,11 +28,6 @@ export const useStylesCreationFields = (parentField?: string, onCreation?: boole
         primaryColorHelper.setValue('');
         secondaryColorHelper.setValue('');
         setPresetColors([]);
-
-        if (onCreation) {
-            localStorage.removeItem('event-creation-image-content-type');
-            localStorage.removeItem('event-creation-image');
-        }
     };
 
     const handleDropErrors = (errors: DropError[]) => {
@@ -81,15 +65,11 @@ export const useStylesCreationFields = (parentField?: string, onCreation?: boole
         });
 
     useEffect(() => {
-        if (onCreation) {
-            reader.onloadend = () => {
-                localStorage.setItem('event-creation-image-content-type', (reader.result as string).split(',')[0].match(/(image\/.+);/)[1]);
-                localStorage.setItem('event-creation-image', (reader.result as string).split(',')[1] as string);
-            };
+        if (avatarField.value) {
+            generatePresetColors(avatarField.value);
         }
-    // eslint-disable-next-line
-    }, [onCreation]);
-
+        // eslint-disable-next-line
+    }, [avatarField.value]);
     return {
         avatarProps: {
             name: avatarField.name,
@@ -97,7 +77,7 @@ export const useStylesCreationFields = (parentField?: string, onCreation?: boole
             browseLabel: t('browse'),
             dragDropLabel: t('drag_and_drop'),
             uploadRecommendations: t('image_recommendation'),
-            onDrop: uploadImages,
+            onDrop: (files: File[]) => uploadImage(files[0]),
             onDropRejected: handleDropErrors,
             onRemove: removeImage,
             width: '600px',

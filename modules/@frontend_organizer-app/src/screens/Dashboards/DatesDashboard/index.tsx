@@ -51,8 +51,9 @@ export const DatesDashboard: React.FC = () => {
     }
 
     return (
+        <>
+        <PreviewBanner/>
         <DatesDashboardContainer>
-            <PreviewBanner/>
             {
                 datesResp.data.dates.length > 0 ?
                 datesResp.data.dates.map(date =>
@@ -75,6 +76,7 @@ export const DatesDashboard: React.FC = () => {
                 </NoDate>
             }
         </DatesDashboardContainer>
+        </>
     )
 };
 
