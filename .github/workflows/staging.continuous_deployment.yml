@@ -32,7 +32,7 @@ jobs:
 
         - name: "Setup SSH Agent"
           if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success')
-          uses: webfactory/ssh-agent@v0.1.1
+          uses: webfactory/ssh-agent@master
           with:
             ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -102,7 +102,7 @@ jobs:
 
         - name: "Setup SSH Agent"
           if: github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success'
-          uses: webfactory/ssh-agent@v0.1.1
+          uses: webfactory/ssh-agent@master
           with:
             ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 

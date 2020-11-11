@@ -47,7 +47,7 @@ jobs:
 
             - name: "Setup SSH Agent"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: webfactory/ssh-agent@v0.1.1
+              uses: webfactory/ssh-agent@master
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -997,7 +997,7 @@ jobs:
 
             - name: Setup SSH Agent
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: webfactory/ssh-agent@v0.1.1
+              uses: webfactory/ssh-agent@master
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -1172,7 +1172,7 @@ jobs:
 
             - name: "Setup SSH Agent"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: webfactory/ssh-agent@v0.1.1
+              uses: webfactory/ssh-agent@master
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -2137,7 +2137,7 @@ jobs:
 
         - name: "Setup SSH Agent"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: webfactory/ssh-agent@v0.1.1
+          uses: webfactory/ssh-agent@master
           with:
             ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
