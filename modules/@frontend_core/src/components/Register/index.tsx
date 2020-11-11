@@ -112,7 +112,7 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
                                 if (props.onLogin) {
                                     props.onLogin();
                                 } else {
-                                    history.replace('/login');
+                                    history.replace('/login', { from });
                                 }
                             }}
                         >

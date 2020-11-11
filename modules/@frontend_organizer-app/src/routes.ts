@@ -111,7 +111,6 @@ export const routes: RouteDatum[] = [
     {
         path: '/create-event',
         page: lazy(() => import('./routes/CreateEvent')),
-        protected: true,
     },
     {
         path: '/you/are/an/admin',

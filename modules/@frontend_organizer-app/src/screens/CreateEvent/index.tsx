@@ -25,7 +25,8 @@ import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 import { EventsBuildResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsBuildResponse.dto';
 import { v4 } from 'uuid';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
-import { b64toBlob } from '../../utils/b64toBlob';
+import { b64ImgtoBlob } from '../../utils/b64ImgtoBlob';
+import { useUploadImage } from '@frontend/core/lib/hooks/useUploadImage';
 
 export interface FormProps {
     onComplete: () => void;
@@ -73,26 +74,22 @@ const stepsInfos: StepInfos[] = [
     },
 ];
 
-const getCover = () => {
-    if (localStorage.getItem('event-creation-image')) {
-        const file: Blob = b64toBlob(localStorage.getItem('event-creation-image'), localStorage.getItem('event-creation-image-content-type'));
-        return URL.createObjectURL(file);
-    }
-
-    return '';
-};
-
 const CreateEvent: React.FC = () => {
     const [ t ] = useTranslation('create_event');
 
     const [ currentStep, setCurrentStep ] = useState<number>(0);
 
+    const [ finalEventPaylaod, setFinalEventPaylaod ] = useState<EventCreationPayload>();
     const [ stepStatuses, setStepStatuses ] = useState<StepStatus[]>([]);
     const dispatch = useDispatch();
     const history = useHistory();
     const [uuid] = useState<string>(v4() + '@event-create');
     const token = useToken();
     const { response, lazyRequest: createEvent } = useLazyRequest<EventsBuildResponseDto>('events.create.create', uuid);
+
+    const { url: imageUrl, error: imageError, uploadImage } = useUploadImage(token);
+
+    const [ reader ] = useState<FileReader>(new FileReader());
 
     const validate = (eventPayload: EventCreationPayload) => {
         const errors = checkEvent(eventPayload);
@@ -117,27 +114,24 @@ const CreateEvent: React.FC = () => {
         return errors;
     };
 
-    const onSubmit = (eventPayload: EventCreationPayload) => createEvent([
-        token,
-        {
-            eventPayload: {
-                ...eventPayload,
-                categoriesConfiguration: eventPayload.categoriesConfiguration.map(category => ({
-                    ...category,
-                    price: category.price * 100,
-                }))
-            },
+    const onSubmit = (eventPayload: EventCreationPayload) => {
+        if (!token) {
+            dispatch(PushNotification(t('auth_required'), 'info'));
+            history.push('/login', { from: '/create-event' });
         }
-    ], { force: true });
+
+        uploadImage(b64ImgtoBlob(eventPayload.imagesMetadata.avatar), v4());
+        setFinalEventPaylaod({
+            ...eventPayload,
+            categoriesConfiguration: eventPayload.categoriesConfiguration.map(category => ({
+                ...category,
+                price: category.price * 100,
+            }))
+        });
+    };
 
     const formik = useFormik({
-        initialValues: {
-            ...initialValues,
-            imagesMetadata: {
-                ...initialValues.imagesMetadata,
-                avatar: getCover(),
-            },
-        },
+        initialValues,
         onSubmit,
         validate,
     });
@@ -148,7 +142,9 @@ const CreateEvent: React.FC = () => {
             case 1: return <StylesForm
             eventName={formik.values.textMetadata.name}
             parentField={'imagesMetadata'}
-            onCreation={true}/>;
+            uploadImage={(file) => {
+                reader.readAsDataURL(file);
+            }}/>;
             case 2: return <DatesStep/>;
             case 3: return <CategoriesStep/>;
             default: return <></>;
@@ -156,11 +152,44 @@ const CreateEvent: React.FC = () => {
     };
 
     useEffect(() => {
+        reader.onloadend = () => {
+            formik.setFieldValue('imagesMetadata.avatar', (reader.result as string));
+        };
+    // eslint-disable-next-line
+    }, []);
+
+    useEffect(() => {
+        if (imageError) {
+            dispatch(PushNotification(t('upload_error'), 'error'));
+        }
+        // eslint-disable-next-line
+    }, [imageError]);
+
+    useEffect(() => {
+        if (imageUrl && finalEventPaylaod) {
+            setFinalEventPaylaod(null);
+            createEvent([
+                token,
+                {
+                    eventPayload: {
+                        ...finalEventPaylaod,
+                        imagesMetadata: {
+                            ...finalEventPaylaod.imagesMetadata,
+                            avatar: imageUrl,
+                        },
+                    },
+                }
+            ], { force: true })
+        }
+        // eslint-disable-next-line
+    }, [imageUrl, finalEventPaylaod]);
+
+    useEffect(() => {
         if (response.data?.event) {
             dispatch(PushNotification(t('event_create_success'), 'success'));
             formik.resetForm();
             formik.validateForm();
-            history.push('/');
+            // history.push('/');
         }
     // eslint-disable-next-line
     }, [response.data?.event]);
@@ -251,7 +280,8 @@ const Container = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    margin-top: 80px;
+    padding: 50px 0;
 `;
 
 const PositionedStepper = styled.div`
