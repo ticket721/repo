@@ -28,9 +28,9 @@ jobs:
             # Initial Setup
             #
 
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v2.3.4
             - name: "Use Node.js 12.x"
-              uses: actions/setup-node@v1.2.0
+              uses: actions/setup-node@v2.1.2
               with:
                   node-version: 12.x
 
@@ -40,14 +40,14 @@ jobs:
 
             - name: "CACHE @backend_migrations"
               id: temoin_cache
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                 path: ./modules/@backend_migrations/node_modules
                 key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_migrations
 
             - name: "Setup SSH Agent"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: webfactory/ssh-agent@v0.1.1
+              uses: webfactory/ssh-agent@master
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -62,34 +62,34 @@ jobs:
 
             - name: "CACHE root"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @backend_nest"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@backend_nest/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
 
             - name: "CACHE @backend_simulation"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@backend_simulation/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_simulation
 
             - name: "CACHE @common_global"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
             - name: "CACHE @common_geoloc"
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               if: steps.temoin_cache.outputs.cache-hit != 'true'
               with:
                 path: ./modules/@common_geoloc/node_modules
@@ -97,42 +97,42 @@ jobs:
 
             - name: "CACHE @common_sdk"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@common_sdk/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
             - name: "CACHE @frontend_flib-react"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@frontend_flib-react/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
 
             - name: "CACHE @frontend_core"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@frontend_core/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
 
             - name: "CACHE @frontend_t721-app"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                 path: ./modules/@frontend_t721-app/node_modules
                 key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_t721-app
 
             - name: "CACHE @frontend_organizer-app"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                 path: ./modules/@frontend_organizer-app/node_modules
                 key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_organizer-app
 
             - name: "CACHE @frontend_staff-app"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                 path: ./modules/@frontend_staff-app/node_modules
                 key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_staff-app
@@ -143,28 +143,28 @@ jobs:
 
             - name: "CACHE @public_dosojin"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@public_dosojin/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('modules/@public_dosojin/yarn.lock') }}-public_dosojin
 
             - name: "CACHE @public_e712"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@public_e712/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('modules/@public_e712/yarn.lock') }}-public_e712
 
             - name: "CACHE @public_erc2280"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@public_erc2280/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('modules/@public_erc2280/yarn.lock') }}-public_erc2280
 
             - name: "CACHE @public_ethvtx"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@public_ethvtx/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('modules/@public_ethvtx/yarn.lock') }}-public_ethvtx
@@ -175,42 +175,42 @@ jobs:
 
             - name: "CACHE @contracts_metamarketplace"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@contracts_metamarketplace/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_metamarketplace
 
             - name: "CACHE @contracts_refract"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@contracts_refract/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_refract
 
             - name: "CACHE @contracts_t721admin"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@contracts_t721admin/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_t721admin
 
             - name: "CACHE @contracts_t721controller"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@contracts_t721controller/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_t721controller
 
             - name: "CACHE @contracts_t721token"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@contracts_t721token/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_t721token
 
             - name: "CACHE @contracts_ticketforge"
               if: steps.temoin_cache.outputs.cache-hit != 'true'
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@contracts_ticketforge/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_ticketforge
@@ -250,16 +250,16 @@ jobs:
         # Initial Setup
         #
 
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2.3.4
         - name: "Use Node.js 12.x"
-          uses: actions/setup-node@v1.2.0
+          uses: actions/setup-node@v2.1.2
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@v4.0.1
           id: git_diff
           with:
-            PREFIX_FILTER: modules/@common_geoloc/
+            PATTERNS: modules/@common_geoloc/**/*
 
         - name: "Install required tools globally (npm install -g yarn)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -270,7 +270,7 @@ jobs:
         #
 
         - name: "CACHE @common/geoloc/coverage"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: modules/@common_geoloc/coverage
@@ -281,14 +281,14 @@ jobs:
         #
 
         - name: "CACHE root"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
         - name: "CACHE @common_geoloc"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./modules/@common_geoloc/node_modules
@@ -341,16 +341,16 @@ jobs:
         # Initial Setup
         #
 
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2.3.4
         - name: "Use Node.js 12.x"
-          uses: actions/setup-node@v1.2.0
+          uses: actions/setup-node@v2.1.2
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@v4.0.1
           id: git_diff
           with:
-            PREFIX_FILTER: modules/@contracts_t721controller/
+            PATTERNS: modules/@contracts_t721controller/**/*
 
         - name: "Install required tools globally (npm install -g yarn)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -361,14 +361,14 @@ jobs:
         #
 
         - name: "CACHE root"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
         - name: "CACHE @contracts_t721controller"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./modules/@contracts_t721controller/node_modules
@@ -428,16 +428,16 @@ jobs:
         # Initial Setup
         #
 
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2.3.4
         - name: "Use Node.js 12.x"
-          uses: actions/setup-node@v1.2.0
+          uses: actions/setup-node@v2.1.2
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@v4.0.1
           id: git_diff
           with:
-            PREFIX_FILTER: modules/@contracts_ticketforge/
+            PATTERNS: modules/@contracts_ticketforge/**/*
 
         - name: "Install required tools globally (npm install -g yarn)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -448,14 +448,14 @@ jobs:
         #
 
         - name: "CACHE root"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
         - name: "CACHE @contracts_ticketforge"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./modules/@contracts_ticketforge/node_modules
@@ -515,16 +515,16 @@ jobs:
         # Initial Setup
         #
 
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2.3.4
         - name: "Use Node.js 12.x"
-          uses: actions/setup-node@v1.2.0
+          uses: actions/setup-node@v2.1.2
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@v4.0.1
           id: git_diff
           with:
-            PREFIX_FILTER: modules/@contracts_t721token/
+            PATTERNS: modules/@contracts_t721token/**/*
 
         - name: "Install required tools globally (npm install -g yarn)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -535,14 +535,14 @@ jobs:
         #
 
         - name: "CACHE root"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
         - name: "CACHE @contracts_t721token"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./modules/@contracts_t721token/node_modules
@@ -603,16 +603,16 @@ jobs:
         # Initial Setup
         #
 
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2.3.4
         - name: "Use Node.js 12.x"
-          uses: actions/setup-node@v1.2.0
+          uses: actions/setup-node@v2.1.2
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@v4.0.1
           id: git_diff
           with:
-            PREFIX_FILTER: modules/@contracts_t721admin/
+            PATTERNS: modules/@contracts_t721admin/**/*
 
         - name: "Install required tools globally (npm install -g yarn)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -623,14 +623,14 @@ jobs:
         #
 
         - name: "CACHE root"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
         - name: "CACHE @contracts_t721admin"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./modules/@contracts_t721admin/node_modules
@@ -690,16 +690,16 @@ jobs:
         # Initial Setup
         #
 
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2.3.4
         - name: "Use Node.js 12.x"
-          uses: actions/setup-node@v1.2.0
+          uses: actions/setup-node@v2.1.2
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@v4.0.1
           id: git_diff
           with:
-            PREFIX_FILTER: modules/@contracts_metamarketplace/
+            PATTERNS: modules/@contracts_metamarketplace/**/*
 
         - name: "Install required tools globally (npm install -g yarn)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -710,14 +710,14 @@ jobs:
         #
 
         - name: "CACHE root"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
         - name: "CACHE @contracts_metamarketplace"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./modules/@contracts_metamarketplace/node_modules
@@ -777,16 +777,16 @@ jobs:
           # Initial Setup
           #
 
-          - uses: actions/checkout@v1
+          - uses: actions/checkout@v2.3.4
           - name: "Use Node.js 12.x"
-            uses: actions/setup-node@v1.2.0
+            uses: actions/setup-node@v2.1.2
             with:
                 node-version: 12.x
 
-          - uses: technote-space/get-diff-action@v2
+          - uses: technote-space/get-diff-action@v4.0.1
             id: git_diff
             with:
-              PREFIX_FILTER: modules/@common_global/
+              PATTERNS: modules/@common_global/**/*
 
           - name: "Install required tools globally (npm install -g yarn)"
             if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -797,7 +797,7 @@ jobs:
           #
 
           - name: "CACHE @common/global/coverage"
-            uses: actions/cache@v1
+            uses: actions/cache@v2.1.3
             if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
             with:
                 path: modules/@common_global/coverage
@@ -808,14 +808,14 @@ jobs:
           #
 
           - name: "CACHE root"
-            uses: actions/cache@v1
+            uses: actions/cache@v2.1.3
             if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
             with:
                 path: ./node_modules
                 key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
           - name: "CACHE @common_global"
-            uses: actions/cache@v1
+            uses: actions/cache@v2.1.3
             if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
             with:
                 path: ./modules/@common_global/node_modules
@@ -866,18 +866,18 @@ jobs:
             # Initial Setup
             #
 
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v2.3.4
             - name: "Use Node.js 12.x"
-              uses: actions/setup-node@v1.2.0
+              uses: actions/setup-node@v2.1.2
               with:
                   node-version: 12.x
 
-            - uses: technote-space/get-diff-action@v2
+            - uses: technote-space/get-diff-action@v4.0.1
               id: git_diff
               with:
-                PREFIX_FILTER: |
-                  modules/@common_sdk/
-                  modules/@common_global/
+                PATTERNS: |
+                  modules/@common_sdk/**/*
+                  modules/@common_global/**/*
 
             - name: "Install required tools globally (npm install -g yarn)"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -889,20 +889,20 @@ jobs:
 
             - name: "CACHE root"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @common_global"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
             - name: "CACHE @common_geoloc"
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               with:
                 path: ./modules/@common_geoloc/node_modules
@@ -910,14 +910,14 @@ jobs:
 
             - name: "CACHE @common_sdk"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@common_sdk/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
             - name: "CACHE @backend_nest"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@backend_nest/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
@@ -979,25 +979,25 @@ jobs:
             # Initial Setup
             #
 
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v2.3.4
             - name: Use Node.js 12.x
-              uses: actions/setup-node@v1.2.0
+              uses: actions/setup-node@v2.1.2
               with:
                   node-version: 12.x
 
-            - uses: technote-space/get-diff-action@v2
+            - uses: technote-space/get-diff-action@v4.0.1
               id: git_diff
               with:
-                PREFIX_FILTER: |
-                  modules/@backend_nest/
-                  modules/@common_global/
-                  modules/@common_geoloc/
-                  modules/@common_sdk/
+                PATTERNS: |
+                  modules/@backend_nest/**/*
+                  modules/@common_global/**/*
+                  modules/@common_geoloc/**/*
+                  modules/@common_sdk/**/*
 
 
             - name: Setup SSH Agent
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: webfactory/ssh-agent@v0.1.1
+              uses: webfactory/ssh-agent@master
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -1015,14 +1015,14 @@ jobs:
 
             - name: "CACHE @public_dosojin"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@public_dosojin/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('modules/@public_dosojin/yarn.lock') }}-public_dosojin
 
             - name: "CACHE @public_e712"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@public_e712/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('modules/@public_e712/yarn.lock') }}-public_e712
@@ -1033,7 +1033,7 @@ jobs:
 
             - name: "CACHE @backend_nest/coverage"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: modules/@backend_nest/coverage
                   key: ${{ runner.os }}-backend_nest-coverage-${{ github.sha }}
@@ -1044,27 +1044,27 @@ jobs:
 
             - name: "CACHE root"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @common_sdk"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@common_sdk/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
             - name: "CACHE @common_global"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
             - name: "CACHE @common_geoloc"
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               with:
                 path: ./modules/@common_geoloc/node_modules
@@ -1072,7 +1072,7 @@ jobs:
 
             - name: "CACHE @backend_nest"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@backend_nest/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
@@ -1155,24 +1155,24 @@ jobs:
         needs: install
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v2.3.4
             - name: "Use Node.js 12.x"
-              uses: actions/setup-node@v1.2.0
+              uses: actions/setup-node@v2.1.2
               with:
                   node-version: 12.x
 
-            - uses: technote-space/get-diff-action@v2
+            - uses: technote-space/get-diff-action@v4.0.1
               id: git_diff
               with:
-                PREFIX_FILTER: |
-                  modules/@backend_nest/
-                  modules/@common_global/
-                  modules/@common_geoloc/
-                  modules/@common_sdk/
+                PATTERNS: |
+                  modules/@backend_nest/**/*
+                  modules/@common_global/**/*
+                  modules/@common_geoloc/**/*
+                  modules/@common_sdk/**/*
 
             - name: "Setup SSH Agent"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: webfactory/ssh-agent@v0.1.1
+              uses: webfactory/ssh-agent@master
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -1190,42 +1190,42 @@ jobs:
 
             - name: "CACHE @contracts_metamarketplace"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@contracts_metamarketplace/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_metamarketplace
 
             - name: "CACHE @contracts_refract"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@contracts_refract/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_refract
 
             - name: "CACHE @contracts_t721admin"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@contracts_t721admin/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_t721admin
 
             - name: "CACHE @contracts_t721controller"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@contracts_t721controller/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_t721controller
 
             - name: "CACHE @contracts_t721token"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@contracts_t721token/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_t721token
 
             - name: "CACHE @contracts_ticketforge"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@contracts_ticketforge/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-@contracts_ticketforge
@@ -1236,14 +1236,14 @@ jobs:
 
             - name: "CACHE @public_dosojin"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@public_dosojin/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('modules/@public_dosojin/yarn.lock') }}-public_dosojin
 
             - name: "CACHE @public_e712"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@public_e712/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('modules/@public_e712/yarn.lock') }}-public_e712
@@ -1254,7 +1254,7 @@ jobs:
 
             - name: "CACHE @backend_nest/coverage-server-e2e"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: modules/@backend_nest/coverage-server-e2e
                   key: ${{ runner.os }}-backend_nest-coverage-server-e2e${{ github.sha }}
@@ -1265,27 +1265,27 @@ jobs:
 
             - name: "CACHE root"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @common_sdk"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@common_sdk/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
             - name: "CACHE @common_global"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
             - name: "CACHE @common_geoloc"
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               with:
                 path: ./modules/@common_geoloc/node_modules
@@ -1293,14 +1293,14 @@ jobs:
 
             - name: "CACHE @backend_nest"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@backend_nest/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
 
             - name: "CACHE @backend_simulation"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@backend_simulation/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_simulation
@@ -1370,16 +1370,16 @@ jobs:
             # Initial Setup
             #
 
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v2.3.4
             - name: "Use Node.js 12.x"
-              uses: actions/setup-node@v1.2.0
+              uses: actions/setup-node@v2.1.2
               with:
                   node-version: 12.x
 
-            - uses: technote-space/get-diff-action@v2
+            - uses: technote-space/get-diff-action@v4.0.1
               id: git_diff
               with:
-                PREFIX_FILTER: modules/@frontend_flib-react/
+                PATTERNS: modules/@frontend_flib-react/**/*
 
             - name: "Install required tools globally (npm install -g yarn)"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -1391,14 +1391,14 @@ jobs:
 
             - name: "CACHE root"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @frontend_flib-react"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@frontend_flib-react/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
@@ -1453,20 +1453,20 @@ jobs:
         # Initial Setup
         #
 
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2.3.4
         - name: "Use Node.js 12.x"
-          uses: actions/setup-node@v1.2.0
+          uses: actions/setup-node@v2.1.2
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@v4.0.1
           id: git_diff
           with:
-            PREFIX_FILTER: |
-              modules/@frontend_t721-app/
-              modules/@common_global/
-              modules/@common_sdk/
-              modules/@frontend_core/
+            PATTERNS: |
+              modules/@frontend_t721-app/**/*
+              modules/@common_global/**/*
+              modules/@common_sdk/**/*
+              modules/@frontend_core/**/*
 
         - name: "Install required tools globally (npm install -g yarn)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -1478,20 +1478,20 @@ jobs:
 
         - name: "CACHE root"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
         - name: "CACHE @common_global"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@common_global/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
         - name: "CACHE @common_geoloc"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./modules/@common_geoloc/node_modules
@@ -1499,35 +1499,35 @@ jobs:
 
         - name: "CACHE @common_sdk"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@common_sdk/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
         - name: "CACHE @frontend_flib-react"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@frontend_flib-react/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
 
         - name: "CACHE @frontend_core"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@frontend_core/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
 
         - name: "CACHE @frontend_t721-app"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@frontend_t721-app/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_t721-app
 
         - name: "CACHE @backend_nest"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@backend_nest/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
@@ -1602,20 +1602,20 @@ jobs:
         # Initial Setup
         #
 
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2.3.4
         - name: "Use Node.js 12.x"
-          uses: actions/setup-node@v1.2.0
+          uses: actions/setup-node@v2.1.2
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@v4.0.1
           id: git_diff
           with:
-            PREFIX_FILTER: |
-              modules/@frontend_organizer-app/
-              modules/@common_global/
-              modules/@common_sdk/
-              modules/@frontend_core/
+            PATTERNS: |
+              modules/@frontend_organizer-app/**/*
+              modules/@common_global/**/*
+              modules/@common_sdk/**/*
+              modules/@frontend_core/**/*
 
         - name: "Install required tools globally (npm install -g yarn)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -1627,20 +1627,20 @@ jobs:
 
         - name: "CACHE root"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
         - name: "CACHE @common_global"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@common_global/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
         - name: "CACHE @common_geoloc"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./modules/@common_geoloc/node_modules
@@ -1648,35 +1648,35 @@ jobs:
 
         - name: "CACHE @common_sdk"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@common_sdk/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
         - name: "CACHE @frontend_flib-react"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@frontend_flib-react/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
 
         - name: "CACHE @frontend_core"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@frontend_core/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
 
         - name: "CACHE @frontend_organizer-app"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@frontend_organizer-app/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_organizer-app
 
         - name: "CACHE @backend_nest"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@backend_nest/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
@@ -1751,20 +1751,20 @@ jobs:
         # Initial Setup
         #
 
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2.3.4
         - name: "Use Node.js 12.x"
-          uses: actions/setup-node@v1.2.0
+          uses: actions/setup-node@v2.1.2
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@v4.0.1
           id: git_diff
           with:
-            PREFIX_FILTER: |
-              modules/@frontend_staff-app/
-              modules/@common_global/
-              modules/@common_sdk/
-              modules/@frontend_core/
+            PATTERNS: |
+              modules/@frontend_staff-app/**/*
+              modules/@common_global/**/*
+              modules/@common_sdk/**/*
+              modules/@frontend_core/**/*
 
         - name: "Install required tools globally (npm install -g yarn)"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -1776,20 +1776,20 @@ jobs:
 
         - name: "CACHE root"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
         - name: "CACHE @common_global"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@common_global/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
         - name: "CACHE @common_geoloc"
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
           with:
             path: ./modules/@common_geoloc/node_modules
@@ -1797,35 +1797,35 @@ jobs:
 
         - name: "CACHE @common_sdk"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@common_sdk/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
         - name: "CACHE @frontend_flib-react"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@frontend_flib-react/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
 
         - name: "CACHE @frontend_core"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@frontend_core/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
 
         - name: "CACHE @frontend_staff-app"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@frontend_staff-app/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_staff-app
 
         - name: "CACHE @backend_nest"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: actions/cache@v1
+          uses: actions/cache@v2.1.3
           with:
             path: ./modules/@backend_nest/node_modules
             key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
@@ -1902,19 +1902,19 @@ jobs:
             # Initial Setup
             #
 
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v2.3.4
             - name: "Use Node.js 12.x"
-              uses: actions/setup-node@v1.2.0
+              uses: actions/setup-node@v2.1.2
               with:
                   node-version: 12.x
 
-            - uses: technote-space/get-diff-action@v2
+            - uses: technote-space/get-diff-action@v4.0.1
               id: git_diff
               with:
-                PREFIX_FILTER: |
-                  modules/@frontend_core/
-                  modules/@common_global/
-                  modules/@common_sdk/
+                PATTERNS: |
+                  modules/@frontend_core/**/*
+                  modules/@common_global/**/*
+                  modules/@common_sdk/**/*
 
             - name: "Install required tools globally (npm install -g yarn)"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -1926,20 +1926,20 @@ jobs:
 
             - name: "CACHE root"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @common_global"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@common_global/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
 
             - name: "CACHE @common_geoloc"
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               with:
                 path: ./modules/@common_geoloc/node_modules
@@ -1947,28 +1947,28 @@ jobs:
 
             - name: "CACHE @common_sdk"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@common_sdk/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_sdk
 
             - name: "CACHE @frontend_flib-react"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@frontend_flib-react/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
 
             - name: "CACHE @frontend_core"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@frontend_core/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_core
 
             - name: "CACHE @backend_nest"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@backend_nest/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-backend_nest
@@ -2047,19 +2047,19 @@ jobs:
             # Initial Setup
             #
 
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v2.3.4
             - name: "Use Node.js 12.x"
-              uses: actions/setup-node@v1.2.0
+              uses: actions/setup-node@v2.1.2
               with:
                   node-version: 12.x
 
-            - uses: technote-space/get-diff-action@v2
+            - uses: technote-space/get-diff-action@v4.0.1
               id: git_diff
               with:
-                PREFIX_FILTER: |
-                  modules/@backend_nest
-                  modules/@common_global
-                  modules/@common_geoloc
+                PATTERNS: |
+                  modules/@backend_nest/**/*
+                  modules/@common_global/**/*
+                  modules/@common_geoloc/**/*
 
             - name: "Install required tools globally (npm install -g yarn)"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
@@ -2071,34 +2071,34 @@ jobs:
 
             - name: "CACHE root"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
             - name: "CACHE @backend_nest/coverage-server-e2e"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: modules/@backend_nest/coverage-server-e2e
                   key: ${{ runner.os }}-backend_nest-coverage-server-e2e${{ github.sha }}
 
             - name: "CACHE @backend_nest/coverage"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: modules/@backend_nest/coverage
                   key: ${{ runner.os }}-backend_nest-coverage-${{ github.sha }}
 
             - name: "CACHE @common/global/coverage"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               with:
                   path: modules/@common_global/coverage
                   key: ${{ runner.os }}-common_global-coverage-${{ github.sha }}
 
             - name: "CACHE @common/geoloc/coverage"
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.3
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               with:
                 path: modules/@common_geoloc/coverage
@@ -2124,20 +2124,20 @@ jobs:
         # Initial Setup
         #
 
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2.3.4
         - name: "Use Node.js 12.x"
-          uses: actions/setup-node@v1.2.0
+          uses: actions/setup-node@v2.1.2
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@v4.0.1
           id: git_diff
           with:
-            PREFIX_FILTER: modules/@infra_
+            PATTERNS: modules/@infra_*/**/*
 
         - name: "Setup SSH Agent"
           if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
-          uses: webfactory/ssh-agent@v0.1.1
+          uses: webfactory/ssh-agent@master
           with:
             ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -2184,7 +2184,6 @@ jobs:
           run: ./helmsman.dryrun.staging.sh
           env:
             CONFIG_STAGING_STRIPE_APIKEY: ${{ secrets.CONFIG_STAGING_STRIPE_APIKEY }}
-            CONFIG_STAGING_ROCKSIDE_APIKEY: ${{ secrets.CONFIG_STAGING_ROCKSIDE_APIKEY }}
             CONFIG_STAGING_MAILJET_APIKEY: ${{ secrets.CONFIG_STAGING_MAILJET_APIKEY }}
             CONFIG_STAGING_MAILJET_APISECRET: ${{ secrets.CONFIG_STAGING_MAILJET_APISECRET }}
             CONFIG_STAGING_JWT_SECRET: ${{ secrets.CONFIG_STAGING_JWT_SECRET }}
@@ -2198,8 +2197,6 @@ jobs:
             CONFIG_STAGING_STAFF_SEGMENT_API_KEY: ${{ secrets.CONFIG_STAGING_STAFF_SEGMENT_API_KEY }}
             CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY: ${{ secrets.CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY }}
             CONFIG_STAGING_ORGANIZER_PUBLISHABLE_STRIPE_API_KEY: ${{ secrets.CONFIG_STAGING_ORGANIZER_PUBLISHABLE_STRIPE_API_KEY }}
-            CONFIG_STAGING_ETHERSCAN_URL: ${{ secrets.CONFIG_STAGING_ETHERSCAN_URL }}
-            CONFIG_STAGING_FORWARDER_ADDRESS: ${{ secrets.CONFIG_STAGING_FORWARDER_ADDRESS }}
             CONFIG_STAGING_T721APP_ITUNES_ID: ${{ secrets.CONFIG_STAGING_T721APP_ITUNES_ID }}
             CONFIG_STAGING_T721APP_APPSTORE_LINK: ${{ secrets.CONFIG_STAGING_T721APP_APPSTORE_LINK }}
             CONFIG_STAGING_T721APP_PLAYSTORE_LINK: ${{ secrets.CONFIG_STAGING_T721APP_PLAYSTORE_LINK }}

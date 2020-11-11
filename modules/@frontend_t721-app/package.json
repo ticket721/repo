@@ -69,8 +69,8 @@
     },
     "scripts": {
         "inject_env": "node env_injector.js > /tmp/index.html && cp /tmp/index.html ./build/index.html",
-        "start": "PORT=8100 react-scripts start",
         "build": "react-scripts --max_old_space_size=4096 build",
+        "start": "PORT=8100 react-scripts start",
         "build:prod": "react-scripts build",
         "test": "react-scripts test",
         "lint": "tslint --project .",
