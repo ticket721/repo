@@ -24,7 +24,7 @@ jobs:
 
         - name: "Use Node.js 12.x"
           if: steps.wait-for-build.outputs.conclusion == 'success'
-          uses: actions/setup-node@v1.2.0
+          uses: actions/setup-node@v2.1.2
           with:
             node-version: 12.x
 
@@ -94,7 +94,7 @@ jobs:
           if: steps.wait-for-build.outputs.conclusion == 'success'
         - name: "Use Node.js 12.x"
           if: steps.wait-for-build.outputs.conclusion == 'success'
-          uses: actions/setup-node@v1.2.0
+          uses: actions/setup-node@v2.1.2
           with:
             node-version: 12.x
 
