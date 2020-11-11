@@ -25,6 +25,7 @@ import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 import { EventsBuildResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsBuildResponse.dto';
 import { v4 } from 'uuid';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
+import { b64toBlob } from '../../utils/b64toBlob';
 
 export interface FormProps {
     onComplete: () => void;
@@ -71,6 +72,15 @@ const stepsInfos: StepInfos[] = [
         description: 'categories_description',
     },
 ];
+
+const getCover = () => {
+    if (localStorage.getItem('event-creation-image')) {
+        const file: Blob = b64toBlob(localStorage.getItem('event-creation-image'), localStorage.getItem('event-creation-image-content-type'));
+        return URL.createObjectURL(file);
+    }
+
+    return '';
+};
 
 const CreateEvent: React.FC = () => {
     const [ t ] = useTranslation('create_event');
@@ -121,7 +131,13 @@ const CreateEvent: React.FC = () => {
     ], { force: true });
 
     const formik = useFormik({
-        initialValues,
+        initialValues: {
+            ...initialValues,
+            imagesMetadata: {
+                ...initialValues.imagesMetadata,
+                avatar: getCover(),
+            },
+        },
         onSubmit,
         validate,
     });
@@ -129,7 +145,10 @@ const CreateEvent: React.FC = () => {
     const buildForm = () => {
         switch (currentStep) {
             case 0: return <GeneralInfoForm/>;
-            case 1: return <StylesForm eventName={formik.values.textMetadata.name} parentField={'imagesMetadata'}/>;
+            case 1: return <StylesForm
+            eventName={formik.values.textMetadata.name}
+            parentField={'imagesMetadata'}
+            onCreation={true}/>;
             case 2: return <DatesStep/>;
             case 3: return <CategoriesStep/>;
             default: return <></>;

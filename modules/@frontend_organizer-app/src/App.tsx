@@ -15,15 +15,14 @@ import { useSelector }      from 'react-redux';
 import styled               from 'styled-components';
 import { AppStatus }        from '@frontend/core/lib/redux/ducks/statuses';
 import ToastStacker         from '@frontend/core/lib/components/ToastStacker';
-// import { EventMenu }        from './screens/Event/EventMenu';
 import MediaQuery           from 'react-responsive';
 import { routes }           from './routes';
 import { FullPageLoading }  from '@frontend/flib-react/lib/components';
-import './core/event_creation/locales';
 import './shared/Translations/global';
 import { UserContextGuard } from '@frontend/core/lib/utils/UserContext';
 import { FeatureFlag }      from '@frontend/core/lib/components/FeatureFlag';
 import { ProtectedByOwnership } from '@frontend/core/lib/components/ProtectedByOwnership';
+import { EventsDrawer } from './components/EventsDrawer';
 
 const App: React.FC = () => {
     const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
@@ -44,8 +43,13 @@ const App: React.FC = () => {
                                 null
                         }
                     </MediaQuery>
+                    {
+                        location.pathname.startsWith('/event') || location.pathname === '/' ?
+                        <EventsDrawer/> :
+                        null
+                    }
                     <Suspense fallback={<FullPageLoading/>}>
-                        <Switch>
+                        <Switch location={location} key={location.pathname}>
                             {
                                 appStatus === AppStatus.Ready
 
@@ -69,12 +73,7 @@ const App: React.FC = () => {
                                                     {
                                                         route.entityParam ?
                                                             <ProtectedByOwnership entityType={route.entityType} entityParam={route.entityParam}>
-                                                                <EventPageWrapper>
-                                                                    {/* <EventMenu/> */}
-                                                                    <div>
-                                                                        <Page/>
-                                                                    </div>
-                                                                </EventPageWrapper>
+                                                                <Page/>
                                                             </ProtectedByOwnership>
                                                             :
                                                             <Page/>
@@ -93,7 +92,7 @@ const App: React.FC = () => {
                             <Redirect to={'/'}/>
                         </Switch>
                     </Suspense>
-                    <ToastStacker />
+                    <ToastStacker additionalLocales={[]}/>
                 </AppContainer>
             </UserContextGuard>
         </Suspense>
@@ -105,19 +104,8 @@ const AppContainer = styled.div`
 `;
 
 const PageWrapper = styled.div`
-    padding: 50px;
+    padding: 50px 0;
     margin-top: 80px;
-`;
-
-const EventPageWrapper = styled.div`
-    margin-left: 280px;
-    width: calc(100% - 280px);
-    display: flex;
-    justify-content: center;
-
-    & > div:last-child {
-        width: 600px;
-    }
 `;
 
 export default withRouter(App);
