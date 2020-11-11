@@ -256,7 +256,7 @@ jobs:
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@master
           id: git_diff
           with:
             PREFIX_FILTER: modules/@common_geoloc/
@@ -347,7 +347,7 @@ jobs:
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@master
           id: git_diff
           with:
             PREFIX_FILTER: modules/@contracts_t721controller/
@@ -434,7 +434,7 @@ jobs:
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@master
           id: git_diff
           with:
             PREFIX_FILTER: modules/@contracts_ticketforge/
@@ -521,7 +521,7 @@ jobs:
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@master
           id: git_diff
           with:
             PREFIX_FILTER: modules/@contracts_t721token/
@@ -609,7 +609,7 @@ jobs:
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@master
           id: git_diff
           with:
             PREFIX_FILTER: modules/@contracts_t721admin/
@@ -696,7 +696,7 @@ jobs:
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@master
           id: git_diff
           with:
             PREFIX_FILTER: modules/@contracts_metamarketplace/
@@ -783,7 +783,7 @@ jobs:
             with:
                 node-version: 12.x
 
-          - uses: technote-space/get-diff-action@v2
+          - uses: technote-space/get-diff-action@master
             id: git_diff
             with:
               PREFIX_FILTER: modules/@common_global/
@@ -872,7 +872,7 @@ jobs:
               with:
                   node-version: 12.x
 
-            - uses: technote-space/get-diff-action@v2
+            - uses: technote-space/get-diff-action@master
               id: git_diff
               with:
                 PREFIX_FILTER: |
@@ -985,7 +985,7 @@ jobs:
               with:
                   node-version: 12.x
 
-            - uses: technote-space/get-diff-action@v2
+            - uses: technote-space/get-diff-action@master
               id: git_diff
               with:
                 PREFIX_FILTER: |
@@ -1161,7 +1161,7 @@ jobs:
               with:
                   node-version: 12.x
 
-            - uses: technote-space/get-diff-action@v2
+            - uses: technote-space/get-diff-action@master
               id: git_diff
               with:
                 PREFIX_FILTER: |
@@ -1376,7 +1376,7 @@ jobs:
               with:
                   node-version: 12.x
 
-            - uses: technote-space/get-diff-action@v2
+            - uses: technote-space/get-diff-action@master
               id: git_diff
               with:
                 PREFIX_FILTER: modules/@frontend_flib-react/
@@ -1459,7 +1459,7 @@ jobs:
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@master
           id: git_diff
           with:
             PREFIX_FILTER: |
@@ -1608,7 +1608,7 @@ jobs:
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@master
           id: git_diff
           with:
             PREFIX_FILTER: |
@@ -1757,7 +1757,7 @@ jobs:
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@master
           id: git_diff
           with:
             PREFIX_FILTER: |
@@ -1908,7 +1908,7 @@ jobs:
               with:
                   node-version: 12.x
 
-            - uses: technote-space/get-diff-action@v2
+            - uses: technote-space/get-diff-action@master
               id: git_diff
               with:
                 PREFIX_FILTER: |
@@ -2053,7 +2053,7 @@ jobs:
               with:
                   node-version: 12.x
 
-            - uses: technote-space/get-diff-action@v2
+            - uses: technote-space/get-diff-action@master
               id: git_diff
               with:
                 PREFIX_FILTER: |
@@ -2130,7 +2130,7 @@ jobs:
           with:
             node-version: 12.x
 
-        - uses: technote-space/get-diff-action@v2
+        - uses: technote-space/get-diff-action@master
           id: git_diff
           with:
             PREFIX_FILTER: modules/@infra_
