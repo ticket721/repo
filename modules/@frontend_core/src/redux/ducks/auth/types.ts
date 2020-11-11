@@ -3,8 +3,6 @@ export enum AuthActionTypes {
     LocalLogin = '@@auth/locallogin',
     Logout = '@@auth/logout',
     SetToken = '@@auth/settoken',
-    SetUser = '@@auth/setuser',
-    GetUser = '@@auth/getuser',
     SetErrors = '@@auth/seterrors',
     ResetErrors = '@@auth/reseterrors',
     SetLoading = '@@auth/setloading',

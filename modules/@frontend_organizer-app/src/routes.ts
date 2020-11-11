@@ -6,81 +6,95 @@ export interface RouteDatum {
     page: React.FC<any>;
     topBar?: React.ReactElement;
     protected?: boolean;
-    entityType?: string;
-    paramId?: 'groupId' | 'dateId' | 'categoryId' | 'eventId';
+    entityType?: 'events' | 'dates' | 'categories';
+    entityParam?: 'eventId' | 'dateId' | 'categoryId';
     flag?: string;
 }
 
 export const routes: RouteDatum[] = [
     {
-        path: '/group/:groupId/event/:eventId/category/:categoryId',
-        page: lazy(() => import('./routes/UpdateGlobalCategory')),
+        path: '/event/:eventId/date/:dateId/category/:categoryId',
+        page: lazy(() => import('./routes/EditCategory')),
         protected: true,
-        entityType: 'event',
-        paramId: 'groupId'
+        entityType: 'categories',
+        entityParam: 'categoryId'
     },
     {
-        path: '/group/:groupId/event/:eventId/category',
-        page: lazy(() => import('./routes/NewGlobalCategory')),
+        path: '/event/:eventId/date/:dateId/category',
+        page: lazy(() => import('./routes/CreateCategory')),
         protected: true,
-        entityType: 'event',
-        paramId: 'groupId'
+        entityType: 'dates',
+        entityParam: 'dateId'
     },
     {
-        path: '/group/:groupId/date/:dateId/category/:categoryId',
-        page: lazy(() => import('./routes/UpdateCategory')),
+        path: '/event/:eventId/categories',
+        page: lazy(() => import('./routes/CategoriesDashboard')),
         protected: true,
-        entityType: 'event',
-        paramId: 'groupId'
+        entityType: 'events',
+        entityParam: 'eventId'
     },
     {
-        path: '/group/:groupId/date/:dateId/category',
-        page: lazy(() => import('./routes/NewCategory')),
+        path: '/event/:eventId/category/:categoryId',
+        page: lazy(() => import('./routes/EditCategory')),
         protected: true,
-        entityType: 'event',
-        paramId: 'groupId'
+        entityType: 'categories',
+        entityParam: 'categoryId'
     },
     {
-        path: '/group/:groupId/date/:dateId/general-infos',
-        page: lazy(() => import('./routes/UpdateGeneralInfos')),
+        path: '/event/:eventId/category',
+        page: lazy(() => import('./routes/CreateCategory')),
         protected: true,
-        entityType: 'event',
-        paramId: 'groupId'
+        entityType: 'events',
+        entityParam: 'eventId'
     },
     {
-        path: '/group/:groupId/date/:dateId/styles',
-        page: lazy(() => import('./routes/UpdateStyles')),
+        path: '/event/:eventId/date/:dateId/general-infos',
+        page: lazy(() => import('./routes/EditDate')),
         protected: true,
-        entityType: 'event',
-        paramId: 'groupId'
+        entityType: 'dates',
+        entityParam: 'dateId'
     },
     {
-        path: '/group/:groupId/date/:dateId/location',
-        page: lazy(() => import('./routes/UpdateLocation')),
+        path: '/event/:eventId/date/:dateId/styles',
+        page: lazy(() => import('./routes/EditDate')),
         protected: true,
-        entityType: 'event',
-        paramId: 'groupId'
+        entityType: 'dates',
+        entityParam: 'dateId'
     },
     {
-        path: '/group/:groupId/date/:dateId',
-        page: lazy(() => import('./routes/Preview')),
+        path: '/event/:eventId/date/:dateId/categories',
+        page: lazy(() => import('./routes/CategoriesDateDashboard')),
         protected: true,
-        entityType: 'event',
-        paramId: 'groupId'
+        entityType: 'dates',
+        entityParam: 'dateId'
     },
     {
-        path: '/group/:groupId/event/:eventId/date',
-        page: lazy(() => import('./routes/NewDate')),
+        path: '/event/:eventId/date/:dateId/dates-typology',
+        page: lazy(() => import('./routes/EditDate')),
         protected: true,
-        entityType: 'event',
-        paramId: 'groupId'
+        entityType: 'dates',
+        entityParam: 'dateId'
     },
     {
-        path: '/group/:groupId',
-        page: lazy(() => import('./routes/FetchEvent')),
+        path: '/event/:eventId/date',
+        page: lazy(() => import('./routes/CreateDate')),
         protected: true,
-        entityType: 'event',
-        paramId: 'groupId'
+        entityType: 'events',
+        entityParam: 'eventId'
+    },
+    {
+        path: '/event/:eventId/edit',
+        page: lazy(() => import('./routes/EditEvent')),
+        protected: true,
+        entityType: 'events',
+        entityParam: 'eventId'
+    },
+    {
+        path: '/event/:eventId',
+        page: lazy(() => import('./routes/DatesDashboard')),
+        protected: true,
+        entityType: 'events',
+        entityParam: 'eventId'
     },
     {
         path: '/login',
@@ -97,7 +111,6 @@ export const routes: RouteDatum[] = [
     {
         path: '/create-event',
         page: lazy(() => import('./routes/CreateEvent')),
-        protected: true,
     },
     {
         path: '/you/are/an/admin',
@@ -135,7 +148,7 @@ export const routes: RouteDatum[] = [
     },
     {
         path: '/',
-        page: lazy(() => import('./routes/Dashboard')),
+        page: lazy(() => import('./routes/EventsDasboard')),
         protected: true,
     }
 ];

@@ -2,6 +2,7 @@ import {
     Body,
     Controller,
     Delete,
+    Get,
     HttpCode,
     HttpException,
     Param,
@@ -11,36 +12,16 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { User } from '@app/server/authentication/decorators/User.controller.decorator';
-import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { DatesService } from '@lib/common/dates/Dates.service';
 import { DatesSearchResponseDto } from '@app/server/controllers/dates/dto/DatesSearchResponse.dto';
-import { DateEntity, DateLocation } from '@lib/common/dates/entities/Date.entity';
+import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 import { DatesSearchInputDto } from '@app/server/controllers/dates/dto/DatesSearchInput.dto';
 import { StatusCodes } from '@lib/common/utils/codes.value';
 import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
-import { DatesCreateInputDto } from '@app/server/controllers/dates/dto/DatesCreateInput.dto';
-import { DatesAddCategoriesInputDto } from '@app/server/controllers/dates/dto/DatesAddCategoriesInput.dto';
-import { DatesDeleteCategoriesInputDto } from '@app/server/controllers/dates/dto/DatesDeleteCategoriesInput.dto';
-import { DatesUpdateInputDto } from '@app/server/controllers/dates/dto/DatesUpdateInput.dto';
-import { DatesCreateResponseDto } from '@app/server/controllers/dates/dto/DatesCreateResponse.dto';
-import { DatesAddCategoriesResponseDto } from '@app/server/controllers/dates/dto/DatesAddCategoriesResponse.dto';
-import { DatesDeleteCategoriesResponseDto } from '@app/server/controllers/dates/dto/DatesDeleteCategoriesResponse.dto';
-import { DatesUpdateResponseDto } from '@app/server/controllers/dates/dto/DatesUpdateResponse.dto';
 import { DatesCountResponseDto } from '@app/server/controllers/dates/dto/DatesCountResponse.dto';
 import { DatesCountInputDto } from '@app/server/controllers/dates/dto/DatesCountInput.dto';
-import { RightsService } from '@lib/common/rights/Rights.service';
-import { AuthGuard } from '@nestjs/passport';
-import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
-import { uuidEq } from '@common/global';
-import { closestCity } from '@common/geoloc';
-import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
-import { CategoriesService } from '@lib/common/categories/Categories.service';
-import { isFutureDateRange, isValidDateRange } from '@common/global';
 import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
-import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
-import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
 import { DatesHomeSearchInputDto } from '@app/server/controllers/dates/dto/DatesHomeSearchInput.dto';
 import { DatesHomeSearchResponseDto } from '@app/server/controllers/dates/dto/DatesHomeSearchResponse.dto';
 import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
@@ -50,6 +31,33 @@ import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
 import { fromES } from '@lib/common/utils/fromES.helper';
 import { DatesFuzzySearchInputDto } from '@app/server/controllers/dates/dto/DatesFuzzySearchInput.dto';
 import { DatesFuzzySearchResponseDto } from '@app/server/controllers/dates/dto/DatesFuzzySearchResponse.dto';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
+import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
+import { ValidGuard } from '@app/server/authentication/guards/ValidGuard.guard';
+import { User } from '@app/server/authentication/decorators/User.controller.decorator';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { DatesAddCategoryInputDto } from '@app/server/controllers/dates/dto/DatesAddCategoryInput.dto';
+import { DatesAddCategoryResponseDto } from '@app/server/controllers/dates/dto/DatesAddCategoryResponse.dto';
+import { EventsService } from '@lib/common/events/Events.service';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
+import {
+    CategoryCreationPayload,
+    checkCategory,
+    checkDate,
+    DateCreationPayload,
+    DatePayload,
+    ImagesMetadata,
+    TextMetadata,
+} from '@common/global';
+import { DatesEditInputDto } from '@app/server/controllers/dates/dto/DatesEditInput.dto';
+import { DatesEditResponseDto } from '@app/server/controllers/dates/dto/DatesEditResponse.dto';
+import { DatesDeleteResponseDto } from '@app/server/controllers/dates/dto/DatesDeleteResponse.dto';
+import { isNil, merge, pickBy } from 'lodash';
+import { closestCity } from '@common/geoloc';
+import { DatesOwnerResponseDto } from '@app/server/controllers/dates/dto/DatesOwnerResponse.dto';
+import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 
 /**
  * Generic Dates controller. Recover Dates linked to all types of events
@@ -62,17 +70,17 @@ export class DatesController extends ControllerBasics<DateEntity> {
      * Dependency Injection
      *
      * @param datesService
-     * @param rightsService
-     * @param categoriesService
-     * @param metadatasService
      * @param timeToolService
+     * @param uuidToolService
+     * @param eventsService
+     * @param categoriesService
      */
     constructor(
         private readonly datesService: DatesService,
-        private readonly rightsService: RightsService,
-        private readonly categoriesService: CategoriesService,
-        private readonly metadatasService: MetadatasService,
         private readonly timeToolService: TimeToolService,
+        private readonly uuidToolService: UUIDToolService,
+        private readonly eventsService: EventsService,
+        private readonly categoriesService: CategoriesService,
     ) {
         super();
     }
@@ -87,17 +95,17 @@ export class DatesController extends ControllerBasics<DateEntity> {
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async fuzzySearch(@Body() body: DatesFuzzySearchInputDto): Promise<DatesFuzzySearchResponseDto> {
-        await this._authorizeGlobal(this.rightsService, this.datesService, null, null, ['route_search']);
-
         const now = this.timeToolService.now().getTime();
         const hour = now - (now % HOUR);
+
+        const online = isNil(body.lat) && isNil(body.lon);
 
         const query = this._esQueryBuilder<DateEntity>({
             status: {
                 $eq: 'live',
             },
-            parent_type: {
-                $eq: 'event',
+            online: {
+                $eq: online,
             },
         } as SortablePagedSearch);
 
@@ -114,25 +122,43 @@ export class DatesController extends ControllerBasics<DateEntity> {
 
         query.body.sort = [];
 
-        query.body.sort.push({
-            _script: {
-                script: {
-                    source: `
+        if (!online) {
+            query.body.sort.push({
+                _script: {
+                    script: {
+                        source: `
                         double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
                         double time = (doc['timestamps.event_end'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
                         return distance + time;
                     `,
-                    params: {
-                        now: hour,
-                        lon: body.lon,
-                        lat: body.lat,
+                        params: {
+                            now: hour,
+                            lon: body.lon,
+                            lat: body.lat,
+                        },
+                        lang: 'painless',
                     },
-                    lang: 'painless',
+                    type: 'number',
+                    order: 'asc',
                 },
-                type: 'number',
-                order: 'asc',
-            },
-        });
+            });
+        } else {
+            query.body.sort.push({
+                _script: {
+                    script: {
+                        source: `
+                        return (doc['timestamps.event_end'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+                    `,
+                        params: {
+                            now: hour,
+                        },
+                        lang: 'painless',
+                    },
+                    type: 'number',
+                    order: 'asc',
+                },
+            });
+        }
 
         const dates = await this.datesService.searchElastic(query);
 
@@ -165,61 +191,108 @@ export class DatesController extends ControllerBasics<DateEntity> {
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async homeSearch(@Body() body: DatesHomeSearchInputDto): Promise<DatesHomeSearchResponseDto> {
-        await this._authorizeGlobal(this.rightsService, this.datesService, null, null, ['route_search']);
-
         const now = this.timeToolService.now().getTime();
         const hour = now - (now % HOUR);
+
+        const isOnline = isNil(body.lat) && isNil(body.lon);
 
         const query = this._esQueryBuilder<DateEntity>({
             status: {
                 $eq: 'live',
             },
-            parent_type: {
-                $eq: 'event',
-            },
             'timestamps.event_begin': {
                 $gt: hour,
             },
+            online: {
+                $eq: isOnline,
+            },
         } as SortablePagedSearch);
 
-        query.body.query.bool.filter = {
-            script: {
+        if (!isOnline) {
+            query.body.query.bool.filter = {
                 script: {
-                    source: `
+                    script: {
+                        source: `
+                        if (doc['location.location'].empty) {
+                            return false;
+                        }
+
                         double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
                         return distance < params.maxDistance;
                     `,
-                    lang: 'painless',
-                    params: {
-                        maxDistance: 100,
-                        lon: body.lon,
-                        lat: body.lat,
+                        lang: 'painless',
+                        params: {
+                            maxDistance: 100,
+                            lon: body.lon,
+                            lat: body.lat,
+                        },
                     },
                 },
-            },
-        };
+            };
+        } else {
+            query.body.query.bool.filter = {
+                script: {
+                    script: {
+                        source: `
+                        return doc['location.location'].empty;
+                    `,
+                        lang: 'painless',
+                        params: {
+                            maxDistance: 100,
+                            lon: body.lon,
+                            lat: body.lat,
+                        },
+                    },
+                },
+            };
+        }
 
         query.body.sort = [];
 
-        query.body.sort.push({
-            _script: {
-                script: {
-                    source: `
-                        double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
+        if (!isOnline) {
+            query.body.sort.push({
+                _script: {
+                    script: {
+                        source: `
                         double time = (doc['timestamps.event_begin'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
-                        return distance + time;
+
+                        if (doc['location.location'].empty) {
+                            return time
+                        } else {
+                            double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
+                            return distance + time;
+                        }
                     `,
-                    params: {
-                        now: hour,
-                        lon: body.lon,
-                        lat: body.lat,
+                        params: {
+                            now: hour,
+                            lon: body.lon,
+                            lat: body.lat,
+                        },
+                        lang: 'painless',
                     },
-                    lang: 'painless',
+                    type: 'number',
+                    order: 'asc',
                 },
-                type: 'number',
-                order: 'asc',
-            },
-        });
+            });
+        } else {
+            query.body.sort.push({
+                _script: {
+                    script: {
+                        source: `
+                        return (doc['timestamps.event_begin'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+                    `,
+                        params: {
+                            now: hour,
+                            lon: body.lon,
+                            lat: body.lat,
+                        },
+                        lang: 'painless',
+                    },
+                    type: 'number',
+                    order: 'asc',
+                },
+            });
+        }
 
         const dates = await this.datesService.searchElastic(query);
 
@@ -252,12 +325,29 @@ export class DatesController extends ControllerBasics<DateEntity> {
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async search(@Body() body: DatesSearchInputDto): Promise<DatesSearchResponseDto> {
-        await this._authorizeGlobal(this.rightsService, this.datesService, null, null, ['route_search']);
-
-        const dates = await this._search(this.datesService, body);
+        const dates = await this._search(this.datesService, (body as unknown) as SearchInputType<DateEntity>);
 
         return {
             dates,
+        };
+    }
+
+    /**
+     * Recover date owner
+     *
+     * @param dateId
+     */
+    @Get('/owner/:date')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
+    async ownerOf(@Param('date') dateId: string): Promise<DatesOwnerResponseDto> {
+        const date = await this._crudCall(this.datesService.findOne(dateId), StatusCodes.InternalServerError);
+
+        const owner = await this.getDateOwner(date);
+
+        return {
+            owner,
         };
     }
 
@@ -271,9 +361,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async count(@Body() body: DatesCountInputDto): Promise<DatesCountResponseDto> {
-        await this._authorizeGlobal(this.rightsService, this.datesService, null, null, ['route_search']);
-
-        const dates = await this._count(this.datesService, body);
+        const dates = await this._count(this.datesService, (body as unknown) as SearchInputType<DateEntity>);
 
         return {
             dates,
@@ -281,409 +369,365 @@ export class DatesController extends ControllerBasics<DateEntity> {
     }
 
     /**
-     * Creates a Date
+     * Interval helper to recover a date owner
      *
-     * @param body
-     * @param user
+     * @param date
+     * @private
      */
-    @Post('/')
-    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
-    @UseFilters(new HttpExceptionFilter())
-    @HttpCode(StatusCodes.Created)
-    @Roles('authenticated')
-    @ApiResponses([
-        StatusCodes.Created,
-        StatusCodes.Unauthorized,
-        StatusCodes.BadRequest,
-        StatusCodes.InternalServerError,
-    ])
-    async create(@Body() body: DatesCreateInputDto, @User() user: UserDto): Promise<DatesCreateResponseDto> {
-        await this._authorizeGlobal(this.rightsService, this.datesService, user, body.group_id, ['route_create']);
+    private async getDateOwner(date: DateEntity): Promise<string> {
+        const event = await this._serviceCall(this.eventsService.findOne(date.event), StatusCodes.InternalServerError);
 
-        if (!isFutureDateRange(new Date(body.timestamps.event_begin), new Date(body.timestamps.event_end))) {
-            throw new HttpException(
-                {
-                    status: StatusCodes.BadRequest,
-                    message: 'invalid_event_dates',
-                },
-                StatusCodes.BadRequest,
-            );
-        }
-
-        const newEntity: DateEntity = await this._new<DateEntity>(this.datesService, {
-            ...body,
-            location: {
-                location: body.location.location,
-                location_label: body.location.location_label,
-                assigned_city: closestCity(body.location.location).id,
-            },
-            status: 'preview',
-        });
-
-        await this._serviceCall(
-            this.metadatasService.attach(
-                'history',
-                'create',
-                [
-                    {
-                        type: 'date',
-                        id: newEntity.id,
-                        field: 'id',
-                        rightId: newEntity.group_id,
-                        rightField: 'group_id',
-                    },
-                ],
-                [
-                    {
-                        type: 'date',
-                        id: newEntity.group_id,
-                        field: 'group_id',
-                    },
-                ],
-                [],
-                {
-                    date: {
-                        at: new Date(Date.now()),
-                    },
-                },
-                user,
-                this.datesService,
-            ),
-            StatusCodes.InternalServerError,
-        );
-
-        return {
-            date: newEntity,
-        };
+        return event.owner;
     }
 
     /**
-     * Adds categories to a Date
+     * Internal helper to check if user is the date owner
+     *
+     * @param date
+     * @param user
+     * @private
+     */
+    private async isDateOwner(date: DateEntity, user: UserDto): Promise<boolean> {
+        const event = await this._serviceCall(this.eventsService.findOne(date.event), StatusCodes.InternalServerError);
+
+        return event.owner === user.id;
+    }
+
+    /**
+     * Creates a category for a specific date
      *
      * @param body
-     * @param dateId
      * @param user
+     * @param dateId
      */
-    @Post('/:dateId/categories')
+    @Post('/:date/category')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.Created)
     @Roles('authenticated')
     @ApiResponses([
         StatusCodes.Created,
-        StatusCodes.BadRequest,
         StatusCodes.Unauthorized,
+        StatusCodes.BadRequest,
         StatusCodes.InternalServerError,
     ])
-    async addCategories(
-        @Body() body: DatesAddCategoriesInputDto,
-        @Param('dateId') dateId: string,
+    async addCategory(
+        @Body() body: DatesAddCategoryInputDto,
         @User() user: UserDto,
-    ): Promise<DatesAddCategoriesResponseDto> {
-        const dateEntity: DateEntity = await this._authorizeOne(
-            this.rightsService,
-            this.datesService,
-            user,
-            {
-                id: dateId,
-            },
-            'group_id',
-            ['route_add_categories'],
+        @Param('date') dateId: string,
+    ): Promise<DatesAddCategoryResponseDto> {
+        const date = await this._crudCall(this.datesService.findOne(dateId), StatusCodes.NotFound);
+
+        if (!(await this.isDateOwner(date, user))) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Unauthorized,
+                    message: 'not_date_owner',
+                },
+                StatusCodes.Unauthorized,
+            );
+        }
+
+        const category: CategoryCreationPayload = body.category;
+
+        const checkRes = checkCategory(category);
+
+        if (checkRes) {
+            return {
+                error: checkRes,
+            };
+        }
+
+        const categoryId = this.uuidToolService.generate();
+
+        const categoryEntity = await this._crudCall(
+            this.categoriesService.create({
+                id: categoryId,
+                group_id: date.group_id,
+                category_name: categoryId,
+                display_name: category.name,
+                sale_begin: category.saleBegin,
+                sale_end: category.saleEnd,
+                price: category.price,
+                currency: category.currency,
+                interface: CategoriesService.interfaceFromCurrencyAndPrice(category.currency, category.price),
+                seats: category.seats,
+                status: 'preview',
+            }),
+            StatusCodes.InternalServerError,
         );
 
-        for (const categoryId of body.categories) {
-            if (dateEntity.categories.findIndex((ec: string): boolean => uuidEq(ec, categoryId)) !== -1) {
+        await this._crudCall(this.datesService.addCategory(dateId, categoryEntity), StatusCodes.InternalServerError);
+
+        if (body.otherDates) {
+            let newCategory: CategoryEntity;
+            const hasDuplicatedDates =
+                new Set([...body.otherDates, dateId]).size !== [...body.otherDates, dateId].length;
+
+            if (hasDuplicatedDates) {
                 throw new HttpException(
                     {
                         status: StatusCodes.Conflict,
-                        message: 'category_already_in_date',
+                        message: 'has_duplicated_dates',
                     },
                     StatusCodes.Conflict,
                 );
             }
 
-            const category: CategoryEntity = await this._getOne<CategoryEntity>(this.categoriesService, {
-                id: categoryId,
-            });
+            for (const otherDateId of body.otherDates) {
+                newCategory = await this._crudCall(
+                    this.categoriesService.findOne(categoryId),
+                    StatusCodes.InternalServerError,
+                );
 
-            if (this.categoriesService.isBound(category)) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.BadRequest,
-                        message: 'category_already_bound',
-                    },
-                    StatusCodes.BadRequest,
+                const updatedDate = await this._crudCall(
+                    this.datesService.findOne(otherDateId),
+                    StatusCodes.InternalServerError,
+                );
+
+                if (updatedDate.group_id !== newCategory.group_id) {
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Unauthorized,
+                            message: 'not_date_owner',
+                        },
+                        StatusCodes.Unauthorized,
+                    );
+                }
+
+                await this._crudCall(
+                    this.datesService.addCategory(otherDateId, newCategory),
+                    StatusCodes.InternalServerError,
                 );
             }
 
-            if (category.group_id !== dateEntity.group_id) {
-                throw new HttpException(
-                    {
-                        status: StatusCodes.BadRequest,
-                        message: 'group_id_not_matching',
-                    },
-                    StatusCodes.BadRequest,
-                );
-            }
-
-            dateEntity.categories.push(categoryId);
-        }
-
-        await this._edit<DateEntity>(
-            this.datesService,
-            {
-                id: dateId,
-            },
-            {
-                categories: dateEntity.categories,
-            },
-        );
-
-        for (const categoryId of body.categories) {
-            await this._bind<CategoryEntity>(this.categoriesService, categoryId, 'date', dateId);
-        }
-
-        await this._serviceCall(
-            this.metadatasService.attach(
-                'history',
-                'add_categories',
-                [
-                    {
-                        type: 'date',
-                        id: dateEntity.id,
-                        field: 'id',
-                        rightId: dateEntity.group_id,
-                        rightField: 'group_id',
-                    },
-                ],
-                [
-                    {
-                        type: 'date',
-                        id: dateEntity.group_id,
-                        field: 'group_id',
-                    },
-                ],
-                [],
-                {
-                    date: {
-                        at: new Date(Date.now()),
-                    },
+            return {
+                category: {
+                    ...categoryEntity,
+                    dates: [...body.otherDates, dateId],
                 },
-                user,
-                this.datesService,
-            ),
-            StatusCodes.InternalServerError,
-        );
+            };
+        }
 
         return {
-            date: dateEntity,
+            category: {
+                ...categoryEntity,
+                dates: [dateId],
+            },
         };
     }
 
     /**
-     * Remove Categories from Date
+     * Edits a date
      *
      * @param body
-     * @param dateId
      * @param user
+     * @param dateId
      */
-    @Delete('/:dateId/categories')
+    @Put('/:date')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
-    @HttpCode(StatusCodes.OK)
+    @HttpCode(StatusCodes.Created)
     @Roles('authenticated')
-    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.NotFound, StatusCodes.InternalServerError])
-    async deleteCategories(
-        @Body() body: DatesDeleteCategoriesInputDto,
-        @Param('dateId') dateId: string,
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.Unauthorized,
+        StatusCodes.BadRequest,
+        StatusCodes.InternalServerError,
+    ])
+    async edit(
+        @Body() body: DatesEditInputDto,
         @User() user: UserDto,
-    ): Promise<DatesDeleteCategoriesResponseDto> {
-        const entity: DateEntity = await this._authorizeOne(
-            this.rightsService,
-            this.datesService,
-            user,
-            {
-                id: dateId,
-            },
-            'group_id',
-            ['route_delete_categories'],
-        );
+        @Param('date') dateId: string,
+    ): Promise<DatesEditResponseDto> {
+        const date = await this._crudCall(this.datesService.findOne(dateId), StatusCodes.NotFound);
 
-        const finalCategories: string[] = [];
-
-        for (const category of entity.categories) {
-            if (body.categories.findIndex((catToDelete: string): boolean => uuidEq(catToDelete, category)) === -1) {
-                finalCategories.push(category);
-            }
-        }
-
-        if (finalCategories.length !== entity.categories.length - body.categories.length) {
+        if (!(await this.isDateOwner(date, user))) {
             throw new HttpException(
                 {
-                    status: StatusCodes.NotFound,
-                    message: 'categories_not_found',
+                    status: StatusCodes.Unauthorized,
+                    message: 'not_date_owner',
                 },
-                StatusCodes.NotFound,
+                StatusCodes.Unauthorized,
             );
         }
 
-        await this._edit<DateEntity>(
-            this.datesService,
-            {
-                id: entity.id,
+        const existingDateCreationValue: DateCreationPayload = {
+            info: {
+                online: date.online,
+                online_link: date.online_link,
+                name: date.metadata.name,
+                eventBegin: new Date(date.timestamps.event_begin),
+                eventEnd: new Date(date.timestamps.event_end),
+                location: date.location
+                    ? {
+                          label: date.location.location_label,
+                          lon: date.location.location.lon,
+                          lat: date.location.location.lat,
+                      }
+                    : null,
             },
-            {
-                categories: finalCategories,
+            textMetadata: {
+                name: date.metadata.name,
+                description: date.metadata.description,
+                twitter: date.metadata.twitter,
+                website: date.metadata.website,
+                facebook: date.metadata.facebook,
+                email: date.metadata.email,
+                linked_in: date.metadata.linked_in,
+                tiktok: date.metadata.tiktok,
+                instagram: date.metadata.instagram,
+                spotify: date.metadata.spotify,
             },
-        );
-
-        for (const category of body.categories) {
-            await this._unbind<CategoryEntity>(this.categoriesService, category);
-        }
-
-        await this._serviceCall(
-            this.metadatasService.attach(
-                'history',
-                'delete_categories',
-                [
-                    {
-                        type: 'date',
-                        id: entity.id,
-                        field: 'id',
-                        rightId: entity.group_id,
-                        rightField: 'group_id',
-                    },
-                ],
-                [
-                    {
-                        type: 'date',
-                        id: entity.group_id,
-                        field: 'group_id',
-                    },
-                ],
-                [],
-                {
-                    date: {
-                        at: new Date(Date.now()),
-                    },
-                },
-                user,
-                this.datesService,
-            ),
-            StatusCodes.InternalServerError,
-        );
-
-        return {
-            date: {
-                ...entity,
-                categories: finalCategories,
+            imagesMetadata: {
+                avatar: date.metadata.avatar,
+                signatureColors: date.metadata.signature_colors as [string, string],
             },
         };
-    }
 
-    /**
-     * Update Date
-     *
-     * @param body
-     * @param dateId
-     * @param user
-     */
-    @Put('/:dateId')
-    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
-    @UseFilters(new HttpExceptionFilter())
-    @HttpCode(StatusCodes.OK)
-    @Roles('authenticated')
-    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.BadRequest, StatusCodes.InternalServerError])
-    async update(
-        @Body() body: DatesUpdateInputDto,
-        @Param('dateId') dateId: string,
-        @User() user: UserDto,
-    ): Promise<DatesUpdateResponseDto> {
-        const dateEntity: DateEntity = await this._authorizeOne(
-            this.rightsService,
-            this.datesService,
-            user,
-            {
-                id: dateId,
-            },
-            'group_id',
-            ['route_update'],
-        );
+        const identityNotNil = (val: any): boolean => !isNil(val);
 
-        if (
-            !isValidDateRange(
-                body.timestamps && body.timestamps.event_begin
-                    ? new Date(body.timestamps.event_begin)
-                    : dateEntity.timestamps.event_begin,
-                body.timestamps && body.timestamps.event_end
-                    ? new Date(body.timestamps.event_end)
-                    : dateEntity.timestamps.event_end,
-            )
-        ) {
+        const dateEditionPayload: DateCreationPayload = merge({}, existingDateCreationValue, body.date);
+        const dateEditionCheckPayload: DateCreationPayload = merge({}, dateEditionPayload, {});
+        dateEditionCheckPayload.info = pickBy(dateEditionCheckPayload.info, identityNotNil) as DatePayload;
+        dateEditionCheckPayload.textMetadata = pickBy(
+            dateEditionCheckPayload.textMetadata,
+            identityNotNil,
+        ) as TextMetadata;
+        dateEditionCheckPayload.imagesMetadata = pickBy(
+            dateEditionCheckPayload.imagesMetadata,
+            identityNotNil,
+        ) as ImagesMetadata;
+
+        const checkResult = checkDate(dateEditionCheckPayload);
+
+        if (checkResult !== null) {
             throw new HttpException(
                 {
                     status: StatusCodes.BadRequest,
-                    message: 'invalid_event_dates',
+                    message: 'date_payload_validation_error',
                 },
                 StatusCodes.BadRequest,
             );
         }
 
-        if (body.location) {
-            body.location = {
-                location: body.location.location,
-                location_label: body.location.location_label,
-                assigned_city: closestCity(body.location.location).id,
-            } as DateLocation;
-        }
+        const identityNotUndef = (val: any): boolean => val !== undefined;
 
-        await this._edit<DateEntity>(
-            this.datesService,
+        const editPayload = pickBy(
             {
-                id: dateId,
+                online: dateEditionPayload.info.online,
+                online_link: dateEditionPayload.info.online_link,
+                location: dateEditionPayload.info.online
+                    ? null
+                    : {
+                          location: {
+                              lat: dateEditionPayload.info.location.lat,
+                              lon: dateEditionPayload.info.location.lon,
+                          },
+                          location_label: dateEditionPayload.info.location.label,
+                          assigned_city: closestCity(dateEditionPayload.info.location).id,
+                      },
+                timestamps: {
+                    event_begin: new Date(dateEditionPayload.info.eventBegin),
+                    event_end: new Date(dateEditionPayload.info.eventEnd),
+                },
+                metadata: {
+                    name: dateEditionPayload.textMetadata.name,
+                    description: dateEditionPayload.textMetadata.description,
+                    avatar: dateEditionPayload.imagesMetadata.avatar,
+                    signature_colors: dateEditionPayload.imagesMetadata.signatureColors,
+                    twitter: dateEditionPayload.textMetadata.twitter,
+                    spotify: dateEditionPayload.textMetadata.spotify,
+                    website: dateEditionPayload.textMetadata.website,
+                    facebook: dateEditionPayload.textMetadata.facebook,
+                    email: dateEditionPayload.textMetadata.email,
+                    linked_in: dateEditionPayload.textMetadata.linked_in,
+                    tiktok: dateEditionPayload.textMetadata.tiktok,
+                    instagram: dateEditionPayload.textMetadata.instagram,
+                },
             },
-            {
-                ...(body as Partial<Pick<DateEntity, 'timestamps' | 'metadata' | 'location'>>),
-            },
+            identityNotUndef,
         );
 
-        await this._serviceCall(
-            this.metadatasService.attach(
-                'history',
-                'update',
-                [
-                    {
-                        type: 'date',
-                        id: dateEntity.id,
-                        field: 'id',
-                        rightId: dateEntity.group_id,
-                        rightField: 'group_id',
-                    },
-                ],
-                [
-                    {
-                        type: 'date',
-                        id: dateEntity.group_id,
-                        field: 'group_id',
-                    },
-                ],
-                [],
+        await this._crudCall(
+            this.datesService.update(
                 {
-                    date: {
-                        at: new Date(Date.now()),
-                    },
+                    id: dateId,
                 },
-                user,
-                this.datesService,
+                editPayload,
             ),
             StatusCodes.InternalServerError,
         );
 
+        const updatedDate = await this._crudCall(this.datesService.findOne(dateId), StatusCodes.InternalServerError);
+
         return {
-            date: {
-                ...dateEntity,
-                ...(body as Partial<Pick<DateEntity, 'timestamps' | 'metadata' | 'location'>>),
-            },
+            date: updatedDate,
         };
+    }
+
+    /**
+     * Attempts to delete a date
+     *
+     * @param user
+     * @param dateId
+     */
+    @Delete('/:date')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.Created)
+    @Roles('authenticated')
+    @ApiResponses([
+        StatusCodes.Created,
+        StatusCodes.Unauthorized,
+        StatusCodes.BadRequest,
+        StatusCodes.InternalServerError,
+    ])
+    async delete(@User() user: UserDto, @Param('date') dateId: string): Promise<DatesDeleteResponseDto> {
+        const date = await this._crudCall(this.datesService.findOne(dateId), StatusCodes.NotFound);
+
+        if (!(await this.isDateOwner(date, user))) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Unauthorized,
+                    message: 'not_date_owner',
+                },
+                StatusCodes.Unauthorized,
+            );
+        }
+
+        if (date.categories.length > 0) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'cannot_delete_date_with_categories',
+                },
+                StatusCodes.BadRequest,
+            );
+        } else {
+            const event = await this._crudCall(this.eventsService.findOne(date.event), StatusCodes.NotFound);
+            const datesList = event.dates.filter((linkedDateId: string): boolean => linkedDateId !== dateId);
+
+            await this._crudCall(
+                this.eventsService.update(
+                    {
+                        id: event.id,
+                    },
+                    {
+                        dates: datesList,
+                    },
+                ),
+                StatusCodes.InternalServerError,
+            );
+
+            await this._crudCall(
+                this.datesService.delete({
+                    id: dateId,
+                }),
+                StatusCodes.InternalServerError,
+            );
+        }
+
+        return {};
     }
 }

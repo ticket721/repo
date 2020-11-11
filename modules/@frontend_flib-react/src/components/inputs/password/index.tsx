@@ -3,9 +3,9 @@ import * as React from 'react';
 import styled from '../../../config/styled';
 import { useEffect, useState } from 'react';
 import { Icon } from '../../icon';
-import { TextInput, InputProps } from '../text';
+import { TextInput, TextInputProps } from '../text';
 
-export interface PasswordProps extends InputProps {
+export interface PasswordProps extends TextInputProps {
     score?: number;
 }
 

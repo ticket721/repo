@@ -1,14 +1,15 @@
 import React, { useState }                       from 'react';
 import { v4 }                                    from 'uuid';
-import { useSelector }                           from 'react-redux';
 import { DatesSearchResponseDto }                from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { Error, FullPageLoading, SearchResults } from '@frontend/flib-react/lib/components';
 import { DateEntity }                            from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { useHistory }                            from 'react-router';
 import { useTranslation }                        from 'react-i18next';
 import { SearchResultEvent }                     from './SearchResultEvent';
-import { T721AppState, UserLocation }            from '../../../redux';
+import { UserLocation }            from '../../../redux';
 import { useRequest }                            from '@frontend/core/lib/hooks/useRequest';
+import { isRequestError }                        from '@frontend/core/lib/utils/isRequestError';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 
 interface SearchEventListProps {
@@ -20,7 +21,7 @@ interface SearchEventListProps {
 export const SearchEventList: React.FC<SearchEventListProps> = (props: SearchEventListProps): JSX.Element => {
 
     const [uuid] = useState(v4());
-    const token = useSelector((state: T721AppState): string => state.auth.token?.value);
+    const token = useToken();
     const history = useHistory();
     const [t] = useTranslation(['search', 'common']);
 
@@ -47,7 +48,7 @@ export const SearchEventList: React.FC<SearchEventListProps> = (props: SearchEve
         />;
     }
 
-    if (dates.response.error) {
+    if (isRequestError(dates)) {
         return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dates.force}/>;
     }
 

@@ -4,14 +4,10 @@ import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-c
 import { TicketsRepository } from '@lib/common/tickets/Tickets.repository';
 import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { TicketforgeService } from '@lib/common/contracts/Ticketforge.service';
-import BigNumber from 'bignumber.js';
-import { contractCallHelper } from '@lib/common/utils/contractCall.helper';
-import { CategoriesService } from '@lib/common/categories/Categories.service';
-import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
-import { UsersService } from '@lib/common/users/Users.service';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import { RightsService } from '@lib/common/rights/Rights.service';
+import { PurchasesService } from '@lib/common/purchases/Purchases.service';
+import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
+import { fromES } from '@lib/common/utils/fromES.helper';
+import { Product, PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
 
 /**
  * Data model required when pre-generating the tickets
@@ -48,22 +44,16 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
      *
      * @param ticketsRepository
      * @param ticketEntity
-     * @param ticketforgeService
-     * @param categoriesService
-     * @param rightsService
-     * @param metadatasService
-     * @param usersService
+     * @param purchasesService
+     * @param timeToolService
      */
     constructor(
         @InjectRepository(TicketsRepository)
         ticketsRepository: TicketsRepository,
         @InjectModel(TicketEntity)
         ticketEntity: BaseModel<TicketEntity>,
-        private readonly ticketforgeService: TicketforgeService,
-        private readonly categoriesService: CategoriesService,
-        private readonly rightsService: RightsService,
-        private readonly metadatasService: MetadatasService,
-        private readonly usersService: UsersService,
+        private readonly purchasesService: PurchasesService,
+        private readonly timeToolService: TimeToolService,
     ) {
         super(
             ticketEntity,
@@ -80,166 +70,127 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
     }
 
     /**
-     * Utility to pre-generate the ticket entities before the transaction is emitted by computing their deterministic IDs
+     * Count tickets that have been created
      *
-     * @param predictionInputs
+     * @param purchases
+     * @param category
+     * @private
      */
-    async predictTickets(predictionInputs: TicketsServicePredictionInput[]): Promise<ServiceResponse<TicketEntity[]>> {
-        const ticketforgeInstance = await this.ticketforgeService.get();
+    private countPurchasesTickets(purchases: PurchaseEntity[], category: string): number {
+        let ret = 0;
 
-        const registeredMintings: { [key: string]: number } = {};
+        for (const purchase of purchases) {
+            const product = purchase.products.find((_product: Product): boolean => _product.id === category);
 
-        for (const input of predictionInputs) {
-            registeredMintings[input.buyer] = 0;
+            if (product) {
+                ret += product.quantity;
+            }
         }
 
-        const res: TicketEntity[] = [];
+        return ret;
+    }
 
-        for (const input of predictionInputs) {
-            const currentMintingNonceRes = await contractCallHelper(
-                ticketforgeInstance,
-                'getMintNonce',
-                {},
-                input.buyer,
-            );
-
-            if (currentMintingNonceRes.error) {
-                return {
-                    error: currentMintingNonceRes.error,
-                    response: null,
-                };
-            }
-
-            const finalMintNonce: string = new BigNumber(currentMintingNonceRes.response)
-                .plus(new BigNumber(registeredMintings[input.buyer]))
-                .toString();
-
-            const ticketIDRes = await contractCallHelper(
-                ticketforgeInstance,
-                'getTokenID',
-                {},
-                input.buyer,
-                finalMintNonce,
-            );
-
-            if (ticketIDRes.error) {
-                return {
-                    error: ticketIDRes.error,
-                    response: null,
-                };
-            }
-
-            const categoryEntityRes = await this.categoriesService.search({
-                id: input.categoryId,
-            });
-
-            if (categoryEntityRes.error || categoryEntityRes.response.length === 0) {
-                return {
-                    error: categoryEntityRes.error || 'category_not_found',
-                    response: null,
-                };
-            }
-
-            const ticketEntityCreationRes = await this.create({
-                id: ticketIDRes.response.toString(),
-                authorization: input.authorizationId,
-                owner: input.buyer,
-                env: 'chain',
-                status: 'minting',
-                transaction_hash: null,
-                category: input.categoryId,
-                group_id: input.groupId,
-                parent_id: categoryEntityRes.response[0].parent_id,
-                parent_type: categoryEntityRes.response[0].parent_type,
-            });
-
-            if (ticketEntityCreationRes.error) {
-                return {
-                    error: ticketEntityCreationRes.error,
-                    response: null,
-                };
-            }
-
-            const userRes = await this.usersService.findByAddress(input.buyer);
-
-            if (userRes.error) {
-                return {
-                    error: userRes.error,
-                    response: null,
-                };
-            }
-
-            const user: UserDto = userRes.response;
-
-            const rights = await this.rightsService.addRights(user, [
-                {
-                    entity: 'ticket',
-                    entityValue: ticketIDRes.response.toString(),
-                    rights: {
-                        owner: true,
-                    },
-                },
-            ]);
-
-            if (rights.error) {
-                return {
-                    error: rights.error,
-                    response: null,
-                };
-            }
-
-            const creationMetadataRes = await this.metadatasService.attach(
-                'ownership',
-                'ticket',
-                [
-                    {
-                        type: 'ticket',
-                        id: ticketIDRes.response.toString(),
-                        field: 'id',
-                    },
-                ],
-                [
-                    {
-                        type: 'ticket',
-                        id: ticketIDRes.response.toString(),
-                        field: 'id',
-                    },
-                ],
-                [],
-                {
-                    date: {
-                        at: new Date(Date.now()),
-                    },
-                    str: {
-                        username: user.username,
-                        email: user.email,
-                        ticket: ticketIDRes.response.toString(),
-                        address: user.address,
-                        categoryId: input.categoryId,
-                    },
+    /**
+     * Recover global ticket count for a category counting created and cart tickets
+     *
+     * @param category
+     * @param currentPurchaseId
+     */
+    async getTicketCount(category: string, currentPurchaseId?: string): Promise<ServiceResponse<number>> {
+        const countRes = await this.countElastic({
+            body: {
+                query: {
                     bool: {
-                        valid: true,
+                        must: {
+                            term: {
+                                category,
+                            },
+                        },
                     },
                 },
-                user,
-                this,
-            );
+            },
+        });
 
-            if (creationMetadataRes.error) {
-                return {
-                    error: creationMetadataRes.error,
-                    response: null,
-                };
-            }
-
-            res.push(ticketEntityCreationRes.response);
-
-            registeredMintings[input.buyer] += 1;
+        if (countRes.error) {
+            return {
+                error: countRes.error,
+                response: null,
+            };
         }
+
+        const esPurchaseQuery = {
+            body: {
+                query: {
+                    bool: {
+                        filter: {
+                            script: {
+                                script: {
+                                    source: `
+                                            return doc['closed_at'].empty && !doc['checked_out_at'].empty && (params.now - doc['checked_out_at'].getValue().toInstant().toEpochMilli()) < 15 * 60 * 1000;
+                                        `,
+                                    lang: 'painless',
+                                    params: {
+                                        now: this.timeToolService.now().getTime(),
+                                    },
+                                },
+                            },
+                        },
+
+                        ...(currentPurchaseId
+                            ? {
+                                  must_not: {
+                                      term: {
+                                          id: currentPurchaseId,
+                                      },
+                                  },
+                              }
+                            : {}),
+
+                        must: [
+                            {
+                                nested: {
+                                    path: 'products',
+                                    query: {
+                                        bool: {
+                                            must: {
+                                                term: {
+                                                    'products.id': category,
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        };
+
+        const purchaseCountRes = await this.purchasesService.countElastic(esPurchaseQuery);
+
+        if (purchaseCountRes.error) {
+            return {
+                error: purchaseCountRes.error,
+                response: null,
+            };
+        }
+
+        const purchaseRes = await this.purchasesService.searchElastic(esPurchaseQuery);
+
+        if (purchaseRes.error) {
+            return {
+                error: purchaseRes.error,
+                response: null,
+            };
+        }
+
+        const purchases: PurchaseEntity[] = purchaseRes.response.hits.hits.map(fromES);
+        const inCheckedOutCartsCount = this.countPurchasesTickets(purchases, category);
 
         return {
             error: null,
-            response: res,
+            response: countRes.response.count + inCheckedOutCartsCount,
         };
     }
 }

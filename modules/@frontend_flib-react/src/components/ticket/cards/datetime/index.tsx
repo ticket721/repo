@@ -126,7 +126,8 @@ const Chevron = styled(Icon)<{ collapsed: boolean }>`
     margin-left: ${(props) => props.theme.smallSpacing};
     transform: rotateX(${(props) => (props.collapsed ? '0deg' : '180deg')});
     transition: transform 200ms;
-    color: ${(props) => props.color};
+    color: ${(props) =>
+        props.color ? (typeof props.color === 'string' ? props.color : props.color.hexCodes[0]) : null};
 `;
 
 export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { className?: string }> = (
@@ -142,7 +143,7 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
         <CardContainer small={props.small} removeBg={!collapsed || props.removeBg} className={props.className}>
             {collapsed ? (
                 <IconContainer>
-                    <Icon icon={'calendar'} size={'18px'} color={props.iconColor} />
+                    <Icon icon={'calendar'} size={'16px'} color={props.iconColor} />
                 </IconContainer>
             ) : null}
             <TileContainer className={collapsing || collapsed ? 'collapsed' : undefined} datesHeight={datesHeight}>

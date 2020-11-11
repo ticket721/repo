@@ -17,8 +17,7 @@ describe('Date Entity', function() {
                 location: {},
                 timestamps: {},
                 metadata: {},
-                parent_id: 'abcd',
-                parent_type: 'event',
+                event: 'event',
                 created_at: new Date(),
                 updated_at: new Date(),
             } as DateEntity;
@@ -37,8 +36,7 @@ describe('Date Entity', function() {
                 location: {},
                 timestamps: {},
                 metadata: {},
-                parent_id: null,
-                parent_type: 'event',
+                event: null,
                 created_at: new Date(),
                 updated_at: new Date(),
             } as DateEntity;

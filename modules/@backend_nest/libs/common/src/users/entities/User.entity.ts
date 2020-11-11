@@ -24,6 +24,25 @@ export class UserEntity {
     id: string;
 
     /**
+     * Current purchase id
+     */
+    @Column({
+        type: 'uuid',
+    })
+    // tslint:disable-next-line:variable-name
+    current_purchase: string;
+
+    /**
+     * Past purchases
+     */
+    @Column({
+        type: 'list',
+        typeDef: '<uuid>',
+    })
+    // tslint:disable-next-line:variable-name
+    past_purchases: string[];
+
+    /**
      * Unique email
      */
     @Column({

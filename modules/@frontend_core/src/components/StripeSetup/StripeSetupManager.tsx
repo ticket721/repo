@@ -8,6 +8,8 @@ import { StripeSetupConnectAccountManager } from './StripeSetupConnectAccountMan
 import { StripeSetupCreateStripeInterfaceManager } from './StripeSetupCreateStripeInterfaceManager';
 import { useStripeInterface } from '../../hooks/useStripeInterface';
 import { useStripeBalance } from '../../hooks/useStripeBalance';
+import { isRequestError } from '../../utils/isRequestError';
+import { getEnv } from '../../utils/getEnv';
 
 const isConnectAccountCreated = (stripeInterface: StripeInterfaceEntity): boolean => {
     return !!stripeInterface.connect_account;
@@ -29,13 +31,13 @@ export const StripeSetupManager = (props: StripeSetupManagerProps): JSX.Element 
         return <FullPageLoading />;
     }
 
-    if (stripeBalanceReq.response.error) {
+    if (isRequestError(stripeBalanceReq)) {
         return (
             <Error message={'cannot fetch stripe balance'} retryLabel={'retry'} onRefresh={stripeInterfaceReq.force} />
         );
     }
 
-    if (stripeInterfaceReq.response.error) {
+    if (isRequestError(stripeInterfaceReq)) {
         return (
             <Error
                 message={'cannot fetch stripe interface'}
@@ -49,8 +51,8 @@ export const StripeSetupManager = (props: StripeSetupManagerProps): JSX.Element 
     const stripeBalance = stripeBalanceReq.response.data.balance;
 
     const force = () => {
-        stripeInterfaceReq.force();
-        stripeBalanceReq.force();
+        stripeInterfaceReq.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
+        stripeBalanceReq.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
     };
 
     if (!stripeInterface) {

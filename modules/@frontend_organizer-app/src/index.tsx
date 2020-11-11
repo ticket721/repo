@@ -6,7 +6,6 @@ import * as serviceWorker                    from './serviceWorker';
 import {Provider}                            from 'react-redux';
 import {Store}                                                                     from 'redux';
 import { AppState, configureStore, history }                                       from '@frontend/core/lib/redux';
-import { organizerInitialState, organizerReducer, organizerSagas, OrganizerState } from './redux/ducks';
 import {BrowserRouter}                                                             from 'react-router-dom';
 import { ConnectedRouter }                                                         from 'connected-react-router';
 import { ThemeProvider }                                                           from 'styled-components';
@@ -15,14 +14,9 @@ import { GlobalStyles }                                                         
 import { customThemes }                                                            from '@frontend/flib-react/lib/config/theme';
 import { EnvValidator }                                                            from '@frontend/core/lib/components/EnvValidator';
 import { OrganizerAppEnvSchema }                                                   from './utils/env';
+import './locales';
 
-export type MergedAppState = AppState & OrganizerState;
-
-export const store: Store<MergedAppState> = configureStore<OrganizerState>(
-    organizerReducer,
-    organizerInitialState,
-    organizerSagas
-);
+export const store: Store<AppState> = configureStore();
 
 ReactDOM.render(
     <EnvValidator schema={OrganizerAppEnvSchema}>

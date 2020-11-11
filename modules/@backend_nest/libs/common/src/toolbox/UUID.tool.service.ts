@@ -1,4 +1,4 @@
-import { uuid } from '@iaminfinity/express-cassandra';
+import { uuid, isUuid } from '@iaminfinity/express-cassandra';
 
 /**
  * UUID Tool to work with everything UUID related
@@ -9,5 +9,29 @@ export class UUIDToolService {
      */
     generate(): string {
         return uuid().toString();
+    }
+
+    /**
+     * Load uuid from string value
+     *
+     * @param id
+     */
+    static fromString(id: string): any {
+        return uuid(id);
+    }
+
+    /**
+     * Verify UUID
+     *
+     * @param uuidValue
+     */
+    verify(uuidValue: string): boolean {
+        try {
+            const parsedUuid = uuid(uuidValue);
+
+            return isUuid(parsedUuid);
+        } catch (e) {
+            return false;
+        }
     }
 }

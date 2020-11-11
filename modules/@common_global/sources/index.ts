@@ -15,6 +15,33 @@ export { isTransactionHash, toAcceptedTransactionHashFormat, isTrackingId }     
 export { getT721ControllerGroupID, encode }                                                                  from './abi';
 export { b64Encode, b64Decode }                                                                              from './encoding';
 export { currencies, symbolOf }                                                                              from './currency';
+export {
+    checkEvent,
+    EventCreationPayload,
+    LocationChecker,
+    generateErrorFromJoiError,
+    PayloadError,
+    ErrorNode,
+    ErrorLeaf,
+    noStringDate,
+    Location,
+    TextMetadata,
+    ImagesMetadata,
+    TextMetadataChecker,
+    ImagesMetadataChecker,
+    quickError,
+    CategoryCreationPayload,
+    CategoryWithDatesPayload,
+    CategoryPayloadChecker,
+    CategoryCreationPayloadChecker,
+    CategoryPayload,
+    DateCreationPayloadChecker,
+    DatePayload,
+    DateCreationPayload,
+    DatePayloadChecker,
+    checkCategory,
+    checkDate
+}                                                                                                            from './event';
 
 /**
  * Longitude / Latitude Coordinates

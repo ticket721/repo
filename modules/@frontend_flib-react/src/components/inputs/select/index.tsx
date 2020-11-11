@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import Select from 'react-select';
 import styled from '../../../config/styled';
 
@@ -41,7 +42,7 @@ const customStyles = {
         width: '100%',
     }),
     menuList: () => ({
-        maxHeight: 300,
+        maxHeight: 200,
         overflow: 'auto',
         padding: 0,
     }),
@@ -75,18 +76,31 @@ const customStyles = {
     }),
 };
 
+export interface SelectOption {
+    label: string;
+    value: string;
+    [key: string]: any;
+}
+
+export interface GroupedSelectOption {
+    label: string;
+    options: SelectOption[];
+}
+
 export interface SelectProps {
-    defaultValue?: object;
-    error?: string | undefined;
+    defaultValue?: SelectOption;
+    error?: string;
     label?: string;
     disabled?: boolean;
-    options: Array<object>;
+    options: Array<SelectOption | GroupedSelectOption>;
+    allOpt?: SelectOption;
     placeholder?: string;
     searchable?: boolean;
     multiple?: boolean;
-    value?: Array<object>;
+    value?: Array<SelectOption>;
     className?: string;
-    onChange?: (val: any) => void;
+    onChange: (options: Array<SelectOption>) => void;
+    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
     grouped?: boolean;
     menu?: boolean;
 }
@@ -111,7 +125,7 @@ const StyledLabel = styled.label`
 `;
 
 const Error = styled.span`
-    top: 110%;
+    top: 104%;
     color: ${(props) => props.theme.errorColor.hex};
     font-size: 13px;
     font-weight: 500;
@@ -165,20 +179,48 @@ const GroupLabel = styled.div`
 const formatGroupLabel = (data: any) => <GroupLabel>{data.label}</GroupLabel>;
 
 export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectProps): JSX.Element => {
+    const [selected, setSelected] = useState<SelectOption[]>();
+
+    useEffect(() => {
+        setSelected(props.value);
+    }, [props.value]);
+
     return (
         <StyledInputContainer label={props.label} className={props.className}>
             {props.label && <StyledLabel>{props.label}</StyledLabel>}
             <Select
                 isMulti={props.multiple}
                 isSearchable={props.searchable}
-                value={props.value}
+                value={props.multiple ? selected : selected ? selected[0] : null}
                 defaultValue={props.defaultValue}
                 noOptionsMessage={() => 'No values available'}
-                options={props.options}
+                options={props.allOpt ? [props.allOpt, ...props.options] : props.options}
                 formatGroupLabel={props.grouped ? formatGroupLabel : undefined}
                 placeholder={props.placeholder}
                 styles={customStyles}
-                onChange={props.onChange}
+                onChange={(options: SelectOption | SelectOption[]) => {
+                    setSelected(options as any);
+                    if (!options) {
+                        props.onChange([]);
+                        return;
+                    }
+
+                    if (props.multiple) {
+                        if (
+                            options &&
+                            !Object.keys(props.options[0]).includes('options') &&
+                            (options as SelectOption[]).findIndex((option) => option.value === props.allOpt?.value) !==
+                                -1
+                        ) {
+                            props.onChange(props.options as SelectOption[]);
+                        } else {
+                            props.onChange(options as SelectOption[]);
+                        }
+                    } else {
+                        props.onChange([options as SelectOption]);
+                    }
+                }}
+                onBlur={props.onBlur}
             />
             {props.error && <Error>{props.error}</Error>}
         </StyledInputContainer>

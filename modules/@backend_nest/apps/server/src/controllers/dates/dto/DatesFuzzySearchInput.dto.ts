@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 /**
  * Input required by the Dates fuzzy Search
@@ -8,16 +8,18 @@ export class DatesFuzzySearchInputDto {
     /**
      * Latitude of the requesting user
      */
-    @ApiProperty()
+    @ApiPropertyOptional()
     @IsNumber()
-    lat: number;
+    @IsOptional()
+    lat?: number;
 
     /**
      * Longitude of the requesting user
      */
-    @ApiProperty()
+    @ApiPropertyOptional()
     @IsNumber()
-    lon: number;
+    @IsOptional()
+    lon?: number;
 
     /**
      * String used for the fuzzy search

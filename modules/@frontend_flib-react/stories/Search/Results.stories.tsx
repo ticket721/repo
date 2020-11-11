@@ -32,7 +32,7 @@ const searchResults = [
                 color={'#188ae2'}
                 name={'Event 1'}
                 id={1}
-                price={31}
+                price={'31 $'}
                 date={'June 3rd 2020'}
                 image={'assets/images/band-1.jpg'}
             />,

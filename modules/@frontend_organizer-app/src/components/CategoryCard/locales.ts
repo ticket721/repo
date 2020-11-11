@@ -1,11 +1,15 @@
 import i18n from '@frontend/core/lib/utils/i18n';
 
 i18n.addResourceBundle('en', 'category_card', {
-    available_tickets: 'available tickets',
-    sale_dates_label: 'Sale dates',
+    sold_tickets: 'sold tickets',
+    seats: 'seats',
+    free: 'Free',
+    ticket_count_fetch_error: 'Unable to fetch tickets count',
 });
 
 i18n.addResourceBundle('fr', 'category_card', {
-    available_tickets: 'tickets disponibles',
-    sale_dates_label: 'Dates de vente',
+    sold_tickets: 'billets vendus',
+    seats: 'places',
+    free: 'Gratuit',
+    ticket_count_fetch_error: 'Impossible de récuperer le compte des billets',
 });

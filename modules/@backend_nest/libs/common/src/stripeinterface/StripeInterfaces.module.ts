@@ -4,13 +4,20 @@ import { StripeInterfaceEntity } from '@lib/common/stripeinterface/entities/Stri
 import { StripeInterfacesRepository } from '@lib/common/stripeinterface/StripeInterfaces.repository';
 import { StripeInterfacesService } from '@lib/common/stripeinterface/StripeInterfaces.service';
 import { ToolBoxModule } from '../toolbox/ToolBox.module';
+import { StripeInterfacesPaymentHandler } from '@lib/common/stripeinterface/StripeInterfaces.paymenthandler';
 
 /**
  * Stripe Interfaces utilities
  */
 @Module({
     imports: [ExpressCassandraModule.forFeature([StripeInterfaceEntity, StripeInterfacesRepository]), ToolBoxModule],
-    providers: [StripeInterfacesService],
+    providers: [
+        StripeInterfacesService,
+        {
+            provide: 'payment/stripe',
+            useClass: StripeInterfacesPaymentHandler,
+        },
+    ],
     exports: [StripeInterfacesService],
 })
 export class StripeInterfacesModule {}

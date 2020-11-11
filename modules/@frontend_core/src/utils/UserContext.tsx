@@ -1,6 +1,5 @@
 import './locales';
 import React, { PropsWithChildren, useState } from 'react';
-import { AppState } from '@frontend-core/redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 } from 'uuid';
 import { SetToken, Token } from '../redux/ducks/auth';
@@ -10,6 +9,8 @@ import { UsersMeResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/sr
 import { PasswordlessUserDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
 import { useDeepEffect } from '../hooks/useDeepEffect';
 import { useTranslation } from 'react-i18next';
+import { isRequestError } from '../utils/isRequestError';
+import { AppState } from '@frontend-core/redux';
 
 export const UserContext = React.createContext<PasswordlessUserDto>(undefined);
 
@@ -34,7 +35,7 @@ const LoggedInUserGuard: React.FC<PropsWithChildren<LoggedOutUserGuardProps>> = 
     );
 
     useDeepEffect(() => {
-        if (userReq.response.error) {
+        if (isRequestError(userReq)) {
             if (userReq.response.error.response) {
                 switch (userReq.response.error.response.status) {
                     case 401: {
@@ -49,7 +50,7 @@ const LoggedInUserGuard: React.FC<PropsWithChildren<LoggedOutUserGuardProps>> = 
         return <FullPageLoading />;
     }
 
-    if (userReq.response.error) {
+    if (isRequestError(userReq)) {
         if (userReq.response.error.response) {
             switch (userReq.response.error.response.status) {
                 case 401: {

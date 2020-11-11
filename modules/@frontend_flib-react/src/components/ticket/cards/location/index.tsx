@@ -19,8 +19,12 @@ export interface LocationCardProps extends React.ComponentProps<any> {
     removeBg?: boolean;
     wSeparator?: boolean;
     coords?: Coords;
-    subtitle: string;
+    subtitle?: string;
+    get_directions?: string;
     disabled?: boolean;
+    online?: boolean;
+    online_label?: string;
+    online_sublabel?: string;
 }
 
 const Info = styled.span`
@@ -100,12 +104,35 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
         <ClickableContainer onClick={() => (!props.disabled ? openMap(props.location) : null)}>
             <CardContainer className={props.className} removeBg={props.removeBg}>
                 <IconContainer>
-                    <Icon icon={'pin'} size={'16px'} color={props.iconColor} />
+                    <Icon
+                        icon={props.online ? 'live' : 'pin'}
+                        size={'16px'}
+                        color={props.online ? 'red' : props.iconColor}
+                    />
                 </IconContainer>
-                <Column iconColor={props.iconColor}>
-                    <Info>{props.location}</Info>
-                    <Info>{props.subtitle}</Info>
-                </Column>
+                {props.online ? (
+                    <Column iconColor={props.iconColor}>
+                        <Info>{props.online_label}</Info>
+                        <Info
+                            style={{
+                                fontWeight: 400,
+                            }}
+                        >
+                            {props.online_sublabel}
+                        </Info>
+                    </Column>
+                ) : (
+                    <Column iconColor={props.iconColor}>
+                        <Info>{props.location}</Info>
+                        <Info
+                            style={{
+                                fontWeight: 400,
+                            }}
+                        >
+                            {props.subtitle}
+                        </Info>
+                    </Column>
+                )}
                 {props.wSeparator && <Separator />}
             </CardContainer>
             {props.coords ? (
@@ -113,10 +140,10 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
                     <LeafletMap coords={props.coords} />
                     <CardContainer className={props.className} removeBg={props.removeBg}>
                         <EndColumn textColor={props.iconColor}>
-                            <EndLinkSpan>Get directions</EndLinkSpan>
+                            <EndLinkSpan>{props.get_directions}</EndLinkSpan>
                         </EndColumn>
                         <IconContainer>
-                            <Icon icon={'arrow'} size={'16px'} color={props.iconColor} />
+                            <Icon icon={'arrow'} size={'14px'} color={props.iconColor} />
                         </IconContainer>
                         {props.wSeparator && <Separator />}
                     </CardContainer>
@@ -128,8 +155,8 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
 
 const MapContainer = styled.div`
     .leaflet-container {
-        width: 100vw;
-        height: 300px;
+        width: 100%;
+        height: 50vw;
     }
 
     .leaflet-left {

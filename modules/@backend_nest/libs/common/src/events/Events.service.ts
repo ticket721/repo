@@ -1,11 +1,11 @@
-import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
+import { CRUDExtension, CRUDResponse } from '@lib/common/crud/CRUDExtension.base';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 import { EventsRepository } from '@lib/common/events/Events.repository';
 import { EventEntity } from '@lib/common/events/entities/Event.entity';
 import { DateEntity } from '@lib/common/dates/entities/Date.entity';
-import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { DatesService } from '@lib/common/dates/Dates.service';
+import { fromES } from '@lib/common/utils/fromES.helper';
 
 /**
  * Service to CRUD EventEntities
@@ -16,14 +16,14 @@ export class EventsService extends CRUDExtension<EventsRepository, EventEntity> 
      *
      * @param eventsRepository
      * @param eventEntity
-     * @param categoriesService
+     * @param datesService
      */
     constructor(
         @InjectRepository(EventsRepository)
         eventsRepository: EventsRepository,
         @InjectModel(EventEntity)
         eventEntity: BaseModel<EventEntity>,
-        private readonly categoriesService: CategoriesService,
+        private readonly datesService: DatesService,
     ) {
         super(
             eventEntity,
@@ -40,79 +40,146 @@ export class EventsService extends CRUDExtension<EventsRepository, EventEntity> 
     }
 
     /**
-     * Creates event with provided pre-created dates and categories
+     * Find events by group id
      *
-     * @param event
-     * @param dates
-     * @param categories
+     * @param groupId
      */
-    async createEventWithDatesAndCategories(
-        event: Partial<EventEntity>,
-        dates: Partial<DateEntity>[],
-        categories: Partial<CategoryEntity>[],
-    ): Promise<ServiceResponse<[EventEntity, CategoryEntity[]]>> {
-        const storedCategories: CategoryEntity[] = [];
+    async findOneFromGroupId(groupId: string): Promise<ServiceResponse<EventEntity>> {
+        // Recover Event
+        const eventRes = await this.searchElastic({
+            body: {
+                query: {
+                    bool: {
+                        must: {
+                            term: {
+                                group_id: groupId,
+                            },
+                        },
+                    },
+                },
+            },
+        });
 
-        event.categories = [];
-
-        // 1. Create all categories
-        for (const category of categories) {
-            // 2. Check that they match current event's ID
-            if (category.group_id !== event.group_id) {
-                return {
-                    error: 'invalid_category_group_id',
-                    response: null,
-                };
-            }
-
-            // 3. Trigger creation
-            const categoryCreationRes = await this.categoriesService.create({
-                ...category,
-                reserved: 0,
-            });
-
-            // 4. Throw on creation error
-            if (categoryCreationRes.error) {
-                return {
-                    error: categoryCreationRes.error,
-                    response: null,
-                };
-            }
-
-            // 5. Store resulting category
-            storedCategories.push(categoryCreationRes.response);
-            event.categories.push(categoryCreationRes.response.id);
-        }
-
-        event.dates = [];
-
-        // 6. Check that dates match current event's ID
-        for (const date of dates) {
-            // 7. Throw if they don't
-            if (date.group_id !== event.group_id) {
-                return {
-                    error: 'invalid_date_group_id',
-                    response: null,
-                };
-            }
-
-            // 8. Store resulting date
-            event.dates.push(date.id);
-        }
-
-        // 9. Trigger event creation
-        const createdEventRes = await this.create(event);
-
-        if (createdEventRes.error) {
+        if (eventRes.error) {
             return {
-                error: createdEventRes.error,
+                error: 'error_while_checking',
+                response: null,
+            };
+        }
+
+        if (eventRes.response.hits.total === 0) {
+            return {
+                error: 'not_found',
+                response: null,
+            };
+        }
+
+        return {
+            response: fromES(eventRes.response.hits.hits[0]),
+            error: null,
+        };
+    }
+
+    /**
+     * Find event by its id
+     *
+     * @param eventId
+     */
+    async findOne(eventId: string): Promise<ServiceResponse<EventEntity>> {
+        // Recover Event
+        const eventRes = await this.search({
+            id: eventId,
+        });
+
+        if (eventRes.error) {
+            return {
+                error: 'error_while_checking',
+                response: null,
+            };
+        }
+
+        if (eventRes.response.length === 0) {
+            return {
+                error: 'not_found',
+                response: null,
+            };
+        }
+
+        return {
+            response: eventRes.response[0],
+            error: null,
+        };
+    }
+
+    /**
+     * Add date to event
+     *
+     * @param eventId
+     * @param date
+     */
+    async addDate(eventId: string, date: DateEntity): Promise<CRUDResponse<EventEntity>> {
+        const eventRes = await this.findOne(eventId);
+
+        if (eventRes.error) {
+            return {
+                error: 'cannot_recover_event',
+                response: null,
+            };
+        }
+
+        if (date.event !== null && date.event !== undefined) {
+            return {
+                error: 'date_already_in_an_event',
+                response: null,
+            };
+        }
+
+        const event: EventEntity = eventRes.response;
+
+        if (date.group_id !== event.group_id) {
+            return {
+                error: 'incompatible_event_date',
+                response: null,
+            };
+        }
+
+        const eventUpdateRes = await this.update(
+            {
+                id: eventId,
+            },
+            {
+                dates: [...event.dates, date.id],
+            },
+        );
+
+        if (eventUpdateRes.error) {
+            return {
+                error: 'cannot_update_event',
+                response: null,
+            };
+        }
+
+        event.dates = [...event.dates, date.id];
+
+        const dateUpdateRes = await this.datesService.update(
+            {
+                id: date.id,
+            },
+            {
+                event: event.id,
+            },
+        );
+
+        if (dateUpdateRes.error) {
+            return {
+                error: 'cannot_update_date',
                 response: null,
             };
         }
 
         return {
             error: null,
-            response: [createdEventRes.response, storedCategories],
+            response: event,
         };
     }
 }

@@ -1,21 +1,19 @@
-import { AxiosResponse }                    from 'axios';
-import { T721SDK }                          from '../../index';
-import { DatesSearchInputDto }              from '@app/server/controllers/dates/dto/DatesSearchInput.dto';
-import { DatesSearchResponseDto }           from '@app/server/controllers/dates/dto/DatesSearchResponse.dto';
-import { DatesCreateInputDto }              from '@app/server/controllers/dates/dto/DatesCreateInput.dto';
-import { DatesCreateResponseDto }           from '@app/server/controllers/dates/dto/DatesCreateResponse.dto';
-import { DatesAddCategoriesInputDto }       from '@app/server/controllers/dates/dto/DatesAddCategoriesInput.dto';
-import { DatesAddCategoriesResponseDto }    from '@app/server/controllers/dates/dto/DatesAddCategoriesResponse.dto';
-import { DatesDeleteCategoriesInputDto }    from '@app/server/controllers/dates/dto/DatesDeleteCategoriesInput.dto';
-import { DatesDeleteCategoriesResponseDto } from '@app/server/controllers/dates/dto/DatesDeleteCategoriesResponse.dto';
-import { DatesUpdateInputDto }              from '@app/server/controllers/dates/dto/DatesUpdateInput.dto';
-import { DatesUpdateResponseDto }           from '@app/server/controllers/dates/dto/DatesUpdateResponse.dto';
-import { DatesCountInputDto }               from '@app/server/controllers/dates/dto/DatesCountInput.dto';
-import { DatesCountResponseDto }            from '@app/server/controllers/dates/dto/DatesCountResponse.dto';
-import { DatesHomeSearchInputDto }          from '@app/server/controllers/dates/dto/DatesHomeSearchInput.dto';
-import { DatesHomeSearchResponseDto }       from '@app/server/controllers/dates/dto/DatesHomeSearchResponse.dto';
-import { DatesFuzzySearchInputDto }         from '@app/server/controllers/dates/dto/DatesFuzzySearchInput.dto';
-import { DatesFuzzySearchResponseDto }      from '@app/server/controllers/dates/dto/DatesFuzzySearchResponse.dto';
+import { AxiosResponse }               from 'axios';
+import { T721SDK }                     from '../../index';
+import { DatesSearchInputDto }         from '@app/server/controllers/dates/dto/DatesSearchInput.dto';
+import { DatesSearchResponseDto }      from '@app/server/controllers/dates/dto/DatesSearchResponse.dto';
+import { DatesCountInputDto }          from '@app/server/controllers/dates/dto/DatesCountInput.dto';
+import { DatesCountResponseDto }       from '@app/server/controllers/dates/dto/DatesCountResponse.dto';
+import { DatesHomeSearchInputDto }     from '@app/server/controllers/dates/dto/DatesHomeSearchInput.dto';
+import { DatesHomeSearchResponseDto }  from '@app/server/controllers/dates/dto/DatesHomeSearchResponse.dto';
+import { DatesFuzzySearchInputDto }    from '@app/server/controllers/dates/dto/DatesFuzzySearchInput.dto';
+import { DatesFuzzySearchResponseDto } from '@app/server/controllers/dates/dto/DatesFuzzySearchResponse.dto';
+import { DatesAddCategoryInputDto }    from '@app/server/controllers/dates/dto/DatesAddCategoryInput.dto';
+import { DatesAddCategoryResponseDto } from '@app/server/controllers/dates/dto/DatesAddCategoryResponse.dto';
+import { DatesEditInputDto }           from '@app/server/controllers/dates/dto/DatesEditInput.dto';
+import { DatesEditResponseDto }        from '@app/server/controllers/dates/dto/DatesEditResponse.dto';
+import { DatesDeleteResponseDto }      from '@app/server/controllers/dates/dto/DatesDeleteResponse.dto';
+import { DatesOwnerResponseDto }       from '@app/server/controllers/dates/dto/DatesOwnerResponse.dto';
 
 export async function datesSearch(
     token: string,
@@ -28,6 +26,19 @@ export async function datesSearch(
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
+}
+
+export async function datesOwner(
+    token: string,
+    date: string
+): Promise<AxiosResponse<DatesOwnerResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.get(`/dates/owner/${date}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    });
 }
 
 export async function datesCount(
@@ -43,59 +54,45 @@ export async function datesCount(
     }, query);
 }
 
-export async function datesCreate(
+export async function datesAddCategory(
     token: string,
-    query: DatesCreateInputDto
-): Promise<AxiosResponse<DatesCreateResponseDto>> {
+    date: string,
+    query: Partial<DatesAddCategoryInputDto>,
+): Promise<AxiosResponse<DatesAddCategoryResponseDto>> {
+
     const self: T721SDK = this;
 
-    return self.post<DatesCreateInputDto>('/dates', {
+    return self.post<Partial<DatesAddCategoryInputDto>>(`/dates/${date}/category`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
-
 }
 
-export async function datesAddCategories(
+export async function datesEdit(
     token: string,
-    dateId: string,
-    query: DatesAddCategoriesInputDto
-): Promise<AxiosResponse<DatesAddCategoriesResponseDto>> {
+    date: string,
+    query: Partial<DatesEditInputDto>,
+): Promise<AxiosResponse<DatesEditResponseDto>> {
+
     const self: T721SDK = this;
 
-    return self.post<DatesAddCategoriesInputDto>(`/dates/${dateId}/categories`, {
+    return self.put<Partial<DatesEditInputDto>>(`/dates/${date}`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
-
 }
 
-export async function datesDeleteCategories(
+export async function datesDelete(
     token: string,
-    dateId: string,
-    query: DatesDeleteCategoriesInputDto
-): Promise<AxiosResponse<DatesDeleteCategoriesResponseDto>> {
+    date: string
+): Promise<AxiosResponse<DatesDeleteResponseDto>> {
+
     const self: T721SDK = this;
 
-    return self.delete<DatesAddCategoriesInputDto>(`/dates/${dateId}/categories`, {
+    return self.delete(`/dates/${date}`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-    }, query);
-
-}
-
-export async function datesUpdate(
-    token: string,
-    dateId: string,
-    query: DatesUpdateInputDto
-): Promise<AxiosResponse<DatesUpdateResponseDto>> {
-    const self: T721SDK = this;
-
-    return self.put<DatesUpdateInputDto>(`/dates/${dateId}`, {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-    }, query);
-
+    }, null);
 }
 
 export async function datesHomeSearch(

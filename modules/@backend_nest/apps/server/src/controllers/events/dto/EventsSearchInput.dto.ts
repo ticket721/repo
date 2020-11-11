@@ -8,7 +8,14 @@ import { EventEntity } from '@lib/common/events/entities/Event.entity';
 /**
  * Data model for the event search query
  */
-export class EventsSearchInputDto implements SearchInputType<EventEntity> {
+export class EventsSearchInputDto
+    implements
+        SearchInputType<
+            Omit<
+                EventEntity,
+                'stripe_interface' | 'avatar' | 'custom_static_fee' | 'custom_percent_fee' | 'signature_colors'
+            >
+        > {
     /**
      * Searchable field to search by id
      */
@@ -16,6 +23,30 @@ export class EventsSearchInputDto implements SearchInputType<EventEntity> {
     @IsOptional()
     // tslint:disable-next-line:variable-name
     id: SearchableField<string>;
+
+    /**
+     * Searchable field to search by status
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    status: SearchableField<'preview' | 'live'>;
+
+    /**
+     * Searchable field to search by owner
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    owner: SearchableField<string>;
+
+    /**
+     * Searchable field to search by description
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    description: SearchableField<string>;
 
     /**
      * Searchable field to search by group_id
@@ -56,14 +87,6 @@ export class EventsSearchInputDto implements SearchInputType<EventEntity> {
     @IsOptional()
     // tslint:disable-next-line:variable-name
     dates: SearchableField<string[]>;
-
-    /**
-     * Searchable field to search by categories
-     */
-    @ApiPropertyOptional()
-    @IsOptional()
-    // tslint:disable-next-line:variable-name
-    categories: SearchableField<string[]>;
 
     /**
      * Searchable field to search by created_at

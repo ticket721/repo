@@ -1,9 +1,14 @@
-import { Reducer } from 'redux';
+import { Reducer }                                                        from 'redux';
 import { LocationActionTypes, LocationState }                             from './types';
 import { IGetLocation, ISetCustomLocation, ISetLocation, LocationAction } from './actions';
 
 export const locationInitialState: LocationState = {
-    location: null,
+    location: {
+        lon: null,
+        lat: null,
+        city: null,
+        online: true
+    },
     customLocation: null,
     requesting: false,
 };

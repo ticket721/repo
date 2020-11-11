@@ -12,9 +12,10 @@ interface RequestParams {
     options?: Partial<LazyRequestOptions>;
 }
 
-interface RequestResp<ReturnType> {
+export interface RequestResp<ReturnType> {
     data: ReturnType;
     error: any;
+    errors: number;
     loading: boolean;
 }
 
@@ -26,7 +27,7 @@ export type RequestBag<ReturnType> = {
     response: RequestResp<ReturnType>;
     registerEntity: (uuid: string, refreshRates?: number) => void;
     unregisterEntity: (uuid: string) => void;
-    force: () => void;
+    force: (score?: number) => void;
 };
 
 export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string): RequestBag<ReturnType> => {
@@ -36,15 +37,18 @@ export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string)
 
     const error = useSelector((state: AppState) => state.cache.items[key]?.error, shallowEqual);
 
+    const errors = useSelector((state: AppState) => state.cache.items[key]?.errors);
+
     const loading = useSelector((state: AppState) => !state.cache.items[key]);
 
     const response: RequestResp<ReturnType> = useMemo(
         () => ({
             data,
             error,
+            errors,
             loading,
         }),
-        [JSON.stringify(data), JSON.stringify(error), loading],
+        [JSON.stringify(data), JSON.stringify(error), errors, loading],
     );
 
     const dispatch = useDispatch();
@@ -60,14 +64,17 @@ export const useRequest = <ReturnType>(call: RequestParams, initialUuid: string)
         JSON.stringify(call.args),
     ]);
 
-    const force = useCallback((): void => {
-        console.log('Force Requesting', call.method);
-        dispatch(ManualFetchItem(key, call.method, call.args));
-    }, [call.method, JSON.stringify(call.args)]);
+    const force = useCallback(
+        (score: number = 1): void => {
+            console.log('Force Requesting', call.method);
+            dispatch(ManualFetchItem(key, call.method, call.args, score));
+        },
+        [call.method, JSON.stringify(call.args)],
+    );
 
     useDeepEffect(() => {
         if (call.options && call.options.force) {
-            dispatch(ManualFetchItem(key, call.method, call.args));
+            dispatch(ManualFetchItem(key, call.method, call.args, 1));
         }
         registerEntity(initialUuid);
 

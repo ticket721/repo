@@ -21,13 +21,6 @@ services:
       args:
         - "TAG=$TAG"
     image: "server:$TAG"
-  worker:
-    build:
-      context: ./modules/@backend_nest
-      dockerfile: worker.dockerfile
-      args:
-        - "TAG=$TAG"
-    image: "worker:$TAG"
   migrations:
     build:
       context: ./modules/@backend_migrations

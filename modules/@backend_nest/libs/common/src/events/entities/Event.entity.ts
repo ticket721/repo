@@ -27,11 +27,18 @@ export class EventEntity {
         if (e) {
             this.id = e.id ? e.id.toString() : e.id;
             this.group_id = e.group_id;
+            this.stripe_interface = e.stripe_interface ? e.stripe_interface.toString() : e.stripe_interface;
+            this.custom_percent_fee = e.custom_percent_fee;
+            this.custom_static_fee = e.custom_static_fee;
+            this.signature_colors = ECAAG(e.signature_colors) as [string, string];
+            this.owner = e.owner ? e.owner.toString() : e.owner;
+            this.avatar = e.avatar;
             this.name = e.name;
+            this.description = e.description;
             this.address = e.address;
             this.controller = e.controller;
+            this.status = e.status;
             this.dates = ECAAG<string>(e.dates);
-            this.categories = ECAAG<string>(e.categories);
             this.created_at = e.created_at;
             this.updated_at = e.updated_at;
         }
@@ -42,6 +49,79 @@ export class EventEntity {
      */
     @GeneratedUUidColumn()
     id: string;
+
+    /**
+     * Custom fee to override static fees
+     */
+    @Column({
+        type: 'int',
+    })
+    // tslint:disable-next-line:variable-name
+    custom_static_fee: number;
+
+    /**
+     * Custom fee to override percent fee
+     */
+    @Column({
+        type: 'double',
+    })
+    // tslint:disable-next-line:variable-name
+    custom_percent_fee: number;
+
+    /**
+     * ID of the owner
+     */
+    @Column({
+        type: 'uuid',
+    })
+    // tslint:disable-next-line:variable-name
+    owner: string;
+
+    /**
+     * ID of the stripe interface to use in case of stripe payments
+     */
+    @Column({
+        type: 'uuid',
+    })
+    // tslint:disable-next-line:variable-name
+    stripe_interface: string;
+
+    /**
+     * Category visibility status
+     */
+    @Column({
+        type: 'text',
+    })
+    // tslint:disable-next-line:variable-name
+    status: 'preview' | 'live';
+
+    /**
+     * Image of the event
+     */
+    @Column({
+        type: 'text',
+    })
+    // tslint:disable-next-line:variable-name
+    avatar: string;
+
+    /**
+     * Signature colors
+     */
+    @Column({
+        type: 'list',
+        typeDef: '<text>',
+    })
+    // tslint:disable-next-line:variable-name
+    signature_colors: [string, string];
+
+    /**
+     * Description of the event
+     */
+    @Column({
+        type: 'text',
+    })
+    // tslint:disable-next-line:variable-name
+    description: string;
 
     /**
      * Name of the Date
@@ -84,15 +164,6 @@ export class EventEntity {
         typeDef: '<uuid>',
     })
     dates: string[];
-
-    /**
-     * Ticket categories that are cross-dates
-     */
-    @Column({
-        type: 'list',
-        typeDef: '<uuid>',
-    })
-    categories: string[];
 
     /**
      * Creation timestamp

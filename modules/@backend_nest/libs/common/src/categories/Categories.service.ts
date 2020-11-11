@@ -3,13 +3,12 @@ import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-c
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { CategoriesRepository } from '@lib/common/categories/Categories.repository';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { Boundable } from '@lib/common/utils/Boundable.type';
+import { fromES } from '@lib/common/utils/fromES.helper';
 
 /**
  * Service to CRUD CategoryEntities
  */
-export class CategoriesService extends CRUDExtension<CategoriesRepository, CategoryEntity>
-    implements Boundable<CategoryEntity> {
+export class CategoriesService extends CRUDExtension<CategoriesRepository, CategoryEntity> {
     /**
      * Dependency injection
      *
@@ -37,129 +36,108 @@ export class CategoriesService extends CRUDExtension<CategoriesRepository, Categ
     }
 
     /**
-     * Bind category to parent entity
+     * Find all categories by group id
      *
-     * @param id
-     * @param entity
-     * @param entityId
+     * @param groupId
      */
-    async bind(id: string, entity: string, entityId: string): Promise<ServiceResponse<CategoryEntity>> {
-        const category = await this.search({
-            id,
-        } as CategoryEntity);
+    public async findAllByGroupId(groupId: string): Promise<ServiceResponse<CategoryEntity[]>> {
+        // Recover Event
+        const categoriesCountRes = await this.countElastic({
+            body: {
+                query: {
+                    bool: {
+                        must: {
+                            term: {
+                                group_id: groupId,
+                            },
+                        },
+                    },
+                },
+            },
+        });
 
-        if (category.error) {
+        if (categoriesCountRes.error) {
             return {
-                error: category.error,
+                error: 'error_while_counting',
                 response: null,
             };
         }
 
-        if (category.response.length === 0) {
-            return {
-                error: 'entity_not_found',
-                response: null,
-            };
-        }
+        const total = categoriesCountRes.response.count;
 
-        if (this.isBound(category.response[0])) {
-            return {
-                error: 'entity_already_bound',
-                response: null,
-            };
-        }
+        const categoriesRes = await this.searchElastic({
+            body: {
+                size: total,
+                query: {
+                    bool: {
+                        must: {
+                            term: {
+                                group_id: groupId,
+                            },
+                        },
+                    },
+                },
+            },
+        });
 
-        const boundReq = await this.update(
-            {
-                id,
-            } as CategoryEntity,
-            {
-                parent_id: entityId,
-                parent_type: entity,
-            } as Partial<CategoryEntity>,
-        );
-
-        if (boundReq.error) {
+        if (categoriesRes.error) {
             return {
-                error: boundReq.error,
+                error: 'error_while_checking',
                 response: null,
             };
         }
 
         return {
+            response: categoriesRes.response.hits.hits.map(fromES),
             error: null,
-            response: {
-                ...category.response[0],
-                parent_id: entityId,
-                parent_type: entity,
-            },
         };
     }
 
     /**
-     * Checks if entity is bound
+     * Find a category by id
      *
-     * @param category
+     * @param categoryId
      */
-    isBound(category: CategoryEntity): boolean {
-        return !!(category.parent_type && category.parent_id);
-    }
+    async findOne(categoryId: string): Promise<ServiceResponse<CategoryEntity>> {
+        // Recover Event
+        const categoryRes = await this.search({
+            id: categoryId,
+        });
 
-    /**
-     * Removes binding to the entity
-     *
-     * @param id
-     */
-    async unbind(id: string): Promise<ServiceResponse<CategoryEntity>> {
-        const category = await this.search({
-            id,
-        } as CategoryEntity);
-
-        if (category.error) {
+        if (categoryRes.error) {
             return {
-                error: category.error,
+                error: 'error_while_checking',
                 response: null,
             };
         }
 
-        if (category.response.length === 0) {
+        if (categoryRes.response.length === 0) {
             return {
-                error: 'entity_not_found',
-                response: null,
-            };
-        }
-
-        if (!this.isBound(category.response[0])) {
-            return {
-                error: 'entity_not_bound',
-                response: null,
-            };
-        }
-
-        const boundReq = await this.update(
-            {
-                id,
-            } as CategoryEntity,
-            {
-                parent_id: null,
-                parent_type: null,
-            } as Partial<CategoryEntity>,
-        );
-
-        if (boundReq.error) {
-            return {
-                error: boundReq.error,
+                error: 'category_not_found',
                 response: null,
             };
         }
 
         return {
+            response: categoryRes.response[0],
             error: null,
-            response: {
-                ...category.response[0],
-                parent_id: null,
-                parent_type: null,
-            },
         };
+    }
+
+    /**
+     * Recover payment interface from currency and price
+     *
+     * @param currency
+     * @param price
+     */
+    public static interfaceFromCurrencyAndPrice(currency: string, price: number): 'stripe' | 'none' {
+        switch (currency) {
+            case 'FREE': {
+                return 'none';
+            }
+            default: {
+                return 'stripe';
+            }
+        }
     }
 }

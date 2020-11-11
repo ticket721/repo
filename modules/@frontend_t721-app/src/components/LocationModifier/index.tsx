@@ -1,14 +1,15 @@
-import React, { useEffect, useState }                                         from 'react';
-import { CurrentLocation, LocationList, SearchInput, FullPageLoading, Error } from '@frontend/flib-react/lib/components';
-import { useFormik }          from 'formik';
-import { City, MatchingCity } from '@common/global';
-import { useDispatch }        from 'react-redux';
-import { useTranslation }                                                     from 'react-i18next';
-import { GetLocation, SetCustomLocation }                                     from '../../redux/ducks/location';
-import { v4 }                                                                 from 'uuid';
-import { useRequest }                                                         from '@frontend/core/lib/hooks/useRequest';
-import { GeolocFuzzySearchResponseDto }                                       from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/geoloc/dto/GeolocFuzzySearchResponse.dto';
+import React, { useEffect, useState }                                                         from 'react';
+import { CurrentLocation, LocationList, SearchInput, FullPageLoading, Error, OnlineLocation } from '@frontend/flib-react/lib/components';
+import { useFormik }                                                                          from 'formik';
+import { City, MatchingCity }                                                                 from '@common/global';
+import { useDispatch }                                                                        from 'react-redux';
+import { useTranslation }                                                                     from 'react-i18next';
+import { GetLocation, SetCustomLocation, SetLocation }                                        from '../../redux/ducks/location';
+import { v4 }                                                                                 from 'uuid';
+import { useRequest }                                                                         from '@frontend/core/lib/hooks/useRequest';
+import { GeolocFuzzySearchResponseDto }                                                       from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/geoloc/dto/GeolocFuzzySearchResponse.dto';
 import './locales';
+import { isRequestError }                                                                     from '@frontend/core/lib/utils/isRequestError';
 
 export interface LocationModifierListProps {
     query: string;
@@ -36,7 +37,7 @@ const LocationModifierList: React.FC<LocationModifierListProps> = (props: Locati
         return <FullPageLoading/>;
     }
 
-    if (locationRequest.response.error) {
+    if (isRequestError(locationRequest)) {
         return <Error message={t('error_location_request_fail')} retryLabel={t('common:retrying_in')} onRefresh={locationRequest.force}/>;
     }
 
@@ -101,6 +102,17 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
         coreProps.disableFilter();
     };
 
+    const setOnlineEvents = () => {
+        dispatch(SetLocation({
+            lat: null,
+            lon: null,
+            city: null,
+            online: true
+        }));
+        clearInput();
+        coreProps.disableFilter();
+    }
+
     return <>
         <SearchInput
             onChange={fmk.handleChange}
@@ -113,6 +125,10 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
 
             placeholder={t('search_city')}
             cancelLabel={t('cancel')}
+        />
+        <OnlineLocation
+            label={t('use_online_events')}
+            getOnlineLocation={setOnlineEvents}
         />
         <CurrentLocation
             label={t('use_current_location')}
@@ -130,6 +146,7 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
                             lat: city.coord.lat,
                             lon: city.coord.lon,
                             city,
+                            online: false
                         }));
                         coreProps.disableFilter();
                     }}

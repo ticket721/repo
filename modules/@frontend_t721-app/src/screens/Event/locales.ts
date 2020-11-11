@@ -12,6 +12,10 @@ i18n.addResourceBundle('en', 'event', {
     read_more_show_more: 'Show more',
     read_more_title: 'About',
     get_directions: 'Click to get directions',
+    free: 'Free',
+    coming_soon: 'Coming soon',
+    online: 'Online',
+    links: 'Links',
 
     error_cannot_fetch_dates: 'Cannot fetch event',
     error_cannot_fetch_cart: 'Cannot recover cart',
@@ -32,6 +36,10 @@ i18n.addResourceBundle('fr', 'event', {
     read_more_show_more: 'Voir plus',
     read_more_title: 'À Propos',
     get_directions: 'Cliquez pour afficher l\'addresse',
+    free: 'Gratuit',
+    coming_soon: 'Bientôt disponible',
+    online: 'En ligne',
+    links: 'Liens',
 
     error_cannot_fetch_event: 'Informations indisponibles',
     error_cannot_fetch_dates: 'Informations indisponibles',

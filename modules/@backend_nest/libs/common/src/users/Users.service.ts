@@ -7,6 +7,7 @@ import { CreateUserServiceInputDto } from './dto/CreateUserServiceInput.dto';
 import { toAcceptedAddressFormat } from '@common/global';
 import { ESSearchReturn } from '@lib/common/utils/ESSearchReturn.type';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
+import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
 
 /**
  * Utilities and services around the user entity
@@ -31,7 +32,7 @@ export class UsersService {
      *
      * @param user
      */
-    async update(user: Partial<UserDto>): Promise<ServiceResponse<UserDto>> {
+    async update(user: Partial<UserEntity>): Promise<ServiceResponse<UserDto>> {
         try {
             const { id, ...complete_user } = user;
 
@@ -64,6 +65,7 @@ export class UsersService {
                 .save(
                     this.usersRepository.create({
                         ...user,
+                        past_purchases: [],
                         valid: false,
                     }),
                 )
@@ -87,11 +89,39 @@ export class UsersService {
      *
      * @param id
      */
-    async findById(id: string): Promise<ServiceResponse<UserDto>> {
+    async findById(id: string): Promise<ServiceResponse<UserEntity>> {
         try {
-            const user: UserDto = await this.usersRepository.findOne({ id: uuid(id) as any }).toPromise();
+            const user: UserEntity = await this.usersRepository.findOne({ id: uuid(id) as any }).toPromise();
             return {
                 response: user || null,
+                error: null,
+            };
+        } catch (e) {
+            return {
+                response: null,
+                error: 'unexpected_error',
+            };
+        }
+    }
+
+    /**
+     * Recover user cart
+     *
+     * @param id
+     */
+    async recoverUserCart(id: string): Promise<ServiceResponse<string>> {
+        try {
+            const user: UserEntity = await this.usersRepository
+                .findOne({ id: UUIDToolService.fromString(id) })
+                .toPromise();
+            if (user === null) {
+                return {
+                    error: 'user_not_found',
+                    response: null,
+                };
+            }
+            return {
+                response: user.current_purchase,
                 error: null,
             };
         } catch (e) {

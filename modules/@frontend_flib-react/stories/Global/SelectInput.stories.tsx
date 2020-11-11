@@ -21,5 +21,6 @@ export const showcase = () => (
         options={object('Values', selectValues)}
         searchable={boolean('Search as you type ?', true)}
         error={text('Error', null as any)}
+        onChange={() => console.log('changed')}
     />
 );

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled                                           from 'styled-components';
-import { useDispatch } from 'react-redux';
 
 import '@frontend/core/lib/utils/window';
 
@@ -8,18 +7,14 @@ import { Button, Popup } from '@frontend/flib-react/lib/components';
 
 import { useTranslation }   from 'react-i18next';
 import './locales';
-import { InitEventAcset }   from '../../../redux/ducks/event_creation';
 
 export interface ResetEventCreateFormProps {
     token: string;
-    eventAcsetId: string;
     onReset: () => void;
 }
 
-export const ResetEventCreateForm: React.FC<ResetEventCreateFormProps> = ({ token, eventAcsetId, onReset }) => {
+export const ResetEventCreateForm: React.FC<ResetEventCreateFormProps> = ({ token, onReset }) => {
     const [ t ] = useTranslation('reset_event_create_form');
-
-    const dispatch = useDispatch();
     const [ showResetPopup, setShowResetPopup ] = useState<boolean>(false);
 
     return (
@@ -33,23 +28,16 @@ export const ResetEventCreateForm: React.FC<ResetEventCreateFormProps> = ({ toke
                         <Button
                             title={t('cancel_btn')}
                             variant={'secondary'}
-                            onClick={() => setShowResetPopup(false)}/>
+                            onClick={() => setShowResetPopup(false)}
+                        />
                         <Button
                             title={t('reset_btn')}
                             variant={'danger'}
                             onClick={() => {
-                                global.window.t721Sdk.actions.consumeUpdate(
-                                    token,
-                                    eventAcsetId,
-                                    {
-                                        consumed: true
-                                    }).then(() => {
-                                    setShowResetPopup(false);
-                                    dispatch(InitEventAcset());
-                                    onReset();
-                                })
-                            }
-                            }/>
+                                onReset();
+                                setShowResetPopup(false);
+                            }}
+                        />
                     </BtnContainer>
                 </Popup>
             }
@@ -59,7 +47,6 @@ export const ResetEventCreateForm: React.FC<ResetEventCreateFormProps> = ({ toke
 
 const ResetLink = styled.span`
     font-size: 12px;
-    color: ${(props) => props.theme.primaryColorGradientEnd.hex};
     text-decoration: underline;
     cursor: pointer;
 `;

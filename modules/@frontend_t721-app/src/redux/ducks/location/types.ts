@@ -10,6 +10,7 @@ export interface UserLocation {
     lon: number;
     lat: number;
     city: City;
+    online: boolean;
 }
 
 export interface LocationState {

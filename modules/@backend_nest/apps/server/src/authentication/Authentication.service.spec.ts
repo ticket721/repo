@@ -8,46 +8,52 @@ import {
     toAcceptedAddressFormat,
     toAcceptedKeccak256Format,
     Wallet,
-    Web3RegisterSigner,
-    Web3LoginSigner,
 } from '@common/global';
 import { hash } from 'bcrypt';
 import { UsersService } from '@lib/common/users/Users.service';
 import { ConfigService } from '@lib/common/config/Config.service';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { Web3Service } from '@lib/common/web3/Web3.service';
-import { RocksideService } from '@lib/common/rockside/Rockside.service';
-import { MetadatasService } from '@lib/common/metadatas/Metadatas.service';
+import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
+import { PurchasesService } from '@lib/common/purchases/Purchases.service';
+import { PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
 
 const context: {
     authenticationService: AuthenticationService;
     usersServiceMock: UsersService;
     configServiceMock: ConfigService;
-    web3ServiceMock: Web3Service;
-    rocksideServiceMock: RocksideService;
-    metadatasServiceMock: MetadatasService;
+    // web3ServiceMock: Web3Service;
+    // rocksideServiceMock: RocksideService;
+    // metadatasServiceMock: MetadatasService;
+    uuidToolServiceMock: UUIDToolService;
+    purchasesServiceMock: PurchasesService;
 } = {
     authenticationService: null,
     usersServiceMock: null,
     configServiceMock: null,
-    web3ServiceMock: null,
-    rocksideServiceMock: null,
-    metadatasServiceMock: null,
+    // web3ServiceMock: null,
+    // rocksideServiceMock: null,
+    // metadatasServiceMock: null,
+    uuidToolServiceMock: null,
+    purchasesServiceMock: null,
 };
 
-const resultAddress = toAcceptedAddressFormat('0x87c02dec6b33498b489e1698801fc2ef79d02eef');
+const resultAddress = toAcceptedAddressFormat('0x0000000000000000000000000000000000000000');
+const uuid = 'ef06f5d9-e867-4319-8ca5-c1953c7b3138';
 
 describe('Authentication Service', function() {
     beforeEach(async function() {
         context.usersServiceMock = mock(UsersService);
         context.configServiceMock = mock(ConfigService);
-        context.web3ServiceMock = mock(Web3Service);
-        context.rocksideServiceMock = mock(RocksideService);
-        context.metadatasServiceMock = mock(MetadatasService);
+        // context.web3ServiceMock = mock(Web3Service);
+        // context.rocksideServiceMock = mock(RocksideService);
+        // context.metadatasServiceMock = mock(MetadatasService);
+        context.uuidToolServiceMock = mock(UUIDToolService);
+        context.purchasesServiceMock = mock(PurchasesService);
 
+        when(context.uuidToolServiceMock.generate()).thenReturn(uuid);
         when(context.configServiceMock.get('AUTH_SIGNATURE_TIMEOUT')).thenReturn('30');
-        when(context.web3ServiceMock.net()).thenResolve(1);
+        // when(context.web3ServiceMock.net()).thenResolve(1);
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -62,19 +68,29 @@ describe('Authentication Service', function() {
                     useValue: instance(context.configServiceMock),
                 },
 
+                // {
+                //     provide: RocksideService,
+                //     useValue: instance(context.rocksideServiceMock),
+                // },
+                //
+                // {
+                //     provide: Web3Service,
+                //     useValue: instance(context.web3ServiceMock),
+                // },
+                //
+                // {
+                //     provide: MetadatasService,
+                //     useValue: instance(context.metadatasServiceMock),
+                // },
+
                 {
-                    provide: RocksideService,
-                    useValue: instance(context.rocksideServiceMock),
+                    provide: UUIDToolService,
+                    useValue: instance(context.uuidToolServiceMock),
                 },
 
                 {
-                    provide: Web3Service,
-                    useValue: instance(context.web3ServiceMock),
-                },
-
-                {
-                    provide: MetadatasService,
-                    useValue: instance(context.metadatasServiceMock),
+                    provide: PurchasesService,
+                    useValue: instance(context.purchasesServiceMock),
                 },
             ],
         }).compile();
@@ -82,954 +98,1173 @@ describe('Authentication Service', function() {
         context.authenticationService = module.get<AuthenticationService>(AuthenticationService);
     });
 
-    describe('validateWeb3User', function() {
-        test('should validate a web3 user', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-
-            const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
-            const loginPayload = web3LoginSigner.generateAuthenticationProofPayload();
-            const loginSignature = await web3LoginSigner.sign(wallet.privateKey, loginPayload[1]);
-
-            const serviceResponse: ServiceResponse<UserDto> = {
-                response: {
-                    email,
-                    username,
-                    address,
-                    device_address: null,
-                    type: 'web3',
-                    password: null,
-                    id: '0',
-                    role: 'authenticated',
-                    locale: 'en',
-                    valid: false,
-                    admin: false,
-                },
-                error: null,
-            };
-
-            when(usersServiceMock.findByAddress(address)).thenReturn(Promise.resolve(serviceResponse));
-
-            const res = await authenticationService.validateWeb3User(loginPayload[0].toString(), loginSignature.hex);
-
-            expect(res.response).toBeDefined();
-            expect(res.error).toEqual(null);
-            expect(res.response).toEqual({
-                email,
-                username,
-                address,
-                device_address: null,
-                type: 'web3',
-                id: '0',
-                role: 'authenticated',
-                locale: 'en',
-                valid: false,
-                admin: false,
-            });
-
-            verify(usersServiceMock.findByAddress(address)).called();
-        });
-
-        test('user does not exist', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-
-            const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
-            const loginPayload = web3LoginSigner.generateAuthenticationProofPayload();
-            const loginSignature = await web3LoginSigner.sign(wallet.privateKey, loginPayload[1]);
-
-            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
-                response: null,
-                error: null,
-            });
-
-            when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
-
-            const res = await authenticationService.validateWeb3User(loginPayload[0].toString(), loginSignature.hex);
-
-            expect(res.response).toEqual(null);
-            expect(res.error).toEqual('invalid_signature');
-
-            verify(usersServiceMock.findByAddress(address)).called();
-        });
-
-        test('unexpected error', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-
-            const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
-            const loginPayload = web3LoginSigner.generateAuthenticationProofPayload();
-            const loginSignature = await web3LoginSigner.sign(wallet.privateKey, loginPayload[1]);
-
-            const errorServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
-                response: null,
-                error: 'unexpected_error',
-            });
-
-            when(usersServiceMock.findByAddress(address)).thenReturn(errorServiceResponse);
-
-            const res = await authenticationService.validateWeb3User(loginPayload[0].toString(), loginSignature.hex);
-
-            expect(res.response).toEqual(null);
-            expect(res.error).toEqual('unexpected_error');
-
-            verify(usersServiceMock.findByAddress(address)).called();
-        });
-
-        test('signature of the past', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-
-            const wallet: Wallet = await createWallet();
-
-            const past = Date.now() - 1000000;
-            const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
-            const loginPayload = web3LoginSigner.generatePayload(
-                {
-                    timestamp: past,
-                },
-                'Web3Login',
-            );
-            const loginSignature = await web3LoginSigner.sign(wallet.privateKey, loginPayload);
-
-            const res = await authenticationService.validateWeb3User(past.toString(), loginSignature.hex);
-
-            expect(res.response).toEqual(null);
-            expect(res.error).toEqual('signature_timed_out');
-        });
-
-        test('signature of the future', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-
-            const wallet: Wallet = await createWallet();
-
-            const future = Date.now() + 1000000;
-            const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
-            const loginPayload = web3LoginSigner.generatePayload(
-                {
-                    timestamp: future,
-                },
-                'Web3Login',
-            );
-            const loginSignature = await web3LoginSigner.sign(wallet.privateKey, loginPayload);
-
-            const res = await authenticationService.validateWeb3User(future.toString(), loginSignature.hex);
-
-            expect(res.response).toEqual(null);
-            expect(res.error).toEqual('signature_is_in_the_future');
-        });
-    });
-
-    describe('createWeb3User', function() {
-        test('should create a user', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
-
-            const serviceResponse: ServiceResponse<UserDto> = {
-                response: {
-                    email,
-                    username,
-                    address,
-                    device_address: null,
-                    type: 'web3',
-                    password: null,
-                    id: '0',
-                    role: 'authenticated',
-                    valid: false,
-                    locale: 'en',
-                    admin: false,
-                },
-                error: null,
-            };
-
-            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
-                response: null,
-                error: null,
-            });
-
-            when(
-                usersServiceMock.create(
-                    deepEqual({
-                        email,
-                        username,
-                        device_address: null,
-                        address,
-                        type: 'web3',
-                        password: null,
-                        role: 'authenticated',
-                        locale: 'en',
-                        admin: false,
-                    }),
-                ),
-            ).thenReturn(Promise.resolve(serviceResponse));
-
-            when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-            when(
-                context.metadatasServiceMock.attach(
-                    'history',
-                    'web3_user_create',
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([]),
-                    anything(),
-                    deepEqual({
-                        email,
-                        username,
-                        device_address: null,
-                        address,
-                        type: 'web3',
-                        password: null,
-                        id: '0',
-                        role: 'authenticated',
-                        valid: false,
-                        locale: 'en',
-                        admin: false,
-                    }),
-                    null,
-                ),
-            ).thenResolve({
-                error: null,
-                response: null,
-            });
-
-            const res = await authenticationService.createWeb3User(
-                email,
-                username,
-                registerPayload[0].toString(),
-                address,
-                registerSignature.hex,
-                'en',
-            );
-
-            expect(res.response).toBeDefined();
-            expect(res.error).toEqual(null);
-            expect(res.response).toEqual({
-                email,
-                username,
-                address,
-                device_address: null,
-                type: 'web3',
-                id: '0',
-                role: 'authenticated',
-                locale: 'en',
-                valid: false,
-                admin: false,
-            });
-
-            verify(
-                usersServiceMock.create(
-                    deepEqual({
-                        email,
-                        username,
-                        address,
-                        device_address: null,
-                        type: 'web3',
-                        password: null,
-                        role: 'authenticated',
-                        locale: 'en',
-                        admin: false,
-                    }),
-                ),
-            ).called();
-
-            verify(usersServiceMock.findByAddress(address)).called();
-            verify(usersServiceMock.findByEmail(email)).called();
-            verify(usersServiceMock.findByUsername(username)).called();
-            verify(
-                context.metadatasServiceMock.attach(
-                    'history',
-                    'web3_user_create',
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([]),
-                    anything(),
-                    deepEqual({
-                        email,
-                        username,
-                        device_address: null,
-                        address,
-                        type: 'web3',
-                        id: '0',
-                        role: 'authenticated',
-                        valid: false,
-                        locale: 'en',
-                        admin: false,
-                    } as UserDto),
-                    null,
-                ),
-            ).times(1);
-        });
-
-        test('should fail on metadata creation error', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
-
-            const serviceResponse: ServiceResponse<UserDto> = {
-                response: {
-                    email,
-                    username,
-                    device_address: null,
-                    address,
-                    type: 'web3',
-                    password: null,
-                    id: '0',
-                    role: 'authenticated',
-                    valid: false,
-                    locale: 'en',
-                    admin: false,
-                },
-                error: null,
-            };
-
-            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
-                response: null,
-                error: null,
-            });
-
-            when(
-                usersServiceMock.create(
-                    deepEqual({
-                        email,
-                        username,
-                        address,
-                        device_address: null,
-                        type: 'web3',
-                        password: null,
-                        role: 'authenticated',
-                        locale: 'en',
-                        admin: false,
-                    }),
-                ),
-            ).thenReturn(Promise.resolve(serviceResponse));
-
-            when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-            when(
-                context.metadatasServiceMock.attach(
-                    'history',
-                    'web3_user_create',
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([]),
-                    anything(),
-                    deepEqual({
-                        email,
-                        username,
-                        address,
-                        device_address: null,
-                        type: 'web3',
-                        password: null,
-                        id: '0',
-                        role: 'authenticated',
-                        valid: false,
-                        locale: 'en',
-                        admin: false,
-                    }),
-                    null,
-                ),
-            ).thenResolve({
-                error: 'unexpected_error',
-                response: null,
-            });
-
-            const res = await authenticationService.createWeb3User(
-                email,
-                username,
-                registerPayload[0].toString(),
-                address,
-                registerSignature.hex,
-                'en',
-            );
-
-            expect(res.error).toEqual('cannot_create_activity_item');
-            expect(res.response).toEqual(null);
-
-            verify(
-                usersServiceMock.create(
-                    deepEqual({
-                        email,
-                        username,
-                        device_address: null,
-                        address,
-                        type: 'web3',
-                        password: null,
-                        role: 'authenticated',
-                        locale: 'en',
-                        admin: false,
-                    }),
-                ),
-            ).called();
-
-            verify(usersServiceMock.findByAddress(address)).called();
-            verify(usersServiceMock.findByEmail(email)).called();
-            verify(usersServiceMock.findByUsername(username)).called();
-            verify(
-                context.metadatasServiceMock.attach(
-                    'history',
-                    'web3_user_create',
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([]),
-                    anything(),
-                    deepEqual({
-                        email,
-                        username,
-                        address,
-                        device_address: null,
-                        password: null,
-                        type: 'web3',
-                        id: '0',
-                        role: 'authenticated',
-                        valid: false,
-                        locale: 'en',
-                        admin: false,
-                    } as UserDto),
-                    null,
-                ),
-            ).times(1);
-        });
-
-        test('should report creation error', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
-
-            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
-                response: null,
-                error: null,
-            });
-
-            when(
-                usersServiceMock.create(
-                    deepEqual({
-                        email,
-                        username,
-                        device_address: null,
-                        address,
-                        type: 'web3',
-                        password: null,
-                        role: 'authenticated',
-                        locale: 'en',
-                        admin: false,
-                    }),
-                ),
-            ).thenReturn(
-                Promise.resolve({
-                    error: 'unexpected_error',
-                    response: null,
-                }),
-            );
-
-            when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-
-            const res = await authenticationService.createWeb3User(
-                email,
-                username,
-                registerPayload[0].toString(),
-                address,
-                registerSignature.hex,
-                'en',
-            );
-
-            expect(res.error).toEqual('unexpected_error');
-            expect(res.response).toEqual(null);
-
-            verify(
-                usersServiceMock.create(
-                    deepEqual({
-                        email,
-                        username,
-                        device_address: null,
-                        address,
-                        type: 'web3',
-                        password: null,
-                        role: 'authenticated',
-                        locale: 'en',
-                        admin: false,
-                    }),
-                ),
-            ).called();
-            verify(usersServiceMock.findByEmail(email)).called();
-            verify(usersServiceMock.findByAddress(address)).called();
-            verify(usersServiceMock.findByUsername(username)).called();
-        });
-
-        test('user by email error', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
-
-            when(usersServiceMock.findByEmail(email)).thenReturn(
-                Promise.resolve({
-                    response: null,
-                    error: 'unexpected_error',
-                }),
-            );
-
-            const res = await authenticationService.createWeb3User(
-                email,
-                username,
-                registerPayload[0].toString(),
-                address,
-                registerSignature.hex,
-                'en',
-            );
-
-            expect(res.error).toEqual('unexpected_error');
-            expect(res.response).toEqual(null);
-
-            verify(usersServiceMock.findByEmail(email)).called();
-        });
-
-        test('user by username error', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
-
-            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
-                response: null,
-                error: null,
-            });
-
-            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
-
-            when(usersServiceMock.findByUsername(username)).thenReturn(
-                Promise.resolve({
-                    response: null,
-                    error: 'unexpected_error',
-                }),
-            );
-
-            const res = await authenticationService.createWeb3User(
-                email,
-                username,
-                registerPayload[0].toString(),
-                address,
-                registerSignature.hex,
-                'en',
-            );
-
-            expect(res.error).toEqual('unexpected_error');
-            expect(res.response).toEqual(null);
-
-            verify(usersServiceMock.findByEmail(email)).called();
-            verify(usersServiceMock.findByUsername(username)).called();
-        });
-
-        test('user by address error', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
-
-            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
-                response: null,
-                error: null,
-            });
-
-            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
-
-            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-
-            when(usersServiceMock.findByAddress(address)).thenReturn(
-                Promise.resolve({
-                    response: null,
-                    error: 'unexpected_error',
-                }),
-            );
-
-            const res = await authenticationService.createWeb3User(
-                email,
-                username,
-                registerPayload[0].toString(),
-                address,
-                registerSignature.hex,
-                'en',
-            );
-
-            expect(res.error).toEqual('unexpected_error');
-            expect(res.response).toEqual(null);
-
-            verify(usersServiceMock.findByEmail(email)).called();
-            verify(usersServiceMock.findByUsername(username)).called();
-            verify(usersServiceMock.findByAddress(address)).called();
-        });
-
-        test('email already in use', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
-
-            const serviceResponse: ServiceResponse<UserDto> = {
-                response: {
-                    email,
-                    username,
-                    address,
-                    device_address: null,
-                    password: null,
-                    type: 'web3',
-                    id: '0',
-                    role: 'authenticated',
-                    locale: 'en',
-                    valid: false,
-                    admin: false,
-                },
-                error: null,
-            };
-
-            when(usersServiceMock.findByEmail(email)).thenReturn(Promise.resolve(serviceResponse));
-
-            const res = await authenticationService.createWeb3User(
-                email,
-                username,
-                registerPayload[0].toString(),
-                address,
-                registerSignature.hex,
-                'en',
-            );
-
-            expect(res.response).toEqual(null);
-            expect(res.error).toEqual('email_already_in_use');
-
-            verify(usersServiceMock.findByEmail(email)).called();
-        });
-
-        test('username already in use', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
-
-            const serviceResponse: ServiceResponse<UserDto> = {
-                response: {
-                    email,
-                    username,
-                    address,
-                    device_address: null,
-                    password: null,
-                    type: 'web3',
-                    id: '0',
-                    role: 'authenticated',
-                    locale: 'en',
-                    valid: false,
-                    admin: false,
-                },
-                error: null,
-            };
-
-            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
-                response: null,
-                error: null,
-            });
-
-            when(usersServiceMock.findByUsername(username)).thenReturn(Promise.resolve(serviceResponse));
-            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
-
-            const res = await authenticationService.createWeb3User(
-                email,
-                username,
-                registerPayload[0].toString(),
-                address,
-                registerSignature.hex,
-                'en',
-            );
-
-            expect(res.response).toEqual(null);
-            expect(res.error).toEqual('username_already_in_use');
-
-            verify(usersServiceMock.findByEmail(email)).called();
-            verify(usersServiceMock.findByUsername(username)).called();
-        });
-
-        test('address already in use', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(wallet.address);
-
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
-
-            const serviceResponse: ServiceResponse<UserDto> = {
-                response: {
-                    email,
-                    username,
-                    device_address: null,
-                    address,
-                    password: null,
-                    type: 'web3',
-                    id: '0',
-                    role: 'authenticated',
-                    locale: 'en',
-                    valid: false,
-                    admin: false,
-                },
-                error: null,
-            };
-
-            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
-                response: null,
-                error: null,
-            });
-
-            when(usersServiceMock.findByAddress(address)).thenReturn(Promise.resolve(serviceResponse));
-            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
-
-            const res = await authenticationService.createWeb3User(
-                email,
-                username,
-                registerPayload[0].toString(),
-                address,
-                registerSignature.hex,
-                'en',
-            );
-
-            expect(res.response).toEqual(null);
-            expect(res.error).toEqual('address_already_in_use');
-
-            verify(usersServiceMock.findByAddress(address)).called();
-            verify(usersServiceMock.findByEmail(email)).called();
-            verify(usersServiceMock.findByUsername(username)).called();
-        });
-
-        test('signature in the future', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const other_wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(other_wallet.address);
-
-            const future = Date.now() + 1000000;
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const registerPayload = web3RegisterSigner.generatePayload(
-                {
-                    email,
-                    username,
-                    timestamp: future,
-                },
-                'Web3Register',
-            );
-            const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload);
-
-            const serviceResponse: ServiceResponse<UserDto> = {
-                response: {
-                    email,
-                    username,
-                    address,
-                    device_address: null,
-                    type: 'web3',
-                    password: null,
-                    id: '0',
-                    role: 'authenticated',
-                    locale: 'en',
-                    valid: false,
-                    admin: false,
-                },
-                error: null,
-            };
-
-            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
-                response: null,
-                error: null,
-            });
-
-            when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-
-            const res = await authenticationService.createWeb3User(
-                email,
-                username,
-                future.toString(),
-                address,
-                registerSignature.hex,
-                'en',
-            );
-
-            expect(res.response).toEqual(null);
-            expect(res.error).toEqual('signature_is_in_the_future');
-
-            verify(usersServiceMock.findByAddress(address)).called();
-            verify(usersServiceMock.findByEmail(email)).called();
-            verify(usersServiceMock.findByUsername(username)).called();
-        });
-
-        test('invalid signature', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const wallet: Wallet = await createWallet();
-            const other_wallet: Wallet = await createWallet();
-            const address = toAcceptedAddressFormat(other_wallet.address);
-
-            const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
-            const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
-            const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
-
-            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
-                response: null,
-                error: null,
-            });
-
-            when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-
-            const res = await authenticationService.createWeb3User(
-                email,
-                username,
-                registerPayload[0].toString(),
-                address,
-                registerSignature.hex,
-                'en',
-            );
-
-            expect(res.response).toEqual(null);
-            expect(res.error).toEqual('invalid_signature');
-
-            verify(usersServiceMock.findByAddress(address)).called();
-            verify(usersServiceMock.findByEmail(email)).called();
-            verify(usersServiceMock.findByUsername(username)).called();
-        });
-    });
-
+    // describe('validateWeb3User', function() {
+    //     test('should validate a web3 user', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //
+    //         const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
+    //         const loginPayload = web3LoginSigner.generateAuthenticationProofPayload();
+    //         const loginSignature = await web3LoginSigner.sign(wallet.privateKey, loginPayload[1]);
+    //
+    //         const serviceResponse: ServiceResponse<UserDto> = {
+    //             response: {
+    //                 email,
+    //                 username,
+    //                 address,
+    //                 device_address: null,
+    //                 type: 'web3',
+    //                 password: null,
+    //                 id: '0',
+    //                 role: 'authenticated',
+    //                 locale: 'en',
+    //                 valid: false,
+    //                 admin: false,
+    //             },
+    //             error: null,
+    //         };
+    //
+    //         when(usersServiceMock.findByAddress(address)).thenReturn(Promise.resolve(serviceResponse));
+    //
+    //         const res = await authenticationService.validateWeb3User(loginPayload[0].toString(), loginSignature.hex);
+    //
+    //         expect(res.response).toBeDefined();
+    //         expect(res.error).toEqual(null);
+    //         expect(res.response).toEqual({
+    //             email,
+    //             username,
+    //             address,
+    //             device_address: null,
+    //             type: 'web3',
+    //             id: '0',
+    //             role: 'authenticated',
+    //             locale: 'en',
+    //             valid: false,
+    //             admin: false,
+    //         });
+    //
+    //         verify(usersServiceMock.findByAddress(address)).called();
+    //     });
+    //
+    //     test('user does not exist', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //
+    //         const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
+    //         const loginPayload = web3LoginSigner.generateAuthenticationProofPayload();
+    //         const loginSignature = await web3LoginSigner.sign(wallet.privateKey, loginPayload[1]);
+    //
+    //         const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+    //             response: null,
+    //             error: null,
+    //         });
+    //
+    //         when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
+    //
+    //         const res = await authenticationService.validateWeb3User(loginPayload[0].toString(), loginSignature.hex);
+    //
+    //         expect(res.response).toEqual(null);
+    //         expect(res.error).toEqual('invalid_signature');
+    //
+    //         verify(usersServiceMock.findByAddress(address)).called();
+    //     });
+    //
+    //     test('unexpected error', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //
+    //         const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
+    //         const loginPayload = web3LoginSigner.generateAuthenticationProofPayload();
+    //         const loginSignature = await web3LoginSigner.sign(wallet.privateKey, loginPayload[1]);
+    //
+    //         const errorServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+    //             response: null,
+    //             error: 'unexpected_error',
+    //         });
+    //
+    //         when(usersServiceMock.findByAddress(address)).thenReturn(errorServiceResponse);
+    //
+    //         const res = await authenticationService.validateWeb3User(loginPayload[0].toString(), loginSignature.hex);
+    //
+    //         expect(res.response).toEqual(null);
+    //         expect(res.error).toEqual('unexpected_error');
+    //
+    //         verify(usersServiceMock.findByAddress(address)).called();
+    //     });
+    //
+    //     test('signature of the past', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //
+    //         const wallet: Wallet = await createWallet();
+    //
+    //         const past = Date.now() - 1000000;
+    //         const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
+    //         const loginPayload = web3LoginSigner.generatePayload(
+    //             {
+    //                 timestamp: past,
+    //             },
+    //             'Web3Login',
+    //         );
+    //         const loginSignature = await web3LoginSigner.sign(wallet.privateKey, loginPayload);
+    //
+    //         const res = await authenticationService.validateWeb3User(past.toString(), loginSignature.hex);
+    //
+    //         expect(res.response).toEqual(null);
+    //         expect(res.error).toEqual('signature_timed_out');
+    //     });
+    //
+    //     test('signature of the future', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //
+    //         const wallet: Wallet = await createWallet();
+    //
+    //         const future = Date.now() + 1000000;
+    //         const web3LoginSigner: Web3LoginSigner = new Web3LoginSigner(1);
+    //         const loginPayload = web3LoginSigner.generatePayload(
+    //             {
+    //                 timestamp: future,
+    //             },
+    //             'Web3Login',
+    //         );
+    //         const loginSignature = await web3LoginSigner.sign(wallet.privateKey, loginPayload);
+    //
+    //         const res = await authenticationService.validateWeb3User(future.toString(), loginSignature.hex);
+    //
+    //         expect(res.response).toEqual(null);
+    //         expect(res.error).toEqual('signature_is_in_the_future');
+    //     });
+    // });
+    //
+    // describe('createWeb3User', function() {
+    //     test('should create a user', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
+    //
+    //         const serviceResponse: ServiceResponse<UserDto> = {
+    //             response: {
+    //                 email,
+    //                 username,
+    //                 address,
+    //                 device_address: null,
+    //                 type: 'web3',
+    //                 password: null,
+    //                 id: '0',
+    //                 role: 'authenticated',
+    //                 valid: false,
+    //                 locale: 'en',
+    //                 admin: false,
+    //             },
+    //             error: null,
+    //         };
+    //
+    //         const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+    //             response: null,
+    //             error: null,
+    //         });
+    //
+    //         const purchaseEntity: Partial<PurchaseEntity> = {
+    //             id: uuid,
+    //             owner: uuid,
+    //             fees: [],
+    //             products: [],
+    //             currency: null,
+    //             payment: null,
+    //             payment_interface: null,
+    //             checked_out_at: null,
+    //             price: null,
+    //         };
+    //
+    //         when(
+    //             context.purchasesServiceMock.create(
+    //                 deepEqual({
+    //                     owner: uuid,
+    //                     fees: [],
+    //                     products: [],
+    //                     currency: null,
+    //                     payment: null,
+    //                     payment_interface: null,
+    //                     checked_out_at: null,
+    //                     price: null,
+    //                 }),
+    //             ),
+    //         ).thenResolve({
+    //             error: null,
+    //             response: purchaseEntity as PurchaseEntity,
+    //         });
+    //
+    //         when(
+    //             usersServiceMock.create(
+    //                 deepEqual({
+    //                     id: UUIDToolService.fromString(uuid),
+    //                     current_purchase: UUIDToolService.fromString(uuid),
+    //                     email,
+    //                     username,
+    //                     device_address: null,
+    //                     address,
+    //                     type: 'web3',
+    //                     password: null,
+    //                     role: 'authenticated',
+    //                     locale: 'en',
+    //                     admin: false,
+    //                 }),
+    //             ),
+    //         ).thenReturn(Promise.resolve(serviceResponse));
+    //
+    //         when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
+    //         when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+    //         when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+    //         when(
+    //             context.metadatasServiceMock.attach(
+    //                 'history',
+    //                 'web3_user_create',
+    //                 deepEqual([
+    //                     {
+    //                         type: 'user',
+    //                         id: '0',
+    //                         field: 'id',
+    //                     },
+    //                 ]),
+    //                 deepEqual([
+    //                     {
+    //                         type: 'user',
+    //                         id: '0',
+    //                         field: 'id',
+    //                     },
+    //                 ]),
+    //                 deepEqual([]),
+    //                 anything(),
+    //                 deepEqual({
+    //                     email,
+    //                     username,
+    //                     device_address: null,
+    //                     address,
+    //                     type: 'web3',
+    //                     password: null,
+    //                     id: '0',
+    //                     role: 'authenticated',
+    //                     valid: false,
+    //                     locale: 'en',
+    //                     admin: false,
+    //                 }),
+    //                 null,
+    //             ),
+    //         ).thenResolve({
+    //             error: null,
+    //             response: null,
+    //         });
+    //
+    //         const res = await authenticationService.createWeb3User(
+    //             email,
+    //             username,
+    //             registerPayload[0].toString(),
+    //             address,
+    //             registerSignature.hex,
+    //             'en',
+    //         );
+    //
+    //         expect(res.response).toBeDefined();
+    //         expect(res.error).toEqual(null);
+    //         expect(res.response).toEqual({
+    //             email,
+    //             username,
+    //             address,
+    //             device_address: null,
+    //             type: 'web3',
+    //             id: '0',
+    //             role: 'authenticated',
+    //             locale: 'en',
+    //             valid: false,
+    //             admin: false,
+    //         });
+    //
+    //         verify(
+    //             context.purchasesServiceMock.create(
+    //                 deepEqual({
+    //                     owner: uuid,
+    //                     fees: [],
+    //                     products: [],
+    //                     currency: null,
+    //                     payment: null,
+    //                     payment_interface: null,
+    //                     checked_out_at: null,
+    //                     price: null,
+    //                 }),
+    //             ),
+    //         ).once();
+    //
+    //         verify(
+    //             usersServiceMock.create(
+    //                 deepEqual({
+    //                     id: UUIDToolService.fromString(uuid),
+    //                     current_purchase: UUIDToolService.fromString(uuid),
+    //                     email,
+    //                     username,
+    //                     address,
+    //                     device_address: null,
+    //                     type: 'web3',
+    //                     password: null,
+    //                     role: 'authenticated',
+    //                     locale: 'en',
+    //                     admin: false,
+    //                 }),
+    //             ),
+    //         ).called();
+    //
+    //         verify(usersServiceMock.findByAddress(address)).called();
+    //         verify(usersServiceMock.findByEmail(email)).called();
+    //         verify(usersServiceMock.findByUsername(username)).called();
+    //         verify(
+    //             context.metadatasServiceMock.attach(
+    //                 'history',
+    //                 'web3_user_create',
+    //                 deepEqual([
+    //                     {
+    //                         type: 'user',
+    //                         id: '0',
+    //                         field: 'id',
+    //                     },
+    //                 ]),
+    //                 deepEqual([
+    //                     {
+    //                         type: 'user',
+    //                         id: '0',
+    //                         field: 'id',
+    //                     },
+    //                 ]),
+    //                 deepEqual([]),
+    //                 anything(),
+    //                 deepEqual({
+    //                     email,
+    //                     username,
+    //                     device_address: null,
+    //                     address,
+    //                     type: 'web3',
+    //                     id: '0',
+    //                     role: 'authenticated',
+    //                     valid: false,
+    //                     locale: 'en',
+    //                     admin: false,
+    //                 } as UserDto),
+    //                 null,
+    //             ),
+    //         ).times(1);
+    //     });
+    //
+    //     test('should fail on purchase creation error', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
+    //
+    //         const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+    //             response: null,
+    //             error: null,
+    //         });
+    //
+    //         when(
+    //             context.purchasesServiceMock.create(
+    //                 deepEqual({
+    //                     owner: uuid,
+    //                     fees: [],
+    //                     products: [],
+    //                     currency: null,
+    //                     payment: null,
+    //                     payment_interface: null,
+    //                     checked_out_at: null,
+    //                     price: null,
+    //                 }),
+    //             ),
+    //         ).thenResolve({
+    //             error: 'unexpected_error',
+    //             response: null,
+    //         });
+    //
+    //         when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
+    //         when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+    //         when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+    //
+    //         const res = await authenticationService.createWeb3User(
+    //             email,
+    //             username,
+    //             registerPayload[0].toString(),
+    //             address,
+    //             registerSignature.hex,
+    //             'en',
+    //         );
+    //
+    //         expect(res.response).toEqual(null);
+    //         expect(res.error).toEqual('unexpected_error');
+    //
+    //         verify(
+    //             context.purchasesServiceMock.create(
+    //                 deepEqual({
+    //                     owner: uuid,
+    //                     fees: [],
+    //                     products: [],
+    //                     currency: null,
+    //                     payment: null,
+    //                     payment_interface: null,
+    //                     checked_out_at: null,
+    //                     price: null,
+    //                 }),
+    //             ),
+    //         ).once();
+    //
+    //         verify(usersServiceMock.findByAddress(address)).called();
+    //         verify(usersServiceMock.findByEmail(email)).called();
+    //         verify(usersServiceMock.findByUsername(username)).called();
+    //     });
+    //
+    //     test('should fail on metadata creation error', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
+    //
+    //         const serviceResponse: ServiceResponse<UserDto> = {
+    //             response: {
+    //                 email,
+    //                 username,
+    //                 device_address: null,
+    //                 address,
+    //                 type: 'web3',
+    //                 password: null,
+    //                 id: '0',
+    //                 role: 'authenticated',
+    //                 valid: false,
+    //                 locale: 'en',
+    //                 admin: false,
+    //             },
+    //             error: null,
+    //         };
+    //
+    //         const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+    //             response: null,
+    //             error: null,
+    //         });
+    //
+    //         const purchaseEntity: Partial<PurchaseEntity> = {
+    //             id: uuid,
+    //             owner: uuid,
+    //             fees: [],
+    //             products: [],
+    //             currency: null,
+    //             payment: null,
+    //             payment_interface: null,
+    //             checked_out_at: null,
+    //             price: null,
+    //         };
+    //
+    //         when(
+    //             context.purchasesServiceMock.create(
+    //                 deepEqual({
+    //                     owner: uuid,
+    //                     fees: [],
+    //                     products: [],
+    //                     currency: null,
+    //                     payment: null,
+    //                     payment_interface: null,
+    //                     checked_out_at: null,
+    //                     price: null,
+    //                 }),
+    //             ),
+    //         ).thenResolve({
+    //             error: null,
+    //             response: purchaseEntity as PurchaseEntity,
+    //         });
+    //
+    //         when(
+    //             usersServiceMock.create(
+    //                 deepEqual({
+    //                     id: UUIDToolService.fromString(uuid),
+    //                     current_purchase: UUIDToolService.fromString(uuid),
+    //                     email,
+    //                     username,
+    //                     address,
+    //                     device_address: null,
+    //                     type: 'web3',
+    //                     password: null,
+    //                     role: 'authenticated',
+    //                     locale: 'en',
+    //                     admin: false,
+    //                 }),
+    //             ),
+    //         ).thenReturn(Promise.resolve(serviceResponse));
+    //
+    //         when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
+    //         when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+    //         when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+    //         when(
+    //             context.metadatasServiceMock.attach(
+    //                 'history',
+    //                 'web3_user_create',
+    //                 deepEqual([
+    //                     {
+    //                         type: 'user',
+    //                         id: '0',
+    //                         field: 'id',
+    //                     },
+    //                 ]),
+    //                 deepEqual([
+    //                     {
+    //                         type: 'user',
+    //                         id: '0',
+    //                         field: 'id',
+    //                     },
+    //                 ]),
+    //                 deepEqual([]),
+    //                 anything(),
+    //                 deepEqual({
+    //                     email,
+    //                     username,
+    //                     address,
+    //                     device_address: null,
+    //                     type: 'web3',
+    //                     password: null,
+    //                     id: '0',
+    //                     role: 'authenticated',
+    //                     valid: false,
+    //                     locale: 'en',
+    //                     admin: false,
+    //                 }),
+    //                 null,
+    //             ),
+    //         ).thenResolve({
+    //             error: 'unexpected_error',
+    //             response: null,
+    //         });
+    //
+    //         const res = await authenticationService.createWeb3User(
+    //             email,
+    //             username,
+    //             registerPayload[0].toString(),
+    //             address,
+    //             registerSignature.hex,
+    //             'en',
+    //         );
+    //
+    //         expect(res.error).toEqual('cannot_create_activity_item');
+    //         expect(res.response).toEqual(null);
+    //
+    //         verify(
+    //             context.purchasesServiceMock.create(
+    //                 deepEqual({
+    //                     owner: uuid,
+    //                     fees: [],
+    //                     products: [],
+    //                     currency: null,
+    //                     payment: null,
+    //                     payment_interface: null,
+    //                     checked_out_at: null,
+    //                     price: null,
+    //                 }),
+    //             ),
+    //         ).once();
+    //
+    //         verify(
+    //             usersServiceMock.create(
+    //                 deepEqual({
+    //                     id: UUIDToolService.fromString(uuid),
+    //                     current_purchase: UUIDToolService.fromString(uuid),
+    //                     email,
+    //                     username,
+    //                     device_address: null,
+    //                     address,
+    //                     type: 'web3',
+    //                     password: null,
+    //                     role: 'authenticated',
+    //                     locale: 'en',
+    //                     admin: false,
+    //                 }),
+    //             ),
+    //         ).called();
+    //
+    //         verify(usersServiceMock.findByAddress(address)).called();
+    //         verify(usersServiceMock.findByEmail(email)).called();
+    //         verify(usersServiceMock.findByUsername(username)).called();
+    //         verify(
+    //             context.metadatasServiceMock.attach(
+    //                 'history',
+    //                 'web3_user_create',
+    //                 deepEqual([
+    //                     {
+    //                         type: 'user',
+    //                         id: '0',
+    //                         field: 'id',
+    //                     },
+    //                 ]),
+    //                 deepEqual([
+    //                     {
+    //                         type: 'user',
+    //                         id: '0',
+    //                         field: 'id',
+    //                     },
+    //                 ]),
+    //                 deepEqual([]),
+    //                 anything(),
+    //                 deepEqual({
+    //                     email,
+    //                     username,
+    //                     address,
+    //                     device_address: null,
+    //                     password: null,
+    //                     type: 'web3',
+    //                     id: '0',
+    //                     role: 'authenticated',
+    //                     valid: false,
+    //                     locale: 'en',
+    //                     admin: false,
+    //                 } as UserDto),
+    //                 null,
+    //             ),
+    //         ).times(1);
+    //     });
+    //
+    //     test('should report creation error', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
+    //
+    //         const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+    //             response: null,
+    //             error: null,
+    //         });
+    //
+    //         const purchaseEntity: Partial<PurchaseEntity> = {
+    //             id: uuid,
+    //             owner: uuid,
+    //             fees: [],
+    //             products: [],
+    //             currency: null,
+    //             payment: null,
+    //             payment_interface: null,
+    //             checked_out_at: null,
+    //             price: null,
+    //         };
+    //
+    //         when(
+    //             context.purchasesServiceMock.create(
+    //                 deepEqual({
+    //                     owner: uuid,
+    //                     fees: [],
+    //                     products: [],
+    //                     currency: null,
+    //                     payment: null,
+    //                     payment_interface: null,
+    //                     checked_out_at: null,
+    //                     price: null,
+    //                 }),
+    //             ),
+    //         ).thenResolve({
+    //             error: null,
+    //             response: purchaseEntity as PurchaseEntity,
+    //         });
+    //
+    //         when(
+    //             usersServiceMock.create(
+    //                 deepEqual({
+    //                     id: UUIDToolService.fromString(uuid),
+    //                     current_purchase: UUIDToolService.fromString(uuid),
+    //                     email,
+    //                     username,
+    //                     device_address: null,
+    //                     address,
+    //                     type: 'web3',
+    //                     password: null,
+    //                     role: 'authenticated',
+    //                     locale: 'en',
+    //                     admin: false,
+    //                 }),
+    //             ),
+    //         ).thenReturn(
+    //             Promise.resolve({
+    //                 error: 'unexpected_error',
+    //                 response: null,
+    //             }),
+    //         );
+    //
+    //         when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
+    //         when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+    //         when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+    //
+    //         const res = await authenticationService.createWeb3User(
+    //             email,
+    //             username,
+    //             registerPayload[0].toString(),
+    //             address,
+    //             registerSignature.hex,
+    //             'en',
+    //         );
+    //
+    //         expect(res.error).toEqual('unexpected_error');
+    //         expect(res.response).toEqual(null);
+    //
+    //         verify(
+    //             context.purchasesServiceMock.create(
+    //                 deepEqual({
+    //                     owner: uuid,
+    //                     fees: [],
+    //                     products: [],
+    //                     currency: null,
+    //                     payment: null,
+    //                     payment_interface: null,
+    //                     checked_out_at: null,
+    //                     price: null,
+    //                 }),
+    //             ),
+    //         ).once();
+    //
+    //         verify(
+    //             usersServiceMock.create(
+    //                 deepEqual({
+    //                     id: UUIDToolService.fromString(uuid),
+    //                     current_purchase: UUIDToolService.fromString(uuid),
+    //                     email,
+    //                     username,
+    //                     device_address: null,
+    //                     address,
+    //                     type: 'web3',
+    //                     password: null,
+    //                     role: 'authenticated',
+    //                     locale: 'en',
+    //                     admin: false,
+    //                 }),
+    //             ),
+    //         ).called();
+    //         verify(usersServiceMock.findByEmail(email)).called();
+    //         verify(usersServiceMock.findByAddress(address)).called();
+    //         verify(usersServiceMock.findByUsername(username)).called();
+    //     });
+    //
+    //     test('user by email error', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
+    //
+    //         when(usersServiceMock.findByEmail(email)).thenReturn(
+    //             Promise.resolve({
+    //                 response: null,
+    //                 error: 'unexpected_error',
+    //             }),
+    //         );
+    //
+    //         const res = await authenticationService.createWeb3User(
+    //             email,
+    //             username,
+    //             registerPayload[0].toString(),
+    //             address,
+    //             registerSignature.hex,
+    //             'en',
+    //         );
+    //
+    //         expect(res.error).toEqual('unexpected_error');
+    //         expect(res.response).toEqual(null);
+    //
+    //         verify(usersServiceMock.findByEmail(email)).called();
+    //     });
+    //
+    //     test('user by username error', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
+    //
+    //         const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+    //             response: null,
+    //             error: null,
+    //         });
+    //
+    //         when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+    //
+    //         when(usersServiceMock.findByUsername(username)).thenReturn(
+    //             Promise.resolve({
+    //                 response: null,
+    //                 error: 'unexpected_error',
+    //             }),
+    //         );
+    //
+    //         const res = await authenticationService.createWeb3User(
+    //             email,
+    //             username,
+    //             registerPayload[0].toString(),
+    //             address,
+    //             registerSignature.hex,
+    //             'en',
+    //         );
+    //
+    //         expect(res.error).toEqual('unexpected_error');
+    //         expect(res.response).toEqual(null);
+    //
+    //         verify(usersServiceMock.findByEmail(email)).called();
+    //         verify(usersServiceMock.findByUsername(username)).called();
+    //     });
+    //
+    //     test('user by address error', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
+    //
+    //         const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+    //             response: null,
+    //             error: null,
+    //         });
+    //
+    //         when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+    //
+    //         when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+    //
+    //         when(usersServiceMock.findByAddress(address)).thenReturn(
+    //             Promise.resolve({
+    //                 response: null,
+    //                 error: 'unexpected_error',
+    //             }),
+    //         );
+    //
+    //         const res = await authenticationService.createWeb3User(
+    //             email,
+    //             username,
+    //             registerPayload[0].toString(),
+    //             address,
+    //             registerSignature.hex,
+    //             'en',
+    //         );
+    //
+    //         expect(res.error).toEqual('unexpected_error');
+    //         expect(res.response).toEqual(null);
+    //
+    //         verify(usersServiceMock.findByEmail(email)).called();
+    //         verify(usersServiceMock.findByUsername(username)).called();
+    //         verify(usersServiceMock.findByAddress(address)).called();
+    //     });
+    //
+    //     test('email already in use', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
+    //
+    //         const serviceResponse: ServiceResponse<UserDto> = {
+    //             response: {
+    //                 email,
+    //                 username,
+    //                 address,
+    //                 device_address: null,
+    //                 password: null,
+    //                 type: 'web3',
+    //                 id: '0',
+    //                 role: 'authenticated',
+    //                 locale: 'en',
+    //                 valid: false,
+    //                 admin: false,
+    //             },
+    //             error: null,
+    //         };
+    //
+    //         when(usersServiceMock.findByEmail(email)).thenReturn(Promise.resolve(serviceResponse));
+    //
+    //         const res = await authenticationService.createWeb3User(
+    //             email,
+    //             username,
+    //             registerPayload[0].toString(),
+    //             address,
+    //             registerSignature.hex,
+    //             'en',
+    //         );
+    //
+    //         expect(res.response).toEqual(null);
+    //         expect(res.error).toEqual('email_already_in_use');
+    //
+    //         verify(usersServiceMock.findByEmail(email)).called();
+    //     });
+    //
+    //     test('username already in use', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
+    //
+    //         const serviceResponse: ServiceResponse<UserDto> = {
+    //             response: {
+    //                 email,
+    //                 username,
+    //                 address,
+    //                 device_address: null,
+    //                 password: null,
+    //                 type: 'web3',
+    //                 id: '0',
+    //                 role: 'authenticated',
+    //                 locale: 'en',
+    //                 valid: false,
+    //                 admin: false,
+    //             },
+    //             error: null,
+    //         };
+    //
+    //         const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+    //             response: null,
+    //             error: null,
+    //         });
+    //
+    //         when(usersServiceMock.findByUsername(username)).thenReturn(Promise.resolve(serviceResponse));
+    //         when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+    //
+    //         const res = await authenticationService.createWeb3User(
+    //             email,
+    //             username,
+    //             registerPayload[0].toString(),
+    //             address,
+    //             registerSignature.hex,
+    //             'en',
+    //         );
+    //
+    //         expect(res.response).toEqual(null);
+    //         expect(res.error).toEqual('username_already_in_use');
+    //
+    //         verify(usersServiceMock.findByEmail(email)).called();
+    //         verify(usersServiceMock.findByUsername(username)).called();
+    //     });
+    //
+    //     test('address already in use', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(wallet.address);
+    //
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
+    //
+    //         const serviceResponse: ServiceResponse<UserDto> = {
+    //             response: {
+    //                 email,
+    //                 username,
+    //                 device_address: null,
+    //                 address,
+    //                 password: null,
+    //                 type: 'web3',
+    //                 id: '0',
+    //                 role: 'authenticated',
+    //                 locale: 'en',
+    //                 valid: false,
+    //                 admin: false,
+    //             },
+    //             error: null,
+    //         };
+    //
+    //         const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+    //             response: null,
+    //             error: null,
+    //         });
+    //
+    //         when(usersServiceMock.findByAddress(address)).thenReturn(Promise.resolve(serviceResponse));
+    //         when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+    //         when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+    //
+    //         const res = await authenticationService.createWeb3User(
+    //             email,
+    //             username,
+    //             registerPayload[0].toString(),
+    //             address,
+    //             registerSignature.hex,
+    //             'en',
+    //         );
+    //
+    //         expect(res.response).toEqual(null);
+    //         expect(res.error).toEqual('address_already_in_use');
+    //
+    //         verify(usersServiceMock.findByAddress(address)).called();
+    //         verify(usersServiceMock.findByEmail(email)).called();
+    //         verify(usersServiceMock.findByUsername(username)).called();
+    //     });
+    //
+    //     test('signature in the future', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const other_wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(other_wallet.address);
+    //
+    //         const future = Date.now() + 1000000;
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const registerPayload = web3RegisterSigner.generatePayload(
+    //             {
+    //                 email,
+    //                 username,
+    //                 timestamp: future,
+    //             },
+    //             'Web3Register',
+    //         );
+    //         const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload);
+    //
+    //         const serviceResponse: ServiceResponse<UserDto> = {
+    //             response: {
+    //                 email,
+    //                 username,
+    //                 address,
+    //                 device_address: null,
+    //                 type: 'web3',
+    //                 password: null,
+    //                 id: '0',
+    //                 role: 'authenticated',
+    //                 locale: 'en',
+    //                 valid: false,
+    //                 admin: false,
+    //             },
+    //             error: null,
+    //         };
+    //
+    //         const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+    //             response: null,
+    //             error: null,
+    //         });
+    //
+    //         when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
+    //         when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+    //         when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+    //
+    //         const res = await authenticationService.createWeb3User(
+    //             email,
+    //             username,
+    //             future.toString(),
+    //             address,
+    //             registerSignature.hex,
+    //             'en',
+    //         );
+    //
+    //         expect(res.response).toEqual(null);
+    //         expect(res.error).toEqual('signature_is_in_the_future');
+    //
+    //         verify(usersServiceMock.findByAddress(address)).called();
+    //         verify(usersServiceMock.findByEmail(email)).called();
+    //         verify(usersServiceMock.findByUsername(username)).called();
+    //     });
+    //
+    //     test('invalid signature', async function() {
+    //         const authenticationService: AuthenticationService = context.authenticationService;
+    //         const usersServiceMock: UsersService = context.usersServiceMock;
+    //
+    //         const email = 'test@test.com';
+    //         const username = 'salut';
+    //         const wallet: Wallet = await createWallet();
+    //         const other_wallet: Wallet = await createWallet();
+    //         const address = toAcceptedAddressFormat(other_wallet.address);
+    //
+    //         const web3RegisterSigner: Web3RegisterSigner = new Web3RegisterSigner(1);
+    //         const registerPayload = web3RegisterSigner.generateRegistrationProofPayload(email, username);
+    //         const registerSignature = await web3RegisterSigner.sign(wallet.privateKey, registerPayload[1]);
+    //
+    //         const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+    //             response: null,
+    //             error: null,
+    //         });
+    //
+    //         when(usersServiceMock.findByAddress(address)).thenReturn(emptyServiceResponse);
+    //         when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+    //         when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+    //
+    //         const res = await authenticationService.createWeb3User(
+    //             email,
+    //             username,
+    //             registerPayload[0].toString(),
+    //             address,
+    //             registerSignature.hex,
+    //             'en',
+    //         );
+    //
+    //         expect(res.response).toEqual(null);
+    //         expect(res.error).toEqual('invalid_signature');
+    //
+    //         verify(usersServiceMock.findByAddress(address)).called();
+    //         verify(usersServiceMock.findByEmail(email)).called();
+    //         verify(usersServiceMock.findByUsername(username)).called();
+    //     });
+    // });
+    //
     describe('createT721User', function() {
         test('should create a user', async function() {
             const authenticationService: AuthenticationService = context.authenticationService;
@@ -1061,9 +1296,41 @@ describe('Authentication Service', function() {
                 error: null,
             });
 
+            const purchaseEntity: Partial<PurchaseEntity> = {
+                id: uuid,
+                owner: uuid,
+                fees: [],
+                products: [],
+                currency: null,
+                payment: null,
+                payment_interface: null,
+                checked_out_at: null,
+                price: null,
+            };
+
+            when(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        checked_out_at: null,
+                        price: null,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: purchaseEntity as PurchaseEntity,
+            });
+
             when(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         device_address: null,
                         username,
@@ -1080,51 +1347,6 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByAddress(resultAddress)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-            when(context.rocksideServiceMock.createIdentity()).thenResolve({
-                response: {
-                    address: resultAddress,
-                },
-                error: null,
-            });
-            when(
-                context.metadatasServiceMock.attach(
-                    'history',
-                    't721_user_create',
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([]),
-                    anything(),
-                    deepEqual({
-                        email,
-                        username,
-                        device_address: null,
-                        address: resultAddress,
-                        type: 't721',
-                        password: hashedp,
-                        id: '0',
-                        role: 'authenticated',
-                        locale: 'en',
-                        valid: false,
-                        admin: false,
-                    }),
-                    null,
-                ),
-            ).thenResolve({
-                error: null,
-                response: null,
-            });
 
             const res = await authenticationService.createT721User(email, hashedp, username, 'en');
 
@@ -1144,8 +1366,25 @@ describe('Authentication Service', function() {
             });
 
             verify(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        checked_out_at: null,
+                        price: null,
+                    }),
+                ),
+            ).once();
+
+            verify(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -1162,250 +1401,6 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByAddress(resultAddress)).called();
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByUsername(username)).called();
-            verify(context.rocksideServiceMock.createIdentity()).called();
-            verify(
-                context.metadatasServiceMock.attach(
-                    'history',
-                    't721_user_create',
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([]),
-                    anything(),
-                    deepEqual({
-                        email,
-                        username,
-                        device_address: null,
-                        address: resultAddress,
-                        type: 't721',
-                        id: '0',
-                        role: 'authenticated',
-                        locale: 'en',
-                        valid: false,
-                        admin: false,
-                    } as UserDto),
-                    null,
-                ),
-            ).called();
-        });
-
-        test('should fail on metadata creation error', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-
-            const serviceResponse: ServiceResponse<UserDto> = {
-                response: {
-                    email,
-                    username,
-                    address: resultAddress,
-                    device_address: null,
-                    type: 't721',
-                    password: hashedp,
-                    id: '0',
-                    role: 'authenticated',
-                    locale: 'en',
-                    valid: false,
-                    admin: false,
-                },
-                error: null,
-            };
-
-            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
-                response: null,
-                error: null,
-            });
-
-            when(
-                usersServiceMock.create(
-                    deepEqual({
-                        email,
-                        username,
-                        device_address: null,
-                        address: anyString(),
-                        type: 't721',
-                        password: anyString(),
-                        role: 'authenticated',
-                        locale: 'en',
-                        admin: false,
-                    }),
-                ),
-            ).thenReturn(Promise.resolve(serviceResponse));
-
-            when(usersServiceMock.findByAddress(resultAddress)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-            when(context.rocksideServiceMock.createIdentity()).thenResolve({
-                response: {
-                    address: resultAddress,
-                },
-                error: null,
-            });
-            when(
-                context.metadatasServiceMock.attach(
-                    'history',
-                    't721_user_create',
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([]),
-                    anything(),
-                    deepEqual({
-                        email,
-                        username,
-                        device_address: null,
-                        address: resultAddress,
-                        type: 't721',
-                        password: hashedp,
-                        id: '0',
-                        role: 'authenticated',
-                        locale: 'en',
-                        valid: false,
-                        admin: false,
-                    }),
-                    null,
-                ),
-            ).thenResolve({
-                error: 'unexpected_error',
-                response: null,
-            });
-
-            const res = await authenticationService.createT721User(email, hashedp, username, 'en');
-
-            expect(res.error).toEqual('cannot_create_activity_item');
-            expect(res.response).toEqual(null);
-
-            verify(
-                usersServiceMock.create(
-                    deepEqual({
-                        email,
-                        username,
-                        device_address: null,
-                        address: anyString(),
-                        type: 't721',
-                        password: anyString(),
-                        role: 'authenticated',
-                        locale: 'en',
-                        admin: false,
-                    }),
-                ),
-            ).called();
-
-            verify(usersServiceMock.findByAddress(resultAddress)).called();
-            verify(usersServiceMock.findByEmail(email)).called();
-            verify(usersServiceMock.findByUsername(username)).called();
-            verify(context.rocksideServiceMock.createIdentity()).called();
-            verify(
-                context.metadatasServiceMock.attach(
-                    'history',
-                    't721_user_create',
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([
-                        {
-                            type: 'user',
-                            id: '0',
-                            field: 'id',
-                        },
-                    ]),
-                    deepEqual([]),
-                    anything(),
-                    deepEqual({
-                        email,
-                        username,
-                        address: resultAddress,
-                        device_address: null,
-                        password: hashedp,
-                        type: 't721',
-                        id: '0',
-                        role: 'authenticated',
-                        locale: 'en',
-                        valid: false,
-                        admin: false,
-                    } as UserDto),
-                    null,
-                ),
-            ).called();
-        });
-
-        test('should fail on rockside account creation error', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-
-            const serviceResponse: ServiceResponse<UserDto> = {
-                response: {
-                    email,
-                    username,
-                    device_address: null,
-                    address: resultAddress,
-                    type: 't721',
-                    password: hashedp,
-                    id: '0',
-                    role: 'authenticated',
-                    locale: 'en',
-                    valid: false,
-                    admin: false,
-                },
-                error: null,
-            };
-
-            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
-                response: null,
-                error: null,
-            });
-
-            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-            when(context.rocksideServiceMock.createIdentity()).thenResolve({
-                response: {
-                    address: resultAddress,
-                },
-                error: 'unexpected_error',
-            });
-
-            const res = await authenticationService.createT721User(email, hashedp, username, 'en');
-
-            expect(res.response).toBeDefined();
-            expect(res.error).toEqual('rockside_identity_creation_error');
-            expect(res.response).toEqual(null);
-
-            verify(usersServiceMock.findByEmail(email)).called();
-            verify(usersServiceMock.findByUsername(username)).called();
-            verify(context.rocksideServiceMock.createIdentity()).called();
         });
 
         test('email already in use', async function() {
@@ -1490,56 +1485,6 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByEmail(email)).called();
         });
 
-        test('address already in use', async function() {
-            const authenticationService: AuthenticationService = context.authenticationService;
-            const usersServiceMock: UsersService = context.usersServiceMock;
-
-            const email = 'test@test.com';
-            const username = 'salut';
-            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
-
-            const serviceResponse: ServiceResponse<UserDto> = {
-                response: {
-                    email,
-                    username,
-                    address: resultAddress,
-                    device_address: null,
-                    type: 't721',
-                    password: hashedp,
-                    id: '0',
-                    role: 'authenticated',
-                    locale: 'en',
-                    valid: false,
-                    admin: false,
-                },
-                error: null,
-            };
-
-            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
-                response: null,
-                error: null,
-            });
-
-            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-            when(usersServiceMock.findByAddress(resultAddress)).thenReturn(Promise.resolve(serviceResponse));
-            when(context.rocksideServiceMock.createIdentity()).thenResolve({
-                response: {
-                    address: resultAddress,
-                },
-                error: null,
-            });
-
-            const res = await authenticationService.createT721User(email, hashedp, username, 'en');
-
-            expect(res.response).toEqual(null);
-            expect(res.error).toEqual('address_already_in_use');
-            verify(usersServiceMock.findByUsername(username)).called();
-            verify(usersServiceMock.findByEmail(email)).called();
-            verify(usersServiceMock.findByAddress(resultAddress)).called();
-            verify(context.rocksideServiceMock.createIdentity()).called();
-        });
-
         test('invalid password', async function() {
             const authenticationService: AuthenticationService = context.authenticationService;
             const usersServiceMock: UsersService = context.usersServiceMock;
@@ -1556,12 +1501,6 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByAddress(resultAddress)).thenReturn(emptyServiceResponse);
-            when(context.rocksideServiceMock.createIdentity()).thenResolve({
-                response: {
-                    address: resultAddress,
-                },
-                error: null,
-            });
 
             const res = await authenticationService.createT721User(email, hashedp.slice(4), username, 'en');
 
@@ -1570,7 +1509,6 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByUsername(username)).called();
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByAddress(resultAddress)).called();
-            verify(context.rocksideServiceMock.createIdentity()).called();
         });
 
         test('email query internal error', async function() {
@@ -1645,12 +1583,6 @@ describe('Authentication Service', function() {
                     error: 'unexpected_error',
                 }),
             );
-            when(context.rocksideServiceMock.createIdentity()).thenResolve({
-                response: {
-                    address: resultAddress,
-                },
-                error: null,
-            });
 
             const res = await authenticationService.createT721User(email, hashedp.slice(4), username, 'en');
 
@@ -1659,7 +1591,6 @@ describe('Authentication Service', function() {
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByUsername(username)).called();
             verify(usersServiceMock.findByAddress(resultAddress)).called();
-            verify(context.rocksideServiceMock.createIdentity()).called();
         });
 
         test('create user internal error', async function() {
@@ -1675,9 +1606,41 @@ describe('Authentication Service', function() {
                 error: null,
             });
 
+            const purchaseEntity: Partial<PurchaseEntity> = {
+                id: uuid,
+                owner: uuid,
+                fees: [],
+                products: [],
+                currency: null,
+                payment: null,
+                payment_interface: null,
+                checked_out_at: null,
+                price: null,
+            };
+
+            when(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        checked_out_at: null,
+                        price: null,
+                    }),
+                ),
+            ).thenResolve({
+                error: null,
+                response: purchaseEntity as PurchaseEntity,
+            });
+
             when(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         device_address: null,
                         username,
@@ -1699,23 +1662,33 @@ describe('Authentication Service', function() {
             when(usersServiceMock.findByAddress(resultAddress)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
             when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
-            when(context.rocksideServiceMock.createIdentity()).thenResolve({
-                response: {
-                    address: resultAddress,
-                },
-                error: null,
-            });
 
             const res = await authenticationService.createT721User(email, hashedp, username, 'en');
 
             expect(res.response).toEqual(null);
             expect(res.error).toEqual('unexpected_error');
+            verify(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        checked_out_at: null,
+                        price: null,
+                    }),
+                ),
+            ).once();
             verify(usersServiceMock.findByEmail(email)).called();
             verify(usersServiceMock.findByUsername(username)).called();
             verify(usersServiceMock.findByAddress(resultAddress)).called();
             verify(
                 usersServiceMock.create(
                     deepEqual({
+                        id: UUIDToolService.fromString(uuid),
+                        current_purchase: UUIDToolService.fromString(uuid),
                         email,
                         username,
                         device_address: null,
@@ -1728,7 +1701,77 @@ describe('Authentication Service', function() {
                     }),
                 ),
             ).called();
-            verify(context.rocksideServiceMock.createIdentity()).called();
+        });
+
+        test('should fail on purchase entity creation error', async function() {
+            const authenticationService: AuthenticationService = context.authenticationService;
+            const usersServiceMock: UsersService = context.usersServiceMock;
+
+            const email = 'test@test.com';
+            const username = 'salut';
+            const hashedp = toAcceptedKeccak256Format(keccak256('salut'));
+
+            const emptyServiceResponse: Promise<ServiceResponse<UserDto>> = Promise.resolve({
+                response: null,
+                error: null,
+            });
+
+            const purchaseEntity: Partial<PurchaseEntity> = {
+                id: uuid,
+                owner: uuid,
+                fees: [],
+                products: [],
+                currency: null,
+                payment: null,
+                payment_interface: null,
+                checked_out_at: null,
+                price: null,
+            };
+
+            when(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        checked_out_at: null,
+                        price: null,
+                    }),
+                ),
+            ).thenResolve({
+                error: 'unexpected_error',
+                response: purchaseEntity as PurchaseEntity,
+            });
+
+            when(usersServiceMock.findByAddress(resultAddress)).thenReturn(emptyServiceResponse);
+            when(usersServiceMock.findByEmail(email)).thenReturn(emptyServiceResponse);
+            when(usersServiceMock.findByUsername(username)).thenReturn(emptyServiceResponse);
+
+            const res = await authenticationService.createT721User(email, hashedp, username, 'en');
+
+            expect(res.response).toEqual(null);
+            expect(res.error).toEqual('unexpected_error');
+
+            verify(
+                context.purchasesServiceMock.create(
+                    deepEqual({
+                        owner: uuid,
+                        fees: [],
+                        products: [],
+                        currency: null,
+                        payment: null,
+                        payment_interface: null,
+                        checked_out_at: null,
+                        price: null,
+                    }),
+                ),
+            ).once();
+            verify(usersServiceMock.findByEmail(email)).called();
+            verify(usersServiceMock.findByUsername(username)).called();
+            verify(usersServiceMock.findByAddress(resultAddress)).called();
         });
     });
 

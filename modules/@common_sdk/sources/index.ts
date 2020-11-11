@@ -4,7 +4,7 @@ export { AxiosResponse } from 'axios';
 
 // APP
 import { getAPIInfos } from './app/app';
-import request from 'supertest';
+import request         from 'supertest';
 
 // AUTHENTICATION
 import {
@@ -18,90 +18,41 @@ import {
     resetPassword,
     validateResetPassword,
     updatePassword,
-    resendValidation
+    resendValidation,
 } from './app/api/authentication';
-
-// ACTIONS
-import {
-    actionsConsumeUpdate,
-    actionsCreate,
-    actionsSearch,
-    actionsCount,
-    actionsUpdate
-} from './app/api/actions';
 
 // IMAGES
 import { uploadImage } from './app/api/images';
 
 // DATES
 import {
-    datesAddCategories,
-    datesCount,
-    datesCreate,
-    datesDeleteCategories,
+    datesAddCategory,
+    datesCount, datesDelete, datesEdit,
     datesFuzzySearch,
-    datesHomeSearch,
+    datesHomeSearch, datesOwner,
     datesSearch,
-    datesUpdate
 } from './app/api/dates';
 
 // EVENTS
 import {
-    eventsAddCategories,
-    eventsAddDates,
     eventsCount,
     eventsCreate,
-    eventsCreateAdminsConfiguration,
-    eventsCreateCategoriesConfiguration,
-    eventsCreateDatesConfiguration,
-    eventsCreateImagesMetadata,
-    eventsCreateModulesConfiguration,
-    eventsCreateTextMetadata,
-    eventsDeleteCategories,
-    eventsDeleteDates,
     eventsSearch,
-    eventsStart,
-    eventsUpdate /*eventsWithdraw, */,
-    eventsGuestlist
+    eventsGuestlist, eventsAddDate, eventsEdit, eventsStatus, eventsBindStripeInterface, eventsOwner,
 } from './app/api/events';
-
-// TXS
-import { txsCount, txsInfos, txsSearch, txsSubscribe } from './app/api/txs';
-
-// CONTRACTS
-import { contractsFetch } from './app/api/contracts';
 
 // CATEGORIES
 import {
-    categoriesCount,
-    categoriesCreate,
-    categoriesSearch,
-    categoriesUpdate
+    categoriesAddDateLinks,
+    categoriesCount, categoriesDelete, categoriesEdit, categoriesOwner, categoriesRemoveDateLinks,
+    categoriesSearch, categoriesTicketCount,
 } from './app/api/categories';
-
-// RIGHTS
-import { rightsSearch } from './app/api/rights';
-
-// METADATAS
-import { metadatasFetch } from './app/api/metadatas';
-
-// CART
-import { cartModulesConfiguration, cartTicketSelections } from './app/api/cart';
-
-// CHECKOUT
-import {
-    checkoutCartCommitStripe,
-    checkoutResolveCartWithPaymentIntent
-} from './app/api/checkout';
-
-// DOSOJIN
-import { dosojinSearch, dosojinCount } from './app/api/dosojin';
 
 // TICKETS
 import {
     ticketsSearch,
     ticketsCount,
-    ticketsValidate
+    ticketsValidate,
 } from './app/api/tickets';
 
 // USERS
@@ -125,6 +76,9 @@ import {
     paymentStripeFetchBalance,
     paymentStripeCreateConnectAccount, paymentStripePayout, paymentStripeTransactions,
 } from './app/api/payment';
+
+// PURCHASES
+import { purchasesCheckout, purchasesClose, purchasesFetch, purchasesSetProducts } from './app/api/purchases';
 
 export { FailedRegisterReport } from './app/api/authentication';
 
@@ -154,83 +108,35 @@ export class T721SDK {
         this.users.me = this.users.me.bind(this);
         this.users.setDeviceAddress = this.users.setDeviceAddress.bind(this);
 
-        this.actions.search = this.actions.search.bind(this);
-        this.actions.count = this.actions.count.bind(this);
-        this.actions.update = this.actions.update.bind(this);
-        this.actions.create = this.actions.create.bind(this);
-        this.actions.consumeUpdate = this.actions.consumeUpdate.bind(this);
-
         this.dates.search = this.dates.search.bind(this);
         this.dates.homeSearch = this.dates.homeSearch.bind(this);
         this.dates.fuzzySearch = this.dates.fuzzySearch.bind(this);
         this.dates.count = this.dates.count.bind(this);
-        this.dates.create = this.dates.create.bind(this);
-        this.dates.addCategories = this.dates.addCategories.bind(this);
-        this.dates.deleteCategories = this.dates.deleteCategories.bind(this);
-        this.dates.update = this.dates.update.bind(this);
+        this.dates.addCategory = this.dates.addCategory.bind(this);
+        this.dates.edit = this.dates.edit.bind(this);
+        this.dates.delete = this.dates.delete.bind(this);
+        this.dates.owner = this.dates.owner.bind(this);
 
         this.events.create.create = this.events.create.create.bind(this);
-        this.events.create.textMetadata = this.events.create.textMetadata.bind(
-            this
-        );
-        this.events.create.modulesConfiguration = this.events.create.modulesConfiguration.bind(
-            this
-        );
-        this.events.create.datesConfiguration = this.events.create.datesConfiguration.bind(
-            this
-        );
-        this.events.create.categoriesConfiguration = this.events.create.categoriesConfiguration.bind(
-            this
-        );
-        this.events.create.imagesMetadata = this.events.create.imagesMetadata.bind(
-            this
-        );
-        this.events.create.adminsConfiguration = this.events.create.adminsConfiguration.bind(
-            this
-        );
         this.events.search = this.events.search.bind(this);
         this.events.count = this.events.count.bind(this);
-        this.events.start = this.events.start.bind(this);
-        this.events.update = this.events.update.bind(this);
-        this.events.deleteCategories = this.events.deleteCategories.bind(this);
-        this.events.addCategories = this.events.addCategories.bind(this);
-        this.events.deleteDates = this.events.deleteDates.bind(this);
-        this.events.addDates = this.events.addDates.bind(this);
-        // this.events.withdraw = this.events.withdraw.bind(this);
         this.events.guestlist = this.events.guestlist.bind(this);
+        this.events.addDate = this.events.addDate.bind(this);
+        this.events.edit = this.events.edit.bind(this);
+        this.events.status = this.events.status.bind(this);
+        this.events.bindStripeInterface = this.events.bindStripeInterface.bind(this);
+        this.events.owner = this.events.owner.bind(this);
 
-        this.categories.create = this.categories.create.bind(this);
         this.categories.count = this.categories.count.bind(this);
         this.categories.search = this.categories.search.bind(this);
-        this.categories.update = this.categories.update.bind(this);
-
-        this.rights.search = this.rights.search.bind(this);
+        this.categories.addDateLinks = this.categories.addDateLinks.bind(this);
+        this.categories.removeDateLinks = this.categories.removeDateLinks.bind(this);
+        this.categories.edit = this.categories.edit.bind(this);
+        this.categories.delete = this.categories.delete.bind(this);
+        this.categories.owner = this.categories.owner.bind(this);
+        this.categories.countTickets = this.categories.countTickets.bind(this);
 
         this.images.upload = this.images.upload.bind(this);
-
-        this.txs.search = this.txs.search.bind(this);
-        this.txs.count = this.txs.count.bind(this);
-        this.txs.subscribe = this.txs.subscribe.bind(this);
-        this.txs.infos = this.txs.infos.bind(this);
-
-        this.contracts.fetch = this.contracts.fetch.bind(this);
-
-        this.metadatas.fetch = this.metadatas.fetch.bind(this);
-
-        this.cart.ticketSelections = this.cart.ticketSelections.bind(this);
-        this.cart.modulesConfiguration = this.cart.modulesConfiguration.bind(
-            this
-        );
-
-        this.checkout.cart.commit.stripe = this.checkout.cart.commit.stripe.bind(
-            this
-        );
-        this.checkout.cart.resolve.paymentIntent = this.checkout.cart.resolve.paymentIntent.bind(
-            this
-        );
-
-        this.dosojin.search = this.dosojin.search.bind(this);
-        this.dosojin.count = this.dosojin.count.bind(this);
 
         this.tickets.search = this.tickets.search.bind(this);
         this.tickets.count = this.tickets.count.bind(this);
@@ -242,38 +148,43 @@ export class T721SDK {
         this.featureFlags.fetch = this.featureFlags.fetch.bind(this);
 
         this.payment.stripe.fetchInterface = this.payment.stripe.fetchInterface.bind(
-            this
+            this,
         );
         this.payment.stripe.fetchBalance = this.payment.stripe.fetchBalance.bind(
-            this
+            this,
         );
         this.payment.stripe.createInterface = this.payment.stripe.createInterface.bind(
-            this
+            this,
         );
         this.payment.stripe.createConnectAccount = this.payment.stripe.createConnectAccount.bind(
-            this
+            this,
         );
         this.payment.stripe.addExternalAccount = this.payment.stripe.addExternalAccount.bind(
-            this
+            this,
         );
         this.payment.stripe.removeExternalAccount = this.payment.stripe.removeExternalAccount.bind(
-            this
+            this,
         );
         this.payment.stripe.generateOnboardingUrl = this.payment.stripe.generateOnboardingUrl.bind(
-            this
+            this,
         );
         this.payment.stripe.generateUpdateUrl = this.payment.stripe.generateUpdateUrl.bind(
-            this
+            this,
         );
         this.payment.stripe.setDefaultExternalAccount = this.payment.stripe.setDefaultExternalAccount.bind(
-            this
+            this,
         );
         this.payment.stripe.payout = this.payment.stripe.payout.bind(
-            this
+            this,
         );
         this.payment.stripe.transactions = this.payment.stripe.transactions.bind(
-            this
+            this,
         );
+
+        this.purchases.fetch = this.purchases.fetch.bind(this);
+        this.purchases.setProducts = this.purchases.setProducts.bind(this);
+        this.purchases.checkout = this.purchases.checkout.bind(this);
+        this.purchases.close = this.purchases.close.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -284,8 +195,8 @@ export class T721SDK {
             baseURL: `${this.protocol}://${this.host}:${this.port.toString()}`,
             timeout: 30000,
             headers: {
-                Accept: 'application/json, multipart/form-data, text/plain, */*'
-            }
+                Accept: 'application/json, multipart/form-data, text/plain, */*',
+            },
         });
     }
 
@@ -295,8 +206,8 @@ export class T721SDK {
             baseURL: res.url,
             timeout: 30000,
             headers: {
-                Accept: 'application/json, multipart/form-data, text/plain, */*'
-            }
+                Accept: 'application/json, multipart/form-data, text/plain, */*',
+            },
         });
     }
 
@@ -305,7 +216,7 @@ export class T721SDK {
             return this.axios({
                 method: 'get',
                 headers,
-                url: route
+                url: route,
             });
         } else {
             throw new Error(`Client not connected`);
@@ -315,14 +226,14 @@ export class T721SDK {
     async post<Body>(
         route: string,
         headers: HTTPHeader,
-        body: Body
+        body: Body,
     ): Promise<AxiosResponse> {
         if (this.axios) {
             return this.axios({
                 method: 'post',
                 headers,
                 data: body,
-                url: route
+                url: route,
             });
         } else {
             throw new Error(`Client not connected`);
@@ -332,14 +243,14 @@ export class T721SDK {
     async put<Body>(
         route: string,
         headers: HTTPHeader,
-        body: Body
+        body: Body,
     ): Promise<AxiosResponse> {
         if (this.axios) {
             return this.axios({
                 method: 'put',
                 headers,
                 data: body,
-                url: route
+                url: route,
             });
         } else {
             throw new Error(`Client not connected`);
@@ -349,14 +260,14 @@ export class T721SDK {
     async delete<Body>(
         route: string,
         headers: HTTPHeader,
-        body: Body
+        body: Body,
     ): Promise<AxiosResponse> {
         if (this.axios) {
             return this.axios({
                 method: 'delete',
                 headers,
                 data: body,
-                url: route
+                url: route,
             });
         } else {
             throw new Error(`Client not connected`);
@@ -379,114 +290,89 @@ export class T721SDK {
 
     public users = {
         me: usersMe,
-        setDeviceAddress: usersSetDeviceAddress
+        setDeviceAddress: usersSetDeviceAddress,
     };
 
-    public actions = {
-        search: actionsSearch,
-        count: actionsCount,
-        update: actionsUpdate,
-        create: actionsCreate,
-        consumeUpdate: actionsConsumeUpdate
-    };
+    // public actions = {
+    //     search: actionsSearch,
+    //     count: actionsCount,
+    //     update: actionsUpdate,
+    //     create: actionsCreate,
+    //     consumeUpdate: actionsConsumeUpdate,
+    // };
 
     public dates = {
         search: datesSearch,
         homeSearch: datesHomeSearch,
         fuzzySearch: datesFuzzySearch,
-        create: datesCreate,
+        owner: datesOwner,
         count: datesCount,
-        addCategories: datesAddCategories,
-        deleteCategories: datesDeleteCategories,
-        update: datesUpdate
+        addCategory: datesAddCategory,
+        edit: datesEdit,
+        delete: datesDelete,
     };
 
     public events = {
         search: eventsSearch,
         count: eventsCount,
+        owner: eventsOwner,
         create: {
             create: eventsCreate,
-            textMetadata: eventsCreateTextMetadata,
-            modulesConfiguration: eventsCreateModulesConfiguration,
-            datesConfiguration: eventsCreateDatesConfiguration,
-            categoriesConfiguration: eventsCreateCategoriesConfiguration,
-            imagesMetadata: eventsCreateImagesMetadata,
-            adminsConfiguration: eventsCreateAdminsConfiguration
         },
-        update: eventsUpdate,
-        start: eventsStart,
-        deleteCategories: eventsDeleteCategories,
-        addCategories: eventsAddCategories,
-        deleteDates: eventsDeleteDates,
-        addDates: eventsAddDates,
-        // withdraw: eventsWithdraw,
-        guestlist: eventsGuestlist
+        guestlist: eventsGuestlist,
+        addDate: eventsAddDate,
+        edit: eventsEdit,
+        status: eventsStatus,
+        bindStripeInterface: eventsBindStripeInterface,
     };
 
-    public rights = {
-        search: rightsSearch
-    };
+    // public rights = {
+    //     search: rightsSearch,
+    // };
 
     public categories = {
         search: categoriesSearch,
+        owner: categoriesOwner,
         count: categoriesCount,
-        create: categoriesCreate,
-        update: categoriesUpdate
+        addDateLinks: categoriesAddDateLinks,
+        removeDateLinks: categoriesRemoveDateLinks,
+        countTickets: categoriesTicketCount,
+        edit: categoriesEdit,
+        delete: categoriesDelete,
     };
 
     public images = {
-        upload: uploadImage
+        upload: uploadImage,
     };
 
-    public txs = {
-        search: txsSearch,
-        count: txsCount,
-        subscribe: txsSubscribe,
-        infos: txsInfos
-    };
+    // public txs = {
+    //     search: txsSearch,
+    //     count: txsCount,
+    //     subscribe: txsSubscribe,
+    //     infos: txsInfos,
+    // };
 
-    public contracts = {
-        fetch: contractsFetch
-    };
+    // public contracts = {
+    //     fetch: contractsFetch,
+    // };
 
-    public metadatas = {
-        fetch: metadatasFetch
-    };
-
-    public cart = {
-        ticketSelections: cartTicketSelections,
-        modulesConfiguration: cartModulesConfiguration
-    };
-
-    public checkout = {
-        cart: {
-            commit: {
-                stripe: checkoutCartCommitStripe
-            },
-            resolve: {
-                paymentIntent: checkoutResolveCartWithPaymentIntent
-            }
-        }
-    };
-
-    public dosojin = {
-        search: dosojinSearch,
-        count: dosojinCount
-    };
+    // public metadatas = {
+    //     fetch: metadatasFetch,
+    // };
 
     public tickets = {
         search: ticketsSearch,
         count: ticketsCount,
-        validate: ticketsValidate
+        validate: ticketsValidate,
     };
 
     public geoloc = {
         closestCity: geolocClosestCity,
-        fuzzySearch: geolocFuzzySearch
+        fuzzySearch: geolocFuzzySearch,
     };
 
     public featureFlags = {
-        fetch: featureFlagsFetch
+        fetch: featureFlagsFetch,
     };
 
     public payment = {
@@ -501,7 +387,14 @@ export class T721SDK {
             generateOnboardingUrl: paymentStripeGenerateOnboardingUrl,
             generateUpdateUrl: paymentStripeGenerateUpdateUrl,
             payout: paymentStripePayout,
-            transactions: paymentStripeTransactions
-        }
+            transactions: paymentStripeTransactions,
+        },
+    };
+
+    public purchases = {
+        fetch: purchasesFetch,
+        setProducts: purchasesSetProducts,
+        checkout: purchasesCheckout,
+        close: purchasesClose,
     };
 }

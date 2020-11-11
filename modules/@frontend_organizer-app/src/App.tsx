@@ -1,5 +1,5 @@
 import React, {
-    Suspense
+    Suspense, useContext,
 } from 'react';
 import {
     Redirect,
@@ -11,19 +11,32 @@ import {
 import Navbar               from './shared/Navbar';
 import { AppState }         from '@frontend/core/lib/redux';
 import ProtectedRoute       from '@frontend/core/lib/components/ProtectedRoute';
-import ProtectedByRights    from '@frontend/core/lib/components/ProtectedByRights';
 import { useSelector }      from 'react-redux';
 import styled               from 'styled-components';
 import { AppStatus }        from '@frontend/core/lib/redux/ducks/statuses';
 import ToastStacker         from '@frontend/core/lib/components/ToastStacker';
-import { EventMenu }        from './screens/Event/EventMenu';
 import MediaQuery           from 'react-responsive';
 import { routes }           from './routes';
 import { FullPageLoading }  from '@frontend/flib-react/lib/components';
-import './core/event_creation/locales';
 import './shared/Translations/global';
-import { UserContextGuard } from '@frontend/core/lib/utils/UserContext';
-import { FeatureFlag }      from '@frontend/core/lib/components/FeatureFlag';
+import { UserContext, UserContextGuard } from '@frontend/core/lib/utils/UserContext';
+import { FeatureFlag }                   from '@frontend/core/lib/components/FeatureFlag';
+import { ProtectedByOwnership } from '@frontend/core/lib/components/ProtectedByOwnership';
+import { EventsDrawer } from './components/EventsDrawer';
+
+const EventsDrawerWrapper = (): JSX.Element => {
+
+    const location = useLocation();
+    const user  = useContext(UserContext);
+
+    return <>
+        {
+            (location.pathname.startsWith('/event') || location.pathname === '/') && user?.valid === true ?
+                <EventsDrawer/> :
+                null
+        }
+    </>
+}
 
 const App: React.FC = () => {
     const appStatus = useSelector(((state: AppState) => state.statuses.appStatus));
@@ -44,8 +57,9 @@ const App: React.FC = () => {
                                 null
                         }
                     </MediaQuery>
+                    <EventsDrawerWrapper/>
                     <Suspense fallback={<FullPageLoading/>}>
-                        <Switch>
+                        <Switch location={location} key={location.pathname}>
                             {
                                 appStatus === AppStatus.Ready
 
@@ -67,15 +81,10 @@ const App: React.FC = () => {
                                             return <ProtectedRoute exact={true} path={route.path} key={idx}>
                                                 <PageWrapper>
                                                     {
-                                                        route.path.match(/^\/group\/:groupId/) ?
-                                                            <ProtectedByRights type={route.entityType} value={route.paramId}>
-                                                                <EventPageWrapper>
-                                                                    <EventMenu/>
-                                                                    <div>
-                                                                        <Page/>
-                                                                    </div>
-                                                                </EventPageWrapper>
-                                                            </ProtectedByRights>
+                                                        route.entityParam ?
+                                                            <ProtectedByOwnership entityType={route.entityType} entityParam={route.entityParam}>
+                                                                <Page/>
+                                                            </ProtectedByOwnership>
                                                             :
                                                             <Page/>
                                                     }
@@ -87,16 +96,13 @@ const App: React.FC = () => {
                                             <Page/>
                                         </Route>;
                                     })
-
                                     :
                                     null
                             }
                             <Redirect to={'/'}/>
                         </Switch>
                     </Suspense>
-                    <ToastStacker additionalLocales={[
-                        'organizer_error_notifications',
-                    ]}/>
+                    <ToastStacker additionalLocales={[]}/>
                 </AppContainer>
             </UserContextGuard>
         </Suspense>
@@ -108,19 +114,8 @@ const AppContainer = styled.div`
 `;
 
 const PageWrapper = styled.div`
-    padding: 50px;
+    padding: 50px 0;
     margin-top: 80px;
-`;
-
-const EventPageWrapper = styled.div`
-    margin-left: 280px;
-    width: calc(100% - 280px);
-    display: flex;
-    justify-content: center;
-
-    & > div:last-child {
-        width: 600px;
-    }
 `;
 
 export default withRouter(App);

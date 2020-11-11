@@ -3,8 +3,9 @@ import { useRequest }              from '@frontend/core/lib/hooks/useRequest';
 import { StaffAppState }           from '../../../redux';
 import { useSelector }             from 'react-redux';
 import { TicketsCountResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
-import { Icon }              from '@frontend/flib-react/lib/components';
-import styled, { keyframes } from 'styled-components';
+import { Icon }                    from '@frontend/flib-react/lib/components';
+import styled, { keyframes }       from 'styled-components';
+import { getEnv }                  from '@frontend/core/lib/utils/getEnv';
 
 interface TicketCountFetcherProps {
     uuid: string;
@@ -36,7 +37,9 @@ export const TicketCategoryCount: React.FC<TicketCountFetcherProps> = ({ uuid, c
 
     useEffect(() => {
         if (ticketCategoryCountReq.response.error) {
-            setTimeout(() => ticketCategoryCountReq.force(), 1000);
+            setTimeout(() => ticketCategoryCountReq.force(
+                parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10)
+            ), 1000);
         }
         // eslint-disable-next-line
     }, [ticketCategoryCountReq.response.error]);

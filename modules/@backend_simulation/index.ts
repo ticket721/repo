@@ -5,84 +5,10 @@ import { AxiosResponse } from 'axios';
 import FormData          from 'form-data';
 import { UserDto }       from '../@backend_nest/libs/common/src/users/dto/User.dto';
 
-const waitForAction = async (sdk: T721SDK, token: string, actionset: string): Promise<any> => {
-    let tries = 0;
-    return new Promise((ok, ko): void => {
-
-        const intervalId = setInterval(async () => {
-
-            if (tries === 30) {
-                clearInterval(intervalId);
-                return ko(new Error('Maximum attempts reached'));
-            }
-
-            tries += 1;
-
-            const res = await sdk.actions.search(token, { id: { $eq: actionset } });
-
-            if (res.data.actionsets.length === 0) {
-                return;
-            }
-
-            const actionSetEntity = res.data.actionsets[0];
-            if (actionSetEntity.current_status !== 'input:waiting' && actionSetEntity.current_status !== 'event:waiting') {
-                clearInterval(intervalId);
-                switch (actionSetEntity.current_status) {
-                    case 'complete':
-                    case 'event:in progress':
-                    case 'input:in progress':
-                        return ok(actionSetEntity.current_status);
-                    case 'error':
-                    case 'input:incomplete':
-                    case 'event:incomplete':
-                    case 'input:error':
-                    case 'event:error':
-                        console.log(`Got ${actionSetEntity.current_status} on entity`);
-                        console.log(actionSetEntity.actions[actionSetEntity.current_action].error);
-                        return ko({
-                            current_status: actionSetEntity.current_status,
-                            error: actionSetEntity.actions[actionSetEntity.current_action].error,
-                        });
-                }
-            }
-
-        }, 1000);
-
-    });
-};
-
 export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, event: string, imagesPath: string): Promise<void> => {
-    console.log(`Deploying Test Event with ID: ${event}`);
+    console.log(`Deploying Test Event with ID: ${event}: ...`);
 
     const infos = require(`./events/${event}/info`).default;
-    let id;
-
-    {
-        console.log('Create Event: ...');
-        const res = await sdk.actions.create(
-            token,
-            {
-                name: 'event_create',
-                arguments: {},
-            },
-        );
-        console.log('Create Event: OK.');
-
-        id = res.data.actionset.id;
-    }
-
-    console.log('Create Event - Text Metadata: ...');
-    await sdk.events.create.textMetadata(
-        token,
-        id,
-        {
-            name: infos.name,
-            description: infos.description,
-            tags: infos.tags,
-        },
-    );
-    await waitForAction(sdk, token, id);
-    console.log('Create Event - Text Metadata: OK.');
 
     let avatarUrl = null;
 
@@ -105,76 +31,68 @@ export const createEvent = async (user: UserDto, sdk: T721SDK, token: string, ev
 
     }
 
-    console.log('Create Event - Images Metadata: ...');
-    await sdk.events.create.imagesMetadata(
+    const eventRes = await sdk.events.create.create(
         token,
-        id,
         {
-            avatar: avatarUrl,
-            signatureColors: infos.images.signatureColors
-        },
-    );
-    await waitForAction(sdk, token, id);
-    console.log('Create Event - Images Metadata: OK.');
+            eventPayload: {
+                textMetadata: {
+                    name: infos.name,
+                    description: infos.description
+                },
+                imagesMetadata: {
+                    avatar: avatarUrl,
+                    signatureColors: infos.images.signatureColors
+                },
+                datesConfiguration: [
+                    ...infos.dates.map((date: any) => ({
+                        name: date.name,
+                        eventBegin: date.eventBegin,
+                        eventEnd: date.eventEnd,
+                        online: date.online || false,
+                        online_link: date.online_link,
+                        location: date.online ? undefined : date.location
+                    }))
+                ],
+                categoriesConfiguration: [
+                    ...(infos.categories.global.map((gcat: any) => (
+                        {
+                            name: gcat.name,
+                            dates: gcat.dates,
+                            saleBegin: gcat.saleBegin,
+                            saleEnd: gcat.saleEnd,
+                            seats: gcat.seats,
+                            price: gcat.price,
+                            currency: gcat.currency
+                        }
+                    ))),
+                    ...infos.categories.dates
+                        .map((date, dateIdx) =>
+                            infos.categories.dates[dateIdx].map((cat) => ({
+                                name: cat.name,
+                                dates: [dateIdx],
+                                saleBegin: cat.saleBegin,
+                                saleEnd: cat.saleEnd,
+                                seats: cat.seats,
+                                price: cat.price,
+                                currency: cat.currency
+                            }))
+                        )
+                        .reduce((prev, next) => prev.concat(next))
+                ]
 
+            }
+        })
 
-    console.log('Create Event - Modules Configuration: ...');
-    await sdk.events.create.modulesConfiguration(
-        token,
-        id,
-        {},
-    );
-    await waitForAction(sdk, token, id);
-    console.log('Create Event - Modules Configuration: OK.');
+    // const liveEvent = await sdk.events.start(token, {
+    //     event: resultingEvent.data.event.id
+    // });
 
-
-    console.log('Create Event - Dates Configuration: ...');
-    await sdk.events.create.datesConfiguration(
-        token,
-        id,
-        {
-            dates: infos.dates,
-        },
-    );
-    await waitForAction(sdk, token, id);
-    console.log('Create Event - Dates Configuration: OK.');
-
-
-    console.log('Create Event - Categories Configuration: ...');
-    await sdk.events.create.categoriesConfiguration(
-        token,
-        id,
-        infos.categories,
-    );
-    await waitForAction(sdk, token, id);
-    console.log('Create Event - Categories Configuration: OK.');
-
-
-    console.log('Create Event - Admins Configuration: ...');
-    await sdk.events.create.adminsConfiguration(
-        token,
-        id,
-        {
-            admins: infos.admins,
-        },
-    );
-    await waitForAction(sdk, token, id);
-    console.log('Create Event - Admins Configuration: OK.');
-
-
-    console.log(`Created Event ${event} with action set id ${id}`);
-
-    console.log('Create Event - Build: ...');
-    const resultingEvent = await sdk.events.create.create(token, {
-        completedActionSet: id,
-    });
-    console.log('Create Event - Build: OK.');
-
-    const liveEvent = await sdk.events.start(token, {
-        event: resultingEvent.data.event.id
-    });
-
-    console.log(liveEvent.data.event);
+    if (eventRes.data.error) {
+        console.error(JSON.stringify(eventRes.data.error, null, 4))
+    } else {
+        console.log(eventRes.data.event);
+        console.log(`Deploying Test Event with ID: ${event}: OK.`);
+    }
 
 };
 

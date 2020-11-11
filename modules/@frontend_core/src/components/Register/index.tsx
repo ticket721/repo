@@ -35,10 +35,12 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
     });
     const history = useHistory();
 
+    const { from }: any = history.location.state || { from: '/' };
+
     useDeepEffect(() => {
         if (!auth.loading) {
             if (auth.submit && !auth.errors && auth.token) {
-                history.replace('/');
+                history.replace(from);
             } else {
                 if (auth.errors) {
                     formik.setErrors(auth.errors);
@@ -110,7 +112,7 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
                                 if (props.onLogin) {
                                     props.onLogin();
                                 } else {
-                                    history.replace('/login');
+                                    history.replace('/login', { from });
                                 }
                             }}
                         >

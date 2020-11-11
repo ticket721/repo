@@ -1,12 +1,7 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
-import Select from '../../inputs/select';
+import Select, { SelectOption } from '../../inputs/select';
 import Icon from '../../icon';
-
-interface Option {
-    label: string;
-    value: any;
-}
 
 export interface TicketQtyProps extends React.ComponentProps<any> {
     color?: string;
@@ -17,10 +12,10 @@ export interface TicketQtyProps extends React.ComponentProps<any> {
     title?: string;
     ticketsLeft: number;
     typeName: string;
-    options: Option[];
-    onChange: (opt: Option) => void;
+    options: SelectOption[];
+    onChange: (opt: SelectOption[]) => void;
     onCancel?: () => void;
-    initialOption: Option;
+    initialOption: SelectOption;
 }
 
 const Container = styled.article<TicketQtyProps>`

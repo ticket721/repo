@@ -49,9 +49,24 @@ export const showcase = () => (
                 <h1>My tickets</h1>
                 <a href={'#todo'}>View past ticket</a>
             </div>
-            <TicketHeader cover={defaultTicket.image} ticketQuantity={defaultTicket.number} />
+            <TicketHeader
+                cover={defaultTicket.image}
+                ticketQuantity={defaultTicket.number}
+                datesCount={1}
+                datesIdx={0}
+                mainColors={['red', 'blue']}
+            />
             <PullUp>
-                <TicketPreview ticket={defaultTicket} />
+                <TicketPreview
+                    ticket={defaultTicket}
+                    event_name={'Event Name'}
+                    gradient={['red', 'blue']}
+                    online={false}
+                    online_label={'Online Label'}
+                    location_label={'Get directions'}
+                    online_sublabel={'Get live link'}
+                    addonsPurchased={'no addons'}
+                />
             </PullUp>
         </Container>
     </div>

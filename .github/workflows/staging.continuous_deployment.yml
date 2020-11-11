@@ -21,18 +21,18 @@ jobs:
             checkName: end
             ref: ${{ github.sha }}
 
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2.3.4
           if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success')
 
         - name: "Use Node.js 12.x"
           if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success')
-          uses: actions/setup-node@v1.2.0
+          uses: actions/setup-node@v2.1.2
           with:
             node-version: 12.x
 
         - name: "Setup SSH Agent"
           if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success')
-          uses: webfactory/ssh-agent@v0.1.1
+          uses: webfactory/ssh-agent@master
           with:
             ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -93,17 +93,17 @@ jobs:
             checkName: end
             ref: ${{ github.sha }}
 
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2.3.4
           if: github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success'
         - name: "Use Node.js 12.x"
           if: github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success'
-          uses: actions/setup-node@v1.2.0
+          uses: actions/setup-node@v2.1.2
           with:
             node-version: 12.x
 
         - name: "Setup SSH Agent"
           if: github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success'
-          uses: webfactory/ssh-agent@v0.1.1
+          uses: webfactory/ssh-agent@master
           with:
             ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -150,7 +150,6 @@ jobs:
           run: ./helmsman.apply.staging.sh
           env:
             CONFIG_STAGING_STRIPE_APIKEY: ${{ secrets.CONFIG_STAGING_STRIPE_APIKEY }}
-            CONFIG_STAGING_ROCKSIDE_APIKEY: ${{ secrets.CONFIG_STAGING_ROCKSIDE_APIKEY }}
             CONFIG_STAGING_MAILJET_APIKEY: ${{ secrets.CONFIG_STAGING_MAILJET_APIKEY }}
             CONFIG_STAGING_MAILJET_APISECRET: ${{ secrets.CONFIG_STAGING_MAILJET_APISECRET }}
             CONFIG_STAGING_JWT_SECRET: ${{ secrets.CONFIG_STAGING_JWT_SECRET }}
@@ -164,8 +163,6 @@ jobs:
             CONFIG_STAGING_STAFF_SEGMENT_API_KEY: ${{ secrets.CONFIG_STAGING_STAFF_SEGMENT_API_KEY }}
             CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY: ${{ secrets.CONFIG_STAGING_T721APP_PUBLISHABLE_STRIPE_API_KEY }}
             CONFIG_STAGING_ORGANIZER_PUBLISHABLE_STRIPE_API_KEY: ${{ secrets.CONFIG_STAGING_ORGANIZER_PUBLISHABLE_STRIPE_API_KEY }}
-            CONFIG_STAGING_ETHERSCAN_URL: ${{ secrets.CONFIG_STAGING_ETHERSCAN_URL }}
-            CONFIG_STAGING_FORWARDER_ADDRESS: ${{ secrets.CONFIG_STAGING_FORWARDER_ADDRESS }}
             CONFIG_STAGING_T721APP_ITUNES_ID: ${{ secrets.CONFIG_STAGING_T721APP_ITUNES_ID }}
             CONFIG_STAGING_T721APP_APPSTORE_LINK: ${{ secrets.CONFIG_STAGING_T721APP_APPSTORE_LINK }}
             CONFIG_STAGING_T721APP_PLAYSTORE_LINK: ${{ secrets.CONFIG_STAGING_T721APP_PLAYSTORE_LINK }}

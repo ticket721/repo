@@ -11,6 +11,7 @@ import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/serve
 import { DateEntity }             from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { EventCategoryFetcher }   from './EventCategoryFetcher';
 import { useTranslation }         from 'react-i18next';
+import { isRequestError }         from '@frontend/core/lib/utils/isRequestError';
 
 export interface EventDetailsProps {
     id: string;
@@ -39,7 +40,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props: EventDetailsPro
         return <FullPageLoading width={250} height={250}/>
     }
 
-    if (dateQuery.response.error) {
+    if (isRequestError(dateQuery)) {
         return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dateQuery.force}/>
     }
 
@@ -49,7 +50,7 @@ export const EventDetails: React.FC<EventDetailsProps> = (props: EventDetailsPro
         return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dateQuery.force}/>
     }
 
-    if (date.parent_type === null || date.status === 'preview') {
+    if (date.status === 'preview') {
         return <Error message={t('error_unavailable_date')}/>
     }
 

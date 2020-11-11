@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { useRequest }      from '@frontend/core/lib/hooks/useRequest';
-import { DatesSearchResponseDto }  from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
-import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
-import { StaffAppState }           from '../redux';
+import { useRequest }                   from '@frontend/core/lib/hooks/useRequest';
+import { DatesSearchResponseDto }       from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { EventsSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
+import { StaffAppState }                from '../redux';
 import { useSelector }                  from 'react-redux';
 import { Error, FullPageLoading, Icon } from '@frontend/flib-react/lib/components';
 import styled                           from 'styled-components';
-import { useTranslation }          from 'react-i18next';
-import { formatDateItems }         from '../utils/formatDateItems';
-import { EventSelection }          from '../components/EventSelection';
-import { CategoriesFetcher }       from '../components/Filters/CategoriesFetcher';
+import { useTranslation }               from 'react-i18next';
+import { formatDateItems }              from '../utils/formatDateItems';
+import { EventSelection }               from '../components/EventSelection';
+import { CategoriesFetcher }            from '../components/Filters/CategoriesFetcher';
+import { isRequestError }               from '@frontend/core/lib/utils/isRequestError';
 
 interface EventsDatesFetcherProps extends React.ComponentProps<any> {
     uuid: string;
@@ -54,11 +55,11 @@ export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ children
         return <FullPageLoading/>;
     }
 
-    if (eventsReq.response.error) {
+    if (isRequestError(eventsReq)) {
         return <Error message={t('error_cannot_fetch_events')} retryLabel={t('common:retrying_in')} onRefresh={eventsReq.force}/>;
     }
 
-    if (datesReq.response.error) {
+    if (isRequestError(datesReq)) {
         return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={datesReq.force}/>;
     }
 

@@ -10,8 +10,8 @@ import { Dispatch } from 'redux';
 import { PushNotification } from '../../redux/ducks/notifications';
 import React, { useState } from 'react';
 import { Theme } from '@frontend/flib-react/lib/config/theme';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../redux';
+import { useDispatch } from 'react-redux';
+import { useToken } from '../../hooks/useToken';
 import { v4 } from 'uuid';
 import { useLazyRequest } from '../../hooks/useLazyRequest';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
@@ -50,6 +50,7 @@ const SubTitleContainer = styled.div`
     margin-top: ${(props) => props.theme.regularSpacing};
     padding: ${(props) => props.theme.regularSpacing};
     width: 100%;
+    max-width: 500px;
 `;
 
 const SubTitle = styled.span`
@@ -171,6 +172,7 @@ const CurrencySelectInput = styled(SelectInput)`
 
 const CurrencySelectInputContainer = styled.div`
     width: 100%;
+    max-width: 500px;
     padding-left: ${(props) => props.theme.regularSpacing};
     padding-right: ${(props) => props.theme.regularSpacing};
 `;
@@ -189,7 +191,7 @@ export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateC
                 const theme = useTheme() as Theme;
                 const stripe = useCustomStripe();
                 const dispatch = useDispatch();
-                const token = useSelector((state: AppState) => state.auth.token?.value);
+                const token = useToken();
                 const [uuid] = useState(v4());
                 const createStripeInterfaceLazyRequest = useLazyRequest('payment.stripe.createConnectAccount', uuid);
                 const [called, setCalled] = useState(false);
@@ -277,7 +279,7 @@ export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateC
                                     <CurrencySelectInputContainer>
                                         <CurrencySelectInput
                                             options={currenciesSelectOptions}
-                                            onChange={(opt: any) => setCurrency(opt.value)}
+                                            onChange={(opt: any) => setCurrency(opt[0].value)}
                                         />
                                     </CurrencySelectInputContainer>
                                 </>

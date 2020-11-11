@@ -8,8 +8,9 @@ import { Error, FullPageLoading }     from '@frontend/flib-react/lib/components'
 import { useTranslation }             from 'react-i18next';
 import './locales';
 import styled                         from 'styled-components';
-import { GuestList }              from './GuestList';
+import { GuestList }                  from './GuestList';
 import { TicketsCountResponseDto }    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
+import { isRequestError }             from '@frontend/core/lib/utils/isRequestError';
 
 export const GuestListFetcher: React.FC = () => {
     const [ t ] = useTranslation('guestlist');
@@ -59,11 +60,11 @@ export const GuestListFetcher: React.FC = () => {
         return <FullPageLoading/>;
     }
 
-    if (guestListReq.response.error) {
+    if (isRequestError(guestListReq)) {
         return <Error message={t('error_cannot_fetch_guestlist')} retryLabel={t('common:retrying_in')} onRefresh={guestListReq.force}/>;
     }
 
-    if (ticketCountReq.response.error) {
+    if (isRequestError(ticketCountReq)) {
         return <Error message={t('error_cannot_fetch_guestlist')} retryLabel={t('common:retrying_in')} onRefresh={ticketCountReq.force}/>;
     }
 

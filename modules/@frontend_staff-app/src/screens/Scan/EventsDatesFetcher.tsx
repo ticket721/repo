@@ -1,14 +1,14 @@
-import React          from 'react';
+import React                       from 'react';
 import { useRequest }              from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto }  from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
-import { StaffAppState }          from '../../redux';
-import { useSelector }            from 'react-redux';
+import { useToken }          from '@frontend/core/lib/hooks/useToken';
 import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
 import styled                     from 'styled-components';
 import { useTranslation }         from 'react-i18next';
 import { Scanner }                from './Scanner';
 import { formatDateItems }        from '../../utils/formatDateItems';
+import { isRequestError }          from '@frontend/core/lib/utils/isRequestError';
 
 interface EventsDatesFetcherProps {
     uuid: string;
@@ -17,7 +17,7 @@ interface EventsDatesFetcherProps {
 
 export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ uuid, entities }: EventsDatesFetcherProps) => {
     const [ t ] = useTranslation(['fetch_errors', 'common']);
-    const token = useSelector((state: StaffAppState) => state.auth.token.value);
+    const token = useToken();
 
     const eventsReq = useRequest<EventsSearchResponseDto>({
         method: 'events.search',
@@ -60,11 +60,11 @@ export const EventsDatesFetcher: React.FC<EventsDatesFetcherProps> = ({ uuid, en
         return <FullPageLoading/>;
     }
 
-    if (eventsReq.response.error) {
+    if (isRequestError(eventsReq)) {
         return <Error message={t('error_cannot_fetch_events')} retryLabel={t('common:retrying_in')} onRefresh={eventsReq.force}/>;
     }
 
-    if (datesReq.response.error) {
+    if (isRequestError(datesReq)) {
         return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={datesReq.force}/>;
     }
 

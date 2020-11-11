@@ -12,6 +12,7 @@ import { AppState } from '../../../redux';
 import { useRequest } from '../../../hooks/useRequest';
 import './SSCATransactionListManager.locales';
 import { TransactionInfo, TransactionInfoCard } from '../StripeTransactionsManager/TransactionInfoCard';
+import { isRequestError } from '../../../utils/isRequestError';
 
 const MoreIcon = styled(Icon)`
     text-align: end;
@@ -47,7 +48,7 @@ export const SSCATransactionListListManager: React.FC<SSCATransactionListManager
         uuid,
     );
 
-    if (transactionsReq.response.error) {
+    if (isRequestError(transactionsReq)) {
         return (
             <>
                 <SectionWithLinkHeader>

@@ -14,7 +14,7 @@ import { IsOptional } from 'class-validator';
 /**
  * Input required by the Dates Search
  */
-export class DatesSearchInputDto implements SearchInputType<DateEntity> {
+export class DatesSearchInputDto implements SearchInputType<Omit<DateEntity, 'online_link' | 'status'>> {
     /**
      * Searchable field to search by id
      */
@@ -24,12 +24,28 @@ export class DatesSearchInputDto implements SearchInputType<DateEntity> {
     id: SearchableField<string>;
 
     /**
+     * Searchable field to search by online
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    online: SearchableField<boolean>;
+
+    /**
      * Searchable field to search by group_id
      */
     @ApiPropertyOptional()
     @IsOptional()
     // tslint:disable-next-line:variable-name
     group_id: SearchableField<string>;
+
+    /**
+     * Searchable field to search by event
+     */
+    @ApiPropertyOptional()
+    @IsOptional()
+    // tslint:disable-next-line:variable-name
+    event: SearchableField<string>;
 
     /**
      * Searchable field to search by status

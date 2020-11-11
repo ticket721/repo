@@ -4,3 +4,4 @@ export * from './purchase-infos';
 export * from './sponsors';
 export * from './ticket-infos';
 export * from './title-text';
+export * from './online';

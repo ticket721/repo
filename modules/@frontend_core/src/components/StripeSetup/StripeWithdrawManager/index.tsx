@@ -4,8 +4,8 @@ import { Error, FullButtonCta } from '@frontend/flib-react/lib/components';
 import { useDeepEffect } from '../../../hooks/useDeepEffect';
 import { useStripeInterface } from '../../../hooks/useStripeInterface';
 import { useStripeBalance } from '../../../hooks/useStripeBalance';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '@frontend-core/redux';
+import { useDispatch } from 'react-redux';
+import { useToken } from '../../../hooks/useToken';
 import { v4 } from 'uuid';
 import { useLazyRequest } from '../../../hooks/useLazyRequest';
 import { PushNotification } from '../../../redux/ducks/notifications';
@@ -15,6 +15,7 @@ import { BankAccountSelection } from './BankAccountSelection';
 import { CurrencySelector, CurrencyValue, PriceSelectionContainer, PriceSelectionDrawer } from './PriceSelection';
 import { MaxBalanceSelector, PriceIndicationsContainer, TotalBalanceIndication } from './PriceIndications';
 import './StripeWithdrawManager.locales';
+import { isRequestError } from '../../../utils/isRequestError';
 
 const Container = styled.div`
     height: 100%;
@@ -63,7 +64,7 @@ export const StripeWithdrawManager: React.FC = (): JSX.Element => {
     const [amount, setAmount] = useState('');
     const stripeInterfaceRequestBag = useStripeInterface();
     const stripeBalanceRequestBag = useStripeBalance();
-    const token = useSelector((state: AppState) => state.auth.token?.value);
+    const token = useToken();
     const [uuid] = useState(v4());
     const createStripePayoutRequest = useLazyRequest('payment.stripe.payout', uuid);
     const dispatch = useDispatch();
@@ -134,7 +135,7 @@ export const StripeWithdrawManager: React.FC = (): JSX.Element => {
                 <WithdrawTitle>{t('title')}</WithdrawTitle>
             </TitleContainer>
             <ConfigurationContainer>
-                {stripeBalanceRequestBag.response.error ? (
+                {isRequestError(stripeBalanceRequestBag) ? (
                     <Error
                         message={t('cannot_fetch_balance')}
                         onRefresh={stripeBalanceRequestBag.force}

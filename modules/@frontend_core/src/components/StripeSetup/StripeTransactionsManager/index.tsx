@@ -9,6 +9,8 @@ import { useInView } from 'react-intersection-observer';
 import { Container, MarginContainer, TransactionInfo, TransactionInfoCard } from './TransactionInfoCard';
 import './StripeTransactionsManager.locales';
 import { useTranslation } from 'react-i18next';
+import { isRequestError } from '../../../utils/isRequestError';
+import { getEnv } from '../../../utils/getEnv';
 
 export interface StripeTransactionsSegmentProps {
     start: string | null;
@@ -43,7 +45,7 @@ const StripeTransactionSegment: React.FC<StripeTransactionsSegmentProps> = (
         if (props.retry) {
             props.retry();
         }
-        transactionsReq.force();
+        transactionsReq.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
     }, [props.retry, transactionsReq.force]);
 
     if (transactionsReq.response.loading) {
@@ -60,7 +62,7 @@ const StripeTransactionSegment: React.FC<StripeTransactionsSegmentProps> = (
         );
     }
 
-    if (transactionsReq.response.error) {
+    if (isRequestError(transactionsReq)) {
         return <Error message={t('cannot_load_txs')} retryLabel={t('retry')} onRefresh={force} />;
     }
 

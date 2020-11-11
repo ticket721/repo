@@ -6,7 +6,6 @@ import {
     UpdateDateColumn,
 } from '@iaminfinity/express-cassandra';
 import { ECAAG } from '@lib/common/utils/ECAAG.helper';
-import { Price } from '@lib/common/currencies/Currencies.service';
 
 /**
  * Error interface whem checking for selection validity
@@ -48,14 +47,12 @@ export class CategoryEntity {
             this.display_name = c.display_name;
             this.sale_begin = c.sale_begin;
             this.sale_end = c.sale_end;
-            this.resale_begin = c.resale_begin;
-            this.resale_end = c.resale_end;
-            this.scope = c.scope;
-            this.prices = ECAAG(c.prices);
+            this.price = c.price;
+            this.currency = c.currency;
+            this.interface = c.interface;
             this.seats = c.seats;
-            this.reserved = c.reserved;
-            this.parent_id = c.parent_id ? c.parent_id.toString() : c.parent_id;
-            this.parent_type = c.parent_type;
+            this.dates = ECAAG(c.dates);
+            this.status = c.status;
             this.created_at = c.created_at;
             this.updated_at = c.updated_at;
         }
@@ -75,6 +72,15 @@ export class CategoryEntity {
     })
     // tslint:disable-next-line:variable-name
     group_id: string;
+
+    /**
+     * Category visibility status
+     */
+    @Column({
+        type: 'text',
+    })
+    // tslint:disable-next-line:variable-name
+    status: 'preview' | 'live';
 
     /**
      * Category Name
@@ -113,39 +119,28 @@ export class CategoryEntity {
     sale_end: Date;
 
     /**
-     * Resale Begin date
+     * Price of the category
      */
     @Column({
-        type: 'timestamp',
+        type: 'int',
     })
-    // tslint:disable-next-line:variable-name
-    resale_begin: Date;
+    price: number;
 
     /**
-     * Resale End date
-     */
-    @Column({
-        type: 'timestamp',
-    })
-    // tslint:disable-next-line:variable-name
-    resale_end: Date;
-
-    /**
-     * Ticket scope of the category
+     * Price of the category
      */
     @Column({
         type: 'text',
     })
-    scope: string;
+    currency: string;
 
     /**
-     * Prices of the category
+     * Payment interface of the category
      */
     @Column({
-        type: 'list',
-        typeDef: '<frozen<price>>',
+        type: 'text',
     })
-    prices: Price[];
+    interface: 'stripe' | 'none';
 
     /**
      * Available seats of the category
@@ -156,30 +151,13 @@ export class CategoryEntity {
     seats: number;
 
     /**
-     * Current amount of existing tickets
+     * Dates where this ticket gives access
      */
     @Column({
-        type: 'int',
+        type: 'list',
+        typeDef: '<uuid>',
     })
-    reserved: number;
-
-    /**
-     * Id of parent entity
-     */
-    @Column({
-        type: 'uuid',
-    })
-    // tslint:disable-next-line:variable-name
-    parent_id: string;
-
-    /**
-     * Type of parent entity
-     */
-    @Column({
-        type: 'text',
-    })
-    // tslint:disable-next-line:variable-name
-    parent_type: string;
+    dates: string[];
 
     /**
      * Creation timestamp
@@ -194,45 +172,4 @@ export class CategoryEntity {
     @UpdateDateColumn()
     // tslint:disable-next-line:variable-name
     updated_at: Date;
-
-    /**
-     * Utility to check if a purchase can happen
-     *
-     * @param now
-     * @param cat
-     * @param amount
-     */
-    static checkCategoryErrors(now: Date, cat: CategoryEntity, amount: number): CategorySelectionError[] {
-        const errors: CategorySelectionError[] = [];
-
-        if (now.getTime() > new Date(cat.sale_end).getTime()) {
-            errors.push({
-                category: cat,
-                reason: 'sale_ended',
-            });
-        }
-
-        if (now.getTime() < new Date(cat.sale_begin).getTime()) {
-            errors.push({
-                category: cat,
-                reason: 'sale_not_started',
-            });
-        }
-
-        if (cat.parent_type === null) {
-            errors.push({
-                category: cat,
-                reason: 'category_not_available',
-            });
-        }
-
-        if (cat.seats - cat.reserved < amount) {
-            errors.push({
-                category: cat,
-                reason: 'category_sold_out',
-            });
-        }
-
-        return errors;
-    }
 }

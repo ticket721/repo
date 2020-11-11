@@ -3,8 +3,8 @@ import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common
 import styled from 'styled-components';
 import { Dispatch } from 'redux';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '@frontend-core/redux';
+import { useDispatch } from 'react-redux';
+import { useToken } from '../../hooks/useToken';
 import { v4 } from 'uuid';
 import { Country } from '../../utils/countries';
 import { PushNotification } from '../../redux/ducks/notifications';
@@ -159,7 +159,7 @@ export const StripeSetupCreateExternalAccountManager: React.FC<StripeSetupManage
                 const [routingNumber, setRoutingNumber] = useState(undefined);
                 const stripe = useCustomStripe();
                 const dispatch = useDispatch();
-                const token = useSelector((state: AppState) => state.auth.token?.value);
+                const token = useToken();
                 const [uuid] = useState(v4());
                 const addExternalAccountLazyRequest = useLazyRequest('payment.stripe.addExternalAccount', uuid);
                 const [called, setCalled] = useState(false);
@@ -232,7 +232,7 @@ export const StripeSetupCreateExternalAccountManager: React.FC<StripeSetupManage
                                     label={t('country_label')}
                                     options={CountriesOptions}
                                     placeholder={t('country_placeholder')}
-                                    onChange={(opt) => setCountry(opt.value)}
+                                    onChange={(opt) => setCountry(opt[0].value)}
                                 />
                             </InputContainer>
                             <InputContainer>
@@ -240,7 +240,7 @@ export const StripeSetupCreateExternalAccountManager: React.FC<StripeSetupManage
                                     label={t('currency_label')}
                                     options={CurrenciesOptions}
                                     placeholder={t('currency_placeholder')}
-                                    onChange={(opt) => setCurrency(opt.value)}
+                                    onChange={(opt) => setCurrency(opt[0].value)}
                                 />
                             </InputContainer>
                             <InputContainer>

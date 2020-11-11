@@ -1,16 +1,16 @@
-import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
+import { CRUDExtension, CRUDResponse } from '@lib/common/crud/CRUDExtension.base';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 import { DatesRepository } from '@lib/common/dates/Dates.repository';
 import { DateEntity } from '@lib/common/dates/entities/Date.entity';
-import { CategoriesService } from '@lib/common/categories/Categories.service';
 import { CategoryEntity } from '@lib/common/categories/entities/Category.entity';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { Boundable } from '@lib/common/utils/Boundable.type';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { fromES } from '@lib/common/utils/fromES.helper';
 
 /**
  * Service to CRUD DateEntities
  */
-export class DatesService extends CRUDExtension<DatesRepository, DateEntity> implements Boundable<DateEntity> {
+export class DatesService extends CRUDExtension<DatesRepository, DateEntity> {
     /**
      * Dependency injection
      *
@@ -40,103 +40,167 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> imp
     }
 
     /**
-     * Creates Dates with given categories
+     * Create a new date entity
      *
      * @param date
-     * @param categories
      */
-    async createDateWithCategories(
-        date: Partial<DateEntity>,
-        categories: Partial<CategoryEntity>[],
-    ): Promise<ServiceResponse<[DateEntity, CategoryEntity[]]>> {
-        const storedCategories: CategoryEntity[] = [];
+    public async createDate(
+        date: Omit<DateEntity, 'id' | 'event' | 'created_at' | 'updated_at'>,
+    ): Promise<CRUDResponse<DateEntity>> {
+        return this.create(date);
+    }
 
-        for (const category of categories) {
-            if (category.group_id.toLowerCase() !== date.group_id.toLowerCase()) {
-                return {
-                    error: 'invalid_category_group_id',
-                    response: null,
-                };
-            }
+    /**
+     * List all dates linked to a groupe ID
+     *
+     * @param groupId
+     */
+    public async findAllByGroupId(groupId: string): Promise<ServiceResponse<DateEntity[]>> {
+        const datesCountRes = await this.countElastic({
+            body: {
+                query: {
+                    bool: {
+                        must: {
+                            term: {
+                                group_id: groupId,
+                            },
+                        },
+                    },
+                },
+            },
+        });
 
-            const categoryCreationRes = await this.categoriesService.create({
-                ...category,
-                reserved: 0,
-            });
-
-            if (categoryCreationRes.error) {
-                return {
-                    error: categoryCreationRes.error,
-                    response: null,
-                };
-            }
-
-            storedCategories.push(categoryCreationRes.response);
+        if (datesCountRes.error) {
+            return {
+                error: 'error_while_counting',
+                response: null,
+            };
         }
 
-        date.categories = storedCategories.map((c: CategoryEntity): string => c.id);
+        const total = datesCountRes.response.count;
 
-        const dateCreationRes = await this.create(date);
+        // Recover Event
+        const dateRes = await this.searchElastic({
+            body: {
+                size: total,
+                query: {
+                    bool: {
+                        must: {
+                            term: {
+                                group_id: groupId,
+                            },
+                        },
+                    },
+                },
+            },
+        });
 
-        if (dateCreationRes.error) {
+        if (dateRes.error) {
             return {
-                error: dateCreationRes.error,
+                error: 'error_while_checking',
                 response: null,
             };
         }
 
         return {
+            response: dateRes.response.hits.hits.map(fromES),
             error: null,
-            response: [dateCreationRes.response, storedCategories],
         };
     }
 
     /**
-     * Binds Date to controller entity
+     * Find a date by its id
      *
-     * @param id
-     * @param entity
-     * @param entityId
+     * @param dateId
      */
-    async bind(id: string, entity: string, entityId: string): Promise<ServiceResponse<DateEntity>> {
-        const date = await this.search({
-            id,
+    async findOne(dateId: string): Promise<ServiceResponse<DateEntity>> {
+        // Recover Event
+        const dateRes = await this.search({
+            id: dateId,
         });
 
-        if (date.error) {
+        if (dateRes.error) {
             return {
-                error: date.error,
+                error: 'error_while_checking',
                 response: null,
             };
         }
 
-        if (date.response.length === 0) {
+        if (dateRes.response.length === 0) {
             return {
-                error: 'entity_not_found',
+                error: 'not_found',
                 response: null,
             };
         }
 
-        if (this.isBound(date.response[0])) {
+        return {
+            response: dateRes.response[0],
+            error: null,
+        };
+    }
+
+    /**
+     * Remove category link from date
+     *
+     * @param dateId
+     * @param category
+     */
+    public async removeCategory(dateId: string, category: CategoryEntity): Promise<CRUDResponse<DateEntity>> {
+        const dateRes = await this.findOne(dateId);
+
+        if (dateRes.error) {
             return {
-                error: 'entity_already_bound',
+                error: 'cannot_recover_date',
                 response: null,
             };
         }
 
-        const boundReq = await this.update(
+        const date = dateRes.response;
+
+        if (date.categories.indexOf(category.id) === -1) {
+            return {
+                error: 'category_not_linked_to_date',
+                response: null,
+            };
+        }
+
+        if (category.dates.indexOf(dateId) === -1) {
+            return {
+                error: 'date_not_linked_to_category',
+                response: null,
+            };
+        }
+
+        const newCategoryList = date.categories.filter((categoryId: string): boolean => categoryId !== category.id);
+
+        const dateUpdateRes = await this.update(
             {
-                id,
+                id: dateId,
             },
             {
-                parent_id: entityId,
-                parent_type: entity,
+                categories: newCategoryList,
             },
         );
 
-        if (boundReq.error) {
+        if (dateUpdateRes.error) {
             return {
-                error: boundReq.error,
+                error: 'cannot_update_date',
+                response: null,
+            };
+        }
+
+        const categoryUpdateRes = await this.categoriesService.update(
+            {
+                id: category.id,
+            },
+            {
+                dates: category.dates.filter((_dateId: string): boolean => _dateId !== date.id),
+            },
+        );
+
+        if (categoryUpdateRes.error) {
+            return {
+                error: 'cannot_update_category',
                 response: null,
             };
         }
@@ -144,65 +208,72 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> imp
         return {
             error: null,
             response: {
-                ...date.response[0],
-                parent_id: entityId,
-                parent_type: entity,
+                ...date,
+                categories: newCategoryList,
             },
         };
     }
 
     /**
-     * Verifies if entity is bound
-     * @param date
-     */
-    isBound(date: DateEntity): boolean {
-        return !!(date.parent_type && date.parent_id);
-    }
-
-    /**
-     * Unbinds entity
+     * Add category link to date
      *
-     * @param id
+     * @param dateId
+     * @param category
      */
-    async unbind(id: string): Promise<ServiceResponse<DateEntity>> {
-        const date = await this.search({
-            id,
-        });
+    public async addCategory(dateId: string, category: CategoryEntity): Promise<CRUDResponse<DateEntity>> {
+        const dateRes = await this.findOne(dateId);
 
-        if (date.error) {
+        if (dateRes.error) {
             return {
-                error: date.error,
+                error: 'cannot_recover_date',
                 response: null,
             };
         }
 
-        if (date.response.length === 0) {
+        const date = dateRes.response;
+
+        if (date.categories.indexOf(category.id) !== -1 || category.dates.indexOf(date.id) !== -1) {
             return {
-                error: 'entity_not_found',
+                error: 'category_already_bound',
                 response: null,
             };
         }
 
-        if (!this.isBound(date.response[0])) {
+        if (date.group_id !== category.group_id) {
             return {
-                error: 'entity_not_bound',
+                error: 'incompatible_date_category',
                 response: null,
             };
         }
 
-        const boundReq = await this.update(
+        const dateUpdateRes = await this.update(
             {
-                id,
+                id: date.id,
             },
             {
-                parent_id: null,
-                parent_type: null,
+                categories: [...date.categories, category.id],
             },
         );
 
-        if (boundReq.error) {
+        if (dateUpdateRes.error) {
             return {
-                error: boundReq.error,
+                error: 'cannot_update_date',
+                response: null,
+            };
+        }
+
+        const categoryUpdateRes = await this.categoriesService.update(
+            {
+                id: category.id,
+            },
+            {
+                dates: [...category.dates, date.id],
+            },
+        );
+
+        if (categoryUpdateRes.error) {
+            return {
+                error: 'cannot_update_category',
                 response: null,
             };
         }
@@ -210,9 +281,8 @@ export class DatesService extends CRUDExtension<DatesRepository, DateEntity> imp
         return {
             error: null,
             response: {
-                ...date.response[0],
-                parent_id: null,
-                parent_type: null,
+                ...date,
+                categories: [...date.categories, category.id],
             },
         };
     }

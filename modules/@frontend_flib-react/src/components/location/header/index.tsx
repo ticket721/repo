@@ -7,6 +7,7 @@ export interface LocationHeaderProps extends React.ComponentProps<any> {
     location: string;
     onFilter?: () => void;
     mainColor?: string;
+    online?: boolean;
 }
 
 const Container = styled.section`
@@ -39,7 +40,11 @@ export const LocationHeader: React.FunctionComponent<LocationHeaderProps> = (
             <div>
                 <h4>{props.title}</h4>
                 <h3 className={'row'}>
-                    <LocationIcon icon={'location'} size={'16px'} color={props.mainColor} />
+                    <LocationIcon
+                        icon={props.online ? 'live' : 'location'}
+                        size={'16px'}
+                        color={props.online ? 'red' : props.mainColor}
+                    />
                     <Location>{props.location}</Location>
                 </h3>
             </div>

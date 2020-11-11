@@ -26,14 +26,25 @@ function getLocationFromBrowser() {
 
         const fetchCity = async (lat: number, lon: number): Promise<City> => {
             try {
-                const res = await global.window.t721Sdk.geoloc.closestCity(null, {
+                const res = await global.window.t721Sdk.geoloc.closestCity('', {
                     lat,
                     lon
                 })
 
                 return res.data.city;
             } catch (e) {
-                return null;
+                return {
+                    name: 'Unknown',
+                    nameAscii: 'Unknown',
+                    nameAdmin: 'Unknown',
+                    country: 'Unknown',
+                    coord: {
+                        lon,
+                        lat
+                    },
+                    population: 0,
+                    id: 0
+                };
             }
         }
 
@@ -51,6 +62,7 @@ function getLocationFromBrowser() {
                             lat: position.coords.latitude,
                             lon: position.coords.longitude,
                             city: resultCity,
+                            online: false
                         }),
                     );
 
@@ -74,6 +86,7 @@ function getLocationFromBrowser() {
                             lat,
                             lon,
                             city: resultCity,
+                            online: false
                         }),
                     );
 

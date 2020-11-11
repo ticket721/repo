@@ -3,27 +3,12 @@ import { ExpressCassandraModule } from '@iaminfinity/express-cassandra';
 import { TicketsService } from '@lib/common/tickets/Tickets.service';
 import { TicketsRepository } from '@lib/common/tickets/Tickets.repository';
 import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
-import { CategoriesModule } from '@lib/common/categories/Categories.module';
-import { MetadatasModule } from '@lib/common/metadatas/Metadatas.module';
-import { UsersModule } from '@lib/common/users/Users.module';
-import { TicketsRightsConfig } from '@lib/common/tickets/Tickets.rights';
-import { RightsModule } from '@lib/common/rights/Rights.module';
+import { PurchasesModule } from '@lib/common/purchases/Purchases.module';
+import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 
 @Module({
-    imports: [
-        ExpressCassandraModule.forFeature([TicketEntity, TicketsRepository]),
-        CategoriesModule,
-        MetadatasModule,
-        RightsModule,
-        UsersModule,
-    ],
-    providers: [
-        {
-            provide: '@rights/ticket',
-            useValue: TicketsRightsConfig,
-        },
-        TicketsService,
-    ],
+    imports: [ExpressCassandraModule.forFeature([TicketEntity, TicketsRepository]), PurchasesModule, ToolBoxModule],
+    providers: [TicketsService],
     exports: [TicketsService],
 })
 export class TicketsModule {}
