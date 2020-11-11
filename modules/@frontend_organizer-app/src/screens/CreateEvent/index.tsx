@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 
 import '@frontend/core/lib/utils/window';
 
-import { Button } from '@frontend/flib-react/lib/components';
+import { Button, FullPageLoading } from '@frontend/flib-react/lib/components';
 
 import { GeneralInfoForm }     from '../../components/GeneralInfoForm';
 import { StylesForm }          from '../../components/StylesForm';
@@ -79,6 +79,7 @@ const CreateEvent: React.FC = () => {
 
     const [ currentStep, setCurrentStep ] = useState<number>(0);
 
+    const [redirecting, setRedirecting] = useState<boolean>(false);
     const [ finalEventPaylaod, setFinalEventPaylaod ] = useState<EventCreationPayload>();
     const [ stepStatuses, setStepStatuses ] = useState<StepStatus[]>([]);
     const dispatch = useDispatch();
@@ -189,7 +190,10 @@ const CreateEvent: React.FC = () => {
             dispatch(PushNotification(t('event_create_success'), 'success'));
             formik.resetForm();
             formik.validateForm();
-            // history.push('/');
+            setRedirecting(true);
+            setTimeout(() => {
+                history.push('/');
+            }, 1000);
         }
     // eslint-disable-next-line
     }, [response.data?.event]);
@@ -203,6 +207,13 @@ const CreateEvent: React.FC = () => {
 
     return (
         <Container>
+            {
+                redirecting ?
+                <HidingDiv>
+                    <FullPageLoading/>
+                </HidingDiv>
+                : null
+            }
             <PositionedStepper>
                 <Stepper
                 steps={stepsInfos.map((infos, idx) => ({
@@ -268,7 +279,7 @@ const CreateEvent: React.FC = () => {
                         formik.validateForm();
                         setCurrentStep(0);
                     }}/>
-                    <Persist name={'event-creation'} />
+                    <Persist name={'event-creation'}/>
                     <DelayedOnMountValidation/>
                 </Form>
             </FormikProvider>
@@ -282,6 +293,14 @@ const Container = styled.div`
     align-items: center;
     margin-top: 80px;
     padding: 50px 0;
+`;
+
+const HidingDiv = styled.div`
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    z-index: 20;
+    background: linear-gradient(91.44deg,#0a0812 0.31%,#120f1a 99.41%);
 `;
 
 const PositionedStepper = styled.div`
