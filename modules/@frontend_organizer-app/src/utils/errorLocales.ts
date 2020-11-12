@@ -77,5 +77,5 @@ i18n.addResourceBundle('fr', 'categoryEntity', {
     invalidDateIndex: 'erreur: index de date invalide',
     saleEndAfterLastEventEnd: 'la fin de vente ne peut pas survenir après la fin de l\'évènement',
     invalidCurrency: 'devise invalide',
-    priceTooLow: 'price inférieur au minimum de 2 €'
+    priceTooLow: 'prix inférieur au minimum de 2 €'
 });

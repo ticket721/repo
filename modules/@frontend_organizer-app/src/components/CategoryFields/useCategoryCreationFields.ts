@@ -28,6 +28,7 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
     saleBeginProps: CustomDatePickerProps,
     saleEndProps: CustomDatePickerProps,
     seatsProps: TextInputProps,
+    freeToggleProps: ToggleProps,
     priceProps: TextInputProps,
     duplicateOnProps?: SelectProps,
     relativeSaleDeltas?: SaleDeltas,
@@ -36,11 +37,13 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
     const [ isMultiDates, setIsMultiDates ] = useState<boolean>(false);
     const [ duplicateOnDates, setDuplicateOnDates ] = useState<SelectOption[]>([]);
     const [ maxDate, setMaxDate ] = useState<Date>(null);
+    const [ isFree, setIsFree ] = useState<boolean>(false);
 
     const [ nameField, nameMeta ] = useField<string>(`${parentField ? parentField + '.' : ''}name`);
     const [ saleBeginField, saleBeginMeta, saleBeginHelper ] = useField<Date>(`${parentField ? parentField + '.' : ''}saleBegin`);
     const [ saleEndField, saleEndMeta, saleEndHelper ] = useField<Date>(`${parentField ? parentField + '.' : ''}saleEnd`);
     const [ seatsField, seatsMeta, seatsHelper ] = useField<number>(`${parentField ? parentField + '.' : ''}seats`);
+    const [ currencyField,, currencyHelper ] = useField<string>(`${parentField ? parentField + '.' : ''}currency`);
     const [ priceField, priceMeta, priceHelper ] = useField<number>(`${parentField ? parentField + '.' : ''}price`);
     const [ datesField, datesMeta, datesHelper ] = useField<number[]>(`${parentField ? parentField + '.' : ''}dates`);
 
@@ -67,6 +70,12 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
             setIsMultiDates(false);
         }
     }, [datesField.value, categoryId]);
+
+    useDeepEffect(() => {
+        if (currencyField.value === 'FREE') {
+            setIsFree(true);
+        }
+    }, [currencyField.value]);
 
     return {
         ticketTypeProps: {
@@ -155,6 +164,25 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
                 numeralDecimalScale: 0,
             }
         },
+        freeToggleProps: {
+            checked: isFree,
+            name: 'isFree',
+            onChange: (isCheck) => {
+                if (isCheck) {
+                    priceHelper.setValue(0);
+                    currencyHelper.setValue('FREE');
+                } else {
+                    priceHelper.setValue(2);
+                    currencyHelper.setValue('EUR');
+                }
+                setIsFree(isCheck);
+                currencyHelper.setTouched(true);
+                setTimeout(() => {
+                    priceHelper.setTouched(true);
+                }, 300);
+            },
+            label: t('free'),
+        },
         priceProps: {
             ...priceField,
             value: priceField.value?.toString().replace('.', ','),
@@ -169,6 +197,7 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
             error: evaluateError(priceMeta),
             label: t('price_label'),
             placeholder: t('price_placeholder'),
+            disabled: isFree,
         },
         duplicateOnProps: !isMultiDates && datesField.value.length > 0 ? {
             options: dateOptions.filter(date => datesField.value[0].toString() !== date.value),

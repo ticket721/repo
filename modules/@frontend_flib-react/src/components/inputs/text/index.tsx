@@ -27,6 +27,7 @@ export interface TextInputProps extends React.ComponentProps<any> {
     autoComplete?: string;
     pattern?: string;
     inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
+    disabled?: boolean;
 }
 
 const Error = styled.span`
@@ -67,6 +68,14 @@ const StyledInputContainer = styled.div<TextInputProps>`
     width: 100%;
     padding-top: ${(props) => props.theme.biggerSpacing};
     transition: background-color 300ms ease;
+
+    ${(props) =>
+        props.disabled
+            ? `
+        opacity: 0.3;
+        filter: grayscale(1);
+    `
+            : null};
 
     ${(props) =>
         props.error &&
@@ -119,7 +128,7 @@ export const TextInput: React.FunctionComponent<TextInputProps & { className?: s
     props: TextInputProps,
 ): JSX.Element => {
     return (
-        <StyledInputContainer error={props.error} className={props.className}>
+        <StyledInputContainer error={props.error} className={props.className} disabled={props.disabled}>
             <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
             <div className={'sub-container'}>
                 {props.icon ? <Icon icon={props.icon} size={'16px'} color={props.iconColor} /> : null}
@@ -138,6 +147,7 @@ export const TextInput: React.FunctionComponent<TextInputProps & { className?: s
                         autoComplete={props.autoComplete || 'off'}
                         pattern={props.pattern}
                         inputMode={props.inputMode}
+                        disabled={props.disabled}
                     />
                 ) : (
                     <input
@@ -156,6 +166,7 @@ export const TextInput: React.FunctionComponent<TextInputProps & { className?: s
                         onBlur={props.onBlur}
                         pattern={props.pattern}
                         inputMode={props.inputMode}
+                        disabled={props.disabled}
                     />
                 )}
             </div>

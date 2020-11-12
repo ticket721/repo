@@ -17,14 +17,14 @@ export const CardInformations: React.FC<CardInformationsProps> = ({ idx }) => {
     const formikCtx = useFormikContext<EventCreationPayload>();
     const primaryColor = formikCtx.values.imagesMetadata.signatureColors[0];
 
-    const formatPrice = (price: number) => {
-        const formattedPrice = price.toString().replace('.', ',');
-        const delimiterIndex = formattedPrice.indexOf(',');
-        if (delimiterIndex !== -1 && formattedPrice.substring(delimiterIndex).length === 2) {
+    const formatPrice = (price: number): string => {
+        const formattedPrice = price?.toString().replace('.', ',');
+        const delimiterIndex = formattedPrice?.indexOf(',');
+        if (delimiterIndex !== -1 && formattedPrice?.substring(delimiterIndex).length === 2) {
             return formattedPrice + '0';
         }
 
-        return formattedPrice;
+        return formattedPrice + '€';
     };
 
     return <CardInformationsContainer>
@@ -47,14 +47,17 @@ export const CardInformations: React.FC<CardInformationsProps> = ({ idx }) => {
             <Seats>
                 <div className={'seat-count'}>
                     {formikCtx.values.categoriesConfiguration[idx].seats}
-                    {/* <span>&nbsp;{t('seats')}</span> */}
                 </div>
                 <Icon
                 icon={'seat'}
                 color={primaryColor}
                 size={'18px'} />
             </Seats>
-            <Price primaryColor={primaryColor}>{formatPrice(formikCtx.values.categoriesConfiguration[idx].price)}€</Price>
+            <Price primaryColor={primaryColor}>{
+                formikCtx.values.categoriesConfiguration[idx].price === 0 ?
+                t('free') :
+                formatPrice(formikCtx.values.categoriesConfiguration[idx].price)
+            }</Price>
         </SeatsAndPrice>
     </CardInformationsContainer>;
 }
