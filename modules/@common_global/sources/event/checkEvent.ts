@@ -1,6 +1,7 @@
 import Joi                                         from '@hapi/joi';
 import { symbolOf }                                from '../currency';
 import {
+    checkMinimum,
     ErrorNode,
     generateErrorFromJoiError,
     ImagesMetadata,
@@ -8,7 +9,7 @@ import {
     noStringDate, quickError,
     TextMetadata,
     TextMetadataChecker,
-}                                                  from './common';
+} from './common';
 import { DatePayload, DatePayloadChecker }         from './checkDate';
 import { CategoryPayload, CategoryPayloadChecker } from './checkCategory';
 import { merge, pick } from 'lodash';
@@ -93,6 +94,7 @@ export const checkEvent = (event: EventCreationPayload): ErrorNode => {
 
         categories[categoryIdx].saleBegin = noStringDate(categories[categoryIdx].saleBegin);
         categories[categoryIdx].saleEnd = noStringDate(categories[categoryIdx].saleEnd);
+        categories[categoryIdx].currency = categories[categoryIdx].currency.toUpperCase();
 
         if (categories[categoryIdx].saleBegin.getTime() > categories[categoryIdx].saleEnd.getTime()) {
 
@@ -134,6 +136,15 @@ export const checkEvent = (event: EventCreationPayload): ErrorNode => {
             return quickError('categoryEntity.invalidCurrency', {
                 currency: categories[categoryIdx].currency,
             }, `categoriesConfiguration.${categoryIdx}.currency`);
+        }
+
+        if (!checkMinimum(categories[categoryIdx].currency, categories[categoryIdx].price)) {
+
+            return quickError('categoryEntity.priceTooLow', {
+                currency: categories[categoryIdx].currency,
+                price: categories[categoryIdx].price
+            }, `currency`);
+
         }
 
     }

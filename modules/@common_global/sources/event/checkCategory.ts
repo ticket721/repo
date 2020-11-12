@@ -1,6 +1,6 @@
-import Joi                                                                from '@hapi/joi';
-import { ErrorNode, generateErrorFromJoiError, noStringDate, quickError } from './common';
-import { symbolOf }                                                       from '../currency';
+import Joi                                                                              from '@hapi/joi';
+import { checkMinimum, ErrorNode, generateErrorFromJoiError, noStringDate, quickError } from './common';
+import { symbolOf }                                                                     from '../currency';
 
 export interface CategoryPayload {
     name: string;
@@ -51,6 +51,7 @@ export const checkCategory = (category: CategoryCreationPayload): ErrorNode => {
 
     category.saleBegin = noStringDate(category.saleBegin);
     category.saleEnd = noStringDate(category.saleEnd);
+    category.currency = category.currency.toUpperCase();
 
     if (category.saleBegin.getTime() > category.saleEnd.getTime()) {
 
@@ -66,6 +67,15 @@ export const checkCategory = (category: CategoryCreationPayload): ErrorNode => {
         return quickError('categoryEntity.invalidCurrency', {
             currency: category.currency,
         }, `currency`);
+    }
+
+    if (!checkMinimum(category.currency, category.price)) {
+
+        return quickError('categoryEntity.priceTooLow', {
+            currency: category.currency,
+            price: category.price
+        }, `currency`);
+
     }
 
     return null;

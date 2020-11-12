@@ -17,9 +17,9 @@ import { ResetEventCreateForm }          from './ResetEventCreateForm';
 import { PushNotification }              from '@frontend/core/lib/redux/ducks/notifications';
 import { useHistory }                    from 'react-router';
 import { FormikProvider, useFormik } from 'formik';
-import { Persist } from 'formik-persist';
-import { checkEvent, EventCreationPayload } from '@common/global';
-import { DelayedOnMountValidation } from './DelayedOnMountValidation';
+import { Persist }                                                    from 'formik-persist';
+import { CategoryWithDatesPayload, checkEvent, EventCreationPayload } from '@common/global';
+import { DelayedOnMountValidation }                                   from './DelayedOnMountValidation';
 import { Stepper, StepStatus } from '../../components/Stepper';
 import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 import { EventsBuildResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsBuildResponse.dto';
@@ -74,6 +74,14 @@ const stepsInfos: StepInfos[] = [
     },
 ];
 
+const updateCategories = (categories: CategoryWithDatesPayload[]): CategoryWithDatesPayload[] =>
+    categories.map((category: CategoryWithDatesPayload) => ({
+        ...category,
+        price: category.price * 100,
+        currency: category.currency.toUpperCase()
+    }));
+
+
 const CreateEvent: React.FC = () => {
     const [ t ] = useTranslation('create_event');
 
@@ -93,7 +101,10 @@ const CreateEvent: React.FC = () => {
     const [ reader ] = useState<FileReader>(new FileReader());
 
     const validate = (eventPayload: EventCreationPayload) => {
-        const errors = checkEvent(eventPayload);
+        const errors = checkEvent({
+            ...eventPayload,
+            categoriesConfiguration: updateCategories(eventPayload.categoriesConfiguration)
+        });
         const errorKeys = errors ? Object.keys(errors) : [];
         const eventCreationKeys = stepsInfos.map(stepInfos => stepInfos.step);
 
@@ -127,6 +138,7 @@ const CreateEvent: React.FC = () => {
             categoriesConfiguration: eventPayload.categoriesConfiguration.map(category => ({
                 ...category,
                 price: category.price * 100,
+                currency: category.currency.toUpperCase()
             }))
         });
     };
@@ -141,11 +153,11 @@ const CreateEvent: React.FC = () => {
         switch (currentStep) {
             case 0: return <GeneralInfoForm/>;
             case 1: return <StylesForm
-            eventName={formik.values.textMetadata.name}
-            parentField={'imagesMetadata'}
-            uploadImage={(file) => {
-                reader.readAsDataURL(file);
-            }}/>;
+                eventName={formik.values.textMetadata.name}
+                parentField={'imagesMetadata'}
+                uploadImage={(file) => {
+                    reader.readAsDataURL(file);
+                }}/>;
             case 2: return <DatesStep/>;
             case 3: return <CategoriesStep/>;
             default: return <></>;
@@ -156,7 +168,7 @@ const CreateEvent: React.FC = () => {
         reader.onloadend = () => {
             formik.setFieldValue('imagesMetadata.avatar', (reader.result as string));
         };
-    // eslint-disable-next-line
+        // eslint-disable-next-line
     }, []);
 
     useEffect(() => {
@@ -195,36 +207,36 @@ const CreateEvent: React.FC = () => {
                 history.push('/');
             }, 1000);
         }
-    // eslint-disable-next-line
+        // eslint-disable-next-line
     }, [response.data?.event]);
 
     useEffect(() => {
         if (response.data?.error) {
             dispatch(PushNotification(t('event_creation_error'), 'error'));
         }
-    // eslint-disable-next-line
+        // eslint-disable-next-line
     }, [response.data?.error]);
 
     return (
         <Container>
             {
                 redirecting ?
-                <HidingDiv>
-                    <FullPageLoading/>
-                </HidingDiv>
-                : null
+                    <HidingDiv>
+                        <FullPageLoading/>
+                    </HidingDiv>
+                    : null
             }
             <PositionedStepper>
                 <Stepper
-                steps={stepsInfos.map((infos, idx) => ({
-                    label: t(infos.title),
-                    status: stepStatuses[idx],
-                }))}
-                editStep={currentStep}
-                onStepClick={(idx) => {
-                    setCurrentStep(idx);
-                    setTimeout(() => formik.validateForm(), 200);
-                }}/>
+                    steps={stepsInfos.map((infos, idx) => ({
+                        label: t(infos.title),
+                        status: stepStatuses[idx],
+                    }))}
+                    editStep={currentStep}
+                    onStepClick={(idx) => {
+                        setCurrentStep(idx);
+                        setTimeout(() => formik.validateForm(), 200);
+                    }}/>
             </PositionedStepper>
             <FormikProvider value={formik}>
                 <Form onSubmit={formik.handleSubmit}>
@@ -237,48 +249,48 @@ const CreateEvent: React.FC = () => {
                         <StepButtons>
                             {
                                 currentStep > 0 ?
-                                <Button
-                                    variant={'secondary'}
-                                    title={t('previous_step_btn')}
-                                    onClick={() => {
-                                        setCurrentStep(currentStep - 1);
-                                        setTimeout(() => formik.validateForm(), 200);
-                                    }}
-                                /> :
-                                <div/>
+                                    <Button
+                                        variant={'secondary'}
+                                        title={t('previous_step_btn')}
+                                        onClick={() => {
+                                            setCurrentStep(currentStep - 1);
+                                            setTimeout(() => formik.validateForm(), 200);
+                                        }}
+                                    /> :
+                                    <div/>
                             }
                             {
                                 currentStep < (stepsInfos.length - 1) ?
-                                <Button
-                                    variant={'primary'}
-                                    title={t('next_step_btn')}
-                                    onClick={() => {
-                                        setCurrentStep(currentStep + 1);
-                                        setTimeout(() => formik.validateForm(), 200);
-                                    }}
-                                /> :
-                                null
+                                    <Button
+                                        variant={'primary'}
+                                        title={t('next_step_btn')}
+                                        onClick={() => {
+                                            setCurrentStep(currentStep + 1);
+                                            setTimeout(() => formik.validateForm(), 200);
+                                        }}
+                                    /> :
+                                    null
                             }
                         </StepButtons>
                     </StepWrapper>
                     {
                         stepStatuses.every(status => status === 'complete' || status === 'edit')
                         && formik.isValid ?
-                        <SubmitButton
-                            type={'submit'}
-                            variant={'primary'}
-                            title={t('create_event_btn')}
-                        /> :
-                        null
+                            <SubmitButton
+                                type={'submit'}
+                                variant={'primary'}
+                                title={t('create_event_btn')}
+                            /> :
+                            null
                     }
 
                     <ResetEventCreateForm
-                    token={token}
-                    onReset={() => {
-                        formik.resetForm();
-                        formik.validateForm();
-                        setCurrentStep(0);
-                    }}/>
+                        token={token}
+                        onReset={() => {
+                            formik.resetForm();
+                            formik.validateForm();
+                            setCurrentStep(0);
+                        }}/>
                     <Persist name={'event-creation'}/>
                     <DelayedOnMountValidation/>
                 </Form>

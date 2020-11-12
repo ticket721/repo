@@ -120,12 +120,12 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
 
 const QrCodeWrapper = styled.div<{ offsetTop: number, qrOpened: boolean }>`
     position: fixed;
+    display: ${props => props.qrOpened ? 'flex' : 'none'};
     top: ${props => props.qrOpened ? '0' : `${props.offsetTop}px` };
     left: 0;
     width: 100vw;
     height: 100vh;
     z-index: 9999;
-    display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;

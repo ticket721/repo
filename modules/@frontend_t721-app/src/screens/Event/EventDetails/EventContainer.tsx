@@ -38,8 +38,8 @@ const BgContainer = styled.div`
 
 const OnlineTagContainer = styled.div`
   position: fixed;
-  top: calc(14px + env(safe-area-inset-top));
-  top: calc(14px + constant(safe-area-inset-top));
+  top: calc(10px + env(safe-area-inset-top));
+  top: calc(10px + constant(safe-area-inset-top));
   right: 14px;
   z-index: 9999;
 `;

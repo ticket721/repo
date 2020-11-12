@@ -104,7 +104,8 @@ export const useCategoryEdition = (token: string, categoryId: string, dates: Dat
     const onSubmit = (category: CategoryWithDatesPayload) => {
         const categoryWithoutDate = omit({
             ...category,
-            price: category.price * 100
+            price: category.price * 100,
+            currency: category.currency.toUpperCase()
         }, 'dates');
 
         const newDateIds = dates.map((date, dateIdx) => {
@@ -132,7 +133,11 @@ export const useCategoryEdition = (token: string, categoryId: string, dates: Dat
     };
 
     const validate = (category: CategoryWithDatesPayload) => {
-        const errors = checkCategory(omit(category, 'dates'));
+        const errors = checkCategory(omit({
+            ...category,
+            price: category.price * 100,
+            currency: category.currency.toUpperCase()
+        }, 'dates'));
 
         if (category.dates.length === 0) {
             return set(errors || {}, 'dates', {

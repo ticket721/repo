@@ -82,7 +82,8 @@ export const useCategoryCreation = (token: string, dates: DateItem[]) => {
     const onSubmit = (category: CategoryWithDatesPayload) => {
         const categoryWithoutDate = omit({
             ...category,
-            price: category.price * 100
+            price: category.price * 100,
+            currency: category.currency.toUpperCase()
         }, 'dates');
 
         const concernedDateIds = dates.map((date, dateIdx) => {
@@ -108,7 +109,14 @@ export const useCategoryCreation = (token: string, dates: DateItem[]) => {
     };
 
     const validate = (category: CategoryWithDatesPayload) => {
-        const errors = checkCategory(omit(category, 'dates'));
+        console.log(category.price);
+        const errors = checkCategory(
+            omit({
+                ...category,
+                price: category.price * 100,
+                currency: category.currency.toUpperCase()
+            }, 'dates')
+        );
 
         if (category.dates.length === 0) {
             return set(errors || {}, 'dates', {
@@ -129,10 +137,10 @@ export const useCategoryCreation = (token: string, dates: DateItem[]) => {
             ...initialValues,
             ...state,
             dates: state?.dates ? dates.map((date, dateIdx) => {
-                if (state.dates.includes(date.id)) return dateIdx;
-                return null
-            }).filter(dateIdx => dateIdx !== null) :
-            [],
+                    if (state.dates.includes(date.id)) return dateIdx;
+                    return null
+                }).filter(dateIdx => dateIdx !== null) :
+                [],
         },
         onSubmit,
         validate,
@@ -144,21 +152,21 @@ export const useCategoryCreation = (token: string, dates: DateItem[]) => {
             dispatch(PushNotification(t('creation_successful'), 'success'));
             history.push(pathname + '/' + createCategoryResp.data.category.id);
         }
-    // eslint-disable-next-line
+        // eslint-disable-next-line
     }, [createCategoryResp.data?.category]);
 
     useEffect(() => {
         if (createCategoryResp.error) {
             dispatch(PushNotification(t('creation_error'), 'error'));
         }
-    // eslint-disable-next-line
+        // eslint-disable-next-line
     }, [createCategoryResp.error]);
 
     useEffect(() => {
         if (duplicateCategoryResp.error) {
             dispatch(PushNotification(t('duplicate_error'), 'error'));
         }
-    // eslint-disable-next-line
+        // eslint-disable-next-line
     }, [duplicateCategoryResp.error]);
 
     return {

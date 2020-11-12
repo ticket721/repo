@@ -1,5 +1,5 @@
-import Joi          from '@hapi/joi';
-import { get, set } from 'lodash';
+import Joi                 from '@hapi/joi';
+import { get, set, isNil } from 'lodash';
 
 export interface TextMetadata {
     name: string;
@@ -30,7 +30,7 @@ export const TextMetadataChecker = Joi.object<TextMetadata>({
         .max(30)
         .custom((value, helpers) => {
             if (!/^([A-Za-z0-9]|_|\.)+$/.test(value)) {
-                return helpers.error('string.pattern.instagram')
+                return helpers.error('string.pattern.instagram');
             }
             return value;
         })
@@ -40,7 +40,7 @@ export const TextMetadataChecker = Joi.object<TextMetadata>({
         .max(15)
         .custom((value, helpers) => {
             if (!/^([A-Za-z0-9]|_)+$/.test(value)) {
-                return helpers.error('string.pattern.twitter')
+                return helpers.error('string.pattern.twitter');
             }
             return value;
         })
@@ -50,7 +50,7 @@ export const TextMetadataChecker = Joi.object<TextMetadata>({
         .max(24)
         .custom((value, helpers) => {
             if (!/^([A-Za-z0-9]|_|\.)+$/.test(value)) {
-                return helpers.error('string.pattern.tiktok')
+                return helpers.error('string.pattern.tiktok');
             }
             return value;
         })
@@ -172,7 +172,7 @@ export const noStringDate = (date: Date | string): Date => {
         return new Date(date);
     }
     return date;
-}
+};
 
 export const quickError = (code: string, context: any, path: string): ErrorNode => {
     return set({}, path, {
@@ -183,5 +183,17 @@ export const quickError = (code: string, context: any, path: string): ErrorNode 
             },
         ],
     });
+};
+
+const minimums = {
+    'EUR': 200,
+    'FREE': 0,
+};
+
+export const checkMinimum = (currency: string, value: number): boolean => {
+    if (isNil(minimums[currency])) {
+        return true;
+    }
+    return minimums[currency] <= value;
 };
 

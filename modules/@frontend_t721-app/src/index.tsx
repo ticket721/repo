@@ -74,7 +74,6 @@ interface ScaleOffsetProps {
 }
 
 const Inception = styled.iframe<ScaleOffsetProps>`
-  cursor: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/9632/heart.png"), auto;
   transform: scale(${props => props.scale});
   transform-origin: bottom right;
   position: absolute;
