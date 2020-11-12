@@ -52,10 +52,28 @@ const TicketDetailsDateHeaderContainer = styled.div<TicketDetailsDateHeaderConta
   padding: ${props => props.theme.regularSpacing};
 `;
 
-const DateIcon = styled.img`
-  width: 60px;
-  height: 60px;
-  border-radius: ${props => props.theme.defaultRadius};`;
+interface DateIconProps {
+    width: number;
+    height: number;
+    avatar: string;
+}
+
+const DateIconContainer = styled.img<DateIconProps>`
+  width: ${props => props.width}px;
+  height: ${props => props.height}px;
+  border-radius: ${props => props.theme.defaultRadius};
+  background-image: url(${props => props.avatar});
+  background-size: cover;
+  background-position: center;
+`
+
+const DateIcon = (props: DateIconProps) => {
+    return <DateIconContainer
+        width={props.width}
+        height={props.height}
+        avatar={props.avatar}
+    />
+}
 
 const DateTitle = styled.span`
   font-size: 16px;
@@ -119,7 +137,9 @@ const TicketDetailsDateHeader: React.FC<TicketDetailsDateHeaderProps> = (props: 
             }}
         >
             <DateIcon
-                src={props.date.metadata.avatar}
+                avatar={props.date.metadata.avatar}
+                width={60}
+                height={60}
             />
             <div
                 style={{

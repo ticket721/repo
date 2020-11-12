@@ -44,11 +44,28 @@ const CartElementContainer = styled.div`
   border-bottom: 1px solid ${props => props.theme.componentColor};
 `
 
-const DateIcon = styled.img`
-  width: 60px;
-  height: 60px;
+interface DateIconProps {
+    width: number;
+    height: number;
+    avatar: string;
+}
+
+const DateIconContainer = styled.img<DateIconProps>`
+  width: ${props => props.width}px;
+  height: ${props => props.height}px;
   border-radius: ${props => props.theme.defaultRadius};
+  background-image: url(${props => props.avatar});
+  background-size: cover;
+  background-position: center;
 `
+
+const DateIcon = (props: DateIconProps) => {
+    return <DateIconContainer
+        width={props.width}
+        height={props.height}
+        avatar={props.avatar}
+    />
+}
 
 interface DateTitleProps {
     color: string;
@@ -273,7 +290,7 @@ const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> 
                         alignItems: 'center',
                         padding: 8
                     }}>
-                        <DateIcon src={date.metadata.avatar}/>
+                        <DateIcon avatar={date.metadata.avatar} width={60} height={60}/>
                         <div style={{
                             marginLeft: 8
                         }}>
