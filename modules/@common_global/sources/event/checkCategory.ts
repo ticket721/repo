@@ -74,7 +74,7 @@ export const checkCategory = (category: CategoryCreationPayload): ErrorNode => {
         return quickError('categoryEntity.priceTooLow', {
             currency: category.currency,
             price: category.price
-        }, `currency`);
+        }, `price`);
 
     }
 

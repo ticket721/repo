@@ -143,7 +143,7 @@ export const checkEvent = (event: EventCreationPayload): ErrorNode => {
             return quickError('categoryEntity.priceTooLow', {
                 currency: categories[categoryIdx].currency,
                 price: categories[categoryIdx].price
-            }, `currency`);
+            }, `categoriesConfiguration.${categoryIdx}.price`);
 
         }
 

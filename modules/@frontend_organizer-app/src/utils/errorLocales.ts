@@ -69,6 +69,7 @@ i18n.addResourceBundle('en', 'categoryEntity', {
     invalidDateIndex: 'error: invalid date index',
     saleEndAfterLastEventEnd: 'end of sale cannot happen after event end date',
     invalidCurrency: 'invalid currency',
+    priceTooLow: 'price under minimum of 2 €'
 });
 
 i18n.addResourceBundle('fr', 'categoryEntity', {
@@ -76,4 +77,5 @@ i18n.addResourceBundle('fr', 'categoryEntity', {
     invalidDateIndex: 'erreur: index de date invalide',
     saleEndAfterLastEventEnd: 'la fin de vente ne peut pas survenir après la fin de l\'évènement',
     invalidCurrency: 'devise invalide',
+    priceTooLow: 'price inférieur au minimum de 2 €'
 });
