@@ -1,6 +1,5 @@
-import { Injectable }        from '@nestjs/common';
-import { VenmasRepository }  from '@lib/common/venmas/Venmas.repository';
-import { VenmasEntity }      from '@lib/common/venmas/entities/Venmas.entity';
+import { VenmasRepository } from '@lib/common/venmas/Venmas.repository';
+import { VenmasEntity } from '@lib/common/venmas/entities/Venmas.entity';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
 
 /**
@@ -16,9 +15,9 @@ export class VenmasService extends CRUDExtension<VenmasRepository, VenmasEntity>
      */
     constructor(
         @InjectRepository(VenmasRepository)
-            venmasRepository: VenmasRepository,
+        venmasRepository: VenmasRepository,
         @InjectModel(EventEntity)
-            venmasEntity: BaseModel<VenmasEntity>,
+        venmasEntity: BaseModel<VenmasEntity>,
         private readonly categoriesService: CategoriesService,
     ) {
         super(
