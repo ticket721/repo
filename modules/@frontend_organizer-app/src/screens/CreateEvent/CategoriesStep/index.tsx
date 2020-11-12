@@ -97,13 +97,15 @@ export const CategoriesStep: React.FC = () => {
                     setNewCategory(false);
                 }}/>
             </DisabledBg> :
-            <AddCategory>
-                <Button
-                title={t('add_new_category')}
-                variant={'custom'}
-                gradients={formikCtx.values.imagesMetadata.signatureColors}
-                onClick={addCategory} />
-            </AddCategory>
+            formikCtx.values.datesConfiguration.length > 0 ?
+                <AddCategory>
+                    <Button
+                    title={t('add_new_category')}
+                    variant={'custom'}
+                    gradients={formikCtx.values.imagesMetadata.signatureColors}
+                    onClick={addCategory} />
+                </AddCategory> :
+                null
         }
         {
             currentDeletingCategory > -1 ?

@@ -6487,6 +6487,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-beforeunload@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@types/react-beforeunload/-/react-beforeunload-2.1.0.tgz#023db4bf117a23a8a5f8b28d276cf00324b8ec98"
+  integrity sha512-N/j7wOFQjrmYuIvemMOsI/NNjwErZGjF/4I1NG9VrF1bLqi11BMD/nqBBedIze2FbtddKHgWfQCue3yzCsQJdg==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-color@3.0.1", "@types/react-color@^3.0.1":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@types/react-color/-/react-color-3.0.1.tgz#5433e2f503ea0e0831cbc6fd0c20f8157d93add0"
@@ -25324,6 +25331,14 @@ react-base16-styling@^0.6.0:
     lodash.flow "^3.3.0"
     pure-color "^1.2.0"
 
+react-beforeunload@2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/react-beforeunload/-/react-beforeunload-2.4.0.tgz#82752a0b0605285aeddc83c5c7998b7ddd67ed0a"
+  integrity sha512-62n4aInZeZ3uf4Gx1rKvUjv0OoIZpeGVgnHtuMLKxNbDZz+gpsC9VyW7uEPyLHPTWqbP2UebIZa1t0K/I6S9/Q==
+  dependencies:
+    prop-types "^15.7.2"
+    use-latest "^1.2.0"
+
 react-clientside-effect@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/react-clientside-effect/-/react-clientside-effect-1.2.2.tgz#6212fb0e07b204e714581dd51992603d1accc837"
@@ -30553,6 +30568,18 @@ use-callback-ref@^1.2.1:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/use-callback-ref/-/use-callback-ref-1.2.3.tgz#9f939dfb5740807bbf9dd79cdd4e99d27e827756"
   integrity sha512-DPBPh1i2adCZoIArRlTuKRy7yue7QogtEnfv0AKrWsY+GA+4EKe37zhRDouNnyWMoNQFYZZRF+2dLHsWE4YvJA==
+
+use-isomorphic-layout-effect@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/use-isomorphic-layout-effect/-/use-isomorphic-layout-effect-1.1.0.tgz#4db2111e0d53ca694187ea5fd5cb2ba610286fe0"
+  integrity sha512-kady5Z1O1qx5RitodCCKbpJSVEtECXYcnBnb5Q48Bz5V6gBmTu85ZcGdVwVFs8+DaOurNb/L5VdGHoQRMknghw==
+
+use-latest@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/use-latest/-/use-latest-1.2.0.tgz#a44f6572b8288e0972ec411bdd0840ada366f232"
+  integrity sha512-d2TEuG6nSLKQLAfW3By8mKr8HurOlTkul0sOpxbClIv4SQ4iOd7BYr7VIzdbktUCnv7dua/60xzd8igMU6jmyw==
+  dependencies:
+    use-isomorphic-layout-effect "^1.0.0"
 
 use-sidecar@^1.0.1:
   version "1.0.2"

@@ -25,6 +25,7 @@ i18n.addResourceBundle('en', 'category_fields', {
     relative_end: 'Sale will end {{ time }} before event end date',
     relative_end_tooltip: 'This difference of sale dates relatively to the concerned event will be reused in case of duplication of this category on other dates',
     duplicate_msg: 'Duplicate this category on other dates',
+    free: 'Free',
 });
 
 i18n.addResourceBundle('fr', 'category_fields', {
@@ -52,4 +53,5 @@ i18n.addResourceBundle('fr', 'category_fields', {
     relative_end: 'La vente se finira {{ time }} avant la date de fin de l\'évènement',
     relative_end_tooltip: 'Cette différence des dates de vente relativement à l\'évènement sera réutilisée dans le cas d\'une duplication de cette catégorie sur d\'autres dates',
     duplicate_msg: 'Dupliquer cette catégorie sur d\'autres dates',
+    free: 'Gratuit',
 });

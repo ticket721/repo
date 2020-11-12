@@ -22,6 +22,7 @@ export const CategoryFields: React.FC<CategoryFieldsProps> = ({ parentField, dat
         saleBeginProps,
         saleEndProps,
         seatsProps,
+        freeToggleProps,
         priceProps,
         duplicateOnProps,
         relativeSaleDeltas,
@@ -75,10 +76,16 @@ export const CategoryFields: React.FC<CategoryFieldsProps> = ({ parentField, dat
                 {...seatsProps}
                 icon={'seat'}
                 iconColor={sigColors && sigColors[0]} />
-                <TextInput
-                icon={'euro'}
-                iconColor={sigColors && sigColors[0]}
-                {...priceProps} />
+                <PriceConfig isFree={freeToggleProps.checked}>
+                    <Toggle
+                    className={'toggle'}
+                    {...freeToggleProps}
+                    gradient={sigColors && !!sigColors[0] ? sigColors : undefined} />
+                    <TextInput
+                    icon={'euro'}
+                    iconColor={sigColors && sigColors[0]}
+                    {...priceProps}/>
+                </PriceConfig>
             </SeatsAndPrice>
             <SaleDateRangeInput>
                 <CustomDatePicker
@@ -187,10 +194,27 @@ const SaleDateRangeInput = styled.div`
 const SeatsAndPrice = styled.div`
     display: flex;
     justify-content: space-between;
+    align-items: flex-end;
     margin-bottom: ${props => props.theme.regularSpacing};
 
     & > div {
         width: calc(50% - ${props => props.theme.smallSpacing});
+    }
+`;
+
+const PriceConfig = styled.div< { isFree: boolean } >`
+    display: flex;
+    flex-direction: column;
+
+    .toggle {
+        margin-bottom: calc(${props => props.theme.biggerSpacing} / 2);
+
+        label {
+            color: ${props => props.isFree ? props.theme.textColor : props.theme.textColorDarker};
+            justify-content: flex-end;
+            padding-top: 3px;
+            text-transform: uppercase;
+        }
     }
 `;
 

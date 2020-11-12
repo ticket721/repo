@@ -8,8 +8,9 @@ import { Button } from '@frontend/flib-react/lib/components';
 import { useTranslation } from 'react-i18next';
 import './locales';
 import { CategoryFields } from '../../../../components/CategoryFields';
-import { SaleDeltas } from './Fields/useCategoryCreationFields';
+import { SaleDeltas } from '../../../../components/CategoryFields/useCategoryCreationFields';
 import { MultiDatesTag } from '../../../../components/MultiDatesTag';
+import { useBeforeunload } from 'react-beforeunload';
 
 export interface CategoryFormProps {
     idx: number;
@@ -26,6 +27,8 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ idx, newCategory, on
 
     const formikCtx = useFormikContext<EventCreationPayload>();
     const sigColors = formikCtx.values.imagesMetadata.signatureColors;
+
+    useBeforeunload((event) => event.preventDefault());
 
     useEffect(() => {
         if (onError) {

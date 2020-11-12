@@ -47,6 +47,8 @@
         "yup": "0.28.4",
         "@embarklabs/subspace": "2.0.3",
         "@embarklabs/subspace-react": "1.0.4",
+        "react-beforeunload": "2.4.0",
+        "@types/react-beforeunload": "2.1.0",
         "rxjs": "6.5.5",
         "@capacitor/cli": "2.0.1",
         "react-scripts": "3.4.1",

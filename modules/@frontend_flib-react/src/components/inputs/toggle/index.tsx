@@ -104,7 +104,7 @@ export const Toggle: React.FunctionComponent<ToggleProps & { className?: string 
     props: ToggleProps,
 ): JSX.Element => {
     return (
-        <StyledCheckboxContainer>
+        <StyledCheckboxContainer className={props.className}>
             <StyledLabel htmlFor={props.name}>
                 {props.label}
                 <input
@@ -118,28 +118,20 @@ export const Toggle: React.FunctionComponent<ToggleProps & { className?: string 
                 />
                 <ToggleSwitchContainer>
                     <ToggleSwitch gradient={props.gradient} custom={props.custom} checked={props.checked}>
-                        {props.custom?.on.icon && props.custom?.off.icon ? (
-                            <Icon
-                                size={
-                                    props.custom
-                                        ? props.checked
-                                            ? props.custom.on.size
-                                            : props.custom.off.size
-                                        : '12px'
-                                }
-                                color={'white'}
-                                icon={
-                                    props.custom
-                                        ? props.checked
-                                            ? props.custom.on.icon
-                                            : props.custom.off.icon
-                                        : 'check'
-                                }
-                            />
+                        {props.custom ? (
+                            props.custom.on.icon && props.custom.off.icon ? (
+                                <Icon
+                                    size={props.checked ? props.custom.on.size : props.custom.off.size}
+                                    color={'white'}
+                                    icon={props.checked ? props.custom.on.icon : props.custom.off.icon}
+                                />
+                            ) : (
+                                <span className={'icon-char'}>
+                                    {props.checked ? props.custom?.on.char : props.custom?.off.char}
+                                </span>
+                            )
                         ) : (
-                            <span className={'icon-char'}>
-                                {props.checked ? props.custom?.on.char : props.custom?.off.char}
-                            </span>
+                            <Icon size={'12px'} color={'white'} icon={'check'} />
                         )}
                     </ToggleSwitch>
                 </ToggleSwitchContainer>
