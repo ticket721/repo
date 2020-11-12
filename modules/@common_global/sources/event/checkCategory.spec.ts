@@ -106,7 +106,7 @@ describe('checkCategory', function() {
                         {
                             "type": "categoryEntity.invalidCurrency",
                             "context": {
-                                "currency": "zouzou"
+                                "currency": "ZOUZOU"
                             }
                         }
                     ]

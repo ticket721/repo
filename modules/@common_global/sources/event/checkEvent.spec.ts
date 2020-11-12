@@ -583,7 +583,7 @@ describe('checkEvent', function() {
         const error = checkEvent(event);
 
         expect(error).toEqual({
-            "categoriesConfiguration": [{"currency": {"reasons": [{"context": {"currency": "zouzou"}, "type": "categoryEntity.invalidCurrency"}]}}]
+            "categoriesConfiguration": [{"currency": {"reasons": [{"context": {"currency": "ZOUZOU"}, "type": "categoryEntity.invalidCurrency"}]}}]
         });
 
     });
