@@ -158,7 +158,7 @@ apps:
     name: "efs-provisioner"
     description: "EFS Storage Provider, allowing pods to mount EFS volumes in the filesystem"
     namespace: "production"
-    enabled: true
+    enabled: false
     group: "critical"
     chart: "../@infra_efs-provisioner/efs-provisioner"
     version: "0.1.0"
@@ -168,7 +168,7 @@ apps:
     priority: -4
     setString:
       _global.namespace: "production"
-      "efs-provisioner.efsProvisioner.efsFileSystemId": "${CONFIG_PRODUCTION_EFS_ID}"
+      "efs-provisioner.efsProvisioner.efsFileSystemId": "EFS_ID"
       "efs-provisioner.efsProvisioner.awsRegion": "eu-west-3"
 
   elassandra:
@@ -218,8 +218,6 @@ apps:
     priority: -1
     setString:
       _global.namespace: "production"
-
-      server.fsName: "${CONFIG_PRODUCTION_EFS_ID}"
 
       config.stripe.apiKey: "${CONFIG_PRODUCTION_STRIPE_APIKEY}"
 
