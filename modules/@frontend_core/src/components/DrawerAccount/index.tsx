@@ -3,12 +3,12 @@ import styled                                                 from 'styled-compo
 import { detect }                                             from 'detect-browser';
 import { useTranslation }                                     from 'react-i18next';
 import { Drawer as MUIDrawer, DrawerProps as MUIDrawerProps } from '@material-ui/core';
-import { blurAndDarkenBackground }                            from '@frontend/core/lib/utils/style';
+import { blurAndDarkenBackground }                            from '../../utils/style';
 import { useHistory }                                         from 'react-router';
 import { ArrowBackIos }                                       from '@material-ui/icons';
-import ProfileRoot                                            from '@frontend/core/lib/components/Profile/Root';
-import Language                                               from '@frontend/core/lib/components/Profile/Language';
-import '../Translations/global';
+import ProfileRoot                                            from '../Profile/Root';
+import Language                                               from '../Profile/Language';
+import './locales';
 
 export type ProfileRoute = 'root' | 'activities' | 'language';
 
@@ -18,7 +18,7 @@ interface DrawerAccountProps {
 }
 
 export const DrawerAccount: React.FC<DrawerAccountProps> = ({route, onClose}: DrawerAccountProps) => {
-    const [t] = useTranslation('global');
+    const [t] = useTranslation('drawer_account');
     const history = useHistory();
     const browser = detect();
 

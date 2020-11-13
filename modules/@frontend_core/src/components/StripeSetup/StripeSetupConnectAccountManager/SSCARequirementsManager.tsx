@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import styled, { useTheme } from 'styled-components';
 import { Theme } from '@frontend/flib-react/lib/config/theme';
 import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { v4 } from 'uuid';
 import { open } from '../../../utils/inAppBrowser';
 import React from 'react';
@@ -16,7 +16,7 @@ import {
 } from './StripeMenuSections';
 import { StatusText, colorFromStatus, StatusIcon } from './StatusUtils';
 import { getEnv } from '../../../utils/getEnv';
-import { AppState } from '../../../redux/ducks/index';
+import { useToken } from '../../../hooks/useToken';
 import { useLazyRequest } from '../../../hooks/useLazyRequest/index';
 import { PushNotification } from '../../../redux/ducks/notifications/actions';
 import { useDeepEffect } from '../../../hooks/useDeepEffect/index';
@@ -46,7 +46,7 @@ export const SSCARequirementsManager: React.FC<SSCARequirementsManagerProps> = (
     const [t] = useTranslation('stripe_setup_requirements');
     const theme = useTheme() as Theme;
     const [uuid, setUUID] = useState(v4());
-    const { token } = useSelector((state: AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
     const generateOnboardingUrlLazyRequest = useLazyRequest('payment.stripe.generateOnboardingUrl', uuid);
     const generateUpdateUrlLazyRequest = useLazyRequest('payment.stripe.generateUpdateUrl', uuid);
     const [called, setCalled] = useState(false);

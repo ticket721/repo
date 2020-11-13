@@ -3,8 +3,7 @@ import { Error, FullPageLoading, TicketType } from '@frontend/flib-react/lib/com
 import { CategoryEntity }                     from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { DateEntity }                         from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { useTranslation }                     from 'react-i18next';
-import { useSelector }                        from 'react-redux';
-import { T721AppState }                       from '../../redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { v4 }                                 from 'uuid';
 import { getPrice }                           from '../../utils/prices';
 import { useRequest }                         from '@frontend/core/lib/hooks/useRequest';
@@ -21,7 +20,7 @@ export interface TicketCategoryDetailsProps {
 export const TicketCategoryDetails: React.FC<TicketCategoryDetailsProps> = (props: TicketCategoryDetailsProps): JSX.Element => {
 
     const [t] = useTranslation(['event_ticket_list', 'common']);
-    const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
     const [uuid] = useState(v4());
 
     const categoriesCount = useRequest<any>({

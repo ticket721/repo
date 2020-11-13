@@ -9,8 +9,8 @@ import { UserContext }                     from '@frontend/core/lib/utils/UserCo
 import { ValidateEmailComponent }          from '@frontend/core/lib/components/ValidateEmail';
 import { DoubleButtonCta }                 from '@frontend/flib-react/lib/components';
 import { isNil }                           from 'lodash';
-import { useDispatch, useSelector }        from 'react-redux';
-import { T721AppState }                    from '../../redux';
+import { useDispatch }        from 'react-redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { v4 }                              from 'uuid';
 import { useLazyRequest }                  from '@frontend/core/lib/hooks/useLazyRequest';
 import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
@@ -129,7 +129,7 @@ export const CartMenu: React.FC = (): JSX.Element => {
         () => (Math.floor(window.height * 0.7) < 500 ? window.height : Math.floor(window.height * 0.7)) + SAI.bottom - SAI.top,
         [window.height]
     );
-    const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
     const [uuid] = useState(v4());
     const clearCartLazyRequest = useLazyRequest<PurchasesSetProductsResponseDto>('purchases.setProducts', uuid);
     const checkoutLazyRequest = useLazyRequest<PurchasesCheckoutResponseDto>('purchases.checkout', uuid);

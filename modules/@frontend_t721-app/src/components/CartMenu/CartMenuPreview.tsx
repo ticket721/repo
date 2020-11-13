@@ -7,8 +7,8 @@ import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/serve
 import { CategoryEntity }               from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { DateEntity }                      from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { v4 }                       from 'uuid';
-import { useDispatch, useSelector } from 'react-redux';
-import { T721AppState }                    from '../../redux';
+import { useDispatch } from 'react-redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { Error, FullPageLoading, Icon }    from '@frontend/flib-react/lib/components';
 import styled, { useTheme }                from 'styled-components';
 import { getPrice }                        from '../../utils/prices';
@@ -130,7 +130,7 @@ const generateErrorMessage = (t: any, error: PurchaseError): string => {
 const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> = (props: CartMenuCategoryDatesPreviewProps): JSX.Element => {
     const [t] = useTranslation('cart');
     const [uuid] = useState(v4());
-    const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
     const theme = useTheme() as Theme;
     const cart = useContext(CartContext);
     const dispatch = useDispatch();
@@ -398,7 +398,7 @@ interface CartMenuCategoryPreview {
 const CartMenuCategoryPreview: React.FC<CartMenuCategoryPreview> = (props: CartMenuCategoryPreview): JSX.Element => {
 
     const [uuid] = useState(v4());
-    const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
 
     const categoryFetch = useRequest<CategoriesSearchResponseDto>({
         method: 'categories.search',

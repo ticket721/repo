@@ -6,22 +6,22 @@ import { DrawerAccount, ProfileRoute }       from '@frontend/core/lib/components
 import { useTranslation }                    from 'react-i18next';
 import { truncate } from '@frontend/core/lib/utils';
 import { useHistory }                        from 'react-router';
-import { NavLink }                           from 'react-router-dom';
+import { NavLink, NavLinkProps }                           from 'react-router-dom';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import './locales';
 import { v4 }                                from 'uuid';
-import { useRequest }                        from '@frontend/core/lib/hooks/useRequest';
 import { TicketsCountResponseDto }           from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
 import { UserContext }                       from '@frontend/core/lib/utils/UserContext';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
+import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 
-const AuthNavBar: React.FC = () => {
+export const DesktopNavbar: React.FC = () => {
     const { t } = useTranslation('navbar');
     const history = useHistory();
     const [uuid] = useState(v4());
     const user = useContext(UserContext);
     const [ profileRoute, setProfileRoute ] = useState<ProfileRoute>();
     const token = useToken();
-
+console.log(history.location.pathname);
     useEffect(() => {
         if (history.location.search.match(/[?|&]profile=(root|activities|language)$/)) {
             const route = history.location.search.match(/[?|&]profile=(root|activities|language)$/)[1];
@@ -35,43 +35,54 @@ const AuthNavBar: React.FC = () => {
         }
     }, [history.location.search]);
 
-    const tickets = useRequest<TicketsCountResponseDto>({
-        method: 'tickets.count',
-        args: [
-            token,
-            {}
-        ],
-        refreshRate: 50,
-    }, uuid);
+    const { response: ticketCountResp, lazyRequest: fetchTicketCount } =
+        useLazyRequest<TicketsCountResponseDto>('tickets.count', uuid);
 
-    if (tickets.response.loading) {
+    useEffect(() => {
+        if (token && user) {
+            fetchTicketCount([
+                token,
+                {}
+            ], { force: true });
+        }
+        // eslint-disable-next-line
+    }, [token, user, history.location.pathname]);
+
+    if (ticketCountResp.loading) {
         return <FullPageLoading/>
     }
 
     return (
         <Container>
-            <NavLink
-                to='/'>
-                <Icon icon='t721' color='#fff' size='30px'/>
-            </NavLink>
-            <ActionContainer>
-                <NavLink
-                    to='/create-event'>
-                    {
-                        t('create_event')
-                    }
+            <LeftSide>
+                <NavLink to='/'>
+                    <Icon icon='t721' color='#fff' size='30px'/>
                 </NavLink>
-                <Profile
-                    onClick={
-                        () => history.push(history.location.pathname + '?profile=root')
-                    }>
-                    <UserHeader
-                        username={user?.username}
-                        picture={'/favicon.ico'}
-                        tickets={tickets.response.error ? '?' : tickets.response.data.tickets.count}/>
-                    <Chevron icon='chevron' color='#fff' size='7px'/>
-                </Profile>
-            </ActionContainer>
+                <SearchLink to='/search' selected={history.location.pathname.startsWith('/search')}>
+                    {t('search')}
+                </SearchLink>
+                <SearchLink to='/wallet' selected={history.location.pathname.startsWith('/wallet')}>
+                    {t('my_tickets')}
+                </SearchLink>
+            </LeftSide>
+            <UserContainer>
+                { user ?
+                    <Profile
+                        onClick={
+                            () => history.push(history.location.pathname + '?profile=root')
+                        }>
+                        <UserHeader
+                            username={user?.username}
+                            picture={'/favicon.ico'}
+                            tickets={ticketCountResp.error ? '?' : ticketCountResp.data?.tickets.count}/>
+                        <Chevron icon='chevron' color='#fff' size='7px'/>
+                    </Profile> :
+                    <Connect>
+                        <NavLink to='/login'>{t('login')}</NavLink>
+                        <NavLink to='/register'>{t('register')}</NavLink>
+                    </Connect>
+                }
+            </UserContainer>
             <DrawerAccount
                 route={profileRoute}
                 onClose={() => history.push(history.location.pathname)}/>
@@ -83,15 +94,34 @@ const Container = styled.div`
   position: fixed;
   top: 0;
   width: 100%;
+  height: 80px;
   z-index: 3;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 24px;
+  padding: ${props => props.theme.smallSpacing} ${props => props.theme.biggerSpacing};
   background-color: #1a1524;
 `;
 
-const ActionContainer = styled.div`
+const LeftSide = styled.div`
+    display: flex;
+    align-items: center;
+`;
+
+const SearchLink = styled(NavLink)<{ selected: boolean }>`
+    margin-left: ${props => props.theme.biggerSpacing};
+
+    ${props => props.selected ?
+        `color: ${props.theme.textColor};`
+        : null
+    }
+
+    :hover {
+        color: ${props => props.theme.textColor};
+    }
+`;
+
+const UserContainer = styled.div`
     display: flex;
     align-items: center;
     && button {
@@ -129,15 +159,14 @@ const Chevron = styled(Icon)`
     transform: rotate(90deg);
 `;
 
-const NavBar = () => {
-    const user = useContext(UserContext);
+const Connect = styled.div`
+    display: flex;
 
-    if (user?.valid) {
-        return <AuthNavBar/>
-    } else {
-        return null
+    a:first-child {
+        margin-right: ${props => props.theme.regularSpacing};
     }
 
-};
-
-export default NavBar;
+    a:hover {
+        color: ${props => props.theme.textColor};
+    }
+`;

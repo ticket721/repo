@@ -7,8 +7,7 @@ import { Icon, FullPageLoading, Error } from '@frontend/flib-react/lib/component
 import { PaymentStripeTransactionsResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/payment/stripe/dto/PaymentStripeTransactionsResponse.dto';
 import { useHistory } from 'react-router';
 import { v4 } from 'uuid';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux';
+import { useToken } from '../../../hooks/useToken';
 import { useRequest } from '../../../hooks/useRequest';
 import './SSCATransactionListManager.locales';
 import { TransactionInfo, TransactionInfoCard } from '../StripeTransactionsManager/TransactionInfoCard';
@@ -32,7 +31,7 @@ export const SSCATransactionListListManager: React.FC<SSCATransactionListManager
     const [t] = useTranslation('stripe_transaction_list');
     const history = useHistory();
     const [uuid] = useState(v4());
-    const { token } = useSelector((state: AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
 
     const transactionsReq = useRequest<PaymentStripeTransactionsResponseDto>(
         {

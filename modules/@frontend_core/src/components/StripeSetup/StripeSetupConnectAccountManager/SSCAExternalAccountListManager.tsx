@@ -16,10 +16,10 @@ import { Icon } from '@frontend/flib-react/lib/components';
 import { useHistory } from 'react-router';
 import { v4 } from 'uuid';
 import { useLazyRequest } from '../../../hooks/useLazyRequest';
-import { useSelector, useDispatch } from 'react-redux';
-import { AppState } from '../../../redux/ducks/index';
+import { useDispatch } from 'react-redux';
 import { useDeepEffect } from '../../../hooks/useDeepEffect';
 import { PushNotification } from '../../../redux/ducks/notifications';
+import { useToken } from '../../../hooks/useToken';
 
 const BankAccountTitle = styled.h3`
     font-size: 16px;
@@ -51,7 +51,7 @@ export const SSCAExternalAccountListManager: React.FC<SSCAExternalAccountListMan
     const history = useHistory();
     const [uuid, setUUID] = useState(v4());
     const [called, setCalled] = useState(false);
-    const { token } = useSelector((state: AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
     const removeBankAccountLazyRequest = useLazyRequest('payment.stripe.removeExternalAccount', uuid);
     const setDefaultBankAccountLazyRequest = useLazyRequest('payment.stripe.setDefaultExternalAccount', uuid);
     const dispatch = useDispatch();

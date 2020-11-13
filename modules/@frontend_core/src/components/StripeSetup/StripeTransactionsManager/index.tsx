@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { v4 } from 'uuid';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux';
+import { useToken } from '../../../hooks/useToken';
 import { useRequest } from '../../../hooks/useRequest';
 import { PaymentStripeTransactionsResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/payment/stripe/dto/PaymentStripeTransactionsResponse.dto';
 import { FullPageLoading, Error } from '@frontend/flib-react/lib/components';
@@ -22,7 +21,7 @@ const StripeTransactionSegment: React.FC<StripeTransactionsSegmentProps> = (
     props: StripeTransactionsSegmentProps,
 ): JSX.Element => {
     const [uuid] = useState(v4());
-    const { token } = useSelector((state: AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
     const [ref, inView] = useInView();
     const [t] = useTranslation('stripe_transactions_manager');
 
