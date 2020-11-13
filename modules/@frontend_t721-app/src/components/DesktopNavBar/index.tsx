@@ -6,7 +6,7 @@ import { DrawerAccount, ProfileRoute }       from '@frontend/core/lib/components
 import { useTranslation }                    from 'react-i18next';
 import { truncate } from '@frontend/core/lib/utils';
 import { useHistory }                        from 'react-router';
-import { NavLink, NavLinkProps }                           from 'react-router-dom';
+import { NavLink }                           from 'react-router-dom';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
 import './locales';
 import { v4 }                                from 'uuid';

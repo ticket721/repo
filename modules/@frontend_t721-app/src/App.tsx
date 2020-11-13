@@ -43,6 +43,7 @@ import { Integrations }                                                         
 import { getEnv }                                                                           from '@frontend/core/lib/utils/getEnv';
 import { Crash }                                                                            from '@frontend/core/lib/components/Crash';
 import { ErrorBoundary }                                                                    from 'react-error-boundary';
+import { DesktopNavbar } from './components/DesktopNavBar';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
     const [scrolled, setScrolled] = useState(false);
@@ -79,7 +80,7 @@ if (getEnv().REACT_APP_SENTRY_DSN) {
     console.log(`Initialized Sentry for release ${getEnv().REACT_APP_RELEASE}`);
 }
 
-const MobileApp: React.FC = () => {
+const App: React.FC = () => {
     const location = useLocation();
     const history = useHistory();
     const keyboardIsVisible = useKeyboardVisibility();
@@ -105,8 +106,10 @@ const MobileApp: React.FC = () => {
                     <StripeSDKManager>
                         <CartContextManager token={token}>
                             <CartButton/>
-                            <CartMenu
-                            />
+                            <CartMenu/>
+                            <MediaQuery minWidth={1224}>
+                                <DesktopNavbar/>
+                            </MediaQuery>
                             <AppContainer>
                                 <MediaQuery maxWidth={1224}>
                                     {location.pathname.lastIndexOf('/') !== 0 &&
@@ -271,6 +274,13 @@ const AppContainerDiv = styled.div<AppContainerDivProps>`
 }
     width: 100%;
     height: 100%;
+
+    @media screen and (min-width: 1224px) {
+        width: 1080px;
+        height: calc(100vh - 80px);
+        margin-top: 80px;
+        margin-left: calc((100% - 1080px) / 2);
+    }
 `;
 
 const AppContainer: React.FC<PropsWithChildren<any>> = (props: PropsWithChildren<any>) => {
@@ -295,7 +305,7 @@ const AppContainer: React.FC<PropsWithChildren<any>> = (props: PropsWithChildren
     </AppContainerDiv>;
 };
 
-let WrappedApp: any = withRouter(MobileApp);
+let WrappedApp: any = withRouter(App);
 
 if (getEnv().REACT_APP_SENTRY_DSN) {
     WrappedApp = Sentry.withErrorBoundary(
