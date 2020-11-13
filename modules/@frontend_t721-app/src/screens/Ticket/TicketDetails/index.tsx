@@ -31,7 +31,6 @@ import { useInView }                           from 'react-intersection-observer
 import { useWindowDimensions }                 from '@frontend/core/lib/hooks/useWindowDimensions';
 import { getPrice }                            from '../../../utils/prices';
 import { PushNotification }                    from '@frontend/core/lib/redux/ducks/notifications';
-import {Plugins, Capacitor} from '@capacitor/core';
 // tslint:disable-next-line:no-var-requires
 const publicIp = require('public-ip');
 // tslint:disable-next-line:no-var-requires
@@ -60,7 +59,7 @@ interface DateIconProps {
     avatar: string;
 }
 
-const DateIconContainer = styled.img<DateIconProps>`
+const DateIconContainer = styled.div<DateIconProps>`
   width: ${props => props.width}px;
   height: ${props => props.height}px;
   border-radius: ${props => props.theme.defaultRadius};
@@ -207,44 +206,40 @@ const catchLiveTicket721Com = (onlineLink: string, ip: string, date: DateEntity)
 
             const payload = btoa(JSON.stringify({
                 ip,
-                urls_landscape: [{
+                urls: [{
                     url: `https://player.vimeo.com/video/${vimeoId}`,
-                    top: '0',
-                    left: '0',
-                    height: '100%',
-                    width: '50%'
+                    landscape: {
+                        top: '0',
+                        left: '0',
+                        height: '100%',
+                        width: '50%'
+                    },
+                    portrait: {
+                        top: '0',
+                        left: '0',
+                        height: '50%',
+                        width: '100%'
+                    }
                 }, {
                     url: `https://vimeo.com/live-chat/${vimeoId}${chatId ? '/' + chatId : ''}`,
-                    top: '0',
-                    left: '50%',
-                    height: '100%',
-                    width: '50%'
-                }],
-                urls_portrait: [{
-                    url: `https://player.vimeo.com/video/${vimeoId}`,
-                    top: '0',
-                    left: '0',
-                    height: '50%',
-                    width: '100%'
-                }, {
-                    url: `https://vimeo.com/live-chat/${vimeoId}${chatId ? '/' + chatId : ''}`,
-                    top: '50%',
-                    left: '0',
-                    height: '50%',
-                    width: '100%'
-                }],
+                    landscape: {
+                        top: '0',
+                        left: '50%',
+                        height: '100%',
+                        width: '50%'
+                    },
+                    portrait: {
+                        top: '50%',
+                        left: '0',
+                        height: '50%',
+                        width: '100%'
+                    }
+                }]
             }));
 
             const destination = `https://live.ticket721.com?_=${payload}`;
 
-            if (!Capacitor.isPluginAvailable('Browser')) {
-                window.location.href = destination;
-            } else {
-                Plugins.Browser.open({
-                    url: destination,
-                    toolbarColor: date.metadata.signature_colors[0]
-                });
-            }
+            window.location.href = destination;
 
             return destination
         }
