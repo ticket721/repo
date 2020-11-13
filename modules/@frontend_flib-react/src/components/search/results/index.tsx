@@ -27,48 +27,20 @@ interface Event {
     onClick?: () => void;
 }
 
-interface Location {
-    id: string | number;
-    name: string;
-    numberEvents: number;
-    url: string;
-    onClick?: () => void;
-}
-
 const Container = styled.div<SearchResultsProps>`
     width: 100%;
 `;
 
-const ImgContainer = styled.div`
+const ImgContainer = styled.div<{ src: string }>`
     border-radius: ${(props) => props.theme.defaultRadius};
-    height: 80px;
+    padding-top: max(80px, 20%);
     margin-right: ${(props) => props.theme.regularSpacing};
     overflow: hidden;
-    width: 80px;
+    width: max(80px, 20%);
     position: relative;
-
-    &.icon {
-        align-items: center;
-        background-color: ${(props) => props.theme.componentColorLight};
-        height: 56px;
-        display: flex;
-        justify-content: center;
-        width: 56px;
-
-        svg {
-            height: 24px;
-        }
-    }
-
-    img {
-        height: 100%;
-        object-fit: cover;
-        width: 100%;
-    }
-
-    span {
-        margin-top: 0 !important;
-    }
+    background-image: url(${props => props.src});
+    background-size: cover;
+    background-position: center;
 `;
 
 const SingleResult = styled.article<React.ComponentProps<any>>`
@@ -119,10 +91,6 @@ const EllipsedTitle = styled.h4`
     white-space: nowrap;
 `;
 
-const InfoContainer = styled.div`
-    width: calc(90% - 80px);
-`;
-
 const AbsoluteOnlineTagDiv = styled.div`
     position: absolute;
     right: 2px;
@@ -132,52 +100,17 @@ const AbsoluteOnlineTagDiv = styled.div`
 export const SingleEvent = (props: Event & { customMarginBottom?: string; online?: boolean }) => {
     return (
         <SingleResult clickable={!!props.onClick} onClick={props.onClick} customMarginBottom={props.customMarginBottom}>
-            <ImgContainer>
-                <img src={props.image} />
+            <ImgContainer src={props.image}>
                 {props.online ? (
                     <AbsoluteOnlineTagDiv>
                         <OnlineBadge />
                     </AbsoluteOnlineTagDiv>
                 ) : null}
             </ImgContainer>
-            <InfoContainer>
+            <div>
                 <EllipsedTitle className={'uppercase'}>{props.name}</EllipsedTitle>
                 <span>{props.date}</span>
                 <span style={{ color: props.color }}>{props.price}</span>
-            </InfoContainer>
-        </SingleResult>
-    );
-};
-
-export const SingleStarEvent = (props: Event & { customMarginBottom?: string }) => {
-    return (
-        <SingleResult clickable={!!props.onClick} onClick={props.onClick} customMarginBottom={props.customMarginBottom}>
-            <ImgContainer>
-                <img src={props.image} />
-            </ImgContainer>
-            <InfoContainer>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'baseline' }}>
-                    <Icon icon={'star'} size={'12px'} color={props.color} />
-                    <EllipsedTitle style={{ marginLeft: '6px' }} className={'uppercase'}>
-                        {props.name}
-                    </EllipsedTitle>
-                </div>
-                <span>{props.date}</span>
-                <span style={{ color: props.color }}>{props.price}€</span>
-            </InfoContainer>
-        </SingleResult>
-    );
-};
-
-export const SingleLocation = (props: Location) => {
-    return (
-        <SingleResult>
-            <ImgContainer className={'icon'}>
-                <Icon icon={'pin'} size={'16px'} color={'rgba(255, 255, 255, 0.6)'} />
-            </ImgContainer>
-            <div>
-                <h4>{props.name}</h4>
-                <span>{props.numberEvents} events</span>
             </div>
         </SingleResult>
     );
