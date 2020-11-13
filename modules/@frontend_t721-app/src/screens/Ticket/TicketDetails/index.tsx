@@ -226,7 +226,6 @@ const catchLiveTicket721Com = (onlineLink: string, ip: string, date: DateEntity)
         case 'vimeo': {
             const vimeoId = url.searchParams.get('vimeo_id');
             const chatId = url.searchParams.get('vimeo_chat_id');
-
             const payload = btoa(JSON.stringify({
                 ip,
                 urls: [{

@@ -33,10 +33,10 @@ const Container = styled.div<SearchResultsProps>`
 
 const ImgContainer = styled.div<{ src: string }>`
     border-radius: ${(props) => props.theme.defaultRadius};
-    padding-top: max(80px, 20%);
-    margin-right: ${(props) => props.theme.regularSpacing};
+    padding-top: max(80px, 10vw);
+    margin-right: max(${(props) => props.theme.regularSpacing}, 1.5vw);
     overflow: hidden;
-    width: max(80px, 20%);
+    width: max(80px, 10vw);
     position: relative;
     background-image: url(${props => props.src});
     background-size: cover;
@@ -46,8 +46,8 @@ const ImgContainer = styled.div<{ src: string }>`
 const SingleResult = styled.article<React.ComponentProps<any>>`
     align-items: center;
     display: flex;
-    font-size: 13px;
-    margin-bottom: ${(props) => props.theme.regularSpacing};
+    font-size: max(13px, 1vw);
+    margin-bottom: max(${(props) => props.theme.regularSpacing}, 5%);
     width: 100%;
     cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
 
@@ -55,13 +55,13 @@ const SingleResult = styled.article<React.ComponentProps<any>>`
         margin-bottom: ${(props) => props.customMarginBottom || props.theme.biggerSpacing};
     }
 
-    span {
+    & > div:last-child > span {
         color: ${(props) => props.theme.textColorDark};
         display: block;
-        margin-top: ${(props) => props.theme.smallSpacing};
+        margin-top: max(12px, 12%);
 
         &:first-of-type {
-            margin-top: 4px;
+            margin-top: max(${(props) => props.theme.smallSpacing}, 8%);
         }
     }
 `;
@@ -70,6 +70,7 @@ const CategorySection = styled.section`
     padding: ${(props) => props.theme.biggerSpacing} ${(props) => props.theme.biggerSpacing};
 
     h2 {
+        font-size: max(18px, 1.4vw);
         margin-bottom: ${(props) => props.theme.regularSpacing};
     }
 
@@ -89,6 +90,10 @@ const EllipsedTitle = styled.h4`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: max(12px, 1.4vw);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 `;
 
 const AbsoluteOnlineTagDiv = styled.div`
@@ -108,7 +113,7 @@ export const SingleEvent = (props: Event & { customMarginBottom?: string; online
                 ) : null}
             </ImgContainer>
             <div>
-                <EllipsedTitle className={'uppercase'}>{props.name}</EllipsedTitle>
+                <EllipsedTitle>{props.name}</EllipsedTitle>
                 <span>{props.date}</span>
                 <span style={{ color: props.color }}>{props.price}</span>
             </div>

@@ -276,10 +276,10 @@ const AppContainerDiv = styled.div<AppContainerDivProps>`
     height: 100%;
 
     @media screen and (min-width: 1224px) {
-        width: 1080px;
+        width: 60vw;
         height: calc(100vh - 80px);
         margin-top: 80px;
-        margin-left: calc((100% - 1080px) / 2);
+        margin-left: 20vw;
     }
 `;
 
