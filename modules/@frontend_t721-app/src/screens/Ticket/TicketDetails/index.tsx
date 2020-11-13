@@ -31,10 +31,12 @@ import { useInView }                           from 'react-intersection-observer
 import { useWindowDimensions }                 from '@frontend/core/lib/hooks/useWindowDimensions';
 import { getPrice }                            from '../../../utils/prices';
 import { PushNotification }                    from '@frontend/core/lib/redux/ducks/notifications';
+import {Plugins, Capacitor} from '@capacitor/core';
 // tslint:disable-next-line:no-var-requires
 const publicIp = require('public-ip');
 // tslint:disable-next-line:no-var-requires
 const safeAreaInsets = require('safe-area-insets');
+
 
 interface TicketDetailsDateHeaderContainerProps {
     sticky: boolean;
@@ -193,18 +195,93 @@ const QRHoverContainer = styled(motion.div) <QRHoverContainerProps>`
   align-items: center;
 `;
 
-const onlineLinkWrapper = async (dispatch, t, onlineLink): Promise<void> => {
+const catchLiveTicket721Com = (onlineLink: string, ip: string, date: DateEntity): string => {
+    const url = new URL(onlineLink);
+
+    const type = url.searchParams.get('type');
+
+    switch (type) {
+        case 'vimeo': {
+            const vimeoId = url.searchParams.get('vimeo_id');
+            const chatId = url.searchParams.get('vimeo_chat_id');
+
+            const payload = btoa(JSON.stringify({
+                ip,
+                urls_landscape: [{
+                    url: `https://player.vimeo.com/video/${vimeoId}`,
+                    top: '0',
+                    left: '0',
+                    height: '100%',
+                    width: '50%'
+                }, {
+                    url: `https://vimeo.com/live-chat/${vimeoId}${chatId ? '/' + chatId : ''}`,
+                    top: '0',
+                    left: '50%',
+                    height: '100%',
+                    width: '50%'
+                }],
+                urls_portrait: [{
+                    url: `https://player.vimeo.com/video/${vimeoId}`,
+                    top: '0',
+                    left: '0',
+                    height: '50%',
+                    width: '100%'
+                }, {
+                    url: `https://vimeo.com/live-chat/${vimeoId}${chatId ? '/' + chatId : ''}`,
+                    top: '50%',
+                    left: '0',
+                    height: '50%',
+                    width: '100%'
+                }],
+            }));
+
+            const destination = `https://live.ticket721.com?_=${payload}`;
+
+            if (!Capacitor.isPluginAvailable('Browser')) {
+                window.location.href = destination;
+            } else {
+                Plugins.Browser.open({
+                    url: destination,
+                    toolbarColor: date.metadata.signature_colors[0]
+                });
+            }
+
+            return destination
+        }
+    }
+
+    return null
+
+}
+
+const catchExceptions = (onlineLink: string, ip: string, date: DateEntity): string => {
+    const url = new URL(onlineLink);
+
+    switch (url.hostname) {
+        case 'live.ticket721.com': {
+            return catchLiveTicket721Com(onlineLink, ip, date);
+        }
+    }
+
+    return null;
+}
+
+const onlineLinkWrapper = async (dispatch, t, onlineLink, date): Promise<void> => {
     publicIp
         .v4()
         .then(
             ip => {
+                const caughtType = catchExceptions(onlineLink, ip, date);
 
-                const payload = btoa(JSON.stringify({
-                    ip,
-                    url: onlineLink,
-                }));
+                if (!caughtType) {
+                    const payload = btoa(JSON.stringify({
+                        ip,
+                        url: onlineLink,
+                    }));
 
-                window.location.href = `https://live.ticket721.com/?_=${payload}`;
+                    window.location.href = `https://live.ticket721.com/?_=${payload}`;
+                }
+
             },
         )
         .catch(
@@ -440,7 +517,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                                                 start={new Date(date.timestamps.event_begin)}
                                                 end={new Date(date.timestamps.event_end)}
                                                 onClick={() => {
-                                                    onlineLinkWrapper(dispatch, t, date.online_link);
+                                                    onlineLinkWrapper(dispatch, t, date.online_link, date);
                                                 }
                                                 }
                                                 online_link={date.online_link}
