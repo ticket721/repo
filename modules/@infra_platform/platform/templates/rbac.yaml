@@ -29,7 +29,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ include "platform.fullname" . }}--platform--sa
-    namespace: staging
+    namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: {{ include "platform.fullname" . }}--platform--cr

@@ -50,7 +50,7 @@ interface DateIconProps {
     avatar: string;
 }
 
-const DateIconContainer = styled.img<DateIconProps>`
+const DateIconContainer = styled.div<DateIconProps>`
   width: ${props => props.width}px;
   height: ${props => props.height}px;
   border-radius: ${props => props.theme.defaultRadius};
