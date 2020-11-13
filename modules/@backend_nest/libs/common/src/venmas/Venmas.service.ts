@@ -1,6 +1,8 @@
-import { VenmasRepository } from '@lib/common/venmas/Venmas.repository';
-import { VenmasEntity } from '@lib/common/venmas/entities/Venmas.entity';
+import { VenmasRepository }  from '@lib/common/venmas/Venmas.repository';
+import { VenmasEntity }      from '@lib/common/venmas/entities/Venmas.entity';
 import { CategoriesService } from '@lib/common/categories/Categories.service';
+import { CRUDExtension }     from '@lib/common/crud/CRUDExtension.base';
+import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
 
 /**
  * Service to CRUD VenmasEntities
@@ -16,7 +18,7 @@ export class VenmasService extends CRUDExtension<VenmasRepository, VenmasEntity>
     constructor(
         @InjectRepository(VenmasRepository)
         venmasRepository: VenmasRepository,
-        @InjectModel(EventEntity)
+        @InjectModel(VenmasEntity)
         venmasEntity: BaseModel<VenmasEntity>,
         private readonly categoriesService: CategoriesService,
     ) {
