@@ -108,12 +108,19 @@ const EventsDashboardContainer = styled.div`
 
 const NoEvent = styled.div`
     width: 100%;
-    text-align: center;
+    height: calc(100vh - 264px);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    button {
+        width: 280px;
+    }
 `;
 
 const NoEventMsg = styled.span`
+    color: ${props => props.theme.textColorDarker};
+    margin-bottom: ${props => props.theme.biggerSpacing};
+    font-weight: 400;
 `;
