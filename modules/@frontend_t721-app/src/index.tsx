@@ -23,9 +23,10 @@ import { searchInitialState, SearchReducer }                               from 
 import { deviceWalletInitialState, DeviceWalletReducer, deviceWalletSaga } from './redux/ducks/device_wallet';
 import MediaQuery                                                          from 'react-responsive';
 import styled                                                              from 'styled-components';
-import phone                     from './phone.png';
-import { FullPageLoading, Icon } from '@frontend/flib-react/lib/components';
-import { useTranslation }        from 'react-i18next';
+import phone                                                               from './phone.png';
+import { FullPageLoading, Icon }                                           from '@frontend/flib-react/lib/components';
+import { useTranslation }                                                  from 'react-i18next';
+import { splashSaga }                                                      from './redux/ducks/splash/sagas';
 
 const store: Store<T721AppState> = configureStore<any>({
     location: LocationReducer,
@@ -38,6 +39,7 @@ const store: Store<T721AppState> = configureStore<any>({
 }, [
     locationSaga,
     deviceWalletSaga,
+    splashSaga
 ]);
 
 function useWindowSize() {
