@@ -2,9 +2,46 @@ doctype html
 html(lang='en')
     head
         title=t('mail_head_title')
+        link(rel='preconnect' href='https://fonts.gstatic.com')
+        link(href='https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap' rel='stylesheet')
+        style.
+            html * {
+                color: #fff !important;
+                font-family: 'Roboto', serif !important;
+                font-weight: 300;
+            }
+            html {
+                background-color: #120f1a;
+            }
+            button {
+                background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(260deg, #079CF0, #2143AB);
+                color: #fff;
+                border: none;
+                font-size: 16px;
+                font-weight: 300;
+                padding: 12px;
+                border-radius: 8px;
+            }
+            p {
+                font-weight: 300;
+            }
+            h1 {
+                text-align: center;
+            }
+            .container {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+            .margined {
+                margin-top: 20px;
+            }
     body
         h1=t('mail_body_title')
         div.container
             p=t('mail_body_subtitle')
-            a(href=`${validationLink}`)
+            a.margined(href=`${validationLink}`)
                 button=t('mail_body_button')
