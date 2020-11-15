@@ -4,58 +4,10 @@ html(lang='en')
         title=t('mail_head_title')
         link(rel='preconnect' href='https://fonts.gstatic.com')
         link(href='https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap' rel='stylesheet')
-        style.
-            html * {
-                color: #fff !important;
-                font-family: 'Roboto', sans-serif !important;
-                font-weight: 300;
-            }
+    body(style="background-color: #120f1a")
+        h1(style="color: #fff; font-family: 'Roboto', sans-serif; text-align: center; font-weight: 300;")=t('mail_body_title')
+        div(style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-cotnent: center; text-align: center;")
+            p(style="color: #fff; font-family: 'Roboto', sans-serif; font-weight: 300;")=t('mail_body_subtitle')
+            a(href=`${validationLink}` style="margin-top: 20px;")
+                button(style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(260deg, #079CF0, #2143AB); color: #fff; border: none; font-size: 16px; font-weight: 300; padding: 12px; border-radius: 8px; font-weight: 300; cursor: pointer;")=t('mail_body_button')
 
-            body {
-                background-color: #120f1a;
-            }
-
-            button {
-                background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(260deg, #079CF0, #2143AB);
-                color: #fff;
-                border: none;
-                font-size: 16px;
-                font-weight: 300;
-                padding: 12px;
-                border-radius: 8px;
-                cursor: pointer;
-            }
-
-            p {
-                font-weight: 300;
-                color: #fff;
-                font-family: 'Roboto', sans-serif;
-            }
-
-            h1 {
-                text-align: center;
-                color: #fff;
-                font-family: 'Roboto', sans-serif;
-            }
-
-            .container {
-                width: 100%;
-                display: flex;
-                display:-webkit-flex;
-                display:-ms-flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-            }
-
-            .margined {
-                margin-top: 20px;
-                    }
-
-    body
-    h1=t('mail_body_title')
-    div.container
-        p=t('mail_body_subtitle')
-        a.margined(href=`${validationLink}`)
-            button=t('mail_body_button')
