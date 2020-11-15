@@ -306,23 +306,24 @@ export class AuthenticationController {
                 resp.response,
                 body.redirectUrl || this.configService.get('RESET_PASSWORD_URL'),
             );
+            return {
+                validationToken:
+                    this.configService.get('NODE_ENV') === 'development'
+                        ? this.jwtService.sign(
+                              {
+                                  email: resp.response.email,
+                                  username: resp.response.username,
+                                  locale: resp.response.locale,
+                                  id: resp.response.id,
+                              },
+                              {
+                                  expiresIn: '1 day',
+                              },
+                          )
+                        : undefined,
+            };
         }
-        return {
-            validationToken:
-                this.configService.get('NODE_ENV') === 'development'
-                    ? this.jwtService.sign(
-                          {
-                              email: resp.response.email,
-                              username: resp.response.username,
-                              locale: resp.response.locale,
-                              id: resp.response.id,
-                          },
-                          {
-                              expiresIn: '1 day',
-                          },
-                      )
-                    : undefined,
-        };
+        return {};
     }
 
     /**

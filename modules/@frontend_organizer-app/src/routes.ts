@@ -101,6 +101,14 @@ export const routes: RouteDatum[] = [
         page: lazy(() => import('./routes/Login')),
     },
     {
+        path: '/reset',
+        page: lazy(() => import('./routes/Reset')),
+    },
+    {
+        path: '/reset-form',
+        page: lazy(() => import('./routes/ResetForm')),
+    },
+    {
         path: '/register',
         page: lazy(() => import('./routes/Register')),
     },

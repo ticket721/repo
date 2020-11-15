@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { PasswordlessUserDto } from '@app/server/authentication/dto/PasswordlessUser.dto';
 
 /**
@@ -8,6 +7,5 @@ export class ValidateResetPasswordResponseDto {
     /**
      * User information
      */
-    @ApiProperty()
     user: PasswordlessUserDto;
 }

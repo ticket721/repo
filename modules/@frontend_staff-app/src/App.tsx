@@ -9,6 +9,8 @@ import { useDispatch }                                      from 'react-redux';
 import { SetupDate }                                        from './redux/ducks/current_event';
 import { UserContextGuard }                                 from '@frontend/core/lib/utils/UserContext';
 import LoginPage                                            from './routes/Login';
+import ResetFormPage                                        from './routes/ResetForm';
+import ResetPage                                            from './routes/Reset';
 import ScanPage                                             from './routes/Scan';
 import GuestListPage                                        from './routes/GuestList';
 import StatsPage                                            from './routes/Stats';
@@ -43,6 +45,14 @@ const App: React.FC = () => {
 
                         <Route path={'/login'} exact={true}>
                             <LoginPage/>
+                        </Route>
+
+                        <Route path={'/reset'} exact={true}>
+                            <ResetPage/>
+                        </Route>
+
+                        <Route path={'/reset-form'} exact={true}>
+                            <ResetFormPage/>
                         </Route>
 
                         <ProtectedRoute path={'/stats'} exact={true}>

@@ -7,6 +7,8 @@ import styled                                                                   
 import { T721Navbar }                                                                       from './components/NavBar';
 import AdminRoutePage                                                                       from './routes/Admin';
 import LoginPage                                                                            from './routes/Login';
+import ResetPage                                                                         from './routes/Reset';
+import ResetFormPage                                                                         from './routes/ResetForm';
 import RegisterPage                                                                         from './routes/Register';
 import HomePage                                                                             from './routes/Home';
 import ProfileLanguagePage                                                                  from './routes/Language';
@@ -151,6 +153,14 @@ const MobileApp: React.FC = () => {
 
                                 <Route path={'/register'} exact={true}>
                                     <RegisterPage/>
+                                </Route>
+
+                                <Route path={'/reset'} exact={true}>
+                                    <ResetPage/>
+                                </Route>
+
+                                <Route path={'/reset-form'} exact={true}>
+                                    <ResetFormPage/>
                                 </Route>
 
                                 <Route path={'/'} exact={true}>

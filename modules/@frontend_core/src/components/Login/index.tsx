@@ -77,23 +77,43 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                     </Inputs>
                     <ActionsContainer>
                         <Button variant={'primary'} type={'submit'} title={t('login')} />
-                        <SwitchToRegister
-                            onClick={() => {
-                                if (props.onRegister) {
-                                    props.onRegister();
-                                } else {
-                                    if (props.externalRegister) {
-                                        window.open(props.externalRegister);
-                                    } else {
-                                        history.replace('/register', {
-                                            from,
-                                        });
-                                    }
-                                }
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: isTabletOrMobile ? 'column' : 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                textAlign: 'center',
                             }}
                         >
-                            {t('register_switch')}
-                        </SwitchToRegister>
+                            <SwitchToRegister
+                                onClick={() => {
+                                    if (props.onRegister) {
+                                        props.onRegister();
+                                    } else {
+                                        if (props.externalRegister) {
+                                            window.open(props.externalRegister);
+                                        } else {
+                                            history.replace('/register', {
+                                                from,
+                                            });
+                                        }
+                                    }
+                                }}
+                            >
+                                {t('register_switch')}
+                            </SwitchToRegister>
+                            <SwitchToReset
+                                isTabletOrMobile={isTabletOrMobile}
+                                onClick={() => {
+                                    history.push('/reset', {
+                                        from,
+                                    });
+                                }}
+                            >
+                                {t('forgot_password')}
+                            </SwitchToReset>
+                        </div>
                     </ActionsContainer>
                 </Form>
             </LoginContainer>
@@ -155,6 +175,17 @@ const ActionsContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+`;
+
+const SwitchToReset = styled.span<{ isTabletOrMobile: boolean }>`
+    font-size: 11px;
+    line-height: 15px;
+    margin-top: 5px;
+    margin-left: ${(props) => (props.isTabletOrMobile ? '0' : props.theme.regularSpacing)};
+    text-decoration: underline;
+    text-align: center;
+    cursor: pointer;
+    color: #ccc;
 `;
 
 const SwitchToRegister = styled.span`

@@ -198,7 +198,8 @@ export async function resetPassword(email: string, redirectUrl?: string) : Promi
 
 export async function validateResetPassword(
     token: string,
-    password: string): Promise<AxiosResponse<ValidateResetPasswordResponseDto> | FailedRegisterReport> {
+    password: string
+): Promise<AxiosResponse<ValidateResetPasswordResponseDto> | FailedRegisterReport> {
     const self: T721SDK = this;
 
     const report = getPasswordStrength(password);

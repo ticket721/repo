@@ -7,3 +7,5 @@ export * from './Login';
 export * from './Register';
 export * from './ToastStacker';
 export * from './ValidateRoute';
+export * from './Reset';
+export * from './ResetForm';
