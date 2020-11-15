@@ -6,8 +6,12 @@ html(lang='en')
         link(href='https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap' rel='stylesheet')
     body(style="background-color: #120f1a")
         h1(style="color: #fff; font-family: 'Roboto', sans-serif; text-align: center; font-weight: 300;")=t('mail_body_title')
-        div(style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-cotnent: center; text-align: center;")
-            p(style="color: #fff; font-family: 'Roboto', sans-serif; font-weight: 300;")=t('mail_body_subtitle')
-            a(href=`${validationLink}` style="margin-top: 20px;")
-                button(style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(260deg, #079CF0, #2143AB); color: #fff; border: none; font-size: 16px; font-weight: 300; padding: 12px; border-radius: 8px; font-weight: 300; cursor: pointer;")=t('mail_body_button')
+        table(width="100%" border="0" cellspacing="0" cellpadding="0")
+            tr
+                td(align="center")
+                    p(style="color: #fff; font-family: 'Roboto', sans-serif; font-weight: 300;")=t('mail_body_subtitle')
+            tr
+                td(align="center")
+                    a(href=`${validationLink}` style="margin-top: 20px;")
+                        button(style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(260deg, #079CF0, #2143AB); color: #fff; border: none; font-size: 16px; font-weight: 300; padding: 12px; border-radius: 8px; font-weight: 300; cursor: pointer;")=t('mail_body_button')
 
