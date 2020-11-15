@@ -10,6 +10,8 @@ i18n.addResourceBundle('en', 'reset', {
     // errors
     email_required: 'email is required',
     password_required: 'password is required',
+    reset_email_error: 'An error occured',
+    reset_email_success: 'A reset email has been sent if the email is found on the system',
 });
 i18n.addResourceBundle('fr', 'reset', {
     email_label: 'email',
@@ -21,4 +23,6 @@ i18n.addResourceBundle('fr', 'reset', {
     // errors
     email_required: 'email requis',
     password_required: 'mot de passe requis',
+    reset_email_error: 'Une erreur est survenue',
+    reset_email_success: "Un email de réinitialisation a été envoyé si l'adresse est bien présente dans notre système",
 });

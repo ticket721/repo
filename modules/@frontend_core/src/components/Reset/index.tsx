@@ -34,7 +34,7 @@ export const Reset: React.FC = () => {
         if (resetPasswordLazyRequest.response.error) {
             dispatch(PushNotification(t('reset_email_error'), 'error'));
         } else if (resetPasswordLazyRequest.response.data) {
-            dispatch(PushNotification(t('reset_email_sent'), 'success'));
+            dispatch(PushNotification(t('reset_email_success'), 'success'));
             history.goBack();
         }
     }, [resetPasswordLazyRequest.response]);
