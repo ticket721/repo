@@ -78,7 +78,7 @@ export const ResetForm: React.FC = () => {
                             onBlur={formik.handleBlur}
                             value={formik.values.password_confirmation}
                             error={
-                                formik.touched['passwordConfirmation'] && formik.errors['passwordConfirmation']
+                                formik.touched['password_confirmation'] && formik.errors['password_confirmation']
                                     ? t('different_password')
                                     : undefined
                             }
