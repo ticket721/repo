@@ -1,7 +1,6 @@
 import React, { useEffect, useState }      from 'react';
 import styled, { useTheme }                from 'styled-components';
 import { Theme }                           from '@frontend/flib-react/lib/config/theme';
-import { Icon }                            from '@frontend/flib-react/lib/components';
 import { useTranslation }                  from 'react-i18next';
 import { v4 }                              from 'uuid';
 import { useDispatch, useSelector }        from 'react-redux';
@@ -15,31 +14,8 @@ import { CartState }                       from '../Cart/CartContext';
 import { CartMenuStripeCBCheckout }        from './CartMenuStripeCBCheckout';
 import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
 import { useCustomStripe }                 from '@frontend/core/lib/utils/useCustomStripe';
-import { useApplePay }                     from './useApplePay';
-
-interface PaymentButtonDivProps {
-    color: string;
-    textColor: string;
-    disabled: boolean;
-}
-
-const PaymentButtonDiv = styled.div<PaymentButtonDivProps>`
-  opacity: ${props => props.disabled ? '0.1' : '1'};
-  width: 80%;
-  margin: ${props => props.theme.regularSpacing};
-  border-radius: ${props => props.theme.defaultRadius};
-  background-color: ${props => props.color};
-  padding: ${props => props.theme.regularSpacing};
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-
-  & span {
-    color: ${props => props.textColor};
-  }
-`;
+import { useApplePay }                         from './useApplePay';
+import { PaymentButtonDiv, PaymentButtonIcon } from './PaymentButton';
 
 const ComingSoonText = styled.span`
   opacity: 0.7;
@@ -47,33 +23,6 @@ const ComingSoonText = styled.span`
   font-size: 10px;
 `;
 
-interface PaymentButtonIconProps {
-    loading?: boolean;
-}
-
-const PaymentButtonIcon = styled(Icon)<PaymentButtonIconProps>`
-
-  @keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-  }
-
-  ${props => props.loading
-
-    ?
-    `animation: rotate 1s infinite;`
-
-    :
-    ``
-}
-  margin-left: ${props => props.theme.smallSpacing};
-  display: inline;
-`;
 
 const ButtonContainer = styled.div`
   height: calc(100% - 120px - env(safe-area-inset-bottom));
@@ -165,26 +114,22 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
 
         case null: {
             return <ButtonContainer>
-                <PaymentButtonDiv
-                    disabled={!apple.available}
-                    color={'#000000'}
-                    textColor={'#ffffff'}
-                    onClick={apple.pay}
-                >
-                    <span>Pay with</span>
-                    <PaymentButtonIcon
-                        icon={'applepay'}
-                        size={'18px'}
-                        color={'#ffffff'}
-                    />
-                </PaymentButtonDiv>
+                {
+                    apple.available && apple.Button
+
+                        ?
+                        apple.Button
+
+                        :
+                        null
+                }
 
                 <PaymentButtonDiv
                     disabled={true}
                     color={'#ffffff'}
                     textColor={'#000000'}
                 >
-                    <span>Pay with</span>
+                    <span>{t('pay_with')}</span>
                     <PaymentButtonIcon
                         icon={'googlepay'}
                         size={'18px'}
@@ -200,7 +145,7 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
                         setPaymentMethod('cb');
                     }}
                 >
-                    <span>Pay with</span>
+                    <span>{t('pay_with')}</span>
                     <PaymentButtonIcon
                         icon={'credit-card'}
                         size={'18px'}
@@ -214,7 +159,7 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
                     textColor={'#ffffff'}
                     onClick={onClear}
                 >
-                    <span>Cancel</span>
+                    <span>{t('cancel')}</span>
                     <PaymentButtonIcon
                         icon={loading ? 'loader' : 'close'}
                         loading={loading}

@@ -21,6 +21,9 @@ i18n.addResourceBundle('en', 'cart', {
     no_fees: 'No fees !',
     pay: 'Pay',
     back: 'Back',
+    cart_name: 'Ticket721',
+    pay_with: 'Pay with',
+    cancel: 'Cancel',
 
     category_limit_reached: 'You reached the maximum amount of tickets for this category !',
     online_category_limit_reached: 'You reached the maximum amount of tickets for this category !',
@@ -51,6 +54,9 @@ i18n.addResourceBundle('fr', 'cart', {
     no_fees: 'Aucuns frais !',
     pay: 'Payer',
     back: 'Retour',
+    cart_name: 'Ticket721',
+    pay_with: 'Payer avec',
+    cancel: 'Annuler',
 
     category_limit_reached: 'Vous avez atteint la limite de tickets pour cette catégorie !',
     online_category_limit_reached: 'Vous avez atteint la limite de tickets pour cette catégorie !',

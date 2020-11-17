@@ -1,7 +1,7 @@
-import { Plugins }             from '@capacitor/core';
-import { getEnv }                                                from './getEnv';
+import { Plugins } from '@capacitor/core';
+import { getEnv } from './getEnv';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { loadStripe }                                            from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import { StripeSDK, StripeSDKContext } from './StripeSDKContext';
 
 const { Stripe } = Plugins;
@@ -11,13 +11,18 @@ export interface StripeSDKOptions {
 }
 
 export const useCustomStripe = (options?: StripeSDKOptions): StripeSDK => {
-
     const stripeSDKContext = useContext(StripeSDKContext);
 
-    const setSDK = useCallback((_sdk: StripeSDK) => {
-        stripeSDKContext.store(options?.stripe_account || 'core', _sdk)
-    }, [options])
-    const sdk = useMemo(() => stripeSDKContext.instances[options?.stripe_account || 'core'] || null, [stripeSDKContext, options])
+    const setSDK = useCallback(
+        (_sdk: StripeSDK) => {
+            stripeSDKContext.store(options?.stripe_account || 'core', _sdk);
+        },
+        [options],
+    );
+    const sdk = useMemo(() => stripeSDKContext.instances[options?.stripe_account || 'core'] || null, [
+        stripeSDKContext,
+        options,
+    ]);
     const [registered, setRegistered] = useState(sdk !== null);
 
     useEffect(() => {

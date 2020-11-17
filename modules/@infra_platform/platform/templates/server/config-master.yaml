@@ -38,3 +38,5 @@ data:
     IMAGE_S3_BUCKET_NAME={{ required "[server] Missing config.s3.bucketName value" .Values.config.s3.bucketName }}
 
     FEATURE_FLAGS_CONFIG=/config/feature-flags.json
+
+    APPLE_PAY_DOMAINS={{ required "[organizer] Missing config.organizer.self value" .Values.config.organizer.self }},{{ required "[organizer] Missing config.t721app.self value" .Values.config.t721app.self }},{{ required "[organizer] Missing config.staff.self value" .Values.config.staff.self }}
