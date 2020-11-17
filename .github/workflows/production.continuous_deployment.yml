@@ -44,7 +44,7 @@ jobs:
 
         - name: "Setup aws CLI"
           if: steps.wait-for-build.outputs.conclusion == 'success'
-          uses: chrislennon/action-aws-cli@v1.1
+          run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install && aws --version
 
         - name: Check if images already exist
           id: should_build
