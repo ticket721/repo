@@ -6,7 +6,7 @@ import { useTranslation }             from 'react-i18next';
 import { useDeepEffect }              from '@frontend/core/lib/hooks/useDeepEffect';
 import { useElements }                from '@stripe/react-stripe-js';
 import { PushNotification }           from '@frontend/core/lib/redux/ducks/notifications';
-import { StripeSDK }                  from '@frontend/core/lib/utils/useCustomStripe';
+import { StripeSDK }                  from '@frontend/core/lib/utils/StripeSDKContext';
 import { CartContext }                from '../Cart/CartContext';
 import { useDispatch }                from 'react-redux';
 import { UserContext }                from '@frontend/core/lib/utils/UserContext';

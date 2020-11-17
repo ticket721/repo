@@ -253,6 +253,7 @@ apps:
       config.t721app.appStoreLink: "${CONFIG_STAGING_T721APP_APPSTORE_LINK}"
       config.t721app.playStoreLink: "${CONFIG_STAGING_T721APP_PLAYSTORE_LINK}"
       config.t721app.self: "https://app.staging.ticket721.com"
+      config.t721app.iosMerchantId: "${CONFIG_STAGING_T721APP_APPLE_MERCHANT_ID}"
 
       config.staff.segmentApiKey: "${CONFIG_STAGING_STAFF_SEGMENT_API_KEY}"
       config.staff.organizerUrl: "https://organizer.staging.ticket721.com"

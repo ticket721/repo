@@ -112,7 +112,7 @@ export const CartMenuCheckout = () => {
                         }
                     </PriceSectionContainer>
                 </PriceContainer>
-                <CartMenuStripeCheckout />
+                <CartMenuStripeCheckout cart={cart}/>
             </>
         }
     }
