@@ -1,4 +1,4 @@
-import { StripeSDK }                   from '@frontend/core/lib/utils/useCustomStripe';
+import { StripeSDK }                   from '@frontend/core/lib/utils/StripeSDKContext';
 import React, { useContext, useState } from 'react';
 import styled, { useTheme }            from 'styled-components';
 import { useTranslation }              from 'react-i18next';

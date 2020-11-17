@@ -57,8 +57,10 @@ spec:
               value: '{{ required "[t721app] Missing config.t721app.playStoreLink value" .Values.config.t721app.playStoreLink }}'
             - name: REACT_APP_ERROR_THRESHOLD
               value: '5'
+            - name: REACT_APP_APPLE_PAY_MERCHANT_ID
+              value: '{{ required "[t721app] Missing config.t721app.webMerchantId value" .Values.config.t721app.iosMerchantId }}'
             - name: REACT_APP_SELF
-              value: '{{ required "[t721app] Missing config.t721app.self value" .Values.config.t721app.self }}'
+              value: 'https://{{ required "[t721app] Missing config.t721app.self value" .Values.config.t721app.self }}'
           ports:
             - name: http
               containerPort: 5000
@@ -70,6 +72,9 @@ spec:
             - name: t721app-config-well-known
               mountPath: /repo/modules/@frontend_t721-app/build/.well-known/assetlinks.json
               subPath: assetlinks.json
+            - name: t721app-config-well-known
+              mountPath: /repo/modules/@frontend_t721-app/build/.well-known/apple-developer-merchantid-domain-association
+              subPath: apple-developer-merchantid-domain-association
           livenessProbe:
             httpGet:
               path: /

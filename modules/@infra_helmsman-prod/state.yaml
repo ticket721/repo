@@ -243,7 +243,7 @@ apps:
       config.serverEndpoint.port: "443"
       config.serverEndpoint.protocol: "https"
 
-      config.organizer.self: "https://organizer.ticket721.com"
+      config.organizer.self: "organizer.ticket721.com"
       config.organizer.segmentApiKey: "${CONFIG_PRODUCTION_ORGANIZER_SEGMENT_API_KEY}"
       config.organizer.publishableStripeApiKey: "${CONFIG_PRODUCTION_ORGANIZER_PUBLISHABLE_STRIPE_API_KEY}"
 
@@ -255,11 +255,18 @@ apps:
       config.t721app.androidCertificateSignature: "${CONFIG_PRODUCTION_T721APP_ANDROID_CERTIFICATE_SIGNATURE}"
       config.t721app.appStoreLink: "${CONFIG_PRODUCTION_T721APP_APPSTORE_LINK}"
       config.t721app.playStoreLink: "${CONFIG_PRODUCTION_T721APP_PLAYSTORE_LINK}"
-      config.t721app.self: "https://app.ticket721.com"
+      config.t721app.self: "app.ticket721.com"
+      
+      config.t721app.webMerchantId: "${CONFIG_PRODUCTION_T721APP_APPLE_MERCHANT_ID}"
+      config.organizer.webMerchantId: "${CONFIG_PRODUCTION_T721APP_APPLE_MERCHANT_ID}"
+      config.staff.webMerchantId: "${CONFIG_PRODUCTION_T721APP_APPLE_MERCHANT_ID}"
+      config.t721app.iosMerchantId: "${CONFIG_PRODUCTION_IOS_T721APP_APPLE_MERCHANT_ID}"
+      config.organizer.iosMerchantId: "${CONFIG_PRODUCTION_IOS_T721APP_APPLE_MERCHANT_ID}"
+      config.staff.iosMerchantId: "${CONFIG_PRODUCTION_IOS_T721APP_APPLE_MERCHANT_ID}"
 
       config.staff.segmentApiKey: "${CONFIG_PRODUCTION_STAFF_SEGMENT_API_KEY}"
       config.staff.organizerUrl: "https://organizer.ticket721.com"
-      config.staff.self: "https://staff.ticket721.com"
+      config.staff.self: "staff.ticket721.com"
 
       config.bugReportLink: "${CONFIG_BUG_REPORT_LINK}"
 

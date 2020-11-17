@@ -26,6 +26,10 @@ spec:
         chart: {{ .Chart.Name }}
     spec:
       serviceAccountName: {{ include "platform.fullname" . }}--platform--sa
+      volumes:
+        - name: staff-config-well-known
+          configMap:
+            name: {{ template "platform.fullname" . }}--staff-config-well-known--cfmp
       containers:
         - name: {{ template  "platform.fullname" . }}--staff
           image: "{{ .Values.staff.image.repository }}:{{ .Values.staff.image.tag }}"
@@ -50,11 +54,15 @@ spec:
             - name: REACT_APP_T721_ORGANIZER_URL
               value: '{{ required "[staff] Missing config.staff.organizerUrl value" .Values.config.staff.organizerUrl }}'
             - name: REACT_APP_SELF
-              value: '{{ required "[staff] Missing config.staff.self value" .Values.config.staff.self }}'
+              value: 'https://{{ required "[staff] Missing config.staff.self value" .Values.config.staff.self }}'
           ports:
             - name: http
               containerPort: 5000
               protocol: TCP
+          volumeMounts:
+            - name: staff-config-well-known
+              mountPath: /repo/modules/@frontend_staff-app/build/.well-known/apple-developer-merchantid-domain-association
+              subPath: apple-developer-merchantid-domain-association
           livenessProbe:
             httpGet:
               path: /

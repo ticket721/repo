@@ -28,3 +28,5 @@ data:
         "sha256_cert_fingerprints": ["{{ .Values.config.t721app.androidCertificateSignature }}"]
       }
     }]
+  apple-developer-merchantid-domain-association: |-
+    {{ .Values.config.t721app.webMerchantId }}

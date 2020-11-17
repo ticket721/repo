@@ -8,7 +8,7 @@ import { useToken } from '../../hooks/useToken';
 import { v4 } from 'uuid';
 import { Country } from '../../utils/countries';
 import { PushNotification } from '../../redux/ducks/notifications';
-import { StripeSDK, useCustomStripe } from '../../utils/useCustomStripe';
+import { useCustomStripe } from '../../utils/useCustomStripe';
 import { useLazyRequest } from '../../hooks/useLazyRequest';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
 import { FullButtonCta, SelectInput, TextInput } from '@frontend/flib-react/lib/components';
@@ -21,6 +21,7 @@ import axios, { Method } from 'axios';
 import { getEnv } from '../../utils/getEnv';
 import qs from 'qs';
 import { currencies, symbolOf } from '@common/global';
+import { StripeSDK } from '../../utils/StripeSDKContext';
 
 const StripeNativeEndpointUrl = 'https://api.stripe.com/v1';
 

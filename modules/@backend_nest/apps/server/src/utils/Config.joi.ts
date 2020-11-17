@@ -97,5 +97,7 @@ export const Config: Joi.ObjectSchema = Joi.object({
             otherwise: Joi.optional(),
         }),
 
+    APPLE_PAY_DOMAINS: Joi.string().required(),
+
     FEATURE_FLAGS_CONFIG: Joi.string().optional(),
 });

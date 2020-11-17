@@ -14,6 +14,7 @@ import Stripe from 'stripe';
 import { SECOND } from '@lib/common/utils/time';
 import { TimeToolService } from '../toolbox/Time.tool.service';
 import { NestError } from '@lib/common/utils/NestError';
+import { ConfigService } from '@lib/common/config/Config.service';
 
 /**
  * Service to CRUD StripeInterfaceEntities
@@ -26,6 +27,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
      * @param stripeInterfaceEntity
      * @param stripeService
      * @param timeToolService
+     * @param configService
      */
     constructor(
         @InjectRepository(StripeInterfacesRepository)
@@ -34,6 +36,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
         stripeInterfaceEntity: BaseModel<StripeInterfaceEntity>,
         private readonly stripeService: StripeService,
         private readonly timeToolService: TimeToolService,
+        private readonly configService: ConfigService,
     ) {
         super(
             stripeInterfaceEntity,
@@ -343,6 +346,32 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
                     connect_account_disabled_reason: account.requirements.disabled_reason,
                     connect_account_updated_at: this.timeToolService.now(),
                 };
+
+                if (account.capabilities.card_payments === 'active') {
+                    const storedDomains: Stripe.ApplePayDomain[] = (await stripe.applePayDomains.list()).data;
+
+                    const domains = this.configService.get('APPLE_PAY_DOMAINS').split(',');
+
+                    const missingDomains = domains.filter((domain: string): boolean => {
+                        return (
+                            domain !== '' &&
+                            storedDomains.findIndex(
+                                (apd: Stripe.ApplePayDomain): boolean => apd.domain_name === domain,
+                            ) === -1
+                        );
+                    });
+
+                    for (const domain of missingDomains) {
+                        await stripe.applePayDomains.create(
+                            {
+                                domain_name: domain,
+                            },
+                            {
+                                stripeAccount: account.id,
+                            },
+                        );
+                    }
+                }
 
                 const accountUpdate = await this.update(
                     {

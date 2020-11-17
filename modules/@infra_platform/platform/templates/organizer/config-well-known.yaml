@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "platform.fullname" . }}--organizer-config-well-known--cfmp
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: {{ include "platform.fullname" . }}--organizer-config-well-known--cfmp
+    chart: {{ .Chart.Name }}
+data:
+  apple-developer-merchantid-domain-association: |-
+    {{ .Values.config.organizer.webMerchantId }}

@@ -5,7 +5,7 @@ import { FullButtonCta, Icon, SelectInput } from '@frontend/flib-react/lib/compo
 import axios, { Method } from 'axios';
 import { getEnv } from '../../utils/getEnv';
 import qs from 'qs';
-import { StripeSDK, useCustomStripe } from '../../utils/useCustomStripe';
+import { useCustomStripe } from '../../utils/useCustomStripe';
 import { Dispatch } from 'redux';
 import { PushNotification } from '../../redux/ducks/notifications';
 import React, { useState } from 'react';
@@ -21,6 +21,7 @@ import { CtaMargin } from '../../utils/CtaMargin';
 import { TopNavMargin } from '../../utils/TopNavMargin';
 import { InvisibleStatusBarMargin } from '../../utils/InvisibleStatusBarMargin';
 import { currencies, symbolOf } from '@common/global';
+import { StripeSDK } from '../../utils/StripeSDKContext';
 
 const StripeServiceAgreementUrl = 'https://stripe.com/legal';
 const StripeConnectedAccountAgreementUrl = 'https://stripe.com/connect-account/legal';

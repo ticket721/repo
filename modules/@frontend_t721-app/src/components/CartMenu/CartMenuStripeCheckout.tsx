@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
-import styled, { useTheme }            from 'styled-components';
-import { Theme }                                  from '@frontend/flib-react/lib/config/theme';
-import { Icon }                            from '@frontend/flib-react/lib/components';
+import React, { useEffect, useState }      from 'react';
+import styled, { useTheme }                from 'styled-components';
+import { Theme }                           from '@frontend/flib-react/lib/config/theme';
 import { useTranslation }                  from 'react-i18next';
 import { v4 }                              from 'uuid';
 import { useDispatch, useSelector }        from 'react-redux';
@@ -11,67 +10,19 @@ import { PurchasesSetProductsResponseDto } from '@common/sdk/lib/@backend_nest/a
 import { isNil }                           from 'lodash';
 import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
 import { PurchaseError }                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
-import { CartContext }                     from '../Cart/CartContext';
+import { CartState }                       from '../Cart/CartContext';
 import { CartMenuStripeCBCheckout }        from './CartMenuStripeCBCheckout';
 import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
-
-interface PaymentButtonDivProps {
-    color: string;
-    textColor: string;
-    disabled: boolean;
-}
-
-const PaymentButtonDiv = styled.div<PaymentButtonDivProps>`
-  opacity: ${props => props.disabled ? '0.1' : '1'};
-  width: 80%;
-  margin: ${props => props.theme.regularSpacing};
-  border-radius: ${props => props.theme.defaultRadius};
-  background-color: ${props => props.color};
-  padding: ${props => props.theme.regularSpacing};
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-
-  & span {
-    color: ${props => props.textColor};
-  }
-`
+import { useCustomStripe }                 from '@frontend/core/lib/utils/useCustomStripe';
+import { useApplePay }                         from './useApplePay';
+import { PaymentButtonDiv, PaymentButtonIcon } from './PaymentButton';
 
 const ComingSoonText = styled.span`
   opacity: 0.7;
   margin: 0;
   font-size: 10px;
-`
-
-interface PaymentButtonIconProps {
-    loading?: boolean;
-}
-
-const PaymentButtonIcon = styled(Icon)<PaymentButtonIconProps>`
-
-  @keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-  }
-
-  ${props => props.loading
-
-    ?
-    `animation: rotate 1s infinite;`
-
-    :
-    ``
-}
-  margin-left: ${props => props.theme.smallSpacing};
-  display: inline;
 `;
+
 
 const ButtonContainer = styled.div`
   height: calc(100% - 120px - env(safe-area-inset-bottom));
@@ -81,26 +32,30 @@ const ButtonContainer = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-`
+`;
 
 const generateErrorMessage = (t: any, error: PurchaseError): string => {
     return t(error.reason, error.context);
-}
+};
 
-// tslint:disable-next-line:no-empty-interface
 export interface CartMenuStripeCheckoutProps {
+    cart: CartState;
 }
 
 export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (props: CartMenuStripeCheckoutProps) => {
 
     const [t] = useTranslation('cart');
     const theme = useTheme() as Theme;
-    const cart = useContext(CartContext);
     const [uuid] = useState(v4());
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
     const [capturedTimesstamp, setTimestamp] = useState(null);
     const [paymentMethod, setPaymentMethod] = useState(null);
     const dispatch = useDispatch();
+    const paymentInfos = JSON.parse(props.cart.cart.payment.client_id);
+    const sdk = useCustomStripe({
+        stripe_account: paymentInfos.stripe_account,
+    });
+    const apple = useApplePay(sdk, props.cart);
 
     const setProductsLazyRequest = useLazyRequest<PurchasesSetProductsResponseDto>('purchases.setProducts', uuid);
 
@@ -112,13 +67,13 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
 
                     const data = setProductsLazyRequest.response.data;
                     if (data.errors.filter((elem): boolean => !isNil(elem)).length > 0) {
-                        const errors = data.errors.filter((elem): boolean => !isNil(elem))
+                        const errors = data.errors.filter((elem): boolean => !isNil(elem));
                         for (const error of errors) {
-                            dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
+                            dispatch(PushNotification(generateErrorMessage(t, error), 'error'));
                         }
                         setTimestamp(null);
                     } else {
-                        cart.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
+                        props.cart.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
                     }
 
                 }
@@ -131,54 +86,50 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
         setProductsLazyRequest.lazyRequest([
             token,
             {
-                products: []
+                products: [],
             },
-            v4()
+            v4(),
         ], {
-            force: true
+            force: true,
         });
-        setTimestamp(cart.last_update);
-    }
+        setTimestamp(props.cart.last_update);
+    };
 
-    const loading = (capturedTimesstamp !== null && capturedTimesstamp === cart.last_update);
+    const loading = (capturedTimesstamp !== null && capturedTimesstamp === props.cart.last_update);
 
     switch (paymentMethod) {
 
         case 'cb': {
 
-            if (!cart.cart?.payment) {
-                return null
+            if (!props.cart.cart?.payment) {
+                return null;
             }
-
-            const paymentInfos = JSON.parse(cart.cart.payment.client_id);
 
             return <CartMenuStripeCBCheckout
                 stripeAccount={paymentInfos.stripe_account}
+                sdk={sdk}
                 back={() => setPaymentMethod(null)}
             />;
         }
 
         case null: {
             return <ButtonContainer>
-                <PaymentButtonDiv
-                    disabled={true}
-                    color={'#000000'}
-                    textColor={'#ffffff'}
-                >
-                    <span>Pay with</span>
-                    <PaymentButtonIcon
-                        icon={'applepay'}
-                        size={'18px'}
-                        color={'#ffffff'}
-                    />
-                </PaymentButtonDiv>
+                {
+                    apple.available && apple.Button
+
+                        ?
+                        apple.Button
+
+                        :
+                        null
+                }
 
                 <PaymentButtonDiv
                     disabled={true}
                     color={'#ffffff'}
                     textColor={'#000000'}
                 >
-                    <span>Pay with</span>
+                    <span>{t('pay_with')}</span>
                     <PaymentButtonIcon
                         icon={'googlepay'}
                         size={'18px'}
@@ -194,7 +145,7 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
                         setPaymentMethod('cb');
                     }}
                 >
-                    <span>Pay with</span>
+                    <span>{t('pay_with')}</span>
                     <PaymentButtonIcon
                         icon={'credit-card'}
                         size={'18px'}
@@ -208,7 +159,7 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
                     textColor={'#ffffff'}
                     onClick={onClear}
                 >
-                    <span>Cancel</span>
+                    <span>{t('cancel')}</span>
                     <PaymentButtonIcon
                         icon={loading ? 'loader' : 'close'}
                         loading={loading}
@@ -219,9 +170,9 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
 
                 <ComingSoonText>{t('coming_soon')}</ComingSoonText>
 
-            </ButtonContainer>
+            </ButtonContainer>;
         }
     }
 
-}
+};
 
