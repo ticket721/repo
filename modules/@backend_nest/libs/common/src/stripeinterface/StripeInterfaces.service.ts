@@ -5,16 +5,16 @@ import {
     ConnectAccountCapability,
     ConnectAccountExternalAccount,
     StripeInterfaceEntity,
-}                          from '@lib/common/stripeinterface/entities/StripeInterface.entity';
+} from '@lib/common/stripeinterface/entities/StripeInterface.entity';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
-import { StripeService }   from '@lib/common/stripe/Stripe.service';
-import { UserDto }         from '@lib/common/users/dto/User.dto';
-import { fromES }          from '@lib/common/utils/fromES.helper';
-import Stripe              from 'stripe';
-import { SECOND }          from '@lib/common/utils/time';
+import { StripeService } from '@lib/common/stripe/Stripe.service';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { fromES } from '@lib/common/utils/fromES.helper';
+import Stripe from 'stripe';
+import { SECOND } from '@lib/common/utils/time';
 import { TimeToolService } from '../toolbox/Time.tool.service';
-import { NestError }       from '@lib/common/utils/NestError';
-import { ConfigService }   from '@lib/common/config/Config.service';
+import { NestError } from '@lib/common/utils/NestError';
+import { ConfigService } from '@lib/common/config/Config.service';
 
 /**
  * Service to CRUD StripeInterfaceEntities
@@ -31,12 +31,12 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
      */
     constructor(
         @InjectRepository(StripeInterfacesRepository)
-            stripeInterfacesRepository: StripeInterfacesRepository,
+        stripeInterfacesRepository: StripeInterfacesRepository,
         @InjectModel(StripeInterfaceEntity)
-            stripeInterfaceEntity: BaseModel<StripeInterfaceEntity>,
+        stripeInterfaceEntity: BaseModel<StripeInterfaceEntity>,
         private readonly stripeService: StripeService,
         private readonly timeToolService: TimeToolService,
-        private readonly configService: ConfigService
+        private readonly configService: ConfigService,
     ) {
         super(
             stripeInterfaceEntity,
@@ -348,23 +348,29 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
                 };
 
                 if (account.capabilities.card_payments === 'active') {
-
                     const storedDomains: Stripe.ApplePayDomain[] = (await stripe.applePayDomains.list()).data;
 
                     const domains = this.configService.get('APPLE_PAY_DOMAINS').split(',');
 
                     const missingDomains = domains.filter((domain: string): boolean => {
-                        return domain !== '' && storedDomains.findIndex((apd: Stripe.ApplePayDomain): boolean => apd.domain_name === domain) === -1
+                        return (
+                            domain !== '' &&
+                            storedDomains.findIndex(
+                                (apd: Stripe.ApplePayDomain): boolean => apd.domain_name === domain,
+                            ) === -1
+                        );
                     });
 
                     for (const domain of missingDomains) {
-                        await stripe.applePayDomains.create({
-                            domain_name: domain
-                        }, {
-                            stripeAccount: account.id
-                        });
+                        await stripe.applePayDomains.create(
+                            {
+                                domain_name: domain,
+                            },
+                            {
+                                stripeAccount: account.id,
+                            },
+                        );
                     }
-
                 }
 
                 const accountUpdate = await this.update(

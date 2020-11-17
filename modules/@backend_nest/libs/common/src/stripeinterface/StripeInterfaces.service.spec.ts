@@ -11,6 +11,7 @@ import { UserDto } from '../users/dto/User.dto';
 import { ESSearchReturn } from '../utils/ESSearchReturn.type';
 import { TimeToolService } from '../toolbox/Time.tool.service';
 import { SECOND } from '../utils/time';
+import { ConfigService } from '@lib/common/config/Config.service';
 
 class StripeInterfaceEntityMock {
     public _properties = null;
@@ -25,6 +26,7 @@ describe('StripeInterfaces Service', function() {
         stripeInterfacesService: StripeInterfacesService;
         stripeInterfaceEntityMock: StripeInterfaceEntityMock;
         stripeInterfacesRepositoryMock: StripeInterfacesRepository;
+        configServiceMock: ConfigService;
         stripeServiceMock: StripeService;
         stripeMock: Stripe;
         timeToolServiceMock: TimeToolService;
@@ -32,6 +34,7 @@ describe('StripeInterfaces Service', function() {
         stripeInterfacesService: null,
         stripeInterfaceEntityMock: null,
         stripeInterfacesRepositoryMock: null,
+        configServiceMock: null,
         stripeServiceMock: null,
         stripeMock: null,
         timeToolServiceMock: null,
@@ -49,6 +52,10 @@ describe('StripeInterfaces Service', function() {
         context.stripeMock = mock(Stripe);
         when(context.stripeServiceMock.get()).thenReturn(instance(context.stripeMock));
         context.timeToolServiceMock = mock(TimeToolService);
+        context.configServiceMock = mock(ConfigService);
+        when(context.configServiceMock.get('APPLE_PAY_DOMAINS')).thenReturn(
+            'app.ticket721.com,organizer.ticket721.com',
+        );
 
         const app = await Test.createTestingModule({
             providers: [
@@ -67,6 +74,10 @@ describe('StripeInterfaces Service', function() {
                 {
                     provide: TimeToolService,
                     useValue: instance(context.timeToolServiceMock),
+                },
+                {
+                    provide: ConfigService,
+                    useValue: instance(context.configServiceMock),
                 },
                 StripeInterfacesService,
             ],
