@@ -11,8 +11,8 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 0
-      maxUnavailable: 1
+      maxSurge: 2
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: {{ include "platform.fullname" . }}--server

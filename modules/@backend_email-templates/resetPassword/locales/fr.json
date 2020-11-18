@@ -1,7 +1,6 @@
 {
     "mail_subject": "Réinitialisez votre mot de passe Ticket721",
     "mail_head_title": "Réinitialisez votre mot de passe Ticket721",
-    "mail_body_title": "Réinitialisez votre mot de passe Ticket721 pour récuperer votre compte",
-    "mail_body_subtitle": "Cliquez sur le bouton pour réinitialiser votre mot de passe Ticket721",
+    "mail_body_subtitle": "Cliquez sur le bouton pour réinitialiser votre mot de passe Ticket721.",
     "mail_body_button": "Réinitialiser mon mot de passe"
 }

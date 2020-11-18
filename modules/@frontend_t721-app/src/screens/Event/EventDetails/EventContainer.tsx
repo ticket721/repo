@@ -134,20 +134,20 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
                 props.date.online
 
                     ?
-                    null
+                    <Border/>
 
                     :
                     <LocationCard
                         iconColor={eventDetails.mainColor}
                         location={eventDetails.location}
                         subtitle={t('get_directions')}
+                        get_directions={t('get_directions')}
                         removeBg
                         coords={
                             props.date.location.location
                         }
                     />
             }
-            <Border/>
             {
                 hasLinks(props.date)
 

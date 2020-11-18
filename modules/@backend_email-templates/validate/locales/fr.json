@@ -1,7 +1,6 @@
 {
     "mail_subject": "Validez votre email Ticket721",
     "mail_head_title": "Validez votre email Ticket721",
-    "mail_body_title": "Validez votre email pour commencer à utiliser la plateforme",
-    "mail_body_subtitle": "Bienvenue chez Ticket721, cliquez sur le bouton pour valider votre compte et cherchez votre prochain évènement",
+    "mail_body_subtitle": "Bienvenue chez Ticket721, cliquez sur le bouton pour valider votre compte et chercher votre prochain évènement !",
     "mail_body_button": "Validez votre email !"
 }

@@ -59,6 +59,13 @@ spec:
             - name: http
               containerPort: 5000
               protocol: TCP
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
           volumeMounts:
             - name: organizer-config-well-known
               mountPath: /repo/modules/@frontend_organizer-app/build/.well-known/apple-developer-merchantid-domain-association

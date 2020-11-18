@@ -104,10 +104,10 @@ const App: React.FC = () => {
                                 <Redirect to={'/'}/>
                             </Switch>
                         </Suspense>
-                        <ToastStacker additionalLocales={[]}/>
                     </AppContainer>
                 </StripeSDKManager>
             </UserContextGuard>
+            <ToastStacker additionalLocales={[]}/>
         </Suspense>
     );
 };

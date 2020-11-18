@@ -7,6 +7,14 @@ interface OnlineTagProps {
     online: string | null;
 }
 
+export const OnlineBadge: React.FC = () => {
+    return (
+        <Badge>
+            <Icon icon={'live'} size={'16px'} color={'white'} />
+        </Badge>
+    );
+};
+
 export const OnlineTag: React.FC<OnlineTagProps> = (props: OnlineTagProps) => {
     return (
         <Tag>
@@ -15,6 +23,15 @@ export const OnlineTag: React.FC<OnlineTagProps> = (props: OnlineTagProps) => {
         </Tag>
     );
 };
+
+const Badge = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: ${(props) => props.theme.badgeColor.hex};
+    padding: 3px;
+    border-radius: 12px;
+`;
 
 const Tag = styled.div`
     display: flex;

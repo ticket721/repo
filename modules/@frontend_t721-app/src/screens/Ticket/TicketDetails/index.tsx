@@ -20,17 +20,18 @@ import qrcodePreview2                          from '../../../media/images/qrcod
 import { getImgPath }                          from '@frontend/core/lib/utils/images';
 import { useDispatch, useSelector }            from 'react-redux';
 import { T721AppState }                        from '../../../redux';
-import { ResetTicket, StartRegenInterval }     from '../../../redux/ducks/device_wallet';
-import { DynamicQrCode }                       from '../DynamicQrCode';
-import { CategoryEntity }                      from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-import { TicketEntity }                        from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
-import { DateEntity }                          from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
-import { EventEntity }                         from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
-import { Sticky, StickyContainer }             from 'react-sticky';
-import { useInView }                           from 'react-intersection-observer';
-import { useWindowDimensions }                 from '@frontend/core/lib/hooks/useWindowDimensions';
-import { getPrice }                            from '../../../utils/prices';
-import { PushNotification }                    from '@frontend/core/lib/redux/ducks/notifications';
+import { ResetTicket, StartRegenInterval } from '../../../redux/ducks/device_wallet';
+import { DynamicQrCode }                   from '../DynamicQrCode';
+import { CategoryEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import { TicketEntity }                    from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
+import { DateEntity }                      from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { EventEntity }                     from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
+import { Sticky, StickyContainer }         from 'react-sticky';
+import { useInView }                       from 'react-intersection-observer';
+import { useWindowDimensions }             from '@frontend/core/lib/hooks/useWindowDimensions';
+import { getPrice }                        from '../../../utils/prices';
+import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
+import { OnlineBadge }                     from '@frontend/flib-react/lib/components/events/single-image/OnlineTag';
 // tslint:disable-next-line:no-var-requires
 const publicIp = require('public-ip');
 // tslint:disable-next-line:no-var-requires
@@ -57,9 +58,11 @@ interface DateIconProps {
     width: number;
     height: number;
     avatar: string;
+    online: boolean;
 }
 
 const DateIconContainer = styled.div<DateIconProps>`
+  position: relative;
   width: ${props => props.width}px;
   height: ${props => props.height}px;
   border-radius: ${props => props.theme.defaultRadius};
@@ -73,7 +76,18 @@ const DateIcon = (props: DateIconProps) => {
         width={props.width}
         height={props.height}
         avatar={props.avatar}
-    />
+        online={props.online}
+    >
+        <div
+            style={{
+                position: 'absolute',
+                right: 3,
+                top: 3
+            }}
+        >
+            <OnlineBadge/>
+        </div>
+    </DateIconContainer>
 }
 
 const DateTitle = styled.span`
@@ -141,6 +155,7 @@ const TicketDetailsDateHeader: React.FC<TicketDetailsDateHeaderProps> = (props: 
                 avatar={props.date.metadata.avatar}
                 width={60}
                 height={60}
+                online={props.date.online}
             />
             <div
                 style={{
