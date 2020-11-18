@@ -78,15 +78,23 @@ const DateIcon = (props: DateIconProps) => {
         avatar={props.avatar}
         online={props.online}
     >
-        <div
-            style={{
-                position: 'absolute',
-                right: 3,
-                top: 3
-            }}
-        >
-            <OnlineBadge/>
-        </div>
+        {
+            props.online
+
+                ?
+                <div
+                    style={{
+                        position: 'absolute',
+                        right: 3,
+                        top: 3
+                    }}
+                >
+                    <OnlineBadge/>
+                </div>
+
+                :
+                null
+        }
     </DateIconContainer>
 }
 
@@ -168,7 +176,7 @@ const TicketDetailsDateHeader: React.FC<TicketDetailsDateHeaderProps> = (props: 
             >
                 <DateTitle>{props.date.metadata.name}</DateTitle>
                 <DateSubtitle>
-                    {t(incoming[0], { count: incoming[1], context: `${incoming[1]}` })}
+                    {t(incoming[0], { count: Math.abs(incoming[1]), context: `${Math.abs(incoming[1])}` })}
                 </DateSubtitle>
             </div>
         </div>
