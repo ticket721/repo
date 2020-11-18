@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "platform.fullname" . }}--server-config-master--cfmp
+  name: {{ template "platform.fullname" . }}--server-config--cfmp
   namespace: {{ .Release.Namespace }}
   labels:
-    name: {{ include "platform.fullname" . }}--server-config-master--cfmp
+    name: {{ include "platform.fullname" . }}--server-config--cfmp
     chart: {{ .Chart.Name }}
 data:
   production.env: |-
