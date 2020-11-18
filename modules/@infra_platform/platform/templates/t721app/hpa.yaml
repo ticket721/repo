@@ -1,9 +1,9 @@
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "platform.fullname" . }}--server--hpa
+  name: {{ include "platform.fullname" . }}--t721app--hpa
   labels:
-    name: {{ include "platform.fullname" . }}--server--hpa
+    name: {{ include "platform.fullname" . }}--t721app--hpa
     chart: {{ .Chart.Name }}
 spec:
   maxReplicas: 10
@@ -11,5 +11,5 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "platform.fullname" . }}--server--d
+    name: {{ include "platform.fullname" . }}--t721app--d
   targetCPUUtilizationPercentage: 70

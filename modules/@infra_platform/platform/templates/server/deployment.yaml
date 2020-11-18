@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "platform.fullname" . }}--server-master--d
+  name: {{ include "platform.fullname" . }}--server--d
   labels:
     app: {{ include "platform.fullname" . }}--server
-    name: {{ include "platform.fullname" . }}--server-master--d
+    name: {{ include "platform.fullname" . }}--server--d
     chart: {{ .Chart.Name }}
 spec:
-  replicas: {{ .Values.server.master.replicas }}
+  replicas: {{ .Values.server.replicas }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -16,13 +16,13 @@ spec:
   selector:
     matchLabels:
       app: {{ include "platform.fullname" . }}--server
-      name: {{ include "platform.fullname" . }}--server-master
+      name: {{ include "platform.fullname" . }}--server
       chart: {{ .Chart.Name }}
   template:
     metadata:
       labels:
         app: {{ include "platform.fullname" . }}--server
-        name: {{ include "platform.fullname" . }}--server-master
+        name: {{ include "platform.fullname" . }}--server
         chart: {{ .Chart.Name }}
     spec:
       serviceAccountName: {{ include "platform.fullname" . }}--platform--sa
@@ -32,12 +32,12 @@ spec:
             name: {{ template "platform.fullname" . }}--server-config-feature-flags--cfmp
         - name: server-config
           configMap:
-            name: {{ template "platform.fullname" . }}--server-config-master--cfmp
+            name: {{ template "platform.fullname" . }}--server-config--cfmp
         - name: server-secret
           secret:
             secretName: {{ template "platform.fullname" . }}--server-secret--sec
       initContainers:
-        - name: {{ include "platform.fullname" . }}--server-master-wfj
+        - name: {{ include "platform.fullname" . }}--server-wfj
           image: "groundnuty/k8s-wait-for:v1.3"
           args:
             - "job"
