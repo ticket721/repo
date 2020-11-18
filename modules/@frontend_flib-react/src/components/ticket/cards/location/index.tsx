@@ -1,9 +1,8 @@
 import * as React from 'react';
 import styled from '../../../../config/styled';
 import CardContainer from '../../../elements/card-container';
-import Separator from '../../../elements/separator';
 import Icon from '../../../icon';
-import { Map, TileLayer, withLeaflet } from 'react-leaflet';
+import { Map, Marker, TileLayer, withLeaflet } from 'react-leaflet';
 // tslint:disable-next-line:no-var-requires
 const { android, ios, macos } = require('platform-detect/os.mjs').default;
 
@@ -17,10 +16,8 @@ export interface LocationCardProps extends React.ComponentProps<any> {
     iconColor?: string;
     linkLabel?: string;
     removeBg?: boolean;
-    wSeparator?: boolean;
     coords?: Coords;
     subtitle?: string;
-    get_directions?: string;
     disabled?: boolean;
     online?: boolean;
     online_label?: string;
@@ -42,18 +39,6 @@ const Info = styled.span`
         color: ${(props) => props.theme.textColorDark};
         margin-top: 8px;
     }
-`;
-
-const EndLinkSpan = styled.span`
-    margin-right: ${(props) => props.theme.regularSpacing};
-`;
-
-const EndColumn = styled.div<LocationCardProps>`
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    width: 90%;
-    color: ${(props) => props.textColor};
 `;
 
 const Column = styled.div<LocationCardProps>`
@@ -133,20 +118,10 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
                         </Info>
                     </Column>
                 )}
-                {props.wSeparator && <Separator />}
             </CardContainer>
             {props.coords ? (
                 <>
                     <LeafletMap coords={props.coords} />
-                    <CardContainer className={props.className} removeBg={props.removeBg}>
-                        <EndColumn textColor={props.iconColor}>
-                            <EndLinkSpan>{props.get_directions}</EndLinkSpan>
-                        </EndColumn>
-                        <IconContainer>
-                            <Icon icon={'arrow'} size={'14px'} color={props.iconColor} />
-                        </IconContainer>
-                        {props.wSeparator && <Separator />}
-                    </CardContainer>
                 </>
             ) : null}
         </ClickableContainer>
@@ -177,9 +152,10 @@ const LeafletMap = withLeaflet((props: any) => (
             touchZoom={false}
         >
             <TileLayer
-                attribution={'&copy; <a href="http://osm.org/copyright"></a>'}
-                url={'https://{s}.tile.osm.org/{z}/{x}/{y}.png'}
+                attribution={''}
+                url={'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'}
             />
+            <Marker position={{ lat: props.coords.lat, lng: props.coords.lon }} />
         </Map>
     </MapContainer>
 ));

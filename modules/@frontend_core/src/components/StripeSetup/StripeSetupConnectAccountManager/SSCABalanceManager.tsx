@@ -134,7 +134,7 @@ export const SSCABalanceManager: React.FC<SSCABalanceManagerProps> = (props: SSC
                     value={[currenciesOptions[selectedIdx]]}
                     options={currenciesOptions}
                     searchable={false}
-                    onChange={(curr: any) => setCurrency(curr.value)}
+                    onChange={(curr: any) => setCurrency(curr[0].value)}
                 />
                 <BalanceButton
                     title={'Withdraw'}

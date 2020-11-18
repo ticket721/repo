@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 import Icon from '../../icon';
-import { OnlineTag } from '../../events/single-image/OnlineTag';
+import { OnlineBadge } from '../../events/single-image/OnlineTag';
 
 export interface SearchResultsProps extends React.ComponentProps<any> {
     noResultsLabel: string;
@@ -136,7 +136,7 @@ export const SingleEvent = (props: Event & { customMarginBottom?: string; online
                 <img src={props.image} />
                 {props.online ? (
                     <AbsoluteOnlineTagDiv>
-                        <OnlineTag online={null} />
+                        <OnlineBadge />
                     </AbsoluteOnlineTagDiv>
                 ) : null}
             </ImgContainer>

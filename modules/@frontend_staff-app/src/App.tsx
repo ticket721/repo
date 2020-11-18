@@ -70,13 +70,13 @@ const App: React.FC = () => {
                         <Redirect to={'/stats'}/>
                     </Switch>
                 </Suspense>
-                <ToastStacker additionalLocales={[]}/>
                 <StaffNavbar visible={
                     location.pathname !== '/register' && location.pathname !== '/login' &&
                     location.pathname.lastIndexOf('/') === 0
                 }/>
             </AppContainer>
         </UserContextGuard>
+        <ToastStacker additionalLocales={[]}/>
     </Suspense>;
 };
 

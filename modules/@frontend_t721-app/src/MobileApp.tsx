@@ -222,13 +222,13 @@ const MobileApp: React.FC = () => {
                                         }
                                     />
                                 </MediaQuery>
-                                <ToastStacker additionalLocales={[]}/>
                             </AppContainer>
                         </CartContextManager>
 
                     </StripeSDKManager>
                 </TicketsContextGuard>
             </UserContextGuard>
+            <ToastStacker additionalLocales={[]}/>
             <DeepLinksListener/>
         </Suspense>
     );
