@@ -1,10 +1,12 @@
+import { VenmasController }                                                                      from '@app/server/controllers/venmas/Venmas.controller';
+
 jest.setTimeout(process.env.JEST_GLOBAL_TIMEOUT ? parseInt(process.env.JEST_GLOBAL_TIMEOUT, 10) : 120000);
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { T721SDK } from '@common/sdk';
+import { Test, TestingModule }                                                                   from '@nestjs/testing';
+import { INestApplication, ValidationPipe }                                                      from '@nestjs/common';
+import { T721SDK }                                                                               from '@common/sdk';
 import { createPaymentIntent, prepare, runMigrations, setupStripeMock, startDocker, stopDocker } from './utils';
-import { ServerModule } from '../src/Server.module';
-import ascii from './ascii';
+import { ServerModule }                                                                          from '../src/Server.module';
+import ascii                                                                                     from './ascii';
 
 import { WorkerModule } from '@app/worker/Worker.module';
 import { ShutdownService } from '@lib/common/shutdown/Shutdown.service';
@@ -27,6 +29,7 @@ import MetadatasControllerTestSuite from '@app/server/controllers/metadatas/Meta
 import TicketsControllerTestSuite from '@app/server/controllers/tickets/Tickets.controller.routes-spec';
 import GeolocControllerTestSuite from '@app/server/controllers/geoloc/Geoloc.controller.routes-spec';
 import FeatureFlagsControllerTestSuite from '@app/server/controllers/featureflags/FeatureFlags.controller.routes-spec';
+import VenmasControllerTestSuite from '@app/server/controllers/venmas/Venmas.controller.routes-spec';
 
 import { instance } from 'ts-mockito';
 
@@ -144,4 +147,5 @@ describe('AppController (e2e)', () => {
     describe('Metadatas Controller', MetadatasControllerTestSuite(getCtx));
     describe('Geoloc Controller', GeolocControllerTestSuite(getCtx));
     describe('FeatureFlags Controller', FeatureFlagsControllerTestSuite(getCtx));
+    describe('Venmas Controller', VenmasControllerTestSuite(getCtx));
 });

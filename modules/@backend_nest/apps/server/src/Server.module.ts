@@ -55,17 +55,18 @@ import { AuthorizationsModule } from '@lib/common/authorizations/Authorizations.
 import { CheckoutModule } from '@lib/common/checkout/Checkout.module';
 import { CartModule } from '@lib/common/cart/Cart.module';
 import { RocksideModule } from '@lib/common/rockside/Rockside.module';
-import { TicketsController } from '@app/server/controllers/tickets/Tickets.controller';
-import { TicketsModule } from '@lib/common/tickets/Tickets.module';
-import { UsersController } from '@app/server/controllers/users/Users.controller';
-import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
-import { GeolocController } from '@app/server/controllers/geoloc/Geoloc.controller';
-import { StripeModule } from '@lib/common/stripe/Stripe.module';
-import { FeatureFlagsModule } from '@lib/common/featureflags/FeatureFlags.module';
+import { TicketsController }      from '@app/server/controllers/tickets/Tickets.controller';
+import { TicketsModule }          from '@lib/common/tickets/Tickets.module';
+import { UsersController }        from '@app/server/controllers/users/Users.controller';
+import { VenmasController }       from '@app/server/controllers/venmas/Venmas.controller';
+import { toHeaderFormat }         from '@lib/common/utils/toHeaderFormat';
+import { GeolocController }       from '@app/server/controllers/geoloc/Geoloc.controller';
+import { StripeModule }           from '@lib/common/stripe/Stripe.module';
+import { FeatureFlagsModule }     from '@lib/common/featureflags/FeatureFlags.module';
 import { FeatureFlagsController } from '@app/server/controllers/featureflags/FeatureFlags.controller';
 import { StripeInterfacesModule } from '@lib/common/stripeinterface/StripeInterfaces.module';
-import { StripeController } from '@app/server/controllers/payment/stripe/Stripe.controller';
-import { FilestoreModule } from '@lib/common/filestore/Filestore.module';
+import { StripeController }       from '@app/server/controllers/payment/stripe/Stripe.controller';
+import { FilestoreModule }        from '@lib/common/filestore/Filestore.module';
 
 @Module({
     imports: [
@@ -186,6 +187,7 @@ import { FilestoreModule } from '@lib/common/filestore/Filestore.module';
         GeolocController,
         FeatureFlagsController,
         StripeController,
+        VenmasController,
     ],
     providers: [
         ServerService,
