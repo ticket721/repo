@@ -17,7 +17,7 @@ import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
 
-import { FullPageLoading, Error, Button, LeafletMap } from '@frontend/flib-react/lib/components';
+import { FullPageLoading, Error as ErrorComponent, Button, LeafletMap } from '@frontend/flib-react/lib/components';
 
 import { GeneralInfoForm }                                           from '../../../components/GeneralInfoForm';
 import { StylesForm }                                                from '../../../components/StylesForm';
@@ -29,33 +29,12 @@ import { useLazyRequest }                                            from '@fron
 import { isRequestError }                                            from '@frontend/core/lib/utils/isRequestError';
 import { getEnv }                                                    from '@frontend/core/lib/utils/getEnv';
 import { v4 } from 'uuid';
+import { uploadImageWithSdk } from '../../../utils/uploadImageWithSdk';
 
 const subFormsTitle = {
     'dates-typology': 'date_and_typology_title',
     'styles': 'styles_title',
     'general-infos': 'general_infos_title',
-};
-
-const defaultValues: DateCreationPayload = {
-    info: {
-        online: false,
-        name: '',
-        eventBegin: null,
-        eventEnd: null,
-        location: {
-            label: '',
-            lon: null,
-            lat: null,
-        },
-    },
-    textMetadata: {
-        name: '',
-        description: '',
-    },
-    imagesMetadata: {
-        avatar: '',
-        signatureColors: ['', ''],
-    },
 };
 
 export const EditDate: React.FC = () => {
@@ -73,7 +52,7 @@ export const EditDate: React.FC = () => {
     const token = useToken();
 
     const { url: uploadImgUrl, error: uploadImgError, uploadImage } = useUploadImage(token);
-    const [ initialValues, setInitialValues ] = useState<DateCreationPayload>(defaultValues);
+    const [ initialValues, setInitialValues ] = useState<DateCreationPayload>(null);
     const dateResp = useRequest<DatesSearchResponseDto>(
         {
             method: 'dates.search',
@@ -95,7 +74,18 @@ export const EditDate: React.FC = () => {
     const buildForm = (): JSX.Element => {
         switch (subform) {
             case 'general-infos':
-                return <GeneralInfoForm/>;
+                return <GeneralInfoForm
+                primaryColor={formik.values.imagesMetadata.signatureColors[0]}
+                uploadDescImage={async (file) => {
+                    const url = await uploadImageWithSdk(token, file);
+
+                    if (!url) {
+                        dispatch(PushNotification(t('upload_error'), 'error'));
+                        return;
+                    }
+
+                    return url;
+                }}/>;
             case 'dates-typology':
                 return <DatesAndTypologyForm
                     parentField={'info'}/>;
@@ -177,35 +167,39 @@ export const EditDate: React.FC = () => {
     }
 
     if (isRequestError(dateResp)) {
-        return <Error message={t('common:error_cannot_fetch', { entity: 'date'})} retryLabel={t('common:retrying_in')} onRefresh={dateResp.force}/>;
+        return <ErrorComponent message={t('common:error_cannot_fetch', { entity: 'date'})} retryLabel={t('common:retrying_in')} onRefresh={dateResp.force}/>;
     }
 
     return <FormikProvider value={formik}>
-        <Form onSubmit={formik.handleSubmit}>
-            <Title>{t(subFormsTitle[subform])}</Title>
-            {
-                buildForm()
-            }
-            {
-                subform === 'dates-typology' && formik.values.info.location ?
-                <div className={'location-map'}>
-                    <LeafletMap
-                    width={'600px'}
-                    height={'300px'}
-                    coords={formik.values.info.location}/>
-                </div> :
-                null
-            }
-            <SubmitButton
-                type={'submit'}
-                variant={(
-                    formik.isValid
-                    && JSON.stringify(formik.values) !== JSON.stringify(formik.initialValues)
-                ) ? 'custom' : 'disabled'}
-                gradients={formik.values.imagesMetadata.signatureColors}
-                title={t('edit_date_btn')}
-            />
-        </Form>
+        {
+            formik.initialValues ?
+            <Form onSubmit={formik.handleSubmit}>
+                <Title>{t(subFormsTitle[subform])}</Title>
+                {
+                    buildForm()
+                }
+                {
+                    subform === 'dates-typology' && formik.values.info.location ?
+                    <div className={'location-map'}>
+                        <LeafletMap
+                        width={'600px'}
+                        height={'300px'}
+                        coords={formik.values.info.location}/>
+                    </div> :
+                    null
+                }
+                <SubmitButton
+                    type={'submit'}
+                    variant={(
+                        formik.isValid
+                        && JSON.stringify(formik.values) !== JSON.stringify(formik.initialValues)
+                    ) ? 'custom' : 'disabled'}
+                    gradients={formik.values.imagesMetadata.signatureColors}
+                    title={t('edit_date_btn')}
+                />
+            </Form> :
+            null
+        }
     </FormikProvider>;
 }
 

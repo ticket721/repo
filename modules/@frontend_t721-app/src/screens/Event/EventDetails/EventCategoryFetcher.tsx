@@ -10,6 +10,7 @@ import { useSelector }                 from 'react-redux';
 import { T721AppState }                from '../../../redux';
 import { useTranslation }              from 'react-i18next';
 import { useHistory }                  from 'react-router';
+import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 
 export interface EventCategoryFetcherProps {
     date: DateEntity;
@@ -22,6 +23,16 @@ export const EventCategoryFetcher: React.FC<EventCategoryFetcherProps> = (props:
     const [ctaHidden, setCtaVisibility] = useState(true);
     const [t] = useTranslation('event');
     const history = useHistory();
+
+    const event = useRequest<EventsSearchResponseDto>({
+        method: 'events.search',
+        args: [token, {
+            id: {
+                $eq: props.date.event
+            }
+        }],
+        refreshRate: 100
+    }, `HomeEvent@${uuid}`);
 
     const categories = useRequest<CategoriesSearchResponseDto>({
         method: 'categories.search',
@@ -54,6 +65,7 @@ export const EventCategoryFetcher: React.FC<EventCategoryFetcherProps> = (props:
 
     return <>
         <EventContainer
+            eventName={event.response.data?.events[0].name}
             priceString={priceRangeString}
             date={props.date}
             setCtaVisibility={setCtaVisibility}

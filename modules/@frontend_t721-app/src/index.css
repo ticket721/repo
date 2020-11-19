@@ -37,6 +37,11 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+    display: flex;
+    justify-content: center;
+}
+
 .fade-exit {
     position: absolute;
     top: 0;

@@ -35,7 +35,7 @@ export interface FormProps {
 const initialValues: EventCreationPayload = {
     textMetadata: {
         name: '',
-        description: '',
+        description: localStorage.getItem('event-creation') ? JSON.parse(localStorage.getItem('event-creation')).values.description : '\\',
     },
     imagesMetadata: {
         avatar: '',
@@ -145,13 +145,16 @@ const CreateEvent: React.FC = () => {
 
     const formik = useFormik({
         initialValues,
+        enableReinitialize: true,
         onSubmit,
         validate,
     });
 
     const buildForm = () => {
         switch (currentStep) {
-            case 0: return <GeneralInfoForm/>;
+            case 0: return <GeneralInfoForm
+                primaryColor={formik.values.imagesMetadata.signatureColors[0]}
+                />;
             case 1: return <StylesForm
                 eventName={formik.values.textMetadata.name}
                 parentField={'imagesMetadata'}

@@ -61,8 +61,12 @@ const Container = styled.article<TicketTypeProps>`
         width: 2px;
     }
 
+    h3 {
+        font-size: max(16px, 1.2vw);
+    }
+
     h4 {
-        font-size: 15px;
+        font-size: max(15px, 1.1vw);
         margin: ${(props) => props.theme.regularSpacing} 0 ${(props) => props.theme.smallSpacing};
 
         & + span {
@@ -80,7 +84,7 @@ const TicketCount = styled.span<TicketTypeProps>`
     align-items: center;
     color: ${(props) => (props.ticketsLeft < 1 ? props.theme.textColorDark : props.theme.textColor)};
     display: inline-flex;
-    font-size: 14px;
+    font-size: max(14px, 1vw);
     font-weight: 500;
 
     svg {

@@ -39,8 +39,12 @@ const CtaContainer = styled.div<FullButtonCtaProps>`
     transform: translateY(100%);
     transition: all 300ms ease, opacity 450ms ease;
     width: 100%;
+    max-width: 900px;
     z-index: 9999;
-
+  
+      @media screen and (min-width: 900px) {
+          margin-left: calc((100% - 900px) / 2);
+      }
     ${(props) =>
         props.show &&
         `

@@ -21,7 +21,7 @@ export const DesktopNavbar: React.FC = () => {
     const user = useContext(UserContext);
     const [ profileRoute, setProfileRoute ] = useState<ProfileRoute>();
     const token = useToken();
-console.log(history.location.pathname);
+
     useEffect(() => {
         if (history.location.search.match(/[?|&]profile=(root|activities|language)$/)) {
             const route = history.location.search.match(/[?|&]profile=(root|activities|language)$/)[1];
@@ -101,6 +101,7 @@ const Container = styled.div`
   align-items: center;
   padding: ${props => props.theme.smallSpacing} ${props => props.theme.biggerSpacing};
   background-color: #1a1524;
+  z-index: 402;
 `;
 
 const LeftSide = styled.div`

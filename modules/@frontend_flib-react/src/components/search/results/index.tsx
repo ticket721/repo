@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
-import Icon from '../../icon';
 import { OnlineBadge } from '../../events/single-image/OnlineTag';
 
 export interface SearchResultsProps extends React.ComponentProps<any> {

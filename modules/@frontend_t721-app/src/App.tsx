@@ -111,7 +111,7 @@ const App: React.FC = () => {
                                 <DesktopNavbar/>
                             </MediaQuery>
                             <AppContainer>
-                                <MediaQuery maxWidth={1224}>
+                                <MediaQuery maxWidth={1223}>
                                     {location.pathname.lastIndexOf('/') !== 0 &&
                                     location.pathname.indexOf('/_/') !== 0 ? (
                                         <TopNavWrapper back={goBackOrHome}/>
@@ -234,7 +234,7 @@ const App: React.FC = () => {
 
                                     <Redirect to={'/'}/>
                                 </Switch>
-                                <MediaQuery maxWidth={1224}>
+                                <MediaQuery maxWidth={1223}>
                                     <T721Navbar
                                         visible={
                                             location.pathname.lastIndexOf('/') === 0 &&
@@ -244,7 +244,6 @@ const App: React.FC = () => {
                                 </MediaQuery>
                             </AppContainer>
                         </CartContextManager>
-
                     </StripeSDKManager>
                 </TicketsContextGuard>
             </UserContextGuard>
@@ -274,13 +273,7 @@ const AppContainerDiv = styled.div<AppContainerDivProps>`
 }
     width: 100%;
     height: 100%;
-
-    @media screen and (min-width: 1224px) {
-        width: 60vw;
-        height: calc(100vh - 80px);
-        margin-top: 80px;
-        margin-left: 20vw;
-    }
+    max-width: 900px;
 `;
 
 const AppContainer: React.FC<PropsWithChildren<any>> = (props: PropsWithChildren<any>) => {
