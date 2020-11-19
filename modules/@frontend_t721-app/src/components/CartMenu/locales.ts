@@ -24,6 +24,7 @@ i18n.addResourceBundle('en', 'cart', {
     cart_name: 'Ticket721',
     pay_with: 'Pay with',
     cancel: 'Cancel',
+    apple_pay_error: 'Unable to process Apple Pay payment. Payment was declined or was cancelled.',
 
     category_limit_reached: 'You reached the maximum amount of tickets for this category !',
     online_category_limit_reached: 'You reached the maximum amount of tickets for this category !',
@@ -57,6 +58,7 @@ i18n.addResourceBundle('fr', 'cart', {
     cart_name: 'Ticket721',
     pay_with: 'Payer avec',
     cancel: 'Annuler',
+    apple_pay_error: 'Impossible de valider le paiement Apple Pay. Le paiement a été rejeté ou annulé.',
 
     category_limit_reached: 'Vous avez atteint la limite de tickets pour cette catégorie !',
     online_category_limit_reached: 'Vous avez atteint la limite de tickets pour cette catégorie !',

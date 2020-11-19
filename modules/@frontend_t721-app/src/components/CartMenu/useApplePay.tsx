@@ -123,12 +123,20 @@ export const useApplePay = (sdk: StripeSDK, cart: CartState): ApplePayStatus => 
                             });
 
                             if (error) {
-                                dispatch(PushNotification(error.message, 'error'));
+                                if (error.message === 'payment timeout or user cancelled') {
+                                    dispatch(PushNotification(t('apple_pay_error'), 'error'));
+                                } else {
+                                    dispatch(PushNotification(error.message, 'error'));
+                                }
                                 return;
                             }
 
                         } catch (e) {
-                            dispatch(PushNotification(e.message, 'error'));
+                            if (e.message === 'payment timeout or user cancelled') {
+                                dispatch(PushNotification(t('apple_pay_error'), 'error'));
+                            } else {
+                                dispatch(PushNotification(e.message, 'error'));
+                            }
                             return;
                         }
 
