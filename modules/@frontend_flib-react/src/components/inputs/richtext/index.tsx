@@ -66,7 +66,7 @@ const StyledRichText = styled.div<RichTextProps>`
 
     .editor {
         font-size: 14px;
-        margin: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
+        margin: ${props => props.theme.regularSpacing} ${props => props.theme.biggerSpacing};
 
         .block-menu-trigger {
             display: none;
@@ -127,14 +127,14 @@ const LabelsContainer = styled.div`
 
 const CircleProgress = styled(CircularProgressbar)<{ progress: number }>`
     position: absolute;
-    right: ${(props) => props.theme.regularSpacing};
-    bottom: ${(props) => props.theme.regularSpacing};
+    right: ${props => props.theme.regularSpacing};
+    bottom: ${props => props.theme.regularSpacing};
     width: 32px;
 
     transition: width 300ms ease;
 
     .CircularProgressbar-path {
-        stroke: ${(props) => {
+        stroke: ${props => {
             if (props.progress >= 1) {
                 return props.theme.errorColor.hex;
             }
@@ -148,17 +148,20 @@ const CircleProgress = styled(CircularProgressbar)<{ progress: number }>`
     }
 
     .CircularProgressbar-trail {
-        stroke: ${(props) => props.theme.componentColorLight};
+        stroke: ${props => props.theme.componentColorLight};
     }
 
     .CircularProgressbar-text {
-        fill: ${(props) => props.theme.textColor};
-        font-size: ${(props) => (props.progress > 1 ? '300%' : '200%')};
-        font-weight: ${(props) => (props.progress > 1 ? 600 : 400)};
+        fill: ${props => props.theme.textColor};
+        font-size: ${props => props.progress > 1 ? '300%' : '200%'};
+        font-weight: ${props => props.progress > 1 ?
+            600 :
+            400
+        };
     }
 
     .CircularProgressbar-background {
-        fill: ${(props) => (props.progress > 1 ? props.theme.errorColor.hex : 'transparent')};
+        fill: ${props => props.progress > 1 ? props.theme.errorColor.hex : 'transparent'};
     }
 `;
 

@@ -362,8 +362,8 @@ export const CartMenu: React.FC = (): JSX.Element => {
             onClick={cart.closeMenu}
             variants={{
                 visible: {
+                    display: 'block',
                     opacity: 0.75,
-                    left: 0,
                     transition: {
                         duration: 1.1,
                         left: {
@@ -372,6 +372,7 @@ export const CartMenu: React.FC = (): JSX.Element => {
                     },
                 },
                 hidden: {
+                    display: 'none',
                     opacity: 0,
                     left: '-100vw',
                     transition: {

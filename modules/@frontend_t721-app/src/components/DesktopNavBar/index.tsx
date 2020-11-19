@@ -23,6 +23,7 @@ export const DesktopNavbar: React.FC = () => {
     const user = useContext(UserContext);
     const [ profileRoute, setProfileRoute ] = useState<ProfileRoute>();
     const token = useToken();
+
     useEffect(() => {
         if (history.location.search.match(/[?|&]profile=(root|activities|language)$/)) {
             const route = history.location.search.match(/[?|&]profile=(root|activities|language)$/)[1];

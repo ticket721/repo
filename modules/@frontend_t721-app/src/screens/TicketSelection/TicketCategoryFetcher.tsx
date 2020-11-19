@@ -23,6 +23,10 @@ const TicketSelectionContainer = styled.div`
     }
     padding-bottom: calc(80px + ${props => props.theme.regularSpacing} + env(safe-area-inset-bottom));
     padding-bottom: calc(80px + ${props => props.theme.regularSpacing} + constant(safe-area-inset-bottom));
+
+    @media screen and (min-width: 1224px) {
+        margin-top: 100px;
+    }
 `;
 
 const TicketSelectionTitle = styled.h1`

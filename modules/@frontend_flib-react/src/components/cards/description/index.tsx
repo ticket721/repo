@@ -19,12 +19,16 @@ const H3 = styled.h3`
 
 const Card = styled(CardContainer)`
     .editor {
+<<<<<<< HEAD
         font-size: 14px;
+=======
+>>>>>>> feat: add richtext + responsive user app
         width: 100%;
 
         .heading-anchor {
             display: none;
         }
+<<<<<<< HEAD
 
         a {
             text-decoration: underline;
@@ -33,6 +37,8 @@ const Card = styled(CardContainer)`
         hr {
             margin: ${(props) => props.theme.smallSpacing};
         }
+=======
+>>>>>>> feat: add richtext + responsive user app
     }
 `;
 
@@ -41,11 +47,19 @@ export const Description: React.FunctionComponent<DescriptionProps> = (props: De
         <Card removeBg={props.removeBg}>
             <H3>{props.title}</H3>
             <Editor
+<<<<<<< HEAD
                 readOnly
                 className={'editor'}
                 defaultValue={props.text}
                 onChange={console.log}
                 theme={getEditorTheme(props.color)}
+=======
+            readOnly
+            className={'editor'}
+            defaultValue={props.text}
+            onChange={console.log}
+            theme={getEditorTheme(props.color)}
+>>>>>>> feat: add richtext + responsive user app
             />
             {props.wSeparator && <Separator />}
         </Card>
