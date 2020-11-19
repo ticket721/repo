@@ -11,7 +11,7 @@ export interface Sections {
     type: string;
     name: string;
     description: string;
-    points: [[number, number]];
+    points: [number, number][];
 }
 
 /**

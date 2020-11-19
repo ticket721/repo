@@ -28,6 +28,7 @@ import { ServerController } from '@app/server/controllers/server/Server.controll
 import { TicketsController } from '@app/server/controllers/tickets/Tickets.controller';
 import { TicketsModule } from '@lib/common/tickets/Tickets.module';
 import { UsersController } from '@app/server/controllers/users/Users.controller';
+import { VenmasController } from '@app/server/controllers/venmas/Venmas.controller';
 import { GeolocController } from '@app/server/controllers/geoloc/Geoloc.controller';
 import { StripeModule } from '@lib/common/stripe/Stripe.module';
 import { FeatureFlagsModule } from '@lib/common/featureflags/FeatureFlags.module';
@@ -91,6 +92,7 @@ import { PurchasesController } from '@app/server/controllers/purchases/Purchases
         FeatureFlagsController,
         StripeController,
         PurchasesController,
+        VenmasController,
     ],
     providers: [
         ServerService,
