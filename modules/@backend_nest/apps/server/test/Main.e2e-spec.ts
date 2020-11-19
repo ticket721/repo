@@ -1,4 +1,4 @@
-import { VenmasController }                                                                      from '@app/server/controllers/venmas/Venmas.controller';
+import { VenmasController } from '@app/server/controllers/venmas/Venmas.controller';
 
 jest.setTimeout(process.env.JEST_GLOBAL_TIMEOUT ? parseInt(process.env.JEST_GLOBAL_TIMEOUT, 10) : 120000);
 import { Test, TestingModule } from '@nestjs/testing';
