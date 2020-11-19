@@ -883,7 +883,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
         let eventStatus: boolean;
 
         if (!isNil(body.event)) {
-            if (body.event === true && event.status === 'preview') {
+            if (body.event === true) {
                 await this.verifyEventPublishability(user, event, dates, categories);
 
                 eventStatus = true;
