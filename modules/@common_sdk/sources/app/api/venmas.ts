@@ -1,0 +1,58 @@
+import { AxiosResponse }           from 'axios';
+import { T721SDK }                 from '../../index';
+import { VenmasSearchInputDto }    from '@app/server/controllers/venmas/dto/VenmasSearchInput.dto';
+import { VenmasSearchResponseDto } from '@app/server/controllers/venmas/dto/VenmasSearchResponse.dto';
+import { VenmasEntity }            from '@lib/common/venmas/entities/Venmas.entity';
+
+export async function venmasSearch(
+    token: string,
+    query: Partial<VenmasSearchInputDto>,
+): Promise<AxiosResponse<VenmasSearchResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<Partial<VenmasSearchInputDto>>('/venmas/search', {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
+export async function venmasCreate(
+    token: string,
+    body: VenmasEntity,
+) {
+
+    const self: T721SDK = this;
+
+    return self.post<VenmasEntity>('/venmas/create', {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, body);
+}
+
+export async function venmasUpdate(
+    token: string,
+    body: VenmasEntity,
+    id: number,
+): Promise<AxiosResponse<VenmasSearchResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<VenmasEntity>(`/venmas/update/${id}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, body);
+}
+
+export async function venmasDelete(
+    token: string,
+    id: number,
+): Promise<AxiosResponse<VenmasSearchResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.get(`/venmas/delete/${id}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    });
+}

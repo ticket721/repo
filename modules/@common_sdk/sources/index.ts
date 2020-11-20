@@ -58,6 +58,9 @@ import {
 // USERS
 import { usersMe, usersSetDeviceAddress } from './app/api/users';
 
+// VENMAS
+import { venmasUpdate, venmasCreate, venmasDelete, venmasSearch  } from './app/api/venmas'
+
 // GEOLOC
 import { geolocClosestCity, geolocFuzzySearch } from './app/api/geoloc';
 
@@ -107,6 +110,11 @@ export class T721SDK {
 
         this.users.me = this.users.me.bind(this);
         this.users.setDeviceAddress = this.users.setDeviceAddress.bind(this);
+
+        this.venmas.update = this.venmas.update.bind(this);
+        this.venmas.create = this.venmas.create.bind(this);
+        this.venmas.search = this.venmas.search.bind(this);
+        this.venmas.delete = this.venmas.delete.bind(this);
 
         this.dates.search = this.dates.search.bind(this);
         this.dates.homeSearch = this.dates.homeSearch.bind(this);
@@ -292,6 +300,13 @@ export class T721SDK {
         me: usersMe,
         setDeviceAddress: usersSetDeviceAddress,
     };
+
+    public venmas = {
+        update: venmasUpdate,
+        search: venmasSearch,
+        delete: venmasDelete,
+        create: venmasCreate,
+    }
 
     // public actions = {
     //     search: actionsSearch,

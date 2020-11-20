@@ -3,9 +3,9 @@ import { VenmasEntity } from '@lib/common/venmas/entities/Venmas.entity';
 /**
  * Ticket search query result
  */
-export class VenmasCreateResponseDto {
+export class VenmasSearchResponseDto {
     /**
      * Venmas entity matching query
      */
-    venmas: VenmasEntity;
+    venmas: VenmasEntity[];
 }

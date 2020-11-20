@@ -68,5 +68,68 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 await failWithCode(sdk.venmas.create(null), StatusCodes.InternalServerError);
             });
         });
+
+        describe('update (POST /venmas/update/$id)', function() {
+            test('should update venmas entity', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const sections: Sections = {
+                    id: 'string',
+                    type: 'string',
+                    name: 'string',
+                    description: 'string',
+                    points: [
+                        [1, 1],
+                        [1, 2],
+                        [2, 1],
+                        [2, 2],
+                    ],
+                };
+                const venmasEntity: VenmasEntity = {
+                    id: 'abcd',
+                    name: 'abcd',
+                    owner: 'abcd',
+                    map: 'abcd',
+                    sections: sections,
+                    created_at: new Date(Date.now()),
+                    updated_at: new Date(Date.now()),
+                };
+                await sdk.venmas.update(venmasEntity);
+
+                expect(
+                    sdk.venmas.search({
+                        id: {
+                            $eq: 'abcd',
+                        },
+                    }),
+                ).toEqual(venmasEntity);
+            });
+
+            test('should fail create venmas entity', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                await failWithCode(sdk.venmas.create(null), StatusCodes.InternalServerError);
+            });
+        });
     };
 }

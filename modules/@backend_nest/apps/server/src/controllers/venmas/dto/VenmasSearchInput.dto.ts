@@ -8,7 +8,7 @@ import { Sections, VenmasEntity } from '@lib/common/venmas/entities/Venmas.entit
 /**
  * Search Query Paramaters to fetch Tickets
  */
-export class VenmasCreateInputDto implements SearchInputType<VenmasEntity> {
+export class VenmasSearchInputDto implements SearchInputType<VenmasEntity> {
     /**
      * Searchable field to search by id
      */

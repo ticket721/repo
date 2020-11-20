@@ -1,16 +1,17 @@
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { VenmasEntity } from '@lib/common/venmas/entities/Venmas.entity';
-import { VenmasService } from '@lib/common/venmas/Venmas.service';
-import { Body, Controller, HttpCode, Injectable, Param, Post, UseFilters, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
-import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
-import { StatusCodes } from '@lib/common/utils/codes.value';
-import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
-import { User } from '@app/server/authentication/decorators/User.controller.decorator';
-import { UserDto } from '@lib/common/users/dto/User.dto';
-import { VenmasCreateInputDto } from '@app/server/controllers/venmas/dto/VenmasCreateInput.dto';
+import { VenmasService }                                                                   from '@lib/common/venmas/Venmas.service';
+import { Body, Controller, Get, HttpCode, Injectable, Param, Post, UseFilters, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags }                                                          from '@nestjs/swagger';
+import { AuthGuard }                                                                  from '@nestjs/passport';
+import { Roles, RolesGuard }                                                          from '@app/server/authentication/guards/RolesGuard.guard';
+import { HttpExceptionFilter }                                                        from '@app/server/utils/HttpException.filter';
+import { StatusCodes }                                                                from '@lib/common/utils/codes.value';
+import { ApiResponses }                                                               from '@app/server/utils/ApiResponses.controller.decorator';
+import { User }                                                                       from '@app/server/authentication/decorators/User.controller.decorator';
+import { UserDto }                                                                    from '@lib/common/users/dto/User.dto';
+import { VenmasSearchInputDto }                                                       from '@app/server/controllers/venmas/dto/VenmasSearchInput.dto';
+import { VenmasSearchResponseDto }                                                    from '@app/server/controllers/venmas/dto/VenmasSearchResponse.dto';
 
 /**
  * Venmas Controller
@@ -85,13 +86,14 @@ export class VenmasController extends ControllerBasics<VenmasEntity> {
      * @param venmasId
      * @param user
      */
-    @Post('/delete/:venmasId')
+    @Get('/delete/:venmasId')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async delete(@Param('venmasId') venmasId: string, @User() user: UserDto) {
+        // need to verify ownership
         await this._crudCall(
             this.venmasService.delete({
                 id: venmasId,
@@ -113,7 +115,7 @@ export class VenmasController extends ControllerBasics<VenmasEntity> {
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
-    async search(@Body() body: VenmasCreateInputDto, @User() user: UserDto) {
+    async search(@Body() body: VenmasSearchInputDto, @User() user: UserDto): Promise<VenmasSearchResponseDto> {
         const venmas = await this._search(this.venmasService, body);
 
         return {
