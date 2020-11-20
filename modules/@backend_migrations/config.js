@@ -98,7 +98,6 @@ module.exports = [
         type: 'elasticsearch',
         name: 'add_venmas_state',
         timestamp: '20201105101935'
-    }
     },
     {
         type: 'elasticsearch',

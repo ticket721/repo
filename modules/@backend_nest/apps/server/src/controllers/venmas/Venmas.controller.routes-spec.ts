@@ -44,7 +44,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 await sdk.venmas.create(token, venmasEntity);
 
                 expect(
-                    sdk.venmas.search({
+                    sdk.venmas.search(token, {
                         id: {
                             $eq: 'abcd',
                         },
@@ -107,7 +107,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 await sdk.venmas.update(token, venmasEntity, '1');
 
                 expect(
-                    sdk.venmas.search({
+                    sdk.venmas.search(token, {
                         id: {
                             $eq: 'abcd',
                         },
