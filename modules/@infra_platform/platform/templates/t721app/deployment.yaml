@@ -59,6 +59,8 @@ spec:
               value: '5'
             - name: REACT_APP_APPLE_PAY_MERCHANT_ID
               value: '{{ required "[t721app] Missing config.t721app.webMerchantId value" .Values.config.t721app.iosMerchantId }}'
+            - name: REACT_APP_SENTRY_DSN
+              value: {{ required "[t721app] Missing config.t721app.sentry_dsn" .Values.config.t721app.sentry_dsn}}
             - name: REACT_APP_SELF
               value: 'https://{{ required "[t721app] Missing config.t721app.self value" .Values.config.t721app.self }}'
           ports:

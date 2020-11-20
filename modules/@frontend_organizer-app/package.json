@@ -53,7 +53,9 @@
         "@capacitor/cli": "2.0.1",
         "react-scripts": "3.4.1",
         "tslint": "6.0.0",
-        "serve": "11.3.2"
+        "serve": "11.3.2",
+        "@sentry/react": "5.27.4",
+        "@sentry/tracing": "5.27.4"
     },
     "resolutions": {
         "react-scripts/**/jest": "24.9.0"

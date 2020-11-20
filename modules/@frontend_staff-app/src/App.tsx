@@ -5,17 +5,33 @@ import ProtectedRoute                                       from '@frontend/core
 import ToastStacker                                         from '@frontend/core/lib/components/ToastStacker';
 import styled                                               from 'styled-components';
 import { StaffNavbar }                                      from './shared/NavBar';
-import { useDispatch }                                      from 'react-redux';
-import { SetupDate }                                        from './redux/ducks/current_event';
-import { UserContextGuard }                                 from '@frontend/core/lib/utils/UserContext';
-import LoginPage                                            from './routes/Login';
-import ResetFormPage                                        from './routes/ResetForm';
-import ResetPage                                            from './routes/Reset';
-import ScanPage                                             from './routes/Scan';
-import GuestListPage                                        from './routes/GuestList';
-import StatsPage                                            from './routes/Stats';
-import AdminPage                                            from './routes/Admin';
-import { useFlag }                                          from '@frontend/core/lib/utils/useFlag';
+import { useDispatch }      from 'react-redux';
+import { SetupDate }        from './redux/ducks/current_event';
+import { UserContextGuard } from '@frontend/core/lib/utils/UserContext';
+import LoginPage            from './routes/Login';
+import ResetFormPage        from './routes/ResetForm';
+import ResetPage            from './routes/Reset';
+import ScanPage             from './routes/Scan';
+import GuestListPage        from './routes/GuestList';
+import StatsPage            from './routes/Stats';
+import AdminPage            from './routes/Admin';
+import { useFlag }          from '@frontend/core/lib/utils/useFlag';
+import { getEnv }           from '@frontend/core/lib/utils/getEnv';
+import * as Sentry          from '@sentry/react';
+import { Integrations }     from '@sentry/tracing';
+
+if (getEnv().REACT_APP_SENTRY_DSN) {
+    Sentry.init({
+        dsn: getEnv().REACT_APP_SENTRY_DSN,
+        integrations: [
+            new Integrations.BrowserTracing(),
+        ],
+
+        // We recommend adjusting this value in production, or using tracesSampler
+        // for finer control
+        tracesSampleRate: 1.0,
+    });
+}
 
 const App: React.FC = () => {
     const dispatch = useDispatch();

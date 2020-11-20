@@ -24,6 +24,9 @@ import { FeatureFlag }                   from '@frontend/core/lib/components/Fea
 import { ProtectedByOwnership }          from '@frontend/core/lib/components/ProtectedByOwnership';
 import { EventsDrawer }                  from './components/EventsDrawer';
 import { StripeSDKManager }              from '@frontend/core/lib/utils/StripeSDKContext';
+import { getEnv }                        from '@frontend/core/lib/utils/getEnv';
+import * as Sentry                       from '@sentry/react';
+import { Integrations }                  from '@sentry/tracing';
 
 const EventsDrawerWrapper = (): JSX.Element => {
 
@@ -37,6 +40,19 @@ const EventsDrawerWrapper = (): JSX.Element => {
                 null
         }
     </>
+}
+
+if (getEnv().REACT_APP_SENTRY_DSN) {
+    Sentry.init({
+        dsn: getEnv().REACT_APP_SENTRY_DSN,
+        integrations: [
+            new Integrations.BrowserTracing(),
+        ],
+
+        // We recommend adjusting this value in production, or using tracesSampler
+        // for finer control
+        tracesSampleRate: 1.0,
+    });
 }
 
 const App: React.FC = () => {

@@ -62,7 +62,9 @@
         "serve": "11.3.2",
         "styled-components": "5.1.0",
         "tslint": "6.0.0",
-        "typescript": "3.8.3"
+        "typescript": "3.8.3",
+        "@sentry/react": "5.27.4",
+        "@sentry/tracing": "5.27.4"
     },
     "resolutions": {
         "react-scripts/**/jest": "24.9.0"
