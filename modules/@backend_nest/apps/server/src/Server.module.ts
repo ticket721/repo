@@ -29,6 +29,7 @@ import { TicketsController } from '@app/server/controllers/tickets/Tickets.contr
 import { TicketsModule } from '@lib/common/tickets/Tickets.module';
 import { UsersController } from '@app/server/controllers/users/Users.controller';
 import { VenmasController } from '@app/server/controllers/venmas/Venmas.controller';
+import { toHeaderFormat } from '@lib/common/utils/toHeaderFormat';
 import { GeolocController } from '@app/server/controllers/geoloc/Geoloc.controller';
 import { StripeModule } from '@lib/common/stripe/Stripe.module';
 import { FeatureFlagsModule } from '@lib/common/featureflags/FeatureFlags.module';
@@ -91,7 +92,10 @@ import { PurchasesController } from '@app/server/controllers/purchases/Purchases
         GeolocController,
         FeatureFlagsController,
         StripeController,
+<<<<<<< HEAD
         PurchasesController,
+=======
+>>>>>>> 87d4ca0ceecce3317eaed90135877f7945374a34
         VenmasController,
     ],
     providers: [
