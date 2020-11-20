@@ -27,6 +27,7 @@ import { StripeSDKManager }              from '@frontend/core/lib/utils/StripeSD
 import { getEnv }                        from '@frontend/core/lib/utils/getEnv';
 import * as Sentry                       from '@sentry/react';
 import { Integrations }                  from '@sentry/tracing';
+import { Crash }                         from '@frontend/core/lib/components/Crash';
 
 const EventsDrawerWrapper = (): JSX.Element => {
 
@@ -48,9 +49,6 @@ if (getEnv().REACT_APP_SENTRY_DSN) {
         integrations: [
             new Integrations.BrowserTracing(),
         ],
-
-        // We recommend adjusting this value in production, or using tracesSampler
-        // for finer control
         tracesSampleRate: 1.0,
     });
 }
@@ -137,4 +135,18 @@ const PageWrapper = styled.div`
     margin-top: 80px;
 `;
 
-export default withRouter(App);
+let WrappedApp: any = withRouter(App);
+
+if (getEnv().REACT_APP_SENTRY_DSN) {
+    WrappedApp = Sentry.withErrorBoundary(
+        Sentry.withProfiler(
+            WrappedApp
+        )
+        ,{
+            showDialog: true,
+            fallback: <Crash/>
+        }
+    )
+}
+
+export default WrappedApp;

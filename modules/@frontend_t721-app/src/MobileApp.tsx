@@ -41,6 +41,7 @@ import { StripeSDKManager }                from '@frontend/core/lib/utils/Stripe
 import * as Sentry                         from '@sentry/react';
 import { Integrations }                    from '@sentry/tracing';
 import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
+import { Crash }                           from '@frontend/core/lib/components/Crash';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
     const [scrolled, setScrolled] = useState(false);
@@ -72,9 +73,6 @@ if (getEnv().REACT_APP_SENTRY_DSN) {
         integrations: [
             new Integrations.BrowserTracing(),
         ],
-
-        // We recommend adjusting this value in production, or using tracesSampler
-        // for finer control
         tracesSampleRate: 1.0,
     });
 }
@@ -295,4 +293,18 @@ const AppContainer: React.FC<PropsWithChildren<any>> = (props: PropsWithChildren
     </AppContainerDiv>;
 };
 
-export default withRouter(MobileApp);
+let WrappedApp: any = withRouter(MobileApp);
+
+if (getEnv().REACT_APP_SENTRY_DSN) {
+    WrappedApp = Sentry.withErrorBoundary(
+        Sentry.withProfiler(
+            WrappedApp
+        )
+        ,{
+            showDialog: true,
+            fallback: <Crash/>
+        }
+    )
+}
+
+export default WrappedApp;

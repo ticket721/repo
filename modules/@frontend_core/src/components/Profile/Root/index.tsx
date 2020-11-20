@@ -34,6 +34,7 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
     const dispatch = useDispatch();
     const history = useHistory();
     const [t, i18n] = useTranslation(['profile', 'common']);
+    const [thisIsASelfDestructVariable, die] = useState(null);
 
     const tickets = useRequest<TicketsCountResponseDto>(
         {
@@ -92,6 +93,17 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                             history.push('/you/are/an/admin');
                         }}
                     />
+                </FeatureFlag>
+                <FeatureFlag flag={'admin_flag'}>
+                    <ArrowLink
+                        label={t('self_destruct')}
+                        onClick={() => {
+                            die({
+                                date_of_death: new Date(Date.now()),
+                            });
+                        }}
+                    />
+                    {thisIsASelfDestructVariable}
                 </FeatureFlag>
             </LinksContainer>
         </>
