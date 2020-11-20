@@ -269,6 +269,10 @@ apps:
       config.organizer.publishableStripeApiKey: "${CONFIG_STAGING_ORGANIZER_PUBLISHABLE_STRIPE_API_KEY}"
       config.organizer.segmentApiKey: "${CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY}"
 
+      config.organizer.sentry_dsn: "${CONFIG_STAGING_SENTRY_DSN}"
+      config.t721app.sentry_dsn: "${CONFIG_STAGING_SENTRY_DSN}"
+      config.staff.sentry_dsn: "${CONFIG_STAGING_SENTRY_DSN}"
+
       config.bugReportLink: "${CONFIG_BUG_REPORT_LINK}"
 
       config.s3.region: "${CONFIG_STAGING_IMAGE_S3_REGION}"

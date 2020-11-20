@@ -38,6 +38,9 @@ import { CartButton }                      from './components/CartButton';
 import { CartMenu }                        from './components/CartMenu';
 import { TicketsContextGuard }             from '@frontend/core/lib/utils/TicketsContext';
 import { StripeSDKManager }                from '@frontend/core/lib/utils/StripeSDKContext';
+import * as Sentry                         from '@sentry/react';
+import { Integrations }                    from '@sentry/tracing';
+import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
     const [scrolled, setScrolled] = useState(false);
@@ -61,6 +64,20 @@ const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
 
     return <TopNav label={''} onPress={props.back} scrolled={scrolled}/>;
 };
+
+
+if (getEnv().REACT_APP_SENTRY_DSN) {
+    Sentry.init({
+        dsn: getEnv().REACT_APP_SENTRY_DSN,
+        integrations: [
+            new Integrations.BrowserTracing(),
+        ],
+
+        // We recommend adjusting this value in production, or using tracesSampler
+        // for finer control
+        tracesSampleRate: 1.0,
+    });
+}
 
 const MobileApp: React.FC = () => {
     const location = useLocation();

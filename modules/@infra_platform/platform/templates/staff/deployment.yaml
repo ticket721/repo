@@ -53,6 +53,8 @@ spec:
               value: '5'
             - name: REACT_APP_T721_ORGANIZER_URL
               value: '{{ required "[staff] Missing config.staff.organizerUrl value" .Values.config.staff.organizerUrl }}'
+            - name: REACT_APP_SENTRY_DSN
+              value: {{ required "[staff] Missing config.t721app.sentry_dsn" .Values.config.staff.sentry_dsn}}
             - name: REACT_APP_SELF
               value: 'https://{{ required "[staff] Missing config.staff.self value" .Values.config.staff.self }}'
           ports:
