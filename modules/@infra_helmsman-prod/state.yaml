@@ -263,13 +263,14 @@ apps:
       config.t721app.iosMerchantId: "${CONFIG_PRODUCTION_IOS_T721APP_APPLE_MERCHANT_ID}"
       config.organizer.iosMerchantId: "${CONFIG_PRODUCTION_IOS_T721APP_APPLE_MERCHANT_ID}"
       config.staff.iosMerchantId: "${CONFIG_PRODUCTION_IOS_T721APP_APPLE_MERCHANT_ID}"
-      config.organizer.sentry_dsn: "${CONFIG_PRODUCTION_SENTRY_DSN}"
-      config.t721app.sentry_dsn: "${CONFIG_PRODUCTION_SENTRY_DSN}"
+
+      config.organizer.sentry_dsn: "${CONFIG_PRODUCTION_ORGANIZER_SENTRY_DSN}"
+      config.t721app.sentry_dsn: "${CONFIG_PRODUCTION_T721APP_SENTRY_DSN}"
+      config.staff.sentry_dsn: "${CONFIG_PRODUCTION_STAFF_SENTRY_DSN}"
 
       config.staff.segmentApiKey: "${CONFIG_PRODUCTION_STAFF_SEGMENT_API_KEY}"
       config.staff.organizerUrl: "https://organizer.ticket721.com"
       config.staff.self: "staff.ticket721.com"
-      config.staff.sentry_dsn: "${CONFIG_PRODUCTION_SENTRY_DSN}"
 
       config.bugReportLink: "${CONFIG_BUG_REPORT_LINK}"
 
