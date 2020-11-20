@@ -8,17 +8,18 @@ import { StaffNavbar }                                      from './shared/NavBa
 import { useDispatch }      from 'react-redux';
 import { SetupDate }        from './redux/ducks/current_event';
 import { UserContextGuard } from '@frontend/core/lib/utils/UserContext';
-import LoginPage            from './routes/Login';
-import ResetFormPage        from './routes/ResetForm';
-import ResetPage            from './routes/Reset';
-import ScanPage             from './routes/Scan';
-import GuestListPage        from './routes/GuestList';
-import StatsPage            from './routes/Stats';
-import AdminPage            from './routes/Admin';
-import { useFlag }          from '@frontend/core/lib/utils/useFlag';
-import { getEnv }           from '@frontend/core/lib/utils/getEnv';
-import * as Sentry          from '@sentry/react';
-import { Integrations }     from '@sentry/tracing';
+import LoginPage        from './routes/Login';
+import ResetFormPage    from './routes/ResetForm';
+import ResetPage        from './routes/Reset';
+import ScanPage         from './routes/Scan';
+import GuestListPage    from './routes/GuestList';
+import StatsPage        from './routes/Stats';
+import AdminPage        from './routes/Admin';
+import { useFlag }      from '@frontend/core/lib/utils/useFlag';
+import { getEnv }       from '@frontend/core/lib/utils/getEnv';
+import * as Sentry      from '@sentry/react';
+import { Integrations } from '@sentry/tracing';
+import { Crash }        from '@frontend/core/lib/components/Crash';
 
 if (getEnv().REACT_APP_SENTRY_DSN) {
     Sentry.init({
@@ -26,9 +27,6 @@ if (getEnv().REACT_APP_SENTRY_DSN) {
         integrations: [
             new Integrations.BrowserTracing(),
         ],
-
-        // We recommend adjusting this value in production, or using tracesSampler
-        // for finer control
         tracesSampleRate: 1.0,
     });
 }
@@ -100,5 +98,19 @@ const AppContainer = styled.div`
   width: 100%;
   height: 100%;
 `;
+
+let WrappedApp: any = withRouter(App);
+
+if (getEnv().REACT_APP_SENTRY_DSN) {
+    WrappedApp = Sentry.withErrorBoundary(
+        Sentry.withProfiler(
+            WrappedApp
+        )
+        ,{
+            showDialog: true,
+            fallback: <Crash/>
+        }
+    )
+}
 
 export default withRouter(App);
