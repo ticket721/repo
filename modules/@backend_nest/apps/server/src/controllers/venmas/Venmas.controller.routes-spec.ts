@@ -41,7 +41,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     created_at: new Date(Date.now()),
                     updated_at: new Date(Date.now()),
                 };
-                await sdk.venmas.create(venmasEntity);
+                await sdk.venmas.create(token, venmasEntity);
 
                 expect(
                     sdk.venmas.search({
@@ -65,7 +65,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                await failWithCode(sdk.venmas.create(null), StatusCodes.InternalServerError);
+                await failWithCode(sdk.venmas.create(token, null), StatusCodes.InternalServerError);
             });
         });
 
@@ -96,7 +96,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     ],
                 };
                 const venmasEntity: VenmasEntity = {
-                    id: 'abcd',
+                    id: '1',
                     name: 'abcd',
                     owner: 'abcd',
                     map: 'abcd',
@@ -104,7 +104,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     created_at: new Date(Date.now()),
                     updated_at: new Date(Date.now()),
                 };
-                await sdk.venmas.update(venmasEntity);
+                await sdk.venmas.update(token, venmasEntity, '1');
 
                 expect(
                     sdk.venmas.search({
@@ -115,7 +115,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                 ).toEqual(venmasEntity);
             });
 
-            test('should fail create venmas entity', async function() {
+            test('should fail create null venmas entity', async function() {
                 const {
                     sdk,
                     token,
@@ -128,7 +128,45 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     password: string;
                 } = await getSDKAndUser(getCtx);
 
-                await failWithCode(sdk.venmas.create(null), StatusCodes.InternalServerError);
+                await failWithCode(sdk.venmas.update(token, null, '1'), StatusCodes.InternalServerError);
+            });
+
+            test('should fail to update venmas entity without id', async function() {
+                const {
+                    sdk,
+                    token,
+                    user,
+                    password,
+                }: {
+                    sdk: T721SDK;
+                    token: string;
+                    user: PasswordlessUserDto;
+                    password: string;
+                } = await getSDKAndUser(getCtx);
+
+                const sections: Sections = {
+                    id: 'string',
+                    type: 'string',
+                    name: 'string',
+                    description: 'string',
+                    points: [
+                        [1, 1],
+                        [1, 2],
+                        [2, 1],
+                        [2, 2],
+                    ],
+                };
+                const venmasEntity: VenmasEntity = {
+                    id: '1',
+                    name: 'abcd',
+                    owner: 'abcd',
+                    map: 'abcd',
+                    sections: sections,
+                    created_at: new Date(Date.now()),
+                    updated_at: new Date(Date.now()),
+                };
+
+                await failWithCode(sdk.venmas.update(token, venmasEntity, 'NotExistingId'), StatusCodes.InternalServerError);
             });
         });
     };

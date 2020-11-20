@@ -20,7 +20,7 @@ export async function venmasSearch(
 export async function venmasCreate(
     token: string,
     body: VenmasEntity,
-) {
+): Promise<AxiosResponse<void>> {
 
     const self: T721SDK = this;
 
@@ -33,8 +33,8 @@ export async function venmasCreate(
 export async function venmasUpdate(
     token: string,
     body: VenmasEntity,
-    id: number,
-): Promise<AxiosResponse<VenmasSearchResponseDto>> {
+    id: string,
+): Promise<AxiosResponse<void>> {
 
     const self: T721SDK = this;
 
@@ -46,8 +46,8 @@ export async function venmasUpdate(
 
 export async function venmasDelete(
     token: string,
-    id: number,
-): Promise<AxiosResponse<VenmasSearchResponseDto>> {
+    id: string,
+): Promise<AxiosResponse<void>> {
 
     const self: T721SDK = this;
 
