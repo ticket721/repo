@@ -113,4 +113,4 @@ if (getEnv().REACT_APP_SENTRY_DSN) {
     )
 }
 
-export default withRouter(App);
+export default WrappedApp;
