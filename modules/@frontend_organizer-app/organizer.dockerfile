@@ -24,7 +24,7 @@ RUN cd ../@common_global && yarn build \
  && cd ../@common_sdk && yarn build \
  && cd ../@frontend_flib-react && yarn build \
  && cd ../@frontend_core && yarn build \
- && cd ../@frontend_organizer-app && yarn build:prod && yarn build:
+ && cd ../@frontend_organizer-app && yarn build:prod
 
 CMD ["yarn", "inject_env_and_serve"]
 
