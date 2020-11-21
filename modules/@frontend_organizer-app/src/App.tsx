@@ -28,6 +28,7 @@ import { getEnv }                        from '@frontend/core/lib/utils/getEnv';
 import * as Sentry                       from '@sentry/react';
 import { Integrations }                  from '@sentry/tracing';
 import { Crash }                         from '@frontend/core/lib/components/Crash';
+import { ErrorBoundary }                                                                    from 'react-error-boundary';
 
 const EventsDrawerWrapper = (): JSX.Element => {
 
@@ -140,13 +141,25 @@ let WrappedApp: any = withRouter(App);
 if (getEnv().REACT_APP_SENTRY_DSN) {
     WrappedApp = Sentry.withErrorBoundary(
         Sentry.withProfiler(
-            WrappedApp
+            WrappedApp,
         )
-        ,{
-            showDialog: true,
-            fallback: <Crash/>
-        }
-    )
+        , {
+            fallback: ({ eventId }: any) => (<Crash
+                onClick={() => {
+                    Sentry.showReportDialog({
+                        eventId,
+                    });
+                }}
+            />),
+        },
+    );
+} else {
+    const CurerntWrappedApp = WrappedApp;
+    WrappedApp = () => <ErrorBoundary
+        FallbackComponent={Crash as any}
+    >
+        <CurerntWrappedApp/>
+    </ErrorBoundary>
 }
 
 export default WrappedApp;

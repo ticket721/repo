@@ -64,12 +64,15 @@
         "tslint": "6.0.0",
         "typescript": "3.8.3",
         "@sentry/react": "5.27.4",
-        "@sentry/tracing": "5.27.4"
+        "@sentry/tracing": "5.27.4",
+        "@sentry/cli": "1.59.0",
+        "react-error-boundary": "3.0.2"
     },
     "resolutions": {
         "react-scripts/**/jest": "24.9.0"
     },
     "scripts": {
+        "sourcemaps_upload": "node sourcemaps_upload.js",
         "inject_env": "node env_injector.js > /tmp/index.html && cp /tmp/index.html ./build/index.html",
         "build": "react-scripts --max_old_space_size=4096 build",
         "start": "PORT=8100 react-scripts start",

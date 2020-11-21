@@ -55,7 +55,9 @@
         "tslint": "6.0.0",
         "serve": "11.3.2",
         "@sentry/react": "5.27.4",
-        "@sentry/tracing": "5.27.4"
+        "@sentry/tracing": "5.27.4",
+        "@sentry/cli": "1.59.0",
+        "react-error-boundary": "3.0.2"
     },
     "resolutions": {
         "react-scripts/**/jest": "24.9.0"

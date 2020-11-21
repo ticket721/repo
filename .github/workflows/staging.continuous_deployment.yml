@@ -9,7 +9,7 @@ on:
 
 jobs:
     docker:
-      name: "[S3] docker"
+      name: "[S1] docker"
       runs-on: ubuntu-latest
       steps:
 
@@ -80,7 +80,7 @@ jobs:
           run: yarn @docker:deploy:github
 
     infra:
-      name: "[S4] infra (staging)"
+      name: "[S2] infra (staging)"
       needs: docker
       runs-on: ubuntu-latest
       steps:
@@ -181,4 +181,5 @@ jobs:
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             AWS_USER_ID: ${{ secrets.AWS_USER_ID }}
             AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+
 

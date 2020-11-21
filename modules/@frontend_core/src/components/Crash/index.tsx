@@ -21,26 +21,39 @@ const Sorry = styled.span`
 `;
 
 const ErrorOccured = styled.span`
-    width: min(80%, 500px);
-    margin-top: 20px;
-    font-size: 20px;
+    width: min(70%, 500px);
+    margin-top: 100px;
+    font-size: 16px;
     font-weight: 300;
 `;
 
 const Submitted = styled.span`
-    margin-top: 30px;
+    margin-top: 15px;
     font-size: 16px;
     opacity: 1;
     font-weight: 300;
-    width: min(80%, 500px);
+    width: min(70%, 500px);
 `;
 
 const ButtonContainer = styled.div`
-    margin-top: 30px;
+    margin-top: 75px;
     width: min(60%, 300px);
 `;
 
-export const Crash = (): JSX.Element => {
+const SecondaryButton = styled.span`
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 400;
+    color: ${(props) => props.theme.primaryColor.hex};
+    text-decoration: underline;
+    cursor: pointer;
+`;
+
+interface CrashProps {
+    onClick?: () => void;
+}
+
+export const Crash: React.FC<CrashProps> = (props: CrashProps): JSX.Element => {
     const [t] = useTranslation('crash');
 
     return (
@@ -55,13 +68,26 @@ export const Crash = (): JSX.Element => {
             <ErrorOccured>{t('an_error_occured')}</ErrorOccured>
             <Submitted>{t('submitted')}</Submitted>
             <ButtonContainer>
-                <Button
-                    title={t('back_to_app')}
-                    variant={'primary'}
-                    onClick={() => {
-                        window.location.replace('/');
-                    }}
-                />
+                {props.onClick ? (
+                    <>
+                        <Button title={t('sentry_title')} variant={'primary'} onClick={props.onClick} />
+                        <SecondaryButton
+                            onClick={() => {
+                                window.location.replace('/');
+                            }}
+                        >
+                            {t('back_to_app')}
+                        </SecondaryButton>
+                    </>
+                ) : (
+                    <Button
+                        title={t('back_to_app')}
+                        variant={'primary'}
+                        onClick={() => {
+                            window.location.replace('/');
+                        }}
+                    />
+                )}
             </ButtonContainer>
         </Container>
     );

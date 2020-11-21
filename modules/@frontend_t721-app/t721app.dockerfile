@@ -15,6 +15,7 @@ WORKDIR "/repo/modules/@frontend_t721-app"
 
 ENV NODE_ENV production
 ENV GENERATE_SOURCEMAP false
+ENV REACT_APP_SENTRY_RELEASE ${TAG}
 
 RUN cd ../@common_global && yarn build \
  && cd ../@common_geoloc && yarn build \
