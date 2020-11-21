@@ -35,9 +35,12 @@
         "cordova-res": "0.15.1",
         "es6-promise-plugin": "4.2.2",
         "@sentry/react": "5.27.4",
-        "@sentry/tracing": "5.27.4"
+        "@sentry/tracing": "5.27.4",
+        "@sentry/cli": "1.59.0",
+        "react-error-boundary": "3.0.2"
     },
     "scripts": {
+        "sourcemaps_upload": "node sourcemaps_upload.js",
         "start": "PORT=3002 react-scripts start",
         "build": "react-scripts build",
         "build:prod": "react-scripts build",

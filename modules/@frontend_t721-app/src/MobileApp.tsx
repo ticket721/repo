@@ -7,8 +7,8 @@ import styled                                                                   
 import { T721Navbar }                                                                       from './components/NavBar';
 import AdminRoutePage                                                                       from './routes/Admin';
 import LoginPage                                                                            from './routes/Login';
-import ResetPage                                                                         from './routes/Reset';
-import ResetFormPage                                                                         from './routes/ResetForm';
+import ResetPage                                                                            from './routes/Reset';
+import ResetFormPage                                                                        from './routes/ResetForm';
 import RegisterPage                                                                         from './routes/Register';
 import HomePage                                                                             from './routes/Home';
 import ProfileLanguagePage                                                                  from './routes/Language';
@@ -26,22 +26,23 @@ import CloseRedirectPage                                                        
 import StripeSetupPage                                                                      from './routes/StripeSetup';
 import StripeTransactionsPage                                                               from './routes/StripeTransactions';
 import StripeWithdrawPage                                                                   from './routes/StripeWithdraw';
-import StripeCreateBankAccountPage         from './routes/StripeCreateBankAccount';
-import { useKeyboardVisibility }           from '@frontend/core/lib/utils/useKeyboardVisibility';
-import { UserContextGuard }                from '@frontend/core/lib/utils/UserContext';
-import DeepLinksListener                   from './components/DeepLinksListener';
-import MediaQuery                          from 'react-responsive';
-import { useFlag }                         from '@frontend/core/lib/utils/useFlag';
-import { useToken }                        from '@frontend/core/lib/hooks/useToken';
-import { CartContext, CartContextManager } from './components/Cart/CartContext';
-import { CartButton }                      from './components/CartButton';
-import { CartMenu }                        from './components/CartMenu';
-import { TicketsContextGuard }             from '@frontend/core/lib/utils/TicketsContext';
-import { StripeSDKManager }                from '@frontend/core/lib/utils/StripeSDKContext';
-import * as Sentry                         from '@sentry/react';
-import { Integrations }                    from '@sentry/tracing';
-import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
-import { Crash }                           from '@frontend/core/lib/components/Crash';
+import StripeCreateBankAccountPage                                                          from './routes/StripeCreateBankAccount';
+import { useKeyboardVisibility }                                                            from '@frontend/core/lib/utils/useKeyboardVisibility';
+import { UserContextGuard }                                                                 from '@frontend/core/lib/utils/UserContext';
+import DeepLinksListener                                                                    from './components/DeepLinksListener';
+import MediaQuery                                                                           from 'react-responsive';
+import { useFlag }                                                                          from '@frontend/core/lib/utils/useFlag';
+import { useToken }                                                                         from '@frontend/core/lib/hooks/useToken';
+import { CartContext, CartContextManager }                                                  from './components/Cart/CartContext';
+import { CartButton }                                                                       from './components/CartButton';
+import { CartMenu }                                                                         from './components/CartMenu';
+import { TicketsContextGuard }                                                              from '@frontend/core/lib/utils/TicketsContext';
+import { StripeSDKManager }                                                                 from '@frontend/core/lib/utils/StripeSDKContext';
+import * as Sentry                                                                          from '@sentry/react';
+import { Integrations }                                                                     from '@sentry/tracing';
+import { getEnv }                                                                           from '@frontend/core/lib/utils/getEnv';
+import { Crash }                                                                            from '@frontend/core/lib/components/Crash';
+import { ErrorBoundary }                                                                    from 'react-error-boundary';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
     const [scrolled, setScrolled] = useState(false);
@@ -66,7 +67,6 @@ const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
     return <TopNav label={''} onPress={props.back} scrolled={scrolled}/>;
 };
 
-
 if (getEnv().REACT_APP_SENTRY_DSN) {
     Sentry.init({
         dsn: getEnv().REACT_APP_SENTRY_DSN,
@@ -74,7 +74,9 @@ if (getEnv().REACT_APP_SENTRY_DSN) {
             new Integrations.BrowserTracing(),
         ],
         tracesSampleRate: 1.0,
+        release: getEnv().REACT_APP_RELEASE
     });
+    console.log(`Initialized Sentry for release ${getEnv().REACT_APP_RELEASE}`);
 }
 
 const MobileApp: React.FC = () => {
@@ -298,13 +300,25 @@ let WrappedApp: any = withRouter(MobileApp);
 if (getEnv().REACT_APP_SENTRY_DSN) {
     WrappedApp = Sentry.withErrorBoundary(
         Sentry.withProfiler(
-            WrappedApp
+            WrappedApp,
         )
-        ,{
-            showDialog: true,
-            fallback: <Crash/>
-        }
-    )
+        , {
+            fallback: ({ eventId }: any) => (<Crash
+                onClick={() => {
+                    Sentry.showReportDialog({
+                        eventId,
+                    });
+                }}
+            />),
+        },
+    );
+} else {
+    const CurerntWrappedApp = WrappedApp;
+    WrappedApp = () => <ErrorBoundary
+        FallbackComponent={Crash as any}
+    >
+        <CurerntWrappedApp/>
+    </ErrorBoundary>
 }
 
 export default WrappedApp;
