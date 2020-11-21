@@ -79,6 +79,42 @@ jobs:
             AWS_REGION: ${{ secrets.AWS_REGION }}
           run: yarn @docker:deploy:github
 
+        - name: "Publish t721app-staging sentry release"
+          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
+          env:
+            SENTRY_AUTH_TOKEN: ${{ secrets.CONFIG_SENTRY_AUTH_TOKEN }}
+          run: docker run -e SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" -e SENTRY_ORG=ticket721 -e SENTRY_PROJECT=t721app-staging t721app:${GITHUB_SHA} yarn sourcemaps_upload
+          
+        - name: "Publish organizer-staging sentry release"
+          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
+          env:
+            SENTRY_AUTH_TOKEN: ${{ secrets.CONFIG_SENTRY_AUTH_TOKEN }}
+          run: docker run -e SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" -e SENTRY_ORG=ticket721 -e SENTRY_PROJECT=organizer-staging organizer:${GITHUB_SHA} yarn sourcemaps_upload
+          
+        - name: "Publish staff-staging sentry release"
+          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
+          env:
+            SENTRY_AUTH_TOKEN: ${{ secrets.CONFIG_SENTRY_AUTH_TOKEN }}
+          run: docker run -e SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" -e SENTRY_ORG=ticket721 -e SENTRY_PROJECT=staff-staging staff:${GITHUB_SHA} yarn sourcemaps_upload
+
+        - name: "Publish t721app sentry release"
+          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
+          env:
+            SENTRY_AUTH_TOKEN: ${{ secrets.CONFIG_SENTRY_AUTH_TOKEN }}
+          run: docker run -e SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" -e SENTRY_ORG=ticket721 -e SENTRY_PROJECT=t721app t721app:${GITHUB_SHA} yarn sourcemaps_upload
+
+        - name: "Publish organizer sentry release"
+          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
+          env:
+            SENTRY_AUTH_TOKEN: ${{ secrets.CONFIG_SENTRY_AUTH_TOKEN }}
+          run: docker run -e SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" -e SENTRY_ORG=ticket721 -e SENTRY_PROJECT=organizer organizer:${GITHUB_SHA} yarn sourcemaps_upload
+
+        - name: "Publish staff sentry release"
+          if: (github.event_name == 'push' || steps.wait-for-build.outputs.conclusion == 'success') && steps.should_build.outputs.should_build == 'true'
+          env:
+            SENTRY_AUTH_TOKEN: ${{ secrets.CONFIG_SENTRY_AUTH_TOKEN }}
+          run: docker run -e SENTRY_AUTH_TOKEN="${SENTRY_AUTH_TOKEN}" -e SENTRY_ORG=ticket721 -e SENTRY_PROJECT=staff staff:${GITHUB_SHA} yarn sourcemaps_upload
+
     infra:
       name: "[S2] infra (staging)"
       needs: docker

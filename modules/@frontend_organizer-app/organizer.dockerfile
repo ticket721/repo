@@ -15,6 +15,7 @@ WORKDIR "/repo/modules/@frontend_organizer-app"
 
 ENV NODE_ENV production
 ENV GENERATE_SOURCEMAP false
+ENV REACT_APP_RELEASE="$TAG"
 
 RUN cd ../@common_global && yarn build \
  && cd ../@common_geoloc && yarn build \

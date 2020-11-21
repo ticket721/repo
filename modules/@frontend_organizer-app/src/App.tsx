@@ -51,7 +51,9 @@ if (getEnv().REACT_APP_SENTRY_DSN) {
             new Integrations.BrowserTracing(),
         ],
         tracesSampleRate: 1.0,
+        release: getEnv().REACT_APP_RELEASE
     });
+    console.log(`Initialized Sentry for release ${getEnv().REACT_APP_RELEASE}`);
 }
 
 const App: React.FC = () => {
