@@ -2,6 +2,8 @@ ARG TAG
 FROM repo:${TAG} as DEPENDENCIES
 FROM raw:${TAG} as BUILDER
 
+ARG TAG
+
 COPY --from=DEPENDENCIES "/repo/node_modules" "/repo/node_modules"
 COPY --from=DEPENDENCIES "/repo/modules/@backend_nest/node_modules" "/repo/modules/@backend_nest/node_modules"
 COPY --from=DEPENDENCIES "/repo/modules/@common_sdk/node_modules" "/repo/modules/@common_sdk/node_modules"

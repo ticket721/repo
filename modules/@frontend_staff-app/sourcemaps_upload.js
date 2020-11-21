@@ -4,7 +4,7 @@ async function createReleaseAndUpload() {
     const release = process.env.REACT_APP_RELEASE;
 
     if (!release) {
-        console.warn('REACT_APP_SENTRY_RELEASE is not set');
+        console.warn('REACT_APP_RELEASE is not set');
         return;
     }  const cli = new SentryCli();  try {
         console.log('Creating sentry release ' + release);
