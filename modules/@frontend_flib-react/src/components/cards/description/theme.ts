@@ -36,11 +36,7 @@ export const getEditorTheme = (color?: string) => {
         toolbarHoverBackground: customThemes.t721.darkBg,
         toolbarInput: customThemes.t721.darkBg,
         toolbarItem: customThemes.t721.textColor,
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> feat: add richtext + responsive user app
         blockToolbarBackground: customThemes.t721.darkerBg,
         blockToolbarTrigger: customThemes.t721.darkBg,
         blockToolbarTriggerIcon: primaryColor,
@@ -48,18 +44,13 @@ export const getEditorTheme = (color?: string) => {
         blockToolbarText: customThemes.t721.textColor,
         blockToolbarHoverBackground: customThemes.t721.darkBg,
         blockToolbarDivider: customThemes.t721.textColorDark,
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> feat: add richtext + responsive user app
         noticeInfoBackground: customThemes.t721.primaryColorGradientEnd.hex,
         noticeInfoText: customThemes.t721.textColor,
         noticeTipBackground: primaryColor,
         noticeTipText: customThemes.t721.textColor,
         noticeWarningBackground: customThemes.t721.warningColor.hex,
         noticeWarningText: customThemes.t721.textColor,
-<<<<<<< HEAD
 
         tableDivider: customThemes.t721.textColorDark,
         tableSelected: primaryColor,
@@ -72,21 +63,6 @@ export const getEditorTheme = (color?: string) => {
         scrollbarBackground: customThemes.t721.componentColorLighter,
         scrollbarThumb: customThemes.t721.componentColorLight,
 
-=======
-    
-        tableDivider: customThemes.t721.textColorDark,
-        tableSelected: primaryColor,
-        tableSelectedBackground: customThemes.t721.componentColorLight,
-    
-        quote: customThemes.t721.componentColor,
-        horizontalRule: customThemes.t721.componentColorLight,
-        imageErrorBackground: customThemes.t721.componentColorLighter,
-    
-        scrollbarBackground: customThemes.t721.componentColorLighter,
-        scrollbarThumb: customThemes.t721.componentColorLight,
-
-
->>>>>>> feat: add richtext + responsive user app
         almostBlack: 'rgb(255,255,0)',
         lightBlack: 'rgb(255,0,255)',
         almostWhite: 'rgb(0,255,255)',
@@ -101,8 +77,4 @@ export const getEditorTheme = (color?: string) => {
         greyMid: 'rgba(0,255,0,0.5)',
         greyDark: 'rgba(0,9,255,0.5)',
     };
-<<<<<<< HEAD
 };
-=======
-}
->>>>>>> feat: add richtext + responsive user app

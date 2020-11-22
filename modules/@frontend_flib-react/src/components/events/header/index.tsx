@@ -35,7 +35,7 @@ const Header = styled.header<EventHeaderProps>`
 
 const Cover = styled.div<{ src: string }>`
     padding-top: 56.25%;
-    background-image: url(${props => props.src});
+    background-image: url(${(props) => props.src});
     background-size: cover;
     background-position: center;
 
@@ -65,7 +65,7 @@ const Infos = styled.div`
     margin-top: -4%;
     background-color: ${(props) => props.theme.darkBg};
     background-color: ${(props) => props.theme.darkerBg};
-    border-top-right-radius: calc( 2 * ${(props) => props.theme.defaultRadius});
+    border-top-right-radius: calc(2 * ${(props) => props.theme.defaultRadius});
     color: ${(props) => props.theme.textColor};
     padding: ${(props) => props.theme.doubleSpacing} ${(props) => props.theme.biggerSpacing}
         ${(props) => props.theme.biggerSpacing};

@@ -31,7 +31,7 @@ const Card = styled(CardContainer)`
         }
 
         hr {
-            margin: ${props => props.theme.smallSpacing};
+            margin: ${(props) => props.theme.smallSpacing};
         }
     }
 `;

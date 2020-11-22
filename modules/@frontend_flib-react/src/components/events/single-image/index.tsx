@@ -108,7 +108,7 @@ export const SingleImage: React.FunctionComponent<SingleImageProps & { className
             clickable={!!props.onClick}
             onClick={props.onClick}
         >
-            <Filter/>
+            <Filter />
             {props.online && props.online_text ? (
                 <AbsoluteOnlineTagDiv>
                     <OnlineTag online={props.online_text} />
