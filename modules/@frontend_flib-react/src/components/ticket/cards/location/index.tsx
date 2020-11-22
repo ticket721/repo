@@ -22,6 +22,7 @@ export interface LocationCardProps extends React.ComponentProps<any> {
     online?: boolean;
     online_label?: string;
     online_sublabel?: string;
+    paddingOverride?: string;
 }
 
 const Info = styled.span`
@@ -87,7 +88,7 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
 ): JSX.Element => {
     return (
         <ClickableContainer onClick={() => (!props.disabled ? openMap(props.location) : null)}>
-            <CardContainer className={props.className} removeBg={props.removeBg}>
+            <CardContainer className={props.className} paddingOverride={props.paddingOverride} removeBg={props.removeBg}>
                 <IconContainer>
                     <Icon
                         icon={props.online ? 'live' : 'pin'}

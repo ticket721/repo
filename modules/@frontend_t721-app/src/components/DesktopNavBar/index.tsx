@@ -58,12 +58,12 @@ export const DesktopNavbar: React.FC = () => {
                 <NavLink to='/'>
                     <Icon icon='t721' color='#fff' size='30px'/>
                 </NavLink>
-                <SearchLink to='/search' selected={history.location.pathname.startsWith('/search')}>
+                <Link to='/search' selected={history.location.pathname.startsWith('/search')}>
                     {t('search')}
-                </SearchLink>
-                <SearchLink to='/wallet' selected={history.location.pathname.startsWith('/wallet')}>
+                </Link>
+                <Link to='/wallet' selected={history.location.pathname.startsWith('/wallet')}>
                     {t('my_tickets')}
-                </SearchLink>
+                </Link>
             </LeftSide>
             <UserContainer>
                 { user ?
@@ -78,8 +78,8 @@ export const DesktopNavbar: React.FC = () => {
                         <Chevron icon='chevron' color='#fff' size='7px'/>
                     </Profile> :
                     <Connect>
-                        <NavLink to='/login'>{t('login')}</NavLink>
-                        <NavLink to='/register'>{t('register')}</NavLink>
+                        <Link selected={history.location.pathname.startsWith('/login')} to='/login'>{t('login')}</Link>
+                        <Link selected={history.location.pathname.startsWith('/register')} to='/register'>{t('register')}</Link>
                     </Connect>
                 }
             </UserContainer>
@@ -91,17 +91,14 @@ export const DesktopNavbar: React.FC = () => {
 };
 
 const Container = styled.div`
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 80px;
-  z-index: 3;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: ${props => props.theme.smallSpacing} ${props => props.theme.biggerSpacing};
-  background-color: #1a1524;
-  z-index: 402;
+    width: 100%;
+    height: 80px;
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: ${props => props.theme.smallSpacing} ${props => props.theme.smallSpacing} ${props => props.theme.smallSpacing} ${props => props.theme.biggerSpacing};
+    z-index: 1001;
 `;
 
 const LeftSide = styled.div`
@@ -109,7 +106,7 @@ const LeftSide = styled.div`
     align-items: center;
 `;
 
-const SearchLink = styled(NavLink)<{ selected: boolean }>`
+const Link = styled(NavLink)<{ selected: boolean }>`
     margin-left: ${props => props.theme.biggerSpacing};
 
     ${props => props.selected ?
@@ -162,6 +159,7 @@ const Chevron = styled(Icon)`
 
 const Connect = styled.div`
     display: flex;
+    margin-right: ${props => props.theme.regularSpacing};
 
     a:first-child {
         margin-right: ${props => props.theme.regularSpacing};

@@ -73,7 +73,7 @@ export const showcase = () => (
                     return (
                         <SingleImage
                             key={event.id}
-                            src={event.src}
+                            cover={event.src}
                             id={event.id}
                             price={event.price.toString()}
                             text={event.text}

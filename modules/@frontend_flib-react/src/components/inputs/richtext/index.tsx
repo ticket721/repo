@@ -76,9 +76,9 @@ const StyledRichText = styled.div<RichTextProps>`
             outline: none;
         }
 
-        // a {
-        //     text-decoration: underline;
-        // }
+        a {
+            text-decoration: underline;
+        }
 
         hr {
             margin: ${props => props.theme.smallSpacing};
@@ -204,7 +204,6 @@ const frenchDictionory = {
 
 export const RichText: React.FunctionComponent<RichTextProps> = (props: RichTextProps): JSX.Element => {
     const editorRef = useRef<RichMarkdownEditor>(null);
-    console.log(props.onClickHashTag)
     return (
         <StyledRichText error={props.error} className={props.className} color={props.color}>
             <LabelsContainer>

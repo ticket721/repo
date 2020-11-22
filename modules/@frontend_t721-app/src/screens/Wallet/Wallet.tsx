@@ -50,7 +50,7 @@ const Wallet: React.FC = () => {
     }
 
     return (
-        <div>
+        <Container>
             <Title>
                 <h1>
                     {t('my_tickets')}
@@ -73,9 +73,14 @@ const Wallet: React.FC = () => {
                         </div>
                     </EmptyWallet>
             }
-        </div>
+        </Container>
     );
 };
+
+const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
 
 const Title = styled.div`
     font-weight: bold;
@@ -87,6 +92,17 @@ const Title = styled.div`
         margin-bottom: 0;
         text-align: center;
         font-size: 16px;
+
+        @media screen and (min-width: 900px) {
+            text-align: start;
+            font-size: 24px;
+        }
+    }
+
+    @media screen and (min-width: 900px) {
+        width: 100%;
+        margin-top: ${props => props.theme.doubleSpacing};
+        padding-left: ${props => props.theme.doubleSpacing};
     }
 `;
 

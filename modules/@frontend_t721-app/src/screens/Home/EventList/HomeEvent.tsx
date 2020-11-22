@@ -10,6 +10,7 @@ import { getImgPath }                  from '@frontend/core/lib/utils/images';
 import { getPriceRange }               from '../../../utils/prices';
 import { useTranslation }              from 'react-i18next';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
+import styled from 'styled-components';
 
 export interface HomeEventProps {
     date: DateEntity;
@@ -47,17 +48,36 @@ export const HomeEvent: React.FC<HomeEventProps> = (props: HomeEventProps): JSX.
     ], t('coming_soon'), t('free'));
 
 
-    return <SingleImage
+    return <EventContainer>
+        <SingleImage
         onClick={() => history.push(`/event/${props.date.id}`)}
         id={props.idx}
         key={props.idx}
-        src={imageUrl}
+        cover={imageUrl}
         text={props.date.location ? props.date.location.location_label : t('online')}
         online={props.date.online}
         online_text={t('online')}
         title={props.date.metadata.name}
         mainColor={props.date.metadata.signature_colors[0]}
         price={priceString}
-        dateLabel={dateString}
-    />
+        dateLabel={dateString}/>
+    </EventContainer>
 };
+
+const EventContainer = styled.div`
+    margin: ${props => props.theme.regularSpacing};
+
+    width: calc((100% - 8 * ${props => props.theme.regularSpacing}) / 4);
+
+    @media screen and (max-width: 1450px) {
+        width: calc((100% - 6 * ${props => props.theme.regularSpacing}) / 3);
+    }
+
+    @media screen and (max-width: 1100px) {
+        width: calc((100% - 4 * ${props => props.theme.regularSpacing}) / 2);
+    }
+
+    @media screen and (max-width: 750px) {
+        width: calc(100% - 2 * ${props => props.theme.regularSpacing});
+    }
+`;

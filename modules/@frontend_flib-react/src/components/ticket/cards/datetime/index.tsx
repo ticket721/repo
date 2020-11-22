@@ -24,6 +24,7 @@ export interface DateTimeCardProps extends React.ComponentProps<any> {
     wSeparator?: boolean;
     onClick?: (dateId: string) => void;
     small?: boolean;
+    paddingOverride?: string;
 }
 
 const TileContainer = styled.div<{ datesHeight: string }>`
@@ -140,7 +141,7 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
     useEffect(() => setDatesHeight(props.dates.length * 136 + 'px'), []);
 
     return (
-        <CardContainer small={props.small} removeBg={!collapsed || props.removeBg} className={props.className}>
+        <CardContainer paddingOverride={props.paddingOverride} small={props.small} removeBg={!collapsed || props.removeBg} className={props.className}>
             {collapsed ? (
                 <IconContainer>
                     <Icon icon={'calendar'} size={'16px'} color={props.iconColor} />

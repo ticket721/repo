@@ -129,7 +129,7 @@ const LoginWrapper = styled.div<LoginWrapperProps>`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: ${(props) => (props.mobile ? 'none' : '100vh')};
+    height: ${(props) => (props.mobile ? 'none' : 'calc(100vh - 80px)')};
 `;
 
 interface ILoginContainerInputProps {

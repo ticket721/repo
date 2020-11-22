@@ -19,10 +19,19 @@ const H3 = styled.h3`
 
 const Card = styled(CardContainer)`
     .editor {
+        font-size: 14px;
         width: 100%;
 
         .heading-anchor {
             display: none;
+        }
+
+        a {
+            text-decoration: underline;
+        }
+
+        hr {
+            margin: ${props => props.theme.smallSpacing};
         }
     }
 `;

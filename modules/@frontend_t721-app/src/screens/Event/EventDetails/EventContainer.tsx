@@ -19,6 +19,7 @@ import facebookImg                                                              
 import websiteImg                                                                             from '../../../media/images/social/website.svg';
 import twitterImg                                                                             from '../../../media/images/social/twitter.svg';
 import MediaQuery from 'react-responsive';
+import { useWindowDimensions } from '@frontend/core/lib/hooks/useWindowDimensions';
 
 export interface EventContainerProps {
     eventName: string;
@@ -27,18 +28,40 @@ export interface EventContainerProps {
     priceString: string;
 }
 
-const Container = styled.div`
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+
+const BlurredBg = styled.div<{ cover: string }>`
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 0;
     overflow: hidden;
 
-    @media screen and (min-width: 1224px) {
-        margin-top: calc(80px + 2 * ${props => props.theme.biggerSpacing});
+    > div {
+        width: 100vw;
+        padding-top: 60vh;
+        filter: blur(2vw);
+        background: url(${props => props.cover});
+        background-size: 150%;
+        background-position: center;
+    }
+`;
+
+const Container = styled.div`
+    width: 100vw;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    z-index: 2;
+    overflow: hidden;
+
+    @media screen and (min-width: 901px) {
+        width: 900px;
+        margin-top: calc(2 * ${props => props.theme.biggerSpacing});
     }
 `;
 
 const BgContainer = styled.div`
-    background-color: #1b1726;
+    position: relative;
+    background-color: ${props => props.theme.darkBg};
 `;
 
 const OverallInfos = styled.div`
@@ -55,6 +78,7 @@ const MainInfos = styled.div`
     flex-direction: column;
     flex: 2;
     padding: ${props => props.theme.smallSpacing} ${props => props.theme.doubleSpacing};
+    margin-bottom: ${props => props.theme.doubleSpacing};
 
     @media screen and (max-width: 900px) {
         padding: 0;
@@ -92,6 +116,7 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
     const imageUrl = getImgPath(props.date.metadata.avatar);
     const [t] = useTranslation('event');
     const history = useHistory();
+    const windowDim = useWindowDimensions();
 
     const eventDetails = {
         eventName: props.eventName,
@@ -113,7 +138,9 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
         history.push(`/event/${props.date.id}/selection`);
     };
 
-    return <Container>
+    return <>
+    <BlurredBg cover={eventDetails.image}><div/></BlurredBg>
+    <Container>
         <EventHeader
             preName={eventDetails.eventName}
             name={eventDetails.name}
@@ -136,6 +163,7 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
                             startTime: eventDetails.startTime,
                             endTime: eventDetails.endTime,
                         }]}
+                        paddingOverride={windowDim.width >= 900 ? '24px 0' : props.date.online ? '24px 24px 0' : '24px'}
                         removeBg
                     />
                     {
@@ -149,6 +177,7 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
                                 iconColor={eventDetails.mainColor}
                                 location={eventDetails.location}
                                 subtitle={t('get_directions')}
+                                paddingOverride={windowDim.width >= 900 ? '24px 0' : '24px'}
                                 removeBg
                                 coords={
                                     props.date.location.location
@@ -289,13 +318,12 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
                                 }
                             </div>
                         </CardContainer>
-                        <Border/>
                     </>
 
                     :
                     null
             }
         </BgContainer>
-    </Container>;
+    </Container></>;
 
 };

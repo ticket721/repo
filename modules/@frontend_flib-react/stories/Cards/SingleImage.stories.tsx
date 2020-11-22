@@ -10,11 +10,11 @@ export default {
     },
 };
 
-export const ImageOnly = () => <SingleImage id={1} src={text('URL', 'assets/images/ticket-1.jpg')} imgOnly />;
+export const ImageOnly = () => <SingleImage id={1} cover={text('URL', 'assets/images/ticket-1.jpg')} imgOnly />;
 
 export const WithDetails = () => (
     <SingleImage
-        src={text('URL', 'assets/images/ticket-1.jpg')}
+        cover={text('URL', 'assets/images/ticket-1.jpg')}
         id={1}
         price={text('Price', '55')}
         mainColor={text('Color', '#E4863C')}

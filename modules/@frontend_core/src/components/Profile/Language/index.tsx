@@ -9,21 +9,23 @@ const Language: React.FC = () => {
     const setLanguage = (lang: string) => i18n.changeLanguage(lang);
 
     return (
-        <SelectableList
-            title={t('title')}
-            items={[
-                {
-                    label: t('en_select'),
-                    value: 'en',
-                },
-                {
-                    label: t('fr_select'),
-                    value: 'fr',
-                },
-            ]}
-            selected={i18n.language.slice(0, 2)}
-            update={setLanguage}
-        />
+        <div style={{width: '100vw'}}>
+            <SelectableList
+                title={t('title')}
+                items={[
+                    {
+                        label: t('en_select'),
+                        value: 'en',
+                    },
+                    {
+                        label: t('fr_select'),
+                        value: 'fr',
+                    },
+                ]}
+                selected={i18n.language.slice(0, 2)}
+                update={setLanguage}
+            />
+        </div>
     );
 };
 

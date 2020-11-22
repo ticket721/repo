@@ -28,7 +28,7 @@ export const FeaturedCarousel: React.FunctionComponent<FeaturedCarouselProps> = 
                         <Slide
                             key={slide.id}
                             id={slide.id}
-                            src={slide.src}
+                            cover={slide.cover}
                             title={slide.title}
                             price={slide.price}
                             text={slide.text}

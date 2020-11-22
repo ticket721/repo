@@ -65,44 +65,51 @@ export const EventCard: React.FC<EventCardProps> = ({ id, name, avatar, primaryC
         return <Error message={t('dates_fetch_error')} onRefresh={forceDates}/>;
     }
 
-    return <EventCardContainer
-    cover={avatar}
-    onClick={() => history.push(`/event/${id}`)}>
-            <Filter/>
-            <Name>{name}</Name>
-            {
-                datesResp.data.dates.length > 0 ?
-                <DateRange primaryColor={primaryColor}>
-                    {t('from')}&nbsp;<strong>{dateRange?.start || '___'}</strong>&nbsp;{t('to')}&nbsp;<strong>{dateRange?.end || '___'}</strong>
-                </DateRange> :
-                null
-            }
-    </EventCardContainer>;
+    return <Container>
+        <Card
+        cover={avatar}
+        onClick={() => history.push(`/event/${id}`)}>
+                <Filter/>
+                <Content>
+                    <Name>{name}</Name>
+                    {
+                        datesResp.data.dates.length > 0 ?
+                        <DateRange primaryColor={primaryColor}>
+                            {t('from')}&nbsp;<strong>{dateRange?.start || '___'}</strong>&nbsp;{t('to')}&nbsp;<strong>{dateRange?.end || '___'}</strong>
+                        </DateRange> :
+                        null
+                    }
+                </Content>
+        </Card>
+    </Container>;
 };
 
-const EventCardContainer = styled.div<{ cover: string }>`
+const Container = styled.div`
+    width: calc((100vw - 450px - (${props => props.theme.doubleSpacing} * 2)) / 3);
+
+    @media screen and (max-width: 1500px) {
+        width: calc((100vw - 450px - ${props => props.theme.doubleSpacing}) / 2);
+    }
+
+    @media screen and (max-width: 1100px) {
+        width: calc(100vw - 450px);
+    }
+`;
+
+const Card = styled.div<{ cover: string }>`
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    width: 400px;
-    width: calc((100vw - 450px - (${props => props.theme.doubleSpacing} * 2)) / 3);
-    height: calc((100vw - 450px - (${props => props.theme.doubleSpacing} * 2)) * (3/16));
+    width: 100%;
     background: url(${props => props.cover});
     background-size: cover;
-    padding: ${props => props.theme.biggerSpacing};
+    background-position: center;
+    padding-top: 56.25%;
     border-radius: ${props => props.theme.defaultRadius};
     cursor: pointer;
-
-    @media screen and (max-width: 1500px) {
-        width: calc((100vw - 450px - ${props => props.theme.doubleSpacing}) / 2);
-        height: calc((100vw - 450px - ${props => props.theme.doubleSpacing}) * (9/32));
-    }
-
-    @media screen and (max-width: 900px) {
-        width: calc(100vw - 450px);
-        height: calc((100vw - 450px) * (9/16));
-    }
+    overflow: hidden;
+    height: 0;
 `;
 
 const Filter = styled.div`
@@ -113,6 +120,14 @@ const Filter = styled.div`
     width: 100%;
     height: 100%;
     background: linear-gradient(0deg, rgba(0,0,0,0.6) 15%, transparent);
+`;
+
+const Content = styled.div`
+    position: absolute;
+    bottom: ${props => props.theme.biggerSpacing};
+    left: ${props => props.theme.biggerSpacing};
+    display: flex;
+    flex-direction: column;
 `;
 
 const Name = styled.span`
@@ -129,6 +144,7 @@ const DateRange = styled.span<{ primaryColor: string }>`
     white-space: nowrap;
     text-overflow: ellipsis;
     font-weight: 500;
+    width: 100%;
 
     strong {
         color: ${props => props.primaryColor};

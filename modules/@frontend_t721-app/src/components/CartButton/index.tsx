@@ -95,10 +95,10 @@ export const CartButton: React.FC = (): JSX.Element => {
         };
     }, [productCount, controls]);
 
-    const width = useMemo(() => window.width < 1224 ? 65 : 80, [window.width]);
-    const height = useMemo(() => window.width < 1224 ? 65 : 80, [window.width]);
-    const navbar = useMemo(() => window.width < 1224 ? 70 : 0, [window.width]);
-    const spacing = useMemo(() => window.width > 900 ? 32 : 8, [window.width]);
+    const width = useMemo(() => window.width < 900 ? 65 : 80, [window.width]);
+    const height = useMemo(() => window.width < 900 ? 65 : 80, [window.width]);
+    const navbar = useMemo(() => window.width < 900 ? 70 : 0, [window.width]);
+    const spacing = useMemo(() => window.width >= 900 ? 32 : 8, [window.width]);
 
     const isError = checkIfError(cart.errors);
 
@@ -197,7 +197,7 @@ export const CartButton: React.FC = (): JSX.Element => {
                 <>
                     <CartIcon
                         icon={'shopping-basket'}
-                        size={window.width < 1224 ? '30px' : '38px'}
+                        size={window.width <= 900 ? '30px' : '38px'}
                         color={'white'}
                     />
                     <Badge

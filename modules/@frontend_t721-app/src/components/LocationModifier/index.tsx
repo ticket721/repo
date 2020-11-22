@@ -10,6 +10,7 @@ import { useRequest }                                                           
 import { GeolocFuzzySearchResponseDto }                                                       from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/geoloc/dto/GeolocFuzzySearchResponse.dto';
 import './locales';
 import { isRequestError }                                                                     from '@frontend/core/lib/utils/isRequestError';
+import styled from 'styled-components';
 
 export interface LocationModifierListProps {
     query: string;
@@ -113,7 +114,7 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
         coreProps.disableFilter();
     }
 
-    return <>
+    return <Container>
         <SearchInput
             onChange={fmk.handleChange}
             cancel={cancel}
@@ -157,6 +158,9 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
                 null
 
         }
-    </>;
-
+    </Container>;
 };
+
+const Container = styled.div`
+    width: min(900px, 100vw);
+`;

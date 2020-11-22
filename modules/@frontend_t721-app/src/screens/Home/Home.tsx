@@ -2,7 +2,6 @@ import './locales';
 import React, { useState }  from 'react';
 import { EventList }        from './EventList';
 import { LocationModifier } from '../../components/LocationModifier';
-import { LocationGate }     from '../../components/LocationGate';
 
 const Home: React.FC = () => {
 
@@ -12,7 +11,7 @@ const Home: React.FC = () => {
     });
 
     return (
-        <LocationGate>
+        <>
             {
                 locationFilter.active
 
@@ -24,10 +23,9 @@ const Home: React.FC = () => {
                     :
                     <EventList
                         enableFilter={() => setLocationFilter({ ...locationFilter, active: true })}
-
                     />
             }
-        </LocationGate>
+        </>
     );
 };
 

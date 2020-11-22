@@ -1,8 +1,12 @@
 import './locales';
 import React, { useState }         from 'react';
-import { LocationGate }            from '../../components/LocationGate';
 import { LocationModifier }        from '../../components/LocationModifier';
 import { SearchViewAllResultList } from './SearchViewAllResultList';
+import styled from 'styled-components';
+
+const SearchWrapper = styled.div`
+    width: min(900px, 100vw);
+`;
 
 const Search: React.FC = () => {
 
@@ -12,7 +16,7 @@ const Search: React.FC = () => {
     });
 
     return (
-        <LocationGate>
+        <SearchWrapper>
             {
                 locationFilter.active
 
@@ -27,7 +31,7 @@ const Search: React.FC = () => {
 
                     />
             }
-        </LocationGate>
+        </SearchWrapper>
     );
 };
 

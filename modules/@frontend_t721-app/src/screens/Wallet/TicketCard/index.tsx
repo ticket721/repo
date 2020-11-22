@@ -17,15 +17,16 @@ interface TicketCardProps {
     category: Omit<CategoryEntity, 'dates'>;
     dates: DateEntity[];
     event: EventEntity;
+    width?: string;
 }
 
-const TicketCard = ({ ticket, category, dates, event }: TicketCardProps) => {
+const TicketCard = ({ ticket, category, dates, event, width }: TicketCardProps) => {
     const history = useHistory();
     const [t] = useTranslation('ticket');
     const idx = useIncrement(7000);
 
     return (
-        <Container onClick={() => history.push(`/ticket/${ticket.id}`)}>
+        <Container customWidth={width} onClick={() => history.push(`/ticket/${ticket.id}`)}>
             <TicketHeader
                 cover={dates[idx % dates.length].metadata.avatar}
                 datesCount={dates.length}
@@ -59,17 +60,16 @@ const TicketCard = ({ ticket, category, dates, event }: TicketCardProps) => {
     );
 };
 
-const Container = styled.div`
+const Container = styled.div<{ customWidth?: string }>`
     border-bottom-left-radius: ${props => props.theme.smallSpacing};
     border-bottom-right-radius: ${props => props.theme.smallSpacing};
-    overflow: hidden;
-    width: calc(100vw - ${props => props.theme.biggerSpacing} * 3 - ${props => props.theme.smallSpacing});
+    width: ${props => props.customWidth || '100%'};
 `;
 
 const PullUp = styled.div`
     position: relative;
-    top: -${props => props.theme.doubleSpacing};
-    margin-bottom: -${props => props.theme.doubleSpacing};
+    top: calc(${props => props.theme.biggerSpacing} * -2);
+    margin-bottom: calc(${props => props.theme.biggerSpacing} * -2);
 `;
 
 export default TicketCard;
