@@ -9,7 +9,7 @@ const Language: React.FC = () => {
     const setLanguage = (lang: string) => i18n.changeLanguage(lang);
 
     return (
-        <div style={{width: '100vw'}}>
+        <div style={{ width: '100vw' }}>
             <SelectableList
                 title={t('title')}
                 items={[

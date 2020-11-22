@@ -75,7 +75,10 @@ export const EventCard: React.FC<EventCardProps> = ({ id, name, avatar, primaryC
                     {
                         datesResp.data.dates.length > 0 ?
                         <DateRange primaryColor={primaryColor}>
-                            {t('from')}&nbsp;<strong>{dateRange?.start || '___'}</strong>&nbsp;{t('to')}&nbsp;<strong>{dateRange?.end || '___'}</strong>
+                            {t('from')}&nbsp;
+                            <strong>{dateRange?.start || '___'}</strong>
+                            &nbsp;{t('to')}&nbsp;
+                            <strong>{dateRange?.end || '___'}</strong>
                         </DateRange> :
                         null
                     }

@@ -37,7 +37,7 @@ const ImgContainer = styled.div<{ src: string }>`
     overflow: hidden;
     width: max(80px, 10vw);
     position: relative;
-    background-image: url(${props => props.src});
+    background-image: url(${(props) => props.src});
     background-size: cover;
     background-position: center;
 `;

@@ -22,7 +22,12 @@ export const CardContainer: React.FunctionComponent<CardContainerProps & { class
     props: CardContainerProps,
 ): JSX.Element => {
     return (
-        <Container className={props.className} paddingOverride={props.paddingOverride} removeBg={props.removeBg} small={props.small}>
+        <Container
+            className={props.className}
+            paddingOverride={props.paddingOverride}
+            removeBg={props.removeBg}
+            small={props.small}
+        >
             {props.children}
         </Container>
     );

@@ -141,7 +141,12 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
     useEffect(() => setDatesHeight(props.dates.length * 136 + 'px'), []);
 
     return (
-        <CardContainer paddingOverride={props.paddingOverride} small={props.small} removeBg={!collapsed || props.removeBg} className={props.className}>
+        <CardContainer
+            paddingOverride={props.paddingOverride}
+            small={props.small}
+            removeBg={!collapsed || props.removeBg}
+            className={props.className}
+        >
             {collapsed ? (
                 <IconContainer>
                     <Icon icon={'calendar'} size={'16px'} color={props.iconColor} />

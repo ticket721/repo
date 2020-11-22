@@ -31,7 +31,7 @@ const Card = styled(CardContainer)`
         }
 
         hr {
-            margin: ${props => props.theme.smallSpacing};
+            margin: ${(props) => props.theme.smallSpacing};
         }
     }
 `;
@@ -41,11 +41,11 @@ export const Description: React.FunctionComponent<DescriptionProps> = (props: De
         <Card removeBg={props.removeBg}>
             <H3>{props.title}</H3>
             <Editor
-            readOnly
-            className={'editor'}
-            defaultValue={props.text}
-            onChange={console.log}
-            theme={getEditorTheme(props.color)}
+                readOnly
+                className={'editor'}
+                defaultValue={props.text}
+                onChange={console.log}
+                theme={getEditorTheme(props.color)}
             />
             {props.wSeparator && <Separator />}
         </Card>

@@ -35,7 +35,7 @@ const Header = styled.header<EventHeaderProps>`
 
 const Cover = styled.div<{ src: string }>`
     padding-top: 56.25%;
-    background-image: url(${props => props.src});
+    background-image: url(${(props) => props.src});
     background-size: cover;
     background-position: center;
 
@@ -65,7 +65,7 @@ const Infos = styled.div`
     margin-top: -4%;
     background-color: ${(props) => props.theme.darkBg};
     background-color: ${(props) => props.theme.darkerBg};
-    border-top-right-radius: calc( 2 * ${(props) => props.theme.defaultRadius});
+    border-top-right-radius: calc(2 * ${(props) => props.theme.defaultRadius});
     color: ${(props) => props.theme.textColor};
     padding: ${(props) => props.theme.doubleSpacing} ${(props) => props.theme.biggerSpacing}
         ${(props) => props.theme.biggerSpacing};
@@ -92,42 +92,39 @@ const Title = styled.div`
     h3 {
         width: 80%;
         font-size: 12px;
-        margin-bottom: ${props => props.theme.smallSpacing};
-        color: ${props => props.theme.textColorDark};
+        margin-bottom: ${(props) => props.theme.smallSpacing};
+        color: ${(props) => props.theme.textColorDark};
     }
 `;
-
 
 export const EventHeader: React.FunctionComponent<EventHeaderProps> = (props: EventHeaderProps): JSX.Element => {
     return (
         <>
-        <Header>
-            <Cover src={props.cover} />
-            <Infos>
-                {
-                    props.online ?
-                    <OnlineTagContainer>
-                        <OnlineTag online={props.online}/>
-                    </OnlineTagContainer>
-                    : null
-                }
-                <Title>
-                    <h3>{props.preName}</h3>
-                    <h2>{props.name}</h2>
-                </Title>
-                <div>
-                    <h4>{props.prices}</h4>
-                    <VisibiltySensor onChange={props.onChange}>
-                        <Button
-                            variant={'custom'}
-                            title={props.buttonTitle}
-                            gradients={props.colors}
-                            onClick={props.onClick}
-                        />
-                    </VisibiltySensor>
-                </div>
-            </Infos>
-        </Header>
+            <Header>
+                <Cover src={props.cover} />
+                <Infos>
+                    {props.online ? (
+                        <OnlineTagContainer>
+                            <OnlineTag online={props.online} />
+                        </OnlineTagContainer>
+                    ) : null}
+                    <Title>
+                        <h3>{props.preName}</h3>
+                        <h2>{props.name}</h2>
+                    </Title>
+                    <div>
+                        <h4>{props.prices}</h4>
+                        <VisibiltySensor onChange={props.onChange}>
+                            <Button
+                                variant={'custom'}
+                                title={props.buttonTitle}
+                                gradients={props.colors}
+                                onClick={props.onClick}
+                            />
+                        </VisibiltySensor>
+                    </div>
+                </Infos>
+            </Header>
         </>
     );
 };

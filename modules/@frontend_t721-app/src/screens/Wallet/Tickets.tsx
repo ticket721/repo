@@ -20,7 +20,7 @@ interface TicketsProps {
 export const Tickets: React.FC<TicketsProps> = ({ tickets , categories, dates, events}) => {
     const history = useHistory();
     const [ currentIdx, setCurrentIdx ] = useState<number>(0);
-    const { width } = useWindowDimensions(); 
+    const { width } = useWindowDimensions();
     useEffect(() => {
         const ticketIdxMatch = history.location.search.match(/ticketIdx=([0-9]+)/);
         if (ticketIdxMatch && parseInt(ticketIdxMatch[1], 10) < tickets.length) {
@@ -170,7 +170,7 @@ const TicketDashboard = styled.div`
         width: calc((100% - 3 * ${props => props.theme.doubleSpacing}) / 3);
         margin: ${props => props.theme.regularSpacing};
         cursor: pointer;
-        
+
         transition: transform 300ms ease, filter 300ms ease;
 
         @media screen and (max-width: 992px) {

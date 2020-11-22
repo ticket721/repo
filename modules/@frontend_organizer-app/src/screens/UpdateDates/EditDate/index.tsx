@@ -167,7 +167,10 @@ export const EditDate: React.FC = () => {
     }
 
     if (isRequestError(dateResp)) {
-        return <ErrorComponent message={t('common:error_cannot_fetch', { entity: 'date'})} retryLabel={t('common:retrying_in')} onRefresh={dateResp.force}/>;
+        return <ErrorComponent
+        message={t('common:error_cannot_fetch', { entity: 'date'})}
+        retryLabel={t('common:retrying_in')}
+        onRefresh={dateResp.force}/>;
     }
 
     return <FormikProvider value={formik}>

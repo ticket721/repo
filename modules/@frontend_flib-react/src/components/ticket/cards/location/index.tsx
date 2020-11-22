@@ -88,7 +88,11 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
 ): JSX.Element => {
     return (
         <ClickableContainer onClick={() => (!props.disabled ? openMap(props.location) : null)}>
-            <CardContainer className={props.className} paddingOverride={props.paddingOverride} removeBg={props.removeBg}>
+            <CardContainer
+                className={props.className}
+                paddingOverride={props.paddingOverride}
+                removeBg={props.removeBg}
+            >
                 <IconContainer>
                     <Icon
                         icon={props.online ? 'live' : 'pin'}

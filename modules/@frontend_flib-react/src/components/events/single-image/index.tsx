@@ -26,7 +26,7 @@ const Container = styled.div<SingleImageProps>`
     overflow: hidden;
     height: 0;
     cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
-    background-image: url(${props => props.cover});
+    background-image: url(${(props) => props.cover});
     background-size: cover;
     background-position: center;
     padding-top: 56.25%;
@@ -36,10 +36,10 @@ const Filter = styled.div`
     position: absolute;
     top: 0;
     left: 0;
-    border-radius: ${props => props.theme.defaultRadius};
+    border-radius: ${(props) => props.theme.defaultRadius};
     width: 100%;
     height: 100%;
-    background: linear-gradient(0deg, rgba(0,0,0,0.6) 15%, transparent);
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 15%, transparent);
 `;
 
 const Details = styled.div<SingleImageProps>`
@@ -109,7 +109,7 @@ export const SingleImage: React.FunctionComponent<SingleImageProps & { className
             clickable={!!props.onClick}
             onClick={props.onClick}
         >
-            <Filter/>
+            <Filter />
             {props.online && props.online_text ? (
                 <AbsoluteOnlineTagDiv>
                     <OnlineTag online={props.online_text} />

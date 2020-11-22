@@ -66,7 +66,7 @@ const StyledRichText = styled.div<RichTextProps>`
 
     .editor {
         font-size: 14px;
-        margin: ${props => props.theme.regularSpacing} ${props => props.theme.biggerSpacing};
+        margin: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
 
         .block-menu-trigger {
             display: none;
@@ -81,7 +81,7 @@ const StyledRichText = styled.div<RichTextProps>`
         }
 
         hr {
-            margin: ${props => props.theme.smallSpacing};
+            margin: ${(props) => props.theme.smallSpacing};
         }
     }
 
@@ -127,14 +127,14 @@ const LabelsContainer = styled.div`
 
 const CircleProgress = styled(CircularProgressbar)<{ progress: number }>`
     position: absolute;
-    right: ${props => props.theme.regularSpacing};
-    bottom: ${props => props.theme.regularSpacing};
+    right: ${(props) => props.theme.regularSpacing};
+    bottom: ${(props) => props.theme.regularSpacing};
     width: 32px;
 
     transition: width 300ms ease;
 
     .CircularProgressbar-path {
-        stroke: ${props => {
+        stroke: ${(props) => {
             if (props.progress >= 1) {
                 return props.theme.errorColor.hex;
             }
@@ -143,25 +143,22 @@ const CircleProgress = styled(CircularProgressbar)<{ progress: number }>`
                 return props.theme.warningColor.hex;
             }
 
-            return props.theme.primaryColor.hex
+            return props.theme.primaryColor.hex;
         }};
     }
 
     .CircularProgressbar-trail {
-        stroke: ${props => props.theme.componentColorLight};
+        stroke: ${(props) => props.theme.componentColorLight};
     }
 
     .CircularProgressbar-text {
-        fill: ${props => props.theme.textColor};
-        font-size: ${props => props.progress > 1 ? '300%' : '200%'};
-        font-weight: ${props => props.progress > 1 ?
-            600 :
-            400
-        };
+        fill: ${(props) => props.theme.textColor};
+        font-size: ${(props) => (props.progress > 1 ? '300%' : '200%')};
+        font-weight: ${(props) => (props.progress > 1 ? 600 : 400)};
     }
 
     .CircularProgressbar-background {
-        fill: ${props => props.progress > 1 ? props.theme.errorColor.hex : 'transparent'};
+        fill: ${(props) => (props.progress > 1 ? props.theme.errorColor.hex : 'transparent')};
     }
 `;
 
@@ -177,13 +174,13 @@ const frenchDictionory = {
     heading: 'Titre',
     hr: 'Séparateur',
     image: 'Image',
-    imageUploadError: 'Désolé, une erreur est survenue durant l\'upload de l\'image',
+    imageUploadError: "Désolé, une erreur est survenue durant l'upload de l'image",
     info: 'Info',
     infoNotice: 'Remarque informative',
     link: 'Lien',
     linkCopied: 'Lien copié',
     mark: 'Surbrillance',
-    newLineEmpty: 'Taper / pour plus d\'options',
+    newLineEmpty: "Taper / pour plus d'options",
     newLineWithSlash: 'Continué de taper pour filtrer',
     noResults: 'Aucun résultat',
     openLink: 'Ouvrir le lien',
@@ -199,8 +196,8 @@ const frenchDictionory = {
     tip: 'Astuce',
     tipNotice: 'Astuce',
     warning: 'Avertissement',
-    warningNotice: 'Remarque d\'avertissement',
-}
+    warningNotice: "Remarque d'avertissement",
+};
 
 export const RichText: React.FunctionComponent<RichTextProps> = (props: RichTextProps): JSX.Element => {
     const editorRef = useRef<RichMarkdownEditor>(null);
@@ -210,77 +207,72 @@ export const RichText: React.FunctionComponent<RichTextProps> = (props: RichText
                 <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
             </LabelsContainer>
             <Editor
-            ref={editorRef}
-            className={'editor'}
-            style={{
-                
-            }}
-            theme={getEditorTheme(props.color)}
-            placeholder={props.placeholder}
-            defaultValue={props.value}
-            dictionary={props.lng === 'fr' ?
-                frenchDictionory : {
-                newLineEmpty: 'Type \'/\' for more options',
-                searchOrPasteLink: 'link or #tag',
-
-            }}
-            onChange={debounce(value => {
-                const output = value();
-                props.onChange(output);
-            },
-            200)}
-            onKeyDown={(e) => {
-                if (
-                    editorRef.current
-                    && props.maxChar
-                    && editorRef.current.value().length >= props.maxChar
-                    && (
-                        e.key !== 'Backspace'
-                        && e.key !== 'Shift'
-                        && e.key !== 'Alt'
-                        && e.key !== 'Meta'
-                        && e.key !== 'ArrowLeft'
-                        && e.key !== 'ArrowUp'
-                        && e.key !== 'ArrowDown'
-                        && e.key !== 'ArrowRight'
-                    )
-                ) {
-                    e.preventDefault();
+                ref={editorRef}
+                className={'editor'}
+                theme={getEditorTheme(props.color)}
+                placeholder={props.placeholder}
+                defaultValue={props.value}
+                dictionary={
+                    props.lng === 'fr'
+                        ? frenchDictionory
+                        : {
+                              newLineEmpty: "Type '/' for more options",
+                              searchOrPasteLink: 'link or #tag',
+                          }
                 }
-            }}
-            handleDOMEvents={{
-                focus: () => {
-                    if (props.onFocus) {
-                        props.onFocus();
+                onChange={debounce((value) => {
+                    const output = value();
+                    props.onChange(output);
+                }, 200)}
+                onKeyDown={(e) => {
+                    if (
+                        editorRef.current &&
+                        props.maxChar &&
+                        editorRef.current.value().length >= props.maxChar &&
+                        e.key !== 'Backspace' &&
+                        e.key !== 'Shift' &&
+                        e.key !== 'Alt' &&
+                        e.key !== 'Meta' &&
+                        e.key !== 'ArrowLeft' &&
+                        e.key !== 'ArrowUp' &&
+                        e.key !== 'ArrowDown' &&
+                        e.key !== 'ArrowRight'
+                    ) {
+                        e.preventDefault();
                     }
-                    return true;
-                },
-                blur: (_, e) => {
-                    if (props.onBlur) {
-                        props.onBlur();
-                    }
-                    return true;
-                },
-
-            }}
-            uploadImage={props.uploadImage}/>
-            {
-                props.maxChar && props.value ?
+                }}
+                handleDOMEvents={{
+                    focus: () => {
+                        if (props.onFocus) {
+                            props.onFocus();
+                        }
+                        return true;
+                    },
+                    blur: (_, e) => {
+                        if (props.onBlur) {
+                            props.onBlur();
+                        }
+                        return true;
+                    },
+                }}
+                uploadImage={props.uploadImage}
+            />
+            {props.maxChar && props.value ? (
                 <CircleProgress
-                progress={props.value.length/props.maxChar}
-                background
-                text={
-                    props.value.length > props.maxChar ?
-                    '!' :
-                    props.value.length/props.maxChar > 0.9 ?
-                    (props.maxChar - props.value.length).toString() :
-                    undefined
-                }
-                maxValue={props.maxChar}
-                strokeWidth={10}
-                value={props.value.length}/> :
-                null
-            }
+                    progress={props.value.length / props.maxChar}
+                    background
+                    text={
+                        props.value.length > props.maxChar
+                            ? '!'
+                            : props.value.length / props.maxChar > 0.9
+                            ? (props.maxChar - props.value.length).toString()
+                            : undefined
+                    }
+                    maxValue={props.maxChar}
+                    strokeWidth={10}
+                    value={props.value.length}
+                />
+            ) : null}
             {props.error && <Error>{props.error}</Error>}
         </StyledRichText>
     );

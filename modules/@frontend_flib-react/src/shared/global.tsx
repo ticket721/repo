@@ -37,12 +37,12 @@ export const bodyStyles = css`
         height: min-content;
         max-height: unset;
 
-        li:nth-child(n+5):nth-child(-n+11) {
+        li:nth-child(n + 5):nth-child(-n + 11) {
             display: none;
         }
 
         > ol > li svg {
-            fill: rgba(255,255,255,0.9);
+            fill: rgba(255, 255, 255, 0.9);
         }
     }
 
@@ -52,7 +52,7 @@ export const bodyStyles = css`
             bottom: unset;
         }
 
-        > div > button:nth-child(n+4):nth-child(-n+5) {
+        > div > button:nth-child(n + 4):nth-child(-n + 5) {
             display: none;
         }
     }

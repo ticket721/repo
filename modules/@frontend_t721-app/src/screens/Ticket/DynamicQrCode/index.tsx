@@ -79,7 +79,7 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
             top: 0,
         }}
         exit={{
-            top: '100vh'  
+            top: '100vh',
         }}
         transition={{
             type: 'spring',
