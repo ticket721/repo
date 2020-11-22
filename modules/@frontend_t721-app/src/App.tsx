@@ -218,11 +218,11 @@ const App: React.FC = () => {
                                     </Route>
 
                                     <Route path={'/login'} exact={true}>
-                                        <LoginPage/>
+                                            {LoginPage(width > 900)}
                                     </Route>
 
                                     <Route path={'/register'} exact={true}>
-                                        <RegisterPage/>
+                                        {RegisterPage(width > 900)}
                                     </Route>
 
                                     <Route path={'/reset'} exact={true}>
