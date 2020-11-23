@@ -6,8 +6,8 @@ import { Theme }                     from '@frontend/flib-react/lib/config/theme
 import { useLazyRequest }            from '@frontend/core/lib/hooks/useLazyRequest';
 import { PurchasesCloseResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesCloseResponse.dto';
 import { v4 }                        from 'uuid';
-import { useDispatch, useSelector }  from 'react-redux';
-import { T721AppState }              from '../../redux';
+import { useDispatch }  from 'react-redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { isNil }                     from 'lodash';
 import { PushNotification }          from '@frontend/core/lib/redux/ducks/notifications';
 import { PurchaseError }             from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
@@ -87,7 +87,7 @@ export const CartMenuStripeEndedPurchase: React.FC<CartMenuStripeEndedPurchasePr
     const cart = useContext(CartContext);
     const [t] = useTranslation('cart');
     const [uuid] = useState(v4());
-    const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
     const closeLazyRequest = useLazyRequest<PurchasesCloseResponseDto>('purchases.close', uuid);
     const dispatch = useDispatch();
     const tickets = useContext(TicketsContext);

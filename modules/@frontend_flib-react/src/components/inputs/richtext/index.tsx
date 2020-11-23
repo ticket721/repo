@@ -1,9 +1,12 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
-import RichTextEditor from 'react-rte';
-// @ts-ignore
-import EditorValue from 'react-rte/src/lib/EditorValue';
-import { ChangeEvent } from 'react';
+import Editor from 'rich-markdown-editor';
+import debounce from 'lodash.debounce';
+import { getEditorTheme } from './theme';
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+import { useRef } from 'react';
+import RichMarkdownEditor from 'rich-markdown-editor';
 
 export interface RichTextProps extends React.ComponentProps<any> {
     error?: string;
@@ -11,15 +14,15 @@ export interface RichTextProps extends React.ComponentProps<any> {
     maxChar?: number;
     name: string;
     placeholder: string;
+    color?: string;
     value?: string;
+    hasNoInitialValue?: boolean;
     className?: string;
-    onChange: (event: any) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
-    onFocus?: (
-        eventOrPath: string | ChangeEvent<any>,
-    ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
-    onBlur?: (
-        eventOrPath: string | ChangeEvent<any> | { target: { id: string; value: string } },
-    ) => void | ((eventOrTextValue: string | ChangeEvent<any>) => void);
+    lng: string;
+    uploadImage?: (file: File) => Promise<string>;
+    onChange: (output: string) => void;
+    onFocus?: () => void;
+    onBlur?: () => void;
 }
 
 const Error = styled.span`
@@ -52,7 +55,7 @@ const StyledLabel = styled.label`
     }
 `;
 
-const StyledTextarea = styled.div<RichTextProps>`
+const StyledRichText = styled.div<RichTextProps>`
     position: relative;
     background-color: ${(props) => props.theme.componentColor};
     border-radius: ${(props) => props.theme.defaultRadius};
@@ -62,41 +65,24 @@ const StyledTextarea = styled.div<RichTextProps>`
     transition: background-color 300ms ease;
 
     .editor {
-        z-index: 2;
-        background-color: transparent;
-        border-radius: 0px;
-        border: none;
-        padding: ${(props) => props.theme.biggerSpacing};
-        padding-top: ${(props) => props.theme.smallSpacing};
-        color: ${(props) => props.theme.textColor};
-        font-family: ${(props) => props.theme.fontStack};
-        input {
-            color: black;
-            font-family: ${(props) => props.theme.fontStack};
+        font-size: 14px;
+        margin: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
+
+        .block-menu-trigger {
+            display: none;
         }
-        .toolbar {
-            margin: 0;
-            button {
-                background: ${(props) => props.theme.componentColorLight};
-                border: 1px solid ${(props) => props.theme.componentColorLight};
-            }
-            button:disabled,
-            button[disabled] {
-                background: ${(props) => props.theme.componentColorLighter};
-            }
-            button:active,
-            button[class*='IconButton__isActive__'] {
-                background: ${(props) => props.theme.textColorDark};
-            }
-            select {
-                border: 1px solid ${(props) => props.theme.componentColorLight};
-                color: ${(props) => props.theme.textColorDark};
-                padding: 0 ${(props) => props.theme.biggerSpacing} 0 ${(props) => props.theme.smallSpacing};
-            }
+
+        .ProseMirror-selectednode {
+            outline: none;
         }
-    }
-    .DraftEditor-root {
-        height: 300px;
+
+        a {
+            text-decoration: underline;
+        }
+
+        hr {
+            margin: ${(props) => props.theme.smallSpacing};
+        }
     }
 
     ${(props) =>
@@ -139,103 +125,156 @@ const LabelsContainer = styled.div`
     padding: 0 ${(props) => props.theme.biggerSpacing};
 `;
 
-type StyleConfig = {
-    label: string;
-    style: string;
-    className?: string;
-};
-type GroupName =
-    | 'INLINE_STYLE_BUTTONS'
-    | 'BLOCK_TYPE_BUTTONS'
-    | 'LINK_BUTTONS'
-    | 'BLOCK_TYPE_DROPDOWN'
-    | 'HISTORY_BUTTONS'
-    | 'IMAGE_BUTTON';
-type ToolbarConfig = {
-    display: Array<GroupName>;
-    INLINE_STYLE_BUTTONS: Array<StyleConfig>;
-    BLOCK_TYPE_DROPDOWN: Array<StyleConfig>;
-    BLOCK_TYPE_BUTTONS: Array<StyleConfig>;
+const CircleProgress = styled(CircularProgressbar)<{ progress: number }>`
+    position: absolute;
+    right: ${(props) => props.theme.regularSpacing};
+    bottom: ${(props) => props.theme.regularSpacing};
+    width: 32px;
+
+    transition: width 300ms ease;
+
+    .CircularProgressbar-path {
+        stroke: ${(props) => {
+            if (props.progress >= 1) {
+                return props.theme.errorColor.hex;
+            }
+
+            if (props.progress > 0.9) {
+                return props.theme.warningColor.hex;
+            }
+
+            return props.theme.primaryColor.hex;
+        }};
+    }
+
+    .CircularProgressbar-trail {
+        stroke: ${(props) => props.theme.componentColorLight};
+    }
+
+    .CircularProgressbar-text {
+        fill: ${(props) => props.theme.textColor};
+        font-size: ${(props) => (props.progress > 1 ? '300%' : '200%')};
+        font-weight: ${(props) => (props.progress > 1 ? 600 : 400)};
+    }
+
+    .CircularProgressbar-background {
+        fill: ${(props) => (props.progress > 1 ? props.theme.errorColor.hex : 'transparent')};
+    }
+`;
+
+const frenchDictionory = {
+    bulletList: 'Liste à puces',
+    codeCopied: 'Copié',
+    createLink: 'Créer un lien',
+    createLinkError: 'Désolé, une erreur est survenue durant la création du lien',
+    em: 'Italique',
+    h1: 'Gros titre',
+    h2: 'Titre moyen',
+    h3: 'Petit titre',
+    heading: 'Titre',
+    hr: 'Séparateur',
+    image: 'Image',
+    imageUploadError: "Désolé, une erreur est survenue durant l'upload de l'image",
+    info: 'Info',
+    infoNotice: 'Remarque informative',
+    link: 'Lien',
+    linkCopied: 'Lien copié',
+    mark: 'Surbrillance',
+    newLineEmpty: "Taper / pour plus d'options",
+    newLineWithSlash: 'Continué de taper pour filtrer',
+    noResults: 'Aucun résultat',
+    openLink: 'Ouvrir le lien',
+    orderedList: 'Liste numérotée',
+    pasteLink: 'Lien collé',
+    placeholder: 'Placeholder',
+    quote: 'Citation',
+    removeLink: 'Retirer le lien',
+    searchOrPasteLink: 'Lien ou #tag',
+    strikethrough: 'Barré',
+    strong: 'Gras',
+    subheading: 'Sous Titre',
+    tip: 'Astuce',
+    tipNotice: 'Astuce',
+    warning: 'Avertissement',
+    warningNotice: "Remarque d'avertissement",
 };
 
 export const RichText: React.FunctionComponent<RichTextProps> = (props: RichTextProps): JSX.Element => {
-    const [value, setValue] = React.useState(() =>
-        !props.value || props.value?.length === 0
-            ? RichTextEditor.createEmptyValue()
-            : RichTextEditor.createValueFromString(props.value, 'markdown'),
-    );
-    const [count, setCount] = React.useState(props.value ? value.toString('markdown').length : 0);
-
-    const onChange = (editorvalue: EditorValue) => {
-        const text = editorvalue.toString('markdown');
-        setCount(text.length);
-        if ((props.maxChar && text.length <= props.maxChar) || !props.maxChar) {
-            setValue(editorvalue);
-            if (props.onChange) {
-                props.onChange(text);
-            }
-        } else {
-            setValue(value);
-        }
-    };
-
-    React.useEffect(() => {
-        if (props.maxChar && count > props.maxChar) {
-            setValue(value);
-        }
-    }, [count]);
-
-    const toolbarConfig: ToolbarConfig = {
-        display: [
-            'INLINE_STYLE_BUTTONS',
-            'BLOCK_TYPE_BUTTONS',
-            'BLOCK_TYPE_DROPDOWN',
-            'LINK_BUTTONS',
-            'HISTORY_BUTTONS',
-        ],
-        INLINE_STYLE_BUTTONS: [
-            { label: 'Bold', style: 'BOLD' },
-            { label: 'Italic', style: 'ITALIC' },
-        ],
-        BLOCK_TYPE_DROPDOWN: [
-            { label: 'Normal', style: 'unstyled' },
-            { label: 'Heading Large', style: 'header-one' },
-            { label: 'Heading Medium', style: 'header-two' },
-            { label: 'Heading Small', style: 'header-three' },
-        ],
-        BLOCK_TYPE_BUTTONS: [{ label: 'UL', style: 'unordered-list-item' }],
-    };
-
+    const editorRef = useRef<RichMarkdownEditor>(null);
     return (
-        <StyledTextarea
-            error={props.error}
-            className={props.className}
-            onFocus={() => props.onFocus && props.onFocus(value.toString('markdown'))}
-            onBlur={() =>
-                props.onBlur &&
-                props.onBlur({
-                    target: { id: 'description', value: value.toString('markdown') },
-                })
-            }
-        >
+        <StyledRichText error={props.error} className={props.className} color={props.color}>
             <LabelsContainer>
                 <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
-                {props.maxChar && value.toString('markdown').length >= props.maxChar - 20 && (
-                    <span>{props.maxChar - value.toString('markdown').length} char left</span>
-                )}
             </LabelsContainer>
-
-            <RichTextEditor
-                editorClassName={'textarea'}
+            <Editor
+                ref={editorRef}
                 className={'editor'}
-                value={value}
-                onChange={onChange}
-                toolbarConfig={toolbarConfig}
-                toolbarClassName={'toolbar'}
+                theme={getEditorTheme(props.color)}
                 placeholder={props.placeholder}
+                defaultValue={props.value}
+                dictionary={
+                    props.lng === 'fr'
+                        ? frenchDictionory
+                        : {
+                              newLineEmpty: "Type '/' for more options",
+                              searchOrPasteLink: 'link or #tag',
+                          }
+                }
+                onChange={debounce((value) => {
+                    const output = value();
+                    props.onChange(output);
+                }, 200)}
+                onKeyDown={(e) => {
+                    if (
+                        editorRef.current &&
+                        props.maxChar &&
+                        editorRef.current.value().length >= props.maxChar &&
+                        e.key !== 'Backspace' &&
+                        e.key !== 'Shift' &&
+                        e.key !== 'Alt' &&
+                        e.key !== 'Meta' &&
+                        e.key !== 'ArrowLeft' &&
+                        e.key !== 'ArrowUp' &&
+                        e.key !== 'ArrowDown' &&
+                        e.key !== 'ArrowRight'
+                    ) {
+                        e.preventDefault();
+                    }
+                }}
+                handleDOMEvents={{
+                    focus: () => {
+                        if (props.onFocus) {
+                            props.onFocus();
+                        }
+                        return true;
+                    },
+                    blur: (_, e) => {
+                        if (props.onBlur) {
+                            props.onBlur();
+                        }
+                        return true;
+                    },
+                }}
+                uploadImage={props.uploadImage}
             />
+            {props.maxChar && props.value ? (
+                <CircleProgress
+                    progress={props.value.length / props.maxChar}
+                    background
+                    text={
+                        props.value.length > props.maxChar
+                            ? '!'
+                            : props.value.length / props.maxChar > 0.9
+                            ? (props.maxChar - props.value.length).toString()
+                            : undefined
+                    }
+                    maxValue={props.maxChar}
+                    strokeWidth={10}
+                    value={props.value.length}
+                />
+            ) : null}
             {props.error && <Error>{props.error}</Error>}
-        </StyledTextarea>
+        </StyledRichText>
     );
 };
 

@@ -24,13 +24,6 @@ import { EventEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/event
 import { EditEventFields } from './EditEventFields';
 import { v4 } from 'uuid';
 
-const defaultValues: EventGenericInfosPayload = {
-    name: '',
-    description: '',
-    avatar: '',
-    signatureColors: ['', ''],
-};
-
 export const EditEvent: React.FC = () => {
     const { t } = useTranslation(['edit_event', 'common']);
 
@@ -42,7 +35,7 @@ export const EditEvent: React.FC = () => {
     const [editUuid] = React.useState('@edit-event' + v4());
     const token = useToken();
 
-    const [ initialValues, setInitialValues ] = useState<EventGenericInfosPayload>(defaultValues);
+    const [ initialValues, setInitialValues ] = useState<EventGenericInfosPayload>(null);
     const { response: eventResp, force: forceEventReq } = useRequest<EventsSearchResponseDto>(
         {
             method: 'events.search',
@@ -114,19 +107,23 @@ export const EditEvent: React.FC = () => {
     }
 
     return <FormikProvider value={formik}>
-        <Form onSubmit={formik.handleSubmit}>
-            <Title>{t('event_title')}</Title>
-            <EditEventFields/>
-            <SubmitButton
-                type={'submit'}
-                variant={(
-                    formik.isValid
-                    && JSON.stringify(formik.values) !== JSON.stringify(formik.initialValues)
-                ) ? 'custom' : 'disabled'}
-                gradients={formik.values.signatureColors}
-                title={t('edit_event_btn')}
-            />
-        </Form>
+        {
+            formik.initialValues ?
+            <Form onSubmit={formik.handleSubmit}>
+                <Title>{t('event_title')}</Title>
+                <EditEventFields/>
+                <SubmitButton
+                    type={'submit'}
+                    variant={(
+                        formik.isValid
+                        && JSON.stringify(formik.values) !== JSON.stringify(formik.initialValues)
+                    ) ? 'custom' : 'disabled'}
+                    gradients={formik.values.signatureColors}
+                    title={t('edit_event_btn')}
+                />
+            </Form> :
+            null
+        }
     </FormikProvider>;
 }
 

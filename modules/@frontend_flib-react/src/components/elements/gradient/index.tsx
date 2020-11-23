@@ -20,9 +20,9 @@ const GradientBar = styled.div<GradientProps>`
     ${(props) =>
         !props.blurOnly &&
         `
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0), ${props.values[0]} ${
+    background: linear-gradient(180deg, transparent, ${props.values[0]} calc( 2 * ${
             props.theme.doubleSpacing
-        }, ${props.values.slice(1).join(', ')});
+        }), ${props.values.slice(1).join(', ')});
   `}
     bottom: 0;
     content: '';

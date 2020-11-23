@@ -26,7 +26,7 @@ const Wrapper = styled.div`
 const PreviewContainer = styled.main`
     background: linear-gradient(180deg, ${(props) => props.theme.darkBg}, ${(props) => props.theme.darkerBg});
     border-bottom-left-radius: ${(props) => props.theme.defaultRadius};
-    border-top-left-radius: ${(props) => props.theme.defaultRadius};
+    border-top-left-radius: 12px;
     font-size: 14px;
     font-weight: 500;
     padding: 12px 0;
@@ -64,6 +64,7 @@ const TicketHeaderInfos = styled.div`
     width: calc(100% - 8px);
     background-image: linear-gradient(180deg, ${(props) => props.theme.darkBg}, ${(props) => props.theme.darkerBg});
     border-top-right-radius: ${(props) => props.theme.defaultRadius};
+    border-bottom-left-radius: 12px;
     padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing}
         ${(props) => props.theme.regularSpacing};
 
@@ -85,27 +86,12 @@ const TicketHeaderInfos = styled.div`
 `;
 const Separator = styled.div<{ bgColor: string | undefined }>`
     background-color: ${(props) => props.bgColor || '#0b0912'};
-    content: '';
     display: block;
     height: 2px;
     position: relative;
-    width: 100%;
+    left: 12px;
+    width: calc(100% - 12px);
     z-index: 100;
-
-    &::before {
-        background-color: ${(props) => props.bgColor || '#0b0912'};
-        content: '';
-        display: inline-block;
-        height: ${(props) => props.theme.regularSpacing};
-        position: absolute;
-        top: -7px;
-        transform: rotate(45deg);
-        width: ${(props) => props.theme.regularSpacing};
-    }
-
-    &::before {
-        left: -8px;
-    }
 `;
 
 const DateTime = styled(DateTimeCard)`

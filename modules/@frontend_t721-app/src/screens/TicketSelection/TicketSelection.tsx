@@ -1,6 +1,5 @@
 import React, { useState }        from 'react';
-import { useSelector }            from 'react-redux';
-import { T721AppState }           from '../../redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { v4 }                     from 'uuid';
 import { useRequest }             from '@frontend/core/lib/hooks/useRequest';
 import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
@@ -17,7 +16,7 @@ export interface TicketSelectionProps {
 
 export const TicketSelection: React.FC<TicketSelectionProps> = (props: TicketSelectionProps): JSX.Element => {
 
-    const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
     const [uuid] = useState(v4());
     const match = useRouteMatch();
     const [t] = useTranslation(['event_ticket_list', 'common']);

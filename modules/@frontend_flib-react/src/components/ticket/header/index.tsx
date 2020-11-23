@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
+import { motion } from 'framer-motion';
 
 export interface TicketHeaderProps extends React.ComponentProps<any> {
     datesCount: number;
@@ -11,20 +12,8 @@ export interface TicketHeaderProps extends React.ComponentProps<any> {
     className?: string;
 }
 
-const TicketHeaderNumber = styled.div`
-    background: ${(props) => props.theme.textColor};
-    border-bottom-left-radius: ${(props) => props.theme.defaultRadius};
-    color: #060814;
-    font-size: 12px;
-    font-weight: 500;
-    padding: calc(${(props) => props.theme.regularSpacing} / 2);
-    position: absolute;
-    right: 0;
-    top: 0;
-`;
-const Header = styled.header<TicketHeaderProps>`
+const Header = styled(motion.header)<TicketHeaderProps>`
     position: relative;
-    padding-top: 62.5%;
     overflow: hidden;
 
     ${(props) =>
@@ -57,13 +46,13 @@ const Header = styled.header<TicketHeaderProps>`
     }
 `;
 
-const Content = styled.div`
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+const Content = styled(motion.div)<{ cover: string }>`
     width: 100%;
+    height: 0;
+    padding-top: 66.25%;
+    background: url(${(props) => props.cover});
+    background-position: center;
+    background-size: cover;
 `;
 
 const CursorBackground = styled.div`
@@ -113,13 +102,8 @@ const Cursor = (props: { datesCount: number; datesIdx: number; mainColors: [stri
 
 export const TicketHeader: React.FunctionComponent<TicketHeaderProps> = (props: TicketHeaderProps): JSX.Element => {
     return (
-        <Header fullWidth={props.fullWidth} className={props.className}>
-            <Content>
-                {!props.fullWidth && props.ticketQuantity ? (
-                    <TicketHeaderNumber>x{props.ticketQuantity}</TicketHeaderNumber>
-                ) : null}
-                <img src={props.cover} alt={'cover'} />
-            </Content>
+        <Header layoutId={'ticket-header'} fullWidth={props.fullWidth} className={props.className}>
+            <Content layoutId={'ticket-cover'} cover={props.cover} />
             {props.datesCount > 1 ? (
                 <Cursor
                     datesCount={props.datesCount}

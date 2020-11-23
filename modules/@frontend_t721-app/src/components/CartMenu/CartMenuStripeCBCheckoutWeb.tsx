@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { TextInput, DoubleButtonCta } from '@frontend/flib-react/lib/components';
+import { TextInput, DoubleButtonCta, Button } from '@frontend/flib-react/lib/components';
 import styled, { useTheme }           from 'styled-components';
 import { Theme }                      from '@frontend/flib-react/lib/config/theme';
 import { useTranslation }             from 'react-i18next';
@@ -11,6 +11,7 @@ import { CartContext }                from '../Cart/CartContext';
 import { useDispatch }                from 'react-redux';
 import { UserContext }                from '@frontend/core/lib/utils/UserContext';
 import { getEnv }                     from '@frontend/core/lib/utils/getEnv';
+import MediaQuery from 'react-responsive';
 
 const CreditCardWrapper = styled.div`
   margin-bottom: ${props => props.theme.regularSpacing};
@@ -88,6 +89,26 @@ const NameInputWrapper = styled.div`
 
 const Container = styled.div`
     padding-bottom: calc(80px + ${props => props.theme.regularSpacing});
+`;
+
+const Actions = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 64px ${props => props.theme.regularSpacing} 0;
+`;
+
+const TextButton = styled.p`
+    width: 30%;
+    text-align: center;
+    text-decoration: underline;
+    color: ${(props) => props.theme.errorColor.hex};
+    opacity: 0.8;
+    cursor: pointer;
+`;
+
+const ButtonWrapper = styled.div`
+    width: 60%;
 `;
 
 const isSubmittable = (...args: any[]): boolean => {
@@ -230,15 +251,30 @@ export const CartMenuStripeCBCheckoutWeb: React.FC<CartMenuStripeCBCheckoutWebPr
                 }}/>
             </NameInputWrapper>
         </CreditCardWrapper>
-        <DoubleButtonCta
-            ctaLabel={t('pay')}
-            secondaryLabel={t('back')}
-            show={cart.open}
-            onClick={handleSubmit}
-            loading={submitted}
-            variant={submittable ? 'custom' : 'disabled'}
-            onSecondaryClick={props.back}
-        />
+        <MediaQuery maxWidth={900}>
+            <DoubleButtonCta
+                ctaLabel={t('pay')}
+                secondaryLabel={t('back')}
+                show={cart.open}
+                onClick={handleSubmit}
+                loading={submitted}
+                variant={submittable ? 'custom' : 'disabled'}
+                onSecondaryClick={props.back}
+            />
+        </MediaQuery>
+        <MediaQuery minWidth={901}>
+            <Actions>
+                <TextButton onClick={props.back}>{t('back')}</TextButton>
+                <ButtonWrapper>
+                    <Button
+                        loadingState={submitted}
+                        title={t('pay')}
+                        variant={submittable ? 'primary' : 'disabled'}
+                        onClick={handleSubmit}
+                    />
+                </ButtonWrapper>
+            </Actions>
+        </MediaQuery>
     </Container>;
 
 };

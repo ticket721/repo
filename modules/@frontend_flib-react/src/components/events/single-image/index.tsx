@@ -5,7 +5,7 @@ import { OnlineTag } from './OnlineTag';
 export interface SingleImageProps extends React.ComponentProps<any> {
     price?: string | number;
     id: string | number;
-    src: string;
+    cover: string;
     text?: string;
     title?: string;
     mainColor?: string;
@@ -20,35 +20,26 @@ export interface SingleImageProps extends React.ComponentProps<any> {
 }
 
 const Container = styled.div<SingleImageProps>`
-    border-radius: ${(props) => props.theme.defaultRadius};
-    height: ${(props) => (props.smaller ? '165px' : '200px')};
-    margin-bottom: ${(props) => props.theme.regularSpacing};
-    overflow: hidden;
     position: relative;
+    border-radius: ${(props) => props.theme.defaultRadius};
     width: 100%;
+    overflow: hidden;
+    height: 0;
     cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
+    background-image: url(${(props) => props.cover});
+    background-size: cover;
+    background-position: center;
+    padding-top: 56.25%;
+`;
 
-    img {
-        height: 100%;
-        object-fit: cover;
-        width: 100%;
-    }
-
-    ${(props) =>
-        !props.imgOnly &&
-        `
-    &::after {
-      background: linear-gradient(180deg, rgba(10, 8, 18, 0), rgba(10, 8, 18, 0.85));
-      content: '';
-      display: block;
-      height: 100%;
-      left: 0;
-      position: absolute;
-      top: 0;
-      width: 100%;
-      z-index: 0;
-    }
-  `}
+const Filter = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: ${(props) => props.theme.defaultRadius};
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 15%, transparent);
 `;
 
 const Details = styled.div<SingleImageProps>`
@@ -111,18 +102,19 @@ export const SingleImage: React.FunctionComponent<SingleImageProps & { className
 ): JSX.Element => {
     return (
         <Container
+            cover={props.cover}
             imgOnly={props.imgOnly}
             smaller={props.smaller}
             className={props.className}
             clickable={!!props.onClick}
             onClick={props.onClick}
         >
+            <Filter />
             {props.online && props.online_text ? (
                 <AbsoluteOnlineTagDiv>
                     <OnlineTag online={props.online_text} />
                 </AbsoluteOnlineTagDiv>
             ) : null}
-            <img src={props.src} />
             {!props.imgOnly && (
                 <Details mainColor={props.mainColor} smaller={props.smaller}>
                     <EllipsedTitle>{props.title}</EllipsedTitle>

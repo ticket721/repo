@@ -2,9 +2,9 @@ import { CategoryEntity }                                      from '@common/sdk
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { FullButtonCta }                                       from '@frontend/flib-react/lib/components';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector }        from 'react-redux';
+import { useDispatch }        from 'react-redux';
 import { useHistory, useLocation }         from 'react-router';
-import { T721AppState }                    from '../../redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { CartContext }                     from '../../components/Cart/CartContext';
 import { isNil }                           from 'lodash';
 import { useLazyRequest }                  from '@frontend/core/lib/hooks/useLazyRequest';
@@ -31,7 +31,7 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
     const dispatch = useDispatch();
     const history = useHistory();
     const location = useLocation();
-    const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
     const [uuid] = useState(v4());
     const addToCartLazyRequest = useLazyRequest<PurchasesSetProductsResponseDto>('purchases.setProducts', `TicketSelectionCta@${uuid}`);
     const cart = useContext(CartContext);

@@ -14,7 +14,7 @@ interface ContainerProps {
     height: number;
 }
 
-const Container = styled(motion.div) <ContainerProps>`
+const Container = styled(motion.div)<ContainerProps>`
   right: ${props => props.spacing}px;
   bottom: calc(${props => props.spacing + props.navbar}px + env(safe-area-inset-bottom));
   bottom: calc(${props => props.spacing + props.navbar}px + constant(safe-area-inset-bottom));
@@ -23,6 +23,7 @@ const Container = styled(motion.div) <ContainerProps>`
   height: ${props => props.height}px;
   border-radius: 100%;
   z-index: 99999;
+  cursor: pointer;
 
   background-color: rgba(43, 39, 55, 1);
   @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
@@ -94,15 +95,10 @@ export const CartButton: React.FC = (): JSX.Element => {
         };
     }, [productCount, controls]);
 
-    const width = useMemo(() => 65, []);
-    const height = useMemo(() => 65, []);
-    const navbar = useMemo(() => 80, []);
-    const spacing = useMemo(() => 8, []);
-
-    // const insets = useMemo(() => SAI.bottom + SAI.top, [SAI.bottom, SAI.top]);
-
-    // const amplitudeX = useMemo(() => window.width - width - spacing * 2, [window.width, width, spacing]);
-    // const amplitudeY = useMemo(() => window.height - height - spacing * 2 - navbar - insets, [window.height, height, navbar, insets]);
+    const width = useMemo(() => window.width < 900 ? 65 : 80, [window.width]);
+    const height = useMemo(() => window.width < 900 ? 65 : 80, [window.width]);
+    const navbar = useMemo(() => window.width < 900 ? 70 : 0, [window.width]);
+    const spacing = useMemo(() => window.width >= 900 ? 32 : 8, [window.width]);
 
     const isError = checkIfError(cart.errors);
 
@@ -186,8 +182,6 @@ export const CartButton: React.FC = (): JSX.Element => {
         drag
         dragMomentum={true}
         dragConstraints={{
-            // top: -amplitudeY,
-            // left: -amplitudeX,
             top: 0,
             left: 0,
             right: 0,
@@ -203,7 +197,7 @@ export const CartButton: React.FC = (): JSX.Element => {
                 <>
                     <CartIcon
                         icon={'shopping-basket'}
-                        size={'30px'}
+                        size={window.width <= 900 ? '30px' : '38px'}
                         color={'white'}
                     />
                     <Badge

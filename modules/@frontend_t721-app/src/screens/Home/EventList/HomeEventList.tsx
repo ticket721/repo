@@ -9,6 +9,7 @@ import { useRequest }                 from '@frontend/core/lib/hooks/useRequest'
 import { useTranslation }             from 'react-i18next';
 import { isRequestError }             from '@frontend/core/lib/utils/isRequestError';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
+import styled from 'styled-components';
 
 interface HomeEventListProps {
     location: UserLocation;
@@ -47,12 +48,17 @@ export const HomeEventList: React.FC<HomeEventListProps> = (props: HomeEventList
         return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dates.force}/>
     }
 
-    return <div style={{padding: '5%'}}>
+    return <Container>
         {
             dates.response.data.dates.map(
                 (date: DateEntity, idx: number) => <HomeEvent key={idx} idx={idx} date={date}/>
             )
         }
-    </div>;
+    </Container>;
 };
 
+const Container = styled.div`
+    display: flex;
+    padding: ${props => props.theme.smallSpacing};
+    flex-wrap: wrap;
+`;

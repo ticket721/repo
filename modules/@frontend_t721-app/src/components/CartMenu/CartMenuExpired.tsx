@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation }                  from 'react-i18next';
 import { Button }                          from '@frontend/flib-react/lib/components';
 import { v4 }                              from 'uuid';
-import { useDispatch, useSelector }        from 'react-redux';
-import { T721AppState }                    from '../../redux';
+import { useDispatch }        from 'react-redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { useLazyRequest }                  from '@frontend/core/lib/hooks/useLazyRequest';
 import { PurchasesSetProductsResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
 import { isNil }                           from 'lodash';
@@ -36,7 +36,7 @@ export const CartMenuExpired: React.FC<CartMenuExpiredProps> = (props: CartMenuE
     const [t] = useTranslation('cart');
     const cart = useContext(CartContext);
     const [uuid] = useState(v4());
-    const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
     const [capturedTimesstamp, setTimestamp] = useState(null);
     const dispatch = useDispatch();
 

@@ -8,8 +8,7 @@ import { OnlineTag }                   from '@frontend/flib-react/lib/components
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
 import { Error, FullPageLoading }      from '@frontend/flib-react/lib/components';
-import { useSelector }                 from 'react-redux';
-import { T721AppState }                from '../../redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { v4 }                          from 'uuid';
 import { isRequestError }              from '@frontend/core/lib/utils/isRequestError';
 
@@ -18,7 +17,7 @@ export interface TicketCategoryFetcherProps {
 }
 
 const TicketSelectionContainer = styled.div`
-    padding-top: ${props => props.theme.regularSpacing};
+    width: min(900px, 100vw);
     padding-bottom: calc(80px + ${props => props.theme.regularSpacing} + env(safe-area-inset-bottom));
     padding-bottom: calc(80px + ${props => props.theme.regularSpacing} + constant(safe-area-inset-bottom));
 `;
@@ -55,7 +54,7 @@ export const TicketCategoryFetcher: React.FC<TicketCategoryFetcherProps> = (prop
 
     const [selection, setSelection] = useState({ selection: null, category: null });
     const [t] = useTranslation('event_ticket_list')
-    const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
     const [uuid] = useState(v4());
 
     const categories = useRequest<CategoriesSearchResponseDto>({

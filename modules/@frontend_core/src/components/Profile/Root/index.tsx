@@ -8,8 +8,7 @@ import {
 } from '@frontend/flib-react/lib/components';
 import { useRequest } from '../../../hooks/useRequest';
 import { v4 } from 'uuid';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../redux';
+import { useDispatch } from 'react-redux';
 import { Logout } from '../../../redux/ducks/auth';
 import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +18,7 @@ import { UserContext } from '../../../utils/UserContext';
 import { FeatureFlag } from '../../FeatureFlag';
 import { getEnv } from '../../../utils/getEnv';
 import { isRequestError } from '../../../utils/isRequestError';
+import { useToken } from '../../../hooks/useToken';
 
 export interface ProfileRootProps {
     desktop?: boolean;
@@ -27,9 +27,7 @@ export interface ProfileRootProps {
 
 const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: ProfileRootProps): JSX.Element => {
     const [uuid] = useState(v4());
-    const { token } = useSelector((state: AppState) => ({
-        token: state.auth.token?.value,
-    }));
+    const token = useToken();
     const user = useContext(UserContext);
     const dispatch = useDispatch();
     const history = useHistory();

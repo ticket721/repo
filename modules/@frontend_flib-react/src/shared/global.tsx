@@ -28,6 +28,34 @@ export const bodyStyles = css`
     font-size: 16px;
     line-height: 1;
     position: relative;
+
+    #block-menu-container {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        left: unset;
+        height: min-content;
+        max-height: unset;
+
+        li:nth-child(n + 5):nth-child(-n + 11) {
+            display: none;
+        }
+
+        > ol > li svg {
+            fill: rgba(255, 255, 255, 0.9);
+        }
+    }
+
+    div {
+        > div::before {
+            top: -2px;
+            bottom: unset;
+        }
+
+        > div > button:nth-child(n + 4):nth-child(-n + 5) {
+            display: none;
+        }
+    }
 `;
 
 export const labelStyles = css`

@@ -49,7 +49,7 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
         }
     }, [auth]);
 
-    const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
+    const isTabletOrMobile = useMediaQuery({ maxWidth: 900 });
 
     return (
         <RegisterWrapper mobile={isTabletOrMobile}>
@@ -133,7 +133,7 @@ const RegisterWrapper = styled.div<RegisterWrapperProps>`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: ${(props) => (props.mobile ? 'none' : '100vh')};
+    height: ${(props) => (props.mobile ? 'none' : 'calc(100vh - 80px)')};
 `;
 
 interface IRegisterContainerInputProps {

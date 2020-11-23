@@ -10,10 +10,16 @@ import { useSelector }                 from 'react-redux';
 import { T721AppState }                from '../../../redux';
 import { useTranslation }              from 'react-i18next';
 import { useHistory }                  from 'react-router';
+import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
+import styled from 'styled-components';
 
 export interface EventCategoryFetcherProps {
     date: DateEntity;
 }
+
+const EventWrapper = styled.div`
+    max-width: 900px;
+`;
 
 export const EventCategoryFetcher: React.FC<EventCategoryFetcherProps> = (props:EventCategoryFetcherProps): JSX.Element => {
 
@@ -22,6 +28,16 @@ export const EventCategoryFetcher: React.FC<EventCategoryFetcherProps> = (props:
     const [ctaHidden, setCtaVisibility] = useState(true);
     const [t] = useTranslation('event');
     const history = useHistory();
+
+    const event = useRequest<EventsSearchResponseDto>({
+        method: 'events.search',
+        args: [token, {
+            id: {
+                $eq: props.date.event
+            }
+        }],
+        refreshRate: 100
+    }, `HomeEvent@${uuid}`);
 
     const categories = useRequest<CategoriesSearchResponseDto>({
         method: 'categories.search',
@@ -52,8 +68,9 @@ export const EventCategoryFetcher: React.FC<EventCategoryFetcherProps> = (props:
         history.push(`/event/${props.date.id}/selection`)
     };
 
-    return <>
+    return <EventWrapper>
         <EventContainer
+            eventName={event.response.data?.events[0].name}
             priceString={priceRangeString}
             date={props.date}
             setCtaVisibility={setCtaVisibility}
@@ -66,5 +83,5 @@ export const EventCategoryFetcher: React.FC<EventCategoryFetcherProps> = (props:
             gradients={props.date.metadata.signature_colors}
             show={!ctaHidden}
         />
-    </>;
+    </EventWrapper>;
 };

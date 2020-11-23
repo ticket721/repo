@@ -2,18 +2,17 @@ import React, { useContext, useEffect, useState } from 'react';
 import styled                                     from 'styled-components';
 import { FullPageLoading, Icon, WalletHeader } from '@frontend/flib-react/lib/components';
 
-import { DrawerAccount, ProfileRoute }       from '../DrawerAccount';
+import { DrawerAccount, ProfileRoute }       from '@frontend/core/lib/components/DrawerAccount';
 import { useTranslation }                    from 'react-i18next';
 import { truncate } from '@frontend/core/lib/utils';
 import { useHistory }                        from 'react-router';
 import { NavLink }                           from 'react-router-dom';
-import { useSelector }                       from 'react-redux';
-import { AppState }                          from '@frontend/core/lib/redux';
 import './locales';
 import { v4 }                                from 'uuid';
 import { useRequest }                        from '@frontend/core/lib/hooks/useRequest';
 import { TicketsCountResponseDto }           from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
 import { UserContext }                       from '@frontend/core/lib/utils/UserContext';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 const AuthNavBar: React.FC = () => {
     const { t } = useTranslation('navbar');
@@ -21,9 +20,7 @@ const AuthNavBar: React.FC = () => {
     const [uuid] = useState(v4());
     const user = useContext(UserContext);
     const [ profileRoute, setProfileRoute ] = useState<ProfileRoute>();
-    const { token } = useSelector((state: AppState) => ({
-        token: state.auth.token?.value,
-    }));
+    const token = useToken();
 
     useEffect(() => {
         if (history.location.search.match(/[?|&]profile=(root|activities|language)$/)) {

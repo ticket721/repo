@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
-import Icon from '../../icon';
 import { OnlineBadge } from '../../events/single-image/OnlineTag';
 
 export interface SearchResultsProps extends React.ComponentProps<any> {
@@ -27,55 +26,27 @@ interface Event {
     onClick?: () => void;
 }
 
-interface Location {
-    id: string | number;
-    name: string;
-    numberEvents: number;
-    url: string;
-    onClick?: () => void;
-}
-
 const Container = styled.div<SearchResultsProps>`
     width: 100%;
 `;
 
-const ImgContainer = styled.div`
+const ImgContainer = styled.div<{ src: string }>`
     border-radius: ${(props) => props.theme.defaultRadius};
-    height: 80px;
-    margin-right: ${(props) => props.theme.regularSpacing};
+    padding-top: max(80px, 10vw);
+    margin-right: max(${(props) => props.theme.regularSpacing}, 1.5vw);
     overflow: hidden;
-    width: 80px;
+    width: max(80px, 10vw);
     position: relative;
-
-    &.icon {
-        align-items: center;
-        background-color: ${(props) => props.theme.componentColorLight};
-        height: 56px;
-        display: flex;
-        justify-content: center;
-        width: 56px;
-
-        svg {
-            height: 24px;
-        }
-    }
-
-    img {
-        height: 100%;
-        object-fit: cover;
-        width: 100%;
-    }
-
-    span {
-        margin-top: 0 !important;
-    }
+    background-image: url(${(props) => props.src});
+    background-size: cover;
+    background-position: center;
 `;
 
 const SingleResult = styled.article<React.ComponentProps<any>>`
     align-items: center;
     display: flex;
-    font-size: 13px;
-    margin-bottom: ${(props) => props.theme.regularSpacing};
+    font-size: max(13px, 1vw);
+    margin-bottom: max(${(props) => props.theme.regularSpacing}, 5%);
     width: 100%;
     cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
 
@@ -83,13 +54,13 @@ const SingleResult = styled.article<React.ComponentProps<any>>`
         margin-bottom: ${(props) => props.customMarginBottom || props.theme.biggerSpacing};
     }
 
-    span {
+    & > div:last-child > span {
         color: ${(props) => props.theme.textColorDark};
         display: block;
-        margin-top: ${(props) => props.theme.smallSpacing};
+        margin-top: max(12px, 12%);
 
         &:first-of-type {
-            margin-top: 4px;
+            margin-top: max(${(props) => props.theme.smallSpacing}, 8%);
         }
     }
 `;
@@ -98,6 +69,7 @@ const CategorySection = styled.section`
     padding: ${(props) => props.theme.biggerSpacing} ${(props) => props.theme.biggerSpacing};
 
     h2 {
+        font-size: max(18px, 1.4vw);
         margin-bottom: ${(props) => props.theme.regularSpacing};
     }
 
@@ -117,10 +89,10 @@ const EllipsedTitle = styled.h4`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-`;
-
-const InfoContainer = styled.div`
-    width: calc(90% - 80px);
+    font-size: max(12px, 1.4vw);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 `;
 
 const AbsoluteOnlineTagDiv = styled.div`
@@ -132,52 +104,17 @@ const AbsoluteOnlineTagDiv = styled.div`
 export const SingleEvent = (props: Event & { customMarginBottom?: string; online?: boolean }) => {
     return (
         <SingleResult clickable={!!props.onClick} onClick={props.onClick} customMarginBottom={props.customMarginBottom}>
-            <ImgContainer>
-                <img src={props.image} />
+            <ImgContainer src={props.image}>
                 {props.online ? (
                     <AbsoluteOnlineTagDiv>
                         <OnlineBadge />
                     </AbsoluteOnlineTagDiv>
                 ) : null}
             </ImgContainer>
-            <InfoContainer>
-                <EllipsedTitle className={'uppercase'}>{props.name}</EllipsedTitle>
+            <div>
+                <EllipsedTitle>{props.name}</EllipsedTitle>
                 <span>{props.date}</span>
                 <span style={{ color: props.color }}>{props.price}</span>
-            </InfoContainer>
-        </SingleResult>
-    );
-};
-
-export const SingleStarEvent = (props: Event & { customMarginBottom?: string }) => {
-    return (
-        <SingleResult clickable={!!props.onClick} onClick={props.onClick} customMarginBottom={props.customMarginBottom}>
-            <ImgContainer>
-                <img src={props.image} />
-            </ImgContainer>
-            <InfoContainer>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'baseline' }}>
-                    <Icon icon={'star'} size={'12px'} color={props.color} />
-                    <EllipsedTitle style={{ marginLeft: '6px' }} className={'uppercase'}>
-                        {props.name}
-                    </EllipsedTitle>
-                </div>
-                <span>{props.date}</span>
-                <span style={{ color: props.color }}>{props.price}€</span>
-            </InfoContainer>
-        </SingleResult>
-    );
-};
-
-export const SingleLocation = (props: Location) => {
-    return (
-        <SingleResult>
-            <ImgContainer className={'icon'}>
-                <Icon icon={'pin'} size={'16px'} color={'rgba(255, 255, 255, 0.6)'} />
-            </ImgContainer>
-            <div>
-                <h4>{props.name}</h4>
-                <span>{props.numberEvents} events</span>
             </div>
         </SingleResult>
     );

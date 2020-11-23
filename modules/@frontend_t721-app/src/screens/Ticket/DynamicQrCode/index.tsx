@@ -7,9 +7,9 @@ import { Icon }                from '@frontend/flib-react/lib/components';
 import { useWindowDimensions } from '@frontend/core/lib/hooks/useWindowDimensions';
 import { Theme }               from '@frontend/flib-react/lib/config/theme';
 import { Brightness } from '@ionic-native/brightness';
+import { motion } from 'framer';
 
 export interface DynamicQrCodeProps {
-    qrOpened: boolean;
     name: string;
     category: string;
     color: string;
@@ -40,7 +40,7 @@ const getBrightness = (): Promise<number> => {
 };
 
 export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCodeProps) => {
-    const { width, height } = useWindowDimensions();
+    const { width } = useWindowDimensions();
     const [initialBrightness, setInitialBrightness] = useState(null);
     const [
         qrcodeContent,
@@ -52,34 +52,40 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
     const theme = useTheme() as Theme;
 
     useEffect(() => {
-
-        if (props.qrOpened) {
-            getBrightness()
-                .then((val: number) => {
-                    setInitialBrightness(val);
-                })
-                .catch((e: Error) => {
-                    console.warn(e);
-                });
-        }
-
-    }, [props.qrOpened]);
+        getBrightness()
+            .then((val: number) => {
+                setInitialBrightness(val);
+            })
+            .catch((e: Error) => {
+                console.warn(e);
+            });
+    }, []);
 
     useEffect(() => {
-
-        if (props.qrOpened) {
-            if (initialBrightness !== null) {
-                setBrightness(0.8);
-                return () => {
-                    setBrightness(initialBrightness)
-                }
+        if (initialBrightness !== null) {
+            setBrightness(0.8);
+            return () => {
+                setBrightness(initialBrightness)
             }
         }
-
-    }, [initialBrightness, props.qrOpened]);
+    }, [initialBrightness]);
 
     return (
-        <QrCodeWrapper offsetTop={height} qrOpened={props.qrOpened}>
+        <QrCodeWrapper
+        initial={{
+            top: '100vh'
+        }}
+        animate={{
+            top: 0,
+        }}
+        exit={{
+            top: '100vh',
+        }}
+        transition={{
+            type: 'spring',
+            stiffness: 200,
+            damping: 26,
+        }}>
             <EventTitle>
                 <EventName>{props.name}</EventName>
                 <Category>{props.category}</Category>
@@ -118,10 +124,9 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
     )
 };
 
-const QrCodeWrapper = styled.div<{ offsetTop: number, qrOpened: boolean }>`
+const QrCodeWrapper = styled(motion.div)`
     position: fixed;
-    display: ${props => props.qrOpened ? 'flex' : 'none'};
-    top: ${props => props.qrOpened ? '0' : `${props.offsetTop}px` };
+    display: flex;
     left: 0;
     width: 100vw;
     height: 100vh;
@@ -132,7 +137,6 @@ const QrCodeWrapper = styled.div<{ offsetTop: number, qrOpened: boolean }>`
     background-color: #ffffff;
     backdrop-filter: blur(6px);
     padding: 6vh ${props => props.theme.biggerSpacing};
-    transition: top 600ms ease-in-out;
 `;
 
 const EventTitle = styled.div`

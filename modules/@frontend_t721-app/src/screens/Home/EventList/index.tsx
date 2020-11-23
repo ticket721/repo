@@ -52,5 +52,7 @@ export const EventList: React.FC<EventListProps> = (props: EventListProps): JSX.
 };
 
 const EventListWrapper = styled.div`
+    width: 100vw;
+    max-width: 1800px;
     margin-top: ${props => props.theme.biggerSpacing};
 `;

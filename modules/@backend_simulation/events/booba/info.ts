@@ -28,8 +28,8 @@ export default {
                 saleBegin: new Date(Date.now() + 30 * SECOND),
                 saleEnd: new Date(Date.now() + 23 * HOUR),
                 seats: 100,
-                price: 20000,
-                currency: 'eur',
+                price: 0,
+                currency: 'FREE',
                 dates: [0]
             }
         ],
@@ -40,8 +40,8 @@ export default {
                     saleBegin: new Date(Date.now() + HOUR),
                     saleEnd: new Date(Date.now() + 23 * HOUR),
                     seats: 200,
-                    price: 20000,
-                    currency: 'eur'
+                    price: 0,
+                    currency: 'FREE'
                 }
             ],
         ]

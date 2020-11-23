@@ -22,6 +22,7 @@ import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 import { EventsAddDateResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsAddDateResponse.dto';
 import { v4 } from 'uuid';
 import { useUploadImage } from '@frontend/core/lib/hooks/useUploadImage';
+import { uploadImageWithSdk } from '../../../utils/uploadImageWithSdk';
 
 interface StepInfos {
     step: string;
@@ -61,7 +62,7 @@ const initialValues: DateCreationPayload = {
     },
     textMetadata: {
         name: '',
-        description: '',
+        description: '\\',
     },
     imagesMetadata: {
         avatar: '',
@@ -132,7 +133,19 @@ export const CreateDate: React.FC = () => {
 
     const buildForm = (setFieldValue: any) => {
         switch (currentStep) {
-            case 0: return <GeneralInfoForm nameUpdate={(name) => setFieldValue('info.name', name)}/>;
+            case 0: return <GeneralInfoForm
+            primaryColor={formik.values.imagesMetadata.signatureColors[0]}
+            nameUpdate={(name) => setFieldValue('info.name', name)}
+            uploadDescImage={async (file) => {
+                const url = await uploadImageWithSdk(token, file);
+
+                if (!url) {
+                    dispatch(PushNotification(t('upload_error'), 'error'));
+                    return;
+                }
+
+                return url;
+            }}/>;
             case 1: return <StylesForm
             eventName={formik.values.textMetadata.name}
             parentField={'imagesMetadata'}

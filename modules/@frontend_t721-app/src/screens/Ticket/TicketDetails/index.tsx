@@ -14,7 +14,7 @@ import { useTranslation }                      from 'react-i18next';
 import './locales';
 import styled                                  from 'styled-components';
 import { useHistory }                          from 'react-router';
-import { motion }                              from 'framer';
+import { AnimatePresence, motion }                              from 'framer';
 import qrcodePreview                           from '../../../media/images/qrcodePreview.png';
 import qrcodePreview2                          from '../../../media/images/qrcodePreview2.png';
 import { getImgPath }                          from '@frontend/core/lib/utils/images';
@@ -32,6 +32,9 @@ import { useWindowDimensions }             from '@frontend/core/lib/hooks/useWin
 import { getPrice }                        from '../../../utils/prices';
 import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
 import { OnlineBadge }                     from '@frontend/flib-react/lib/components/events/single-image/OnlineTag';
+
+import { usePlatform } from '@capacitor-community/react-hooks/platform';
+import { DownloadAppModal } from '../DownloadAppModal';
 // tslint:disable-next-line:no-var-requires
 const publicIp = require('public-ip');
 // tslint:disable-next-line:no-var-requires
@@ -226,7 +229,6 @@ const catchLiveTicket721Com = (onlineLink: string, ip: string, date: DateEntity)
         case 'vimeo': {
             const vimeoId = url.searchParams.get('vimeo_id');
             const chatId = url.searchParams.get('vimeo_chat_id');
-
             const payload = btoa(JSON.stringify({
                 ip,
                 urls: [{
@@ -393,8 +395,11 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
     const dispatch = useDispatch();
     const [currentDate, setCurrentDate] = useState<DateEntity>(null);
 
+    const { width } = useWindowDimensions();
     const [qrPrev, setQrPrev] = useState<string>(qrcodePreview);
-    const [qrOpened, setQrOpened] = useState<boolean>(false);
+    const [modalOpened, setModalOpened] = useState<boolean>(false);
+
+    const { platform } = usePlatform();
 
     const { ref, inView } = useInView();
 
@@ -420,15 +425,15 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
 
     const isPhysical = useMemo(() => isPhysicalChecker(props.dates), [props.dates]);
 
-    return <>
+    return <Container>
         {
             isPhysical
-
+            && (platform === 'ios' || platform === 'android')
                 ?
                 <QRHoverButton
                     inView={inView}
-                    qrOpened={qrOpened}
-                    onClick={() => setQrOpened(true)}
+                    qrOpened={modalOpened}
+                    onClick={() => setModalOpened(true)}
                     qrPrev={qrPrev}
                 />
 
@@ -451,7 +456,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                         ?
                         <Banner>
                             <QrLink>
-                                <Btn onClick={() => setQrOpened(true)} ref={ref}>
+                                <Btn onClick={() => setModalOpened(true)} ref={ref}>
                                     <img src={qrPrev} alt={'qrPreview'}/>
                                     <Timer>
                                         <span>{t('next_gen_label')}</span>
@@ -490,15 +495,16 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                                     }}
                                 >
                                     <Sticky
-                                        topOffset={-(48 + safeAreaInsets.top)}
-                                        bottomOffset={48 + safeAreaInsets.top}
+                                        topOffset={width <= 900 ? -(48 + safeAreaInsets.top) : 0}
+                                        bottomOffset={width <= 900 ? 48 + safeAreaInsets.top : 0}
                                     >
                                         {({ style, isSticky, distanceFromBottom }) => (
                                             <div
                                                 style={{
                                                     ...style,
-                                                    marginTop: isSticky ? (48 + safeAreaInsets.top) : 0,
+                                                    marginTop: width <= 900 && isSticky ? (48 + safeAreaInsets.top) : 0,
                                                     zIndex: 1000,
+                                                    cursor: 'pointer',
                                                 }}
                                                 onClick={() => history.push(`/event/${date.id}`)}
                                             >
@@ -509,93 +515,93 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                                     </Sticky>
 
                                 </div>
+                                <DateTimeCard
+                                    dates={[{
+                                        id: date.id,
+                                        name: date.metadata.name,
+                                        startDate: formatDay(date.timestamps.event_begin),
+                                        endDate: formatDay(date.timestamps.event_end),
+                                        startTime: formatHour(date.timestamps.event_begin),
+                                        endTime: formatHour(date.timestamps.event_end),
+                                        location: date.location?.location_label,
+                                    }]}
+                                    iconColor={date.metadata.signature_colors[0]}
+                                    label={t('show_all_dates_label')}
+                                    labelCollapse={t('collapse_dates_label')}
+                                    onClick={(dateId: string) => history.push('/event/' + dateId)}
+                                    wSeparator
+                                />
                                 {
                                     date.online
 
                                         ?
-                                        <>
-                                            <DateTimeCard
-                                                dates={[{
-                                                    id: date.id,
-                                                    name: date.metadata.name,
-                                                    startDate: formatDay(date.timestamps.event_begin),
-                                                    endDate: formatDay(date.timestamps.event_end),
-                                                    startTime: formatHour(date.timestamps.event_begin),
-                                                    endTime: formatHour(date.timestamps.event_end),
-                                                    location: date.location?.location_label,
-                                                }]}
-                                                iconColor={date.metadata.signature_colors[0]}
-                                                label={t('show_all_dates_label')}
-                                                labelCollapse={t('collapse_dates_label')}
-                                                onClick={(dateId: string) => history.push('/event/' + dateId)}
-                                                wSeparator
-                                            />
-                                            <OnlineCard
-                                                online={true}
-                                                start={new Date(date.timestamps.event_begin)}
-                                                end={new Date(date.timestamps.event_end)}
-                                                onClick={() => {
-                                                    onlineLinkWrapper(dispatch, t, date.online_link, date);
-                                                }
-                                                }
-                                                online_link={date.online_link}
-                                                live_title={t('live_title')}
-                                                offline_title={t('offline_title')}
-                                                waiting_link_subtitle={t('waiting_link_subtitle')}
-                                                ended_subtitle={t('ended_subtitle')}
-                                                live_subtitle={t('live_subtitle')}
-                                                soon_subtitle={t('soon_subtitle')}
-                                            />
-                                        </>
-
+                                        <OnlineCard
+                                            online={true}
+                                            start={new Date(date.timestamps.event_begin)}
+                                            end={new Date(date.timestamps.event_end)}
+                                            onClick={() => {
+                                                onlineLinkWrapper(dispatch, t, date.online_link, date);
+                                            }
+                                            }
+                                            online_link={date.online_link}
+                                            live_title={t('live_title')}
+                                            offline_title={t('offline_title')}
+                                            waiting_link_subtitle={t('waiting_link_subtitle')}
+                                            ended_subtitle={t('ended_subtitle')}
+                                            live_subtitle={t('live_subtitle')}
+                                            soon_subtitle={t('soon_subtitle')}
+                                        />
                                         :
-                                        <>
-                                            <DateTimeCard
-                                                dates={[{
-                                                    id: date.id,
-                                                    name: date.metadata.name,
-                                                    startDate: formatDay(date.timestamps.event_begin),
-                                                    endDate: formatDay(date.timestamps.event_end),
-                                                    startTime: formatHour(date.timestamps.event_begin),
-                                                    endTime: formatHour(date.timestamps.event_end),
-                                                    location: date.location?.location_label,
-                                                }]}
-                                                iconColor={date.metadata.signature_colors[0]}
-                                                label={t('show_all_dates_label')}
-                                                labelCollapse={t('collapse_dates_label')}
-                                                onClick={(dateId: string) => history.push('/event/' + dateId)}
-                                                wSeparator
-                                            />
-                                            <LocationCard
-                                                location={date.location.location_label}
-                                                coords={date.location.location}
-                                                iconColor={date.metadata.signature_colors[0]}
-                                                wSeparator={false}
-                                                get_directions={t('get_directions')}
-                                            />
-                                        </>
+                                        <LocationCard
+                                            location={date.location.location_label}
+                                            coords={date.location.location}
+                                            iconColor={date.metadata.signature_colors[0]}
+                                            wSeparator={false}
+                                            get_directions={t('get_directions')}
+                                        />
                                 }
                             </StickyContainer>
                         ))
                 }
             </Details>
         </TicketContent>
-        <DynamicQrCode
-            qrOpened={qrOpened}
-            name={props.event.name}
-            category={props.category.display_name}
-            color={props.event.signature_colors[0]}
-            onClose={() => setQrOpened(false)}/>
-    </>;
+        <AnimatePresence>
+        {
+            modalOpened ?
+                platform === 'ios' || platform === 'android' ?
+                <DynamicQrCode
+                name={props.event.name}
+                category={props.category.display_name}
+                color={props.event.signature_colors[0]}
+                onClose={() => setModalOpened(false)}/> :
+                <DownloadAppModal closeModal={() => setModalOpened(false)}/> :
+            null
+        }
+        </AnimatePresence>
+    </Container>;
 };
+
+const Container = styled.div`
+    width: 100%;
+
+    @media screen and (min-width: 601px) {
+        border-radius: ${props => props.theme.defaultRadius};
+        overflow: hidden;
+        width: 600px;
+    }
+`;
 
 const TicketContent = styled.div`
     position: relative;
-    top: -${props => props.theme.doubleSpacing};
+    top: calc(${props => props.theme.doubleSpacing} * -2);
     margin-bottom: calc(env(safe-area-inset-bottom) + 80px + 70px + 25px);
     display: flex;
     border-bottom-right-radius: ${props => props.theme.defaultRadius};
     overflow: hidden;
+
+    @media screen and (min-width: 901px) {
+        margin-bottom: 0;
+    }
 `;
 
 const Details = styled.div`

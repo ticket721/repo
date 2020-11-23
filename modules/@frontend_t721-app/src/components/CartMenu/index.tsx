@@ -7,10 +7,10 @@ import { CartContext }            from '../Cart/CartContext';
 import { CartMenuPreview }                 from './CartMenuPreview';
 import { UserContext }                     from '@frontend/core/lib/utils/UserContext';
 import { ValidateEmailComponent }          from '@frontend/core/lib/components/ValidateEmail';
-import { DoubleButtonCta }                 from '@frontend/flib-react/lib/components';
+import { Button, DoubleButtonCta }                 from '@frontend/flib-react/lib/components';
 import { isNil }                           from 'lodash';
-import { useDispatch, useSelector }        from 'react-redux';
-import { T721AppState }                    from '../../redux';
+import { useDispatch }        from 'react-redux';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { v4 }                              from 'uuid';
 import { useLazyRequest }                  from '@frontend/core/lib/hooks/useLazyRequest';
 import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
@@ -22,6 +22,7 @@ import { CartMenuCheckout }                from './CartMenuCheckout';
 import { CartMenuExpired }                 from './CartMenuExpired';
 import Countdown                           from 'react-countdown';
 import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
+import MediaQuery from 'react-responsive';
 // tslint:disable-next-line:no-var-requires
 const SAI = require('safe-area-insets');
 
@@ -30,16 +31,18 @@ interface ShadowProps {
     height: number;
 }
 
-const Shadow = styled(motion.div) <ShadowProps>`
+const Shadow = styled(motion.div)<ShadowProps>`
     position: fixed;
     background-color: #000000;
+    opacity: 0;
     width: ${props => props.width}px;
     height: ${props => props.height}px;
     top: 0;
-    left: ${props => -props.width}px;
+    left: 0;
     z-index: 99999;
     overflow-x: hidden;
     overflow-y: hidden;
+    transition: opacity 300ms;
 `;
 
 interface MenuContainerProps {
@@ -56,6 +59,14 @@ const MenuContainer = styled(motion.div) <MenuContainerProps>`
     padding-bottom: constant(safe-area-inset-bottom);
     left: 0;
     z-index: 100000;
+
+    @media screen and (min-width: 900px) {
+        width: 700px;
+        height: 600px;
+        bottom: calc((100vh - 600px)/2);
+        left: calc((100vw - 700px)/2);
+        border-radius: 12px;
+    }
 
     background-color: rgba(33, 29, 45, 1);
     @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
@@ -89,6 +100,7 @@ const MenuContainerHeaderClose = styled.p`
     font-size: 15px;
     color: ${props => props.theme.errorColor.hex};
     margin: 0;
+    cursor: pointer;
 `;
 
 const TimerText = styled.span`
@@ -98,6 +110,26 @@ const TimerText = styled.span`
   font-size: 15px;
   opacity: 0.5;
 `
+
+const Actions = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: -75px ${props => props.theme.regularSpacing} 0;
+`;
+
+const TextButton = styled.p`
+    width: 30%;
+    text-align: center;
+    text-decoration: underline;
+    color: ${(props) => props.theme.errorColor.hex};
+    opacity: 0.8;
+    cursor: pointer;
+`;
+
+const ButtonWrapper = styled.div`
+    width: 60%;
+`;
 
 const twoDigits = (num: number) => {
     if (num < 10) {
@@ -129,7 +161,7 @@ export const CartMenu: React.FC = (): JSX.Element => {
         () => (Math.floor(window.height * 0.7) < 500 ? window.height : Math.floor(window.height * 0.7)) + SAI.bottom - SAI.top,
         [window.height]
     );
-    const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
     const [uuid] = useState(v4());
     const clearCartLazyRequest = useLazyRequest<PurchasesSetProductsResponseDto>('purchases.setProducts', uuid);
     const checkoutLazyRequest = useLazyRequest<PurchasesCheckoutResponseDto>('purchases.checkout', uuid);
@@ -271,24 +303,17 @@ export const CartMenu: React.FC = (): JSX.Element => {
             onClick={cart.closeMenu}
             variants={{
                 visible: {
+                    display: 'block',
                     opacity: 0.75,
-                    left: 0,
                     transition: {
-                        duration: 1,
-                        left: {
-                            duration: 0,
-                        },
+                        duration: 0.75
                     },
                 },
                 hidden: {
+                    display: 'none',
                     opacity: 0,
-                    left: -window.width,
                     transition: {
-                        duration: 1,
-                        left: {
-                            delay: 1,
-                            duration: 0,
-                        },
+                        duration: 0.75
                     },
                 },
             }}
@@ -299,13 +324,15 @@ export const CartMenu: React.FC = (): JSX.Element => {
             width={window.width}
             height={menuHeight}
             transition={{
-                duration: 1,
+                duration: 0.75,
             }}
             variants={{
                 visible: {
-                    bottom: 0
+                    display: 'block',
+                    bottom: window.width > 900 ? (window.height - 600) / 2 : 0,
                 },
                 hidden: {
+                    display: 'none',
                     bottom: - window.height * 2,
                 },
             }}
@@ -345,16 +372,31 @@ export const CartMenu: React.FC = (): JSX.Element => {
                                     <CartMenuPreview
                                         setChildrenLoading={setChildrenLoading}
                                     />
-                                    <DoubleButtonCta
-                                        solid={true}
-                                        show={ctaVisible}
-                                        loading={loading}
-                                        variant={disabled ? 'disabled' : 'custom'}
-                                        ctaLabel={isFree ? t('checkout_free') : t('checkout')}
-                                        secondaryLabel={t('empty')}
-                                        onClick={onCheckout}
-                                        onSecondaryClick={onClearCart}
-                                    />
+                                    <MediaQuery maxWidth={900}>
+                                        <DoubleButtonCta
+                                            solid={true}
+                                            show={ctaVisible}
+                                            loading={loading}
+                                            variant={disabled ? 'disabled' : 'custom'}
+                                            ctaLabel={isFree ? t('checkout_free') : t('checkout')}
+                                            secondaryLabel={t('empty')}
+                                            onClick={onCheckout}
+                                            onSecondaryClick={onClearCart}
+                                        />
+                                    </MediaQuery>
+                                    <MediaQuery minWidth={901}>
+                                        <Actions>
+                                            <TextButton onClick={onClearCart}>{t('empty')}</TextButton>
+                                            <ButtonWrapper>
+                                                <Button
+                                                    loadingState={loading}
+                                                    title={isFree ? t('checkout_free') : t('checkout')}
+                                                    variant={loading ? 'disabled' : disabled ? 'disabled' : 'primary'}
+                                                    onClick={loading ? undefined : onCheckout}
+                                                />
+                                            </ButtonWrapper>
+                                        </Actions>
+                                    </MediaQuery>
                                 </>
                         )
 

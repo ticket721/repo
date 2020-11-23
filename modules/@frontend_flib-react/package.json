@@ -35,9 +35,14 @@
   },
   "homepage": "https://github.com/ticket721/flib#readme",
   "dependencies": {
-    "react-rte": "0.16.1",
-    "react-markdown": "4.3.1",
-    "@types/react-rte": "0.16.1",
+    "rich-markdown-editor": "11.0.6",
+    "@types/prosemirror-view": "1.16.1",
+    "@types/prosemirror-state": "1.2.5",
+    "@types/prosemirror-markdown": "1.0.3",
+    "@types/prosemirror-inputrules": "1.0.3",
+    "lodash.debounce": "4.0.8",
+    "@types/lodash.debounce": "4.0.6",
+    "react-circular-progressbar": "2.0.3",
     "@egjs/react-flicking": "3.2.2",
     "@sambego/storybook-state": "2.0.1",
     "@types/cleave.js": "1.4.2",
@@ -48,6 +53,7 @@
     "@types/styled-components": "5.1.0",
     "@types/react-color": "3.0.1",
     "cleave.js": "1.6.0",
+    "dante2": "0.5.0-rc1",
     "detect-browser": "5.1.0",
     "html5-file-selector": "2.1.0",
     "polished": "3.6.3",
@@ -98,8 +104,8 @@
     "platform-detect": "3.0.0",
     "react-countdown": "2.2.1",
     "framer-motion": "2.6.9"
-  },
-  "devDependencies": {
+},
+"devDependencies": {
     "@storybook/addon-actions": "5.3.19",
     "@storybook/addon-centered": "5.3.19",
     "@storybook/addon-docs": "5.3.19",

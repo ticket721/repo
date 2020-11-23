@@ -3,7 +3,6 @@ import { Route, Switch, useHistory, useLocation, withRouter, Redirect }         
 import { TopNav, FullPageLoading }                                                          from '@frontend/flib-react/lib/components';
 import ProtectedRoute                                                                       from '@frontend/core/lib/components/ProtectedRoute';
 import ToastStacker                                                                         from '@frontend/core/lib/components/ToastStacker';
-import styled                                                                               from 'styled-components';
 import { T721Navbar }                                                                       from './components/NavBar';
 import AdminRoutePage                                                                       from './routes/Admin';
 import LoginPage                                                                            from './routes/Login';
@@ -43,6 +42,8 @@ import { Integrations }                                                         
 import { getEnv }                                                                           from '@frontend/core/lib/utils/getEnv';
 import { Crash }                                                                            from '@frontend/core/lib/components/Crash';
 import { ErrorBoundary }                                                                    from 'react-error-boundary';
+import { DesktopNavbar } from './components/DesktopNavBar';
+import { useWindowDimensions } from '@frontend/core/lib/hooks/useWindowDimensions';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
     const [scrolled, setScrolled] = useState(false);
@@ -79,11 +80,12 @@ if (getEnv().REACT_APP_SENTRY_DSN) {
     console.log(`Initialized Sentry for release ${getEnv().REACT_APP_RELEASE}`);
 }
 
-const MobileApp: React.FC = () => {
+const App: React.FC = () => {
     const location = useLocation();
     const history = useHistory();
     const keyboardIsVisible = useKeyboardVisibility();
     const token = useToken();
+    const { width } = useWindowDimensions();
 
     const goBackOrHome = useCallback(() => {
         if (history.length > 2) {
@@ -105,10 +107,12 @@ const MobileApp: React.FC = () => {
                     <StripeSDKManager>
                         <CartContextManager token={token}>
                             <CartButton/>
-                            <CartMenu
-                            />
+                            <CartMenu/>
+                            <MediaQuery minWidth={901}>
+                                <DesktopNavbar/>
+                            </MediaQuery>
                             <AppContainer>
-                                <MediaQuery maxWidth={1224}>
+                                <MediaQuery maxWidth={900}>
                                     {location.pathname.lastIndexOf('/') !== 0 &&
                                     location.pathname.indexOf('/_/') !== 0 ? (
                                         <TopNavWrapper back={goBackOrHome}/>
@@ -166,11 +170,11 @@ const MobileApp: React.FC = () => {
                                     </Route>
 
                                     <Route path={'/login'} exact={true}>
-                                        <LoginPage/>
+                                            {LoginPage(width > 900)}
                                     </Route>
 
                                     <Route path={'/register'} exact={true}>
-                                        <RegisterPage/>
+                                        {RegisterPage(width > 900)}
                                     </Route>
 
                                     <Route path={'/reset'} exact={true}>
@@ -231,7 +235,7 @@ const MobileApp: React.FC = () => {
 
                                     <Redirect to={'/'}/>
                                 </Switch>
-                                <MediaQuery maxWidth={1224}>
+                                <MediaQuery maxWidth={900}>
                                     <T721Navbar
                                         visible={
                                             location.pathname.lastIndexOf('/') === 0 &&
@@ -241,7 +245,6 @@ const MobileApp: React.FC = () => {
                                 </MediaQuery>
                             </AppContainer>
                         </CartContextManager>
-
                     </StripeSDKManager>
                 </TicketsContextGuard>
             </UserContextGuard>
@@ -251,32 +254,8 @@ const MobileApp: React.FC = () => {
     );
 };
 
-interface AppContainerDivProps {
-    checkoutOpen: boolean;
-    margin: number;
-}
-
-const AppContainerDiv = styled.div<AppContainerDivProps>`
-    ${props => props.checkoutOpen
-
-    ?
-    `
-        overflow: hidden;
-        margin-top: -${props.margin}px;
-    `
-
-    :
-    `
-    `
-}
-    width: 100%;
-    height: 100%;
-`;
-
 const AppContainer: React.FC<PropsWithChildren<any>> = (props: PropsWithChildren<any>) => {
-
     const cart = useContext(CartContext);
-    const [savedPos] = useState(0);
 
     useEffect(() => {
         if (cart.open) {
@@ -287,15 +266,10 @@ const AppContainer: React.FC<PropsWithChildren<any>> = (props: PropsWithChildren
         }
     }, [cart.open]);
 
-    return <AppContainerDiv
-        checkoutOpen={false}
-        margin={savedPos}
-    >
-        {props.children}
-    </AppContainerDiv>;
+    return props.children;
 };
 
-let WrappedApp: any = withRouter(MobileApp);
+let WrappedApp: any = withRouter(App);
 
 if (getEnv().REACT_APP_SENTRY_DSN) {
     WrappedApp = Sentry.withErrorBoundary(

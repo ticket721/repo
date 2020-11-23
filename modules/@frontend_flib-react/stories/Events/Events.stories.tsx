@@ -7,7 +7,7 @@ import styled from '../../src/config/styled';
 import EventHeader from '../../src/components/events/header';
 import LocationCard from '../../src/components/ticket/cards/location';
 import DateTimeCard from '../../src/components/ticket/cards/datetime';
-import ReadMore from '../../src/components/cards/read-more';
+import { Description } from '../../src/components/cards/description';
 import Border from '../../src/components/elements/border';
 import PhotosVideosCard from '../../src/components/cards/photos-videos';
 import Gradient from '../../src/components/elements/gradient';
@@ -125,8 +125,12 @@ export const showcase = () => (
                 <Container>
                     <Gradient values={eventDetails.gradients} blurOnly />
                     <EventHeader
-                        event={eventDetails}
-                        subtitle={'Tickets from 12 $'}
+                        preName={'Pre name'}
+                        name={eventDetails.name}
+                        prices={'Tickets from 12 $'}
+                        cover={eventDetails.image}
+                        colors={eventDetails.gradients}
+                        online={''}
                         buttonTitle={'Get Tickets'}
                         onChange={onChange}
                         onClick={action('clicked')}
@@ -152,12 +156,10 @@ export const showcase = () => (
                             removeBg
                         />
                         <Border />
-                        <ReadMore
-                            readMoreColor={eventDetails.mainColor}
+                        <Description
+                            color={eventDetails.mainColor}
                             title={'About'}
                             text={eventDetails.about}
-                            showLabel={'Read more'}
-                            hideLabel={'Show less'}
                             removeBg
                         />
                         <Border />

@@ -3,13 +3,12 @@ import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
 import { PasswordlessUserDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
 import { useRequest } from '../../hooks/useRequest';
 import { v4 } from 'uuid';
-import { useSelector } from 'react-redux';
 import { PaymentStripeFetchInterfaceResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/payment/stripe/dto/PaymentStripeFetchInterfaceResponse.dto';
 import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
-import { AppState } from '../../redux';
 import { StripeSetupCreateExternalAccountManager } from './StripeSetupCreateExternalAccountManager';
 import { useHistory, Redirect } from 'react-router';
 import { isRequestError } from '../../utils/isRequestError';
+import { useToken } from '../../hooks/useToken';
 
 const isConnectAccountCreated = (stripeInterface: StripeInterfaceEntity): boolean => {
     return !!stripeInterface.connect_account;
@@ -21,7 +20,7 @@ export interface StripeCreateBankAccountManagerProps {
 
 export const StripeCreateBankAccountManager = (props: StripeCreateBankAccountManagerProps): JSX.Element => {
     const [uuid] = useState(v4());
-    const { token } = useSelector((state: AppState) => ({ token: state.auth.token?.value }));
+    const token = useToken();
     const history = useHistory();
 
     const stripeInterfaceReq = useRequest<PaymentStripeFetchInterfaceResponseDto>(
