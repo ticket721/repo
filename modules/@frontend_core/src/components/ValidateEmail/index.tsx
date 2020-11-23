@@ -19,7 +19,7 @@ const remaining = (elapsed: number, multiplicator: number): number => {
 };
 
 export const ValidateEmailComponent = () => {
-    const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
+    const isTabletOrMobile = useMediaQuery({ maxWidth: 900 });
     const { t } = useTranslation('validate_email');
     const [uuid, setUUID] = useState(v4());
     const [multiplicator, setMultiplicator] = useState(1);

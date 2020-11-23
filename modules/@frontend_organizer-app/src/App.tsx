@@ -65,7 +65,7 @@ const App: React.FC = () => {
             <UserContextGuard>
                 <StripeSDKManager>
                     <AppContainer>
-                        <MediaQuery minDeviceWidth={1224}>
+                        <MediaQuery minDeviceWidth={900}>
                             {
                                 location.pathname !== '/register' && location.pathname !== '/login'
 

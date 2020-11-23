@@ -2,5 +2,4 @@ import { Login }           from '@frontend/core/lib/components';
 import { StatusBarMargin } from '@frontend/core/lib/utils/StatusBarMargin';
 import { NavbarMargin }    from '@frontend/core/lib/utils/NavbarMargin';
 
-const BuildLogin = (isDesktop?: boolean) => StatusBarMargin(isDesktop ? Login : NavbarMargin(Login));
-export default BuildLogin;
+export default StatusBarMargin(NavbarMargin(Login));

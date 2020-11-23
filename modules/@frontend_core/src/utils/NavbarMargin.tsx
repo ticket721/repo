@@ -4,6 +4,10 @@ import React from 'react';
 const NavbarMarginContainer = styled.div`
     margin-bottom: calc(70px + env(safe-area-inset-bottom));
     margin-bottom: calc(70px + constant(safe-area-inset-bottom));
+
+    @media screen and (min-width: 901px) {
+        margin-bottom: 0;
+    }
 `;
 
 export const NavbarMargin = (Comp: React.ComponentType): React.FC => {
