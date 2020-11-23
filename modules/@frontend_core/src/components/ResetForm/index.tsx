@@ -40,7 +40,7 @@ export const ResetForm: React.FC = () => {
             history.replace('/login');
         }
     }, [resetPasswordLazyRequest.response]);
-    const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
+    const isTabletOrMobile = useMediaQuery({ maxWidth: 900 });
 
     useEffect(() => {
         if (isNil(token)) {

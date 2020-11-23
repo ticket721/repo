@@ -52,7 +52,7 @@ const OnlineTagContainer = styled.div`
     right: 14px;
     z-index: 9999;
 
-    @media screen and (min-width: 1224px) {
+    @media screen and (min-width: 900px) {
         position: absolute;
         z-index: 1;
     }

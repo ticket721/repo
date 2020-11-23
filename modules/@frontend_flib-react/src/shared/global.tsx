@@ -31,11 +31,15 @@ export const bodyStyles = css`
 
     #block-menu-container {
         position: fixed;
-        bottom: 24px;
+        top: unset;
         right: 24px;
+        bottom: -800px;
         left: unset;
         height: min-content;
         max-height: unset;
+        transform: scale(1);
+        opacity: 1;
+        transition: bottom 300ms ease-in-out 300ms;
 
         li:nth-child(n + 5):nth-child(-n + 11) {
             display: none;

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
-import { motion } from 'framer-motion';
 
 export interface TicketHeaderProps extends React.ComponentProps<any> {
     datesCount: number;
@@ -12,7 +11,7 @@ export interface TicketHeaderProps extends React.ComponentProps<any> {
     className?: string;
 }
 
-const Header = styled(motion.header)<TicketHeaderProps>`
+const Header = styled.header<TicketHeaderProps>`
     position: relative;
     overflow: hidden;
 
@@ -46,7 +45,7 @@ const Header = styled(motion.header)<TicketHeaderProps>`
     }
 `;
 
-const Content = styled(motion.div)<{ cover: string }>`
+const Content = styled.div<{ cover: string }>`
     width: 100%;
     height: 0;
     padding-top: 66.25%;
@@ -102,8 +101,8 @@ const Cursor = (props: { datesCount: number; datesIdx: number; mainColors: [stri
 
 export const TicketHeader: React.FunctionComponent<TicketHeaderProps> = (props: TicketHeaderProps): JSX.Element => {
     return (
-        <Header layoutId={'ticket-header'} fullWidth={props.fullWidth} className={props.className}>
-            <Content layoutId={'ticket-cover'} cover={props.cover} />
+        <Header fullWidth={props.fullWidth} className={props.className}>
+            <Content cover={props.cover} />
             {props.datesCount > 1 ? (
                 <Cursor
                     datesCount={props.datesCount}

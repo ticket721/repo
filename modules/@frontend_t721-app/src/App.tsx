@@ -43,7 +43,6 @@ import { getEnv }                                                               
 import { Crash }                                                                            from '@frontend/core/lib/components/Crash';
 import { ErrorBoundary }                                                                    from 'react-error-boundary';
 import { DesktopNavbar } from './components/DesktopNavBar';
-import { useWindowDimensions } from '@frontend/core/lib/hooks/useWindowDimensions';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
     const [scrolled, setScrolled] = useState(false);
@@ -85,7 +84,6 @@ const App: React.FC = () => {
     const history = useHistory();
     const keyboardIsVisible = useKeyboardVisibility();
     const token = useToken();
-    const { width } = useWindowDimensions();
 
     const goBackOrHome = useCallback(() => {
         if (history.length > 2) {
@@ -170,11 +168,11 @@ const App: React.FC = () => {
                                     </Route>
 
                                     <Route path={'/login'} exact={true}>
-                                            {LoginPage(width > 900)}
+                                        <LoginPage/>
                                     </Route>
 
                                     <Route path={'/register'} exact={true}>
-                                        {RegisterPage(width > 900)}
+                                        <RegisterPage/>
                                     </Route>
 
                                     <Route path={'/reset'} exact={true}>
