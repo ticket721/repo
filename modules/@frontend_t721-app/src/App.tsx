@@ -104,6 +104,7 @@ const App: React.FC = () => {
     const history = useHistory();
     const keyboardIsVisible = useKeyboardVisibility();
     const token = useToken();
+
     const isUnder900 = useMediaQuery({ maxWidth: 900 });
     const platform = usePlatform();
     const isMobileNavigation = useMemo(() =>
@@ -218,11 +219,11 @@ const App: React.FC = () => {
                                     </Route>
 
                                     <Route path={'/login'} exact={true}>
-                                            {LoginPage(width > 900)}
+                                        <LoginPage/>
                                     </Route>
 
                                     <Route path={'/register'} exact={true}>
-                                        {RegisterPage(width > 900)}
+                                        <RegisterPage/>
                                     </Route>
 
                                     <Route path={'/reset'} exact={true}>
