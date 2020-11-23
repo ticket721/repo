@@ -415,12 +415,18 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
             identityNotUndef,
         );
 
+        const requiresRePublish: boolean =
+            !isNil(body.category.currency) && body.category.currency !== category.currency;
+
         await this._crudCall(
             this.categoriesService.update(
                 {
                     id: categoryId,
                 },
-                editPayload,
+                {
+                    ...editPayload,
+                    status: requiresRePublish ? 'preview' : category.status,
+                },
             ),
             StatusCodes.InternalServerError,
         );

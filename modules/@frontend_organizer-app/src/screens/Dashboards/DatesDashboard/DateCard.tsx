@@ -2,17 +2,18 @@ import { useRequest } from '@frontend/core/lib/hooks/useRequest';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { FullPageLoading, Error, Toggle } from '@frontend/flib-react/lib/components';
 import React, { useEffect, useState } from 'react';
-import { v4 } from 'uuid';
-import { useTranslation }  from 'react-i18next';
-import styled from 'styled-components';
-import { useHistory, useParams } from 'react-router';
+import { v4 }                          from 'uuid';
+import { useTranslation }              from 'react-i18next';
+import styled                          from 'styled-components';
+import { useHistory, useParams }       from 'react-router';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { eventParam } from '../../types';
-import { OnlineTag } from '../../../components/OnlineTag';
-import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
-import { EventsStatusResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsStatusResponse.dto';
-import { useDispatch } from 'react-redux';
-import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
+import { eventParam }                  from '../../types';
+import { OnlineTag }                   from '../../../components/OnlineTag';
+import { RequestResp, useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
+import { EventsStatusResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsStatusResponse.dto';
+import { useDispatch }                 from 'react-redux';
+import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
+import { Dispatch }                    from 'redux';
 
 export interface DateCardProps {
     id: string;
@@ -24,6 +25,22 @@ export interface DateCardProps {
     colors: string[];
     categoryIds: string[];
     forceRefresh: () => void;
+}
+
+const handleStatus = (req: RequestResp<EventsStatusResponseDto>, history: any, dispatch: Dispatch, t: any): void => {
+    switch (req.error.response.data.message) {
+        case 'no_stripe_interface_bound':
+            dispatch(PushNotification(t('no_stripe_interface'), 'warning'));
+            history.push('/stripe/connect');
+            break;
+        case 'stripe_interface_not_ready':
+            dispatch(PushNotification(t('stripe_not_ready'), 'warning'));
+            history.push('/stripe/connect');
+            break;
+        default:
+            dispatch(PushNotification(t('toggle_error'), 'error'));
+            break;
+    }
 }
 
 export const DateCard: React.FC<DateCardProps> = ({
@@ -111,8 +128,8 @@ export const DateCard: React.FC<DateCardProps> = ({
 
     useEffect(() => {
         if (toggleDateStatusResp.error) {
-            dispatch(PushNotification(t('toggle_error'), 'error'));
             setDateStatusChanging(false);
+            handleStatus(toggleDateStatusResp, history, dispatch, t);
         }
         // eslint-disable-next-line
     }, [toggleDateStatusResp.error]);
