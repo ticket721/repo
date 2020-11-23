@@ -7,8 +7,6 @@ interface StyledNavbar {
 }
 
 const StyledNavbar = styled.nav<StyledNavbar>`
-    align-items: center;
-
     background-color: rgba(33, 29, 45, 1);
     @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
         background-color: rgba(33, 29, 45, 0.6);
@@ -21,8 +19,6 @@ const StyledNavbar = styled.nav<StyledNavbar>`
         props.visible
             ? '0'
             : `calc(-${props.theme.regularSpacing} * 3 - env(safe-area-inset-bottom) - ${props.iconHeight})`};
-    display: flex;
-    justify-content: space-between;
     left: 0;
     padding: calc(${(props) => props.theme.regularSpacing} * 1.5) ${(props) => props.theme.doubleSpacing};
     padding-bottom: calc(${(props) => props.theme.regularSpacing} * 1.5 + env(safe-area-inset-bottom));
@@ -30,6 +26,16 @@ const StyledNavbar = styled.nav<StyledNavbar>`
     position: fixed;
     width: 100%;
     z-index: 9999;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+`;
+
+const ContentContainer = styled.div`
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    width: min(100%, 500px);
 
     a {
         align-items: center;
@@ -73,7 +79,7 @@ export interface NavbarProps {
 export const Navbar: React.FunctionComponent<NavbarProps> = (props): JSX.Element => {
     return (
         <StyledNavbar visible={props.visible} iconHeight={props.iconHeight}>
-            {props.children}
+            <ContentContainer>{props.children}</ContentContainer>
         </StyledNavbar>
     );
 };

@@ -164,7 +164,7 @@ const TicketDashboard = styled.div`
     display: flex;
     flex-wrap: wrap;
     width: min(100vw, 1296px);
-    margin: ${props => props.theme.regularSpacing};
+    margin-bottom: 80px;
 
     & > div {
         width: calc((100% - 3 * ${props => props.theme.doubleSpacing}) / 3);
