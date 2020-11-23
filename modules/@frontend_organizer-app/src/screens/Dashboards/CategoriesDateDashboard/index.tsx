@@ -50,7 +50,7 @@ export const CategoriesDateDashboard: React.FC = () => {
                 },
                 $sort: [{
                     $field_name: 'created_at',
-                    $order: 'asc',
+                    $order: 'desc',
                 }]
             }
         ],
@@ -60,7 +60,7 @@ export const CategoriesDateDashboard: React.FC = () => {
     useEffect(() => {
         forceDates();
         forceCategories();
-    // eslint-disable-next-line
+        // eslint-disable-next-line
     }, []);
 
     if (datesResp.loading || categoriesResp.loading) {
@@ -81,31 +81,34 @@ export const CategoriesDateDashboard: React.FC = () => {
             <Title>{t('categories_of')}&nbsp;<strong>{datesResp.data.dates.find(date => date.id === dateId).metadata.name}</strong></Title>
             {
                 categoriesResp.data.categories.length > 0 ?
-                categoriesResp.data.categories.map(category =>
-                    <CategoryCard
-                    key={category.id}
-                    id={category.id}
-                    name={category.display_name}
-                    link={`/event/${eventId}/date/${dateId}/category/${category.id}`}
-                    seats={category.seats}
-                    price={category.price}
-                    datesInfos={
-                        datesResp.data.dates
-                        .filter(date => category.dates.includes(date.id))
-                        .map(date => ({
-                            cover: date.metadata.avatar,
-                            primaryColor: date.metadata.signature_colors[0]
-                        }))
-                    }
-                    />
-                ) :
-                <NoCategory>
-                    <NoCategoryMsg>{t('no_category_msg')}</NoCategoryMsg>
-                    <Button
-                    title={t('create_category')}
-                    variant={'primary'}
-                    onClick={() => history.push(`/event/${eventId}/date/${dateId}/category`)}/>
-                </NoCategory>
+                    categoriesResp.data.categories.map(category =>
+                        <CategoryCard
+                            key={category.id}
+                            eventId={eventId}
+                            id={category.id}
+                            status={category.status}
+                            name={category.display_name}
+                            link={`/event/${eventId}/date/${dateId}/category/${category.id}`}
+                            seats={category.seats}
+                            price={category.price}
+                            datesInfos={
+                                datesResp.data.dates
+                                    .filter(date => category.dates.includes(date.id))
+                                    .map(date => ({
+                                        cover: date.metadata.avatar,
+                                        colors: date.metadata.signature_colors,
+                                    }))
+                            }
+                            forceRefresh={forceCategories}
+                        />
+                    ) :
+                    <NoCategory>
+                        <NoCategoryMsg>{t('no_category_msg')}</NoCategoryMsg>
+                        <Button
+                            title={t('create_category')}
+                            variant={'primary'}
+                            onClick={() => history.push(`/event/${eventId}/date/${dateId}/category`)}/>
+                    </NoCategory>
             }
         </CategoriesDashboardContainer>
     )
@@ -118,14 +121,14 @@ const CategoriesDashboardContainer = styled.div`
     font-weight: 500;
 
     & > div {
-        margin-bottom: ${props => props.theme.doubleSpacing};
+        margin-bottom: 48px;
     }
 `;
 
 const Title = styled.span`
     width: 100%;
     font-size: 20px;
-    margin-bottom: ${props => props.theme.doubleSpacing};
+    margin-bottom: 48px;
 
     strong {
         text-transform: uppercase;

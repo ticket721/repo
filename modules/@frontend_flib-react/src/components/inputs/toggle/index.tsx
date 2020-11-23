@@ -23,6 +23,7 @@ export interface ToggleProps extends React.ComponentProps<any> {
     gradient?: string[];
     checked?: boolean;
     custom?: CustomToggle;
+    disabled?: boolean;
 }
 
 const StyledLabel = styled.label`
@@ -112,6 +113,7 @@ export const Toggle: React.FunctionComponent<ToggleProps & { className?: string 
                     type={'checkbox'}
                     name={props.name}
                     id={props.name}
+                    disabled={props.disabled}
                     onChange={(e) => {
                         props.onChange(e.target.checked, props.name, e);
                     }}

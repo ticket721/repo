@@ -15,7 +15,7 @@ import { motion } from 'framer';
 import { MultiDatesTag } from '../../../MultiDatesTag';
 import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
 
-export const CategoriesSubMenu: React.FC = () => {
+export const CategoriesSubMenu: React.FC<{ dateCount: number }> = ({ dateCount }) => {
     const [ t ] = useTranslation('categories_submenu');
     const token = useToken();
     const [fetchEventUuid] = useState<string>(v4() + '@event-search');
@@ -108,10 +108,14 @@ export const CategoriesSubMenu: React.FC = () => {
         }}>
             <Title>
                 {t('categories_title')}
-                <MultiDatesTag/>
+                {
+                    dateCount > 1 ?
+                    <MultiDatesTag/> :
+                    null
+                }
             </Title>
             {
-                categoriesResp.data?.categories.filter(category => category.dates.length > 1).length > 0 ?
+                categoriesResp.data?.categories.filter(category => dateCount > 1 ? category.dates.length > 1 : true).length > 0 ?
                     <Chevron
                     className={'chevron'}
                     rotate={
@@ -130,11 +134,11 @@ export const CategoriesSubMenu: React.FC = () => {
         collapsed={collapsed}
         categoriesCount={
             categoriesResp.data?.categories
-            .filter(category => category.dates.length > 1).length
+            .filter(category => dateCount > 1 ? category.dates.length > 1 : true).length
         }>
             {
                 categoriesResp.data?.categories
-                .filter(category => category.dates.length > 1)
+                .filter(category => dateCount > 1 ? category.dates.length > 1 : true)
                 .map(category => (
                     <Link
                     key={category.id}

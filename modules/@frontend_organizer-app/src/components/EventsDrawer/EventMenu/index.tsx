@@ -1,23 +1,41 @@
-import React, { useEffect, useState }           from 'react';
-import { useRequest }                           from '@frontend/core/lib/hooks/useRequest';
-import { EventsSearchResponseDto }              from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
+import React, { useEffect, useState } from 'react';
+import { useRequest }    from '@frontend/core/lib/hooks/useRequest';
+import { EventsSearchResponseDto }    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 import { v4 }                                   from 'uuid';
 import { useToken }                             from '@frontend/core/lib/hooks/useToken';
 import { FullPageLoading, Error, Icon, Button } from '@frontend/flib-react/lib/components';
 import { useTranslation }                       from 'react-i18next';
 import './locales';
 import { useHistory, useRouteMatch }            from 'react-router';
-import { eventParam }                           from '../../../screens/types';
-import styled                                   from 'styled-components';
-import { DatesSearchResponseDto }               from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
-import { EventsStatusResponseDto }              from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsStatusResponse.dto';
-import { CategoriesSubMenu }                    from './CategoriesSubMenu';
-import { AnimateSharedLayout, motion }          from 'framer';
-import { DatesSubMenu }                         from './DatesSubMenu';
-import { useDeepEffect }                        from '@frontend/core/lib/hooks/useDeepEffect';
-import { useLazyRequest }                       from '@frontend/core/lib/hooks/useLazyRequest';
-import { useDispatch }                          from 'react-redux';
-import { PushNotification }                     from '@frontend/core/lib/redux/ducks/notifications';
+import { eventParam }                  from '../../../screens/types';
+import styled                          from 'styled-components';
+import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { EventsStatusResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsStatusResponse.dto';
+import { CategoriesSubMenu }           from './CategoriesSubMenu';
+import { AnimateSharedLayout, motion } from 'framer';
+import { DatesSubMenu }                from './DatesSubMenu';
+import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
+import { useLazyRequest, RequestResp }  from '@frontend/core/lib/hooks/useLazyRequest';
+import { useDispatch }                 from 'react-redux';
+import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
+import { Dispatch }                    from 'redux';
+
+const handleStatus = (req: RequestResp<EventsStatusResponseDto>, history: any, dispatch: Dispatch, t: any): void => {
+    switch (req.error.response.data.message) {
+        case 'no_stripe_interface_bound':
+            dispatch(PushNotification(t('no_stripe_interface'), 'warning'));
+            history.push('/stripe/connect');
+            break;
+        case 'stripe_interface_not_ready':
+            dispatch(PushNotification(t('stripe_not_ready'), 'warning'));
+            history.push('/stripe/connect');
+            break;
+        default:
+            dispatch(PushNotification(t('invalid_stripe_interface'), 'error'));
+            history.push('/stripe/connect');
+            break;
+    }
+}
 
 export const EventMenu: React.FC = () => {
     const [t] = useTranslation('event_menu');
@@ -89,20 +107,7 @@ export const EventMenu: React.FC = () => {
     useEffect(() => {
 
         if (publishResp.error) {
-            switch (publishResp.error.response.data.message) {
-                case 'no_stripe_interface_bound':
-                    dispatch(PushNotification(t('no_stripe_interface'), 'warning'));
-                    history.push('/stripe/connect');
-                    break;
-                case 'stripe_interface_not_ready':
-                    dispatch(PushNotification(t('stripe_not_ready'), 'warning'));
-                    history.push('/stripe/connect');
-                    break;
-                default:
-                    dispatch(PushNotification(t('invalid_stripe_interface'), 'error'));
-                    history.push('/stripe/connect');
-                    break;
-            }
+            handleStatus(publishResp, history, dispatch, t);
         }
         // eslint-disable-next-line
     }, [publishResp.error]);
@@ -158,7 +163,7 @@ export const EventMenu: React.FC = () => {
                 </PublishBtn>
             </Title>
             <DatesSubMenu/>
-            <CategoriesSubMenu/>
+            <CategoriesSubMenu dateCount={datesResp.data.dates.length}/>
         </AnimateSharedLayout>
     </EventMenuContainer>;
 };
