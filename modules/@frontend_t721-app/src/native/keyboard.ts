@@ -4,7 +4,7 @@ const { Keyboard } = Plugins;
 
 if (Capacitor.isPluginAvailable('Keyboard')) {
     Keyboard.setResizeMode({
-        mode: KeyboardResize.Native
+        mode: KeyboardResize.None
     }).then(() => {
             console.log(`[native]: properly changed keyboard resize mode`)
         })

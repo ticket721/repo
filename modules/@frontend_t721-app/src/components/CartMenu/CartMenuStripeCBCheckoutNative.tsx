@@ -1,24 +1,47 @@
 import { StripeSDK }                   from '@frontend/core/lib/utils/StripeSDKContext';
-import React, { useContext, useState } from 'react';
-import styled, { useTheme }            from 'styled-components';
-import { useTranslation }              from 'react-i18next';
-import { useDispatch }                 from 'react-redux';
-import { Theme }                       from '@frontend/flib-react/lib/config/theme';
-import { TextInput, DoubleButtonCta }  from '@frontend/flib-react/lib/components';
-import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
-import { CartContext }                 from '../Cart/CartContext';
-import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
-import { UserContext }                 from '@frontend/core/lib/utils/UserContext';
-import { getEnv }                      from '@frontend/core/lib/utils/getEnv';
+import React, { useContext, useState }        from 'react';
+import styled, { useTheme }                   from 'styled-components';
+import { useTranslation }                     from 'react-i18next';
+import { useDispatch }                        from 'react-redux';
+import { Theme }                              from '@frontend/flib-react/lib/config/theme';
+import { TextInput, DoubleButtonCta, Button } from '@frontend/flib-react/lib/components';
+import { PushNotification }                   from '@frontend/core/lib/redux/ducks/notifications';
+import { CartContext }                        from '../Cart/CartContext';
+import { useDeepEffect }                      from '@frontend/core/lib/hooks/useDeepEffect';
+import { UserContext }                        from '@frontend/core/lib/utils/UserContext';
+import { getEnv }                             from '@frontend/core/lib/utils/getEnv';
+import MediaQuery                             from 'react-responsive';
 
 const CreditCardWrapper = styled.div`
   padding: ${props => props.theme.regularSpacing};
 `;
 
 const Container = styled.div`
-  height: calc(100% - 70px - 50px);
+  height: calc(100vh - 70px - 50px);
   overflow: scroll;
-  padding-bottom: 80px;
+    @media screen and (max-width: 900px) {
+        padding-bottom: 80px;
+    }
+`;
+
+const Actions = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: ${props => props.theme.regularSpacing};
+`;
+
+const TextButton = styled.p`
+    width: 30%;
+    text-align: center;
+    text-decoration: underline;
+    color: ${(props) => props.theme.errorColor.hex};
+    opacity: 0.8;
+    cursor: pointer;
+`;
+
+const ButtonWrapper = styled.div`
+    width: 60%;
 `;
 
 export interface CartMenuStripeCBCheckoutNativeProps {
@@ -177,7 +200,11 @@ export const CartMenuStripeCBCheckoutNative: React.FC<CartMenuStripeCBCheckoutNa
                         justifyContent: 'center',
                         marginTop: theme.regularSpacing,
                     }}>
-                        <div>
+                        <div
+                            style={{
+                                width: '50%'
+                            }}
+                        >
                             <TextInput
                                 autoComplete={'cc-exp'}
                                 label={t('cart_checkout_card_expiry')}
@@ -198,7 +225,12 @@ export const CartMenuStripeCBCheckoutNative: React.FC<CartMenuStripeCBCheckoutNa
                                 }}
                             />
                         </div>
-                        <div style={{ marginLeft: theme.regularSpacing }}>
+                        <div
+                            style={{
+                                marginLeft: theme.regularSpacing,
+                                width: `calc(50% - ${theme.regularSpacing})`
+                            }}
+                        >
                             <TextInput
                                 autoComplete={'cc-csc'}
                                 label={t('cart_checkout_card_cvc')}
@@ -230,14 +262,29 @@ export const CartMenuStripeCBCheckoutNative: React.FC<CartMenuStripeCBCheckoutNa
                     </div>
                 </div>
             </CreditCardWrapper>
-            <DoubleButtonCta
-                ctaLabel={t('pay')}
-                secondaryLabel={t('back')}
-                show={cart.open}
-                onClick={handleSubmit}
-                loading={submitted}
-                variant={submittable ? 'custom' : 'disabled'}
-                onSecondaryClick={props.back}
-            />
+            <MediaQuery maxWidth={900}>
+                <DoubleButtonCta
+                    ctaLabel={t('pay')}
+                    secondaryLabel={t('back')}
+                    show={cart.open}
+                    onClick={handleSubmit}
+                    loading={submitted}
+                    variant={submittable ? 'custom' : 'disabled'}
+                    onSecondaryClick={props.back}
+                />
+            </MediaQuery>
+            <MediaQuery minWidth={901}>
+                <Actions>
+                    <TextButton onClick={props.back}>{t('back')}</TextButton>
+                    <ButtonWrapper>
+                        <Button
+                            loadingState={submitted}
+                            title={t('pay')}
+                            variant={submittable ? 'primary' : 'disabled'}
+                            onClick={handleSubmit}
+                        />
+                    </ButtonWrapper>
+                </Actions>
+            </MediaQuery>
         </Container>;
     };

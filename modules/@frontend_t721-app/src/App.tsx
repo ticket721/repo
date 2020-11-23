@@ -1,5 +1,5 @@
-import React, { useEffect, useState, Suspense, useCallback, PropsWithChildren, useContext } from 'react';
-import { Route, Switch, useHistory, useLocation, withRouter, Redirect }                     from 'react-router-dom';
+import React, { useEffect, useState, Suspense, useCallback, PropsWithChildren, useContext, useMemo } from 'react';
+import { Route, Switch, useHistory, useLocation, withRouter, Redirect }                              from 'react-router-dom';
 import { TopNav, FullPageLoading }                                                          from '@frontend/flib-react/lib/components';
 import ProtectedRoute                                                                       from '@frontend/core/lib/components/ProtectedRoute';
 import ToastStacker                                                                         from '@frontend/core/lib/components/ToastStacker';
@@ -28,9 +28,9 @@ import StripeWithdrawPage                                                       
 import StripeCreateBankAccountPage                                                          from './routes/StripeCreateBankAccount';
 import { useKeyboardVisibility }                                                            from '@frontend/core/lib/utils/useKeyboardVisibility';
 import { UserContextGuard }                                                                 from '@frontend/core/lib/utils/UserContext';
-import DeepLinksListener                                                                    from './components/DeepLinksListener';
-import MediaQuery                                                                           from 'react-responsive';
-import { useFlag }                                                                          from '@frontend/core/lib/utils/useFlag';
+import DeepLinksListener             from './components/DeepLinksListener';
+import { useMediaQuery } from 'react-responsive';
+import { useFlag }                   from '@frontend/core/lib/utils/useFlag';
 import { useToken }                                                                         from '@frontend/core/lib/hooks/useToken';
 import { CartContext, CartContextManager }                                                  from './components/Cart/CartContext';
 import { CartButton }                                                                       from './components/CartButton';
@@ -43,6 +43,7 @@ import { getEnv }                                                               
 import { Crash }                                                                            from '@frontend/core/lib/components/Crash';
 import { ErrorBoundary }                                                                    from 'react-error-boundary';
 import { DesktopNavbar } from './components/DesktopNavBar';
+import { usePlatform }         from '@capacitor-community/react-hooks/platform';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
     const [scrolled, setScrolled] = useState(false);
@@ -84,6 +85,9 @@ const App: React.FC = () => {
     const history = useHistory();
     const keyboardIsVisible = useKeyboardVisibility();
     const token = useToken();
+    const isUnder900 = useMediaQuery({ maxWidth: 900 });
+    const platform = usePlatform();
+    const isMobileNavigation = useMemo(() => platform.platform === 'ios' || platform.platform === 'android' || isUnder900, [platform, isUnder900]);
 
     const goBackOrHome = useCallback(() => {
         if (history.length > 2) {
@@ -106,16 +110,22 @@ const App: React.FC = () => {
                         <CartContextManager token={token}>
                             <CartButton/>
                             <CartMenu/>
-                            <MediaQuery minWidth={901}>
-                                <DesktopNavbar/>
-                            </MediaQuery>
+                            {
+                                !isMobileNavigation
+
+                                    ?
+                                    <DesktopNavbar/>
+
+                                    :
+                                    null
+                            }
                             <AppContainer>
-                                <MediaQuery maxWidth={900}>
-                                    {location.pathname.lastIndexOf('/') !== 0 &&
+                                {
+                                    isMobileNavigation &&
+                                    location.pathname.lastIndexOf('/') !== 0 &&
                                     location.pathname.indexOf('/_/') !== 0 ? (
                                         <TopNavWrapper back={goBackOrHome}/>
                                     ) : null}
-                                </MediaQuery>
                                 <Switch>
 
                                     {flags.stripe_interface_setup ? (
@@ -233,14 +243,20 @@ const App: React.FC = () => {
 
                                     <Redirect to={'/'}/>
                                 </Switch>
-                                <MediaQuery maxWidth={900}>
-                                    <T721Navbar
-                                        visible={
-                                            location.pathname.lastIndexOf('/') === 0 &&
-                                            !keyboardIsVisible
-                                        }
-                                    />
-                                </MediaQuery>
+                                {
+                                    isMobileNavigation
+
+                                        ?
+                                        <T721Navbar
+                                            visible={
+                                                location.pathname.lastIndexOf('/') === 0 &&
+                                                !keyboardIsVisible
+                                            }
+                                        />
+
+                                        :
+                                        null
+                                }
                             </AppContainer>
                         </CartContextManager>
                     </StripeSDKManager>

@@ -22,21 +22,48 @@ import { CartMenuCheckout }                from './CartMenuCheckout';
 import { CartMenuExpired }                 from './CartMenuExpired';
 import Countdown                           from 'react-countdown';
 import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
-import MediaQuery from 'react-responsive';
+import MediaQuery, { useMediaQuery } from 'react-responsive';
+import { KeyboardInfo, Plugins, Capacitor }     from '@capacitor/core';
 // tslint:disable-next-line:no-var-requires
 const SAI = require('safe-area-insets');
 
-interface ShadowProps {
-    width: number;
-    height: number;
+const useKeyboardState = () => {
+
+    const [keyboardState, setKeyboardState] = useState({
+        isOpen: false,
+        keyboardHeight: 0
+    });
+
+    useEffect(() => {
+
+        if (Capacitor.isPluginAvailable('Keyboard')) {
+
+            Plugins.Keyboard.addListener('keyboardDidShow', (info: KeyboardInfo) => {
+                setKeyboardState({
+                    isOpen: true,
+                    keyboardHeight: info.keyboardHeight
+                });
+            });
+
+            Plugins.Keyboard.addListener('keyboardDidHide', () => {
+                setKeyboardState({
+                    isOpen: false,
+                    keyboardHeight: 0
+                });
+            })
+        }
+
+    }, []);
+
+    return keyboardState;
 }
 
-const Shadow = styled(motion.div)<ShadowProps>`
+const Shadow = styled(motion.div)`
     position: fixed;
     background-color: #000000;
     opacity: 0;
-    width: ${props => props.width}px;
-    height: ${props => props.height}px;
+    width: 100vw;
+    height: 100vh;
     top: 0;
     left: 0;
     z-index: 99999;
@@ -48,23 +75,20 @@ const Shadow = styled(motion.div)<ShadowProps>`
 interface MenuContainerProps {
     width: number;
     height: number;
+    left: number;
 }
 
 const MenuContainer = styled(motion.div) <MenuContainerProps>`
     position: fixed;
     width: ${props => props.width}px;
     height: ${props => props.height}px;
-    bottom: 0;
     padding-bottom: env(safe-area-inset-bottom);
     padding-bottom: constant(safe-area-inset-bottom);
-    left: 0;
+    left: ${props => props.left}px;
+    bottom: -100vh;
     z-index: 100000;
 
     @media screen and (min-width: 900px) {
-        width: 700px;
-        height: 600px;
-        bottom: calc((100vh - 600px)/2);
-        left: calc((100vw - 700px)/2);
         border-radius: 12px;
     }
 
@@ -151,15 +175,38 @@ const generateErrorMessage = (t: any, error: PurchaseError): string => {
     return t(error.reason, error.context);
 }
 
+const computeMenuHeight = (window, isKeyboardOpen, keyboardHeight) => {
+
+    if (isKeyboardOpen) {
+        return window.height - keyboardHeight - SAI.top;
+    }
+
+    return (Math.floor(window.height * 0.7) < 500 ? window.height : Math.floor(window.height * 0.7)) + SAI.bottom - SAI.top;
+}
+
+const computeModalMenuHeight = (window, isKeyboardOpen, keyboardHeight) => {
+
+    if (isKeyboardOpen) {
+        return window.height - keyboardHeight - SAI.top;
+    }
+
+    return 600;
+
+}
+
 export const CartMenu: React.FC = (): JSX.Element => {
 
     const [t] = useTranslation('cart');
     const window = useWindowDimensions();
     const cart = useContext(CartContext);
     const user = useContext(UserContext);
+    const isSmallScreen= useMediaQuery({ maxWidth: 900 });
+    const keyboard = useKeyboardState();
     const menuHeight = useMemo(
-        () => (Math.floor(window.height * 0.7) < 500 ? window.height : Math.floor(window.height * 0.7)) + SAI.bottom - SAI.top,
-        [window.height]
+        () => isSmallScreen
+            ? computeMenuHeight(window, keyboard.isOpen, keyboard.keyboardHeight)
+            : computeModalMenuHeight(window, keyboard.isOpen, keyboard.keyboardHeight),
+        [window, isSmallScreen, keyboard]
     );
     const token = useToken();
     const [uuid] = useState(v4());
@@ -298,22 +345,27 @@ export const CartMenu: React.FC = (): JSX.Element => {
 
     return <>
         <Shadow
-            width={window.width}
-            height={window.height}
             onClick={cart.closeMenu}
             variants={{
                 visible: {
-                    display: 'block',
                     opacity: 0.75,
+                    left: 0,
                     transition: {
-                        duration: 0.75
+                        duration: 1.1,
+                        left: {
+                            duration: 0,
+                        },
                     },
                 },
                 hidden: {
-                    display: 'none',
                     opacity: 0,
+                    left: '-100vw',
                     transition: {
-                        duration: 0.75
+                        duration: 1,
+                        left: {
+                            delay: 1.1,
+                            duration: 0,
+                        },
                     },
                 },
             }}
@@ -321,23 +373,26 @@ export const CartMenu: React.FC = (): JSX.Element => {
             animate={cart.open ? 'visible' : 'hidden'}
         />
         <MenuContainer
-            width={window.width}
+            width={isSmallScreen || keyboard.isOpen ? window.width : 700}
             height={menuHeight}
+            left={isSmallScreen  || keyboard.isOpen ? 0 : (window.width - 700) / 2}
             transition={{
                 duration: 0.75,
             }}
-            variants={{
-                visible: {
-                    display: 'block',
-                    bottom: window.width > 900 ? (window.height - 600) / 2 : 0,
-                },
-                hidden: {
-                    display: 'none',
-                    bottom: - window.height * 2,
-                },
+            animate={{
+                bottom: (
+                    cart.open
+                        ? (
+                            !isSmallScreen ?
+                                !keyboard.isOpen ? (
+                                    (window.height - 600) / 2
+                                ) : keyboard.keyboardHeight
+                                : keyboard.keyboardHeight)
+                        : (
+                            - window.height * 2
+                        )
+                )
             }}
-            initial={'hidden'}
-            animate={cart.open ? 'visible' : 'hidden'}
         >
             <MenuContainerHeaderContainer>
                 <MenuContainerHeaderTitle>{t('cart')}</MenuContainerHeaderTitle>
@@ -372,31 +427,41 @@ export const CartMenu: React.FC = (): JSX.Element => {
                                     <CartMenuPreview
                                         setChildrenLoading={setChildrenLoading}
                                     />
-                                    <MediaQuery maxWidth={900}>
-                                        <DoubleButtonCta
-                                            solid={true}
-                                            show={ctaVisible}
-                                            loading={loading}
-                                            variant={disabled ? 'disabled' : 'custom'}
-                                            ctaLabel={isFree ? t('checkout_free') : t('checkout')}
-                                            secondaryLabel={t('empty')}
-                                            onClick={onCheckout}
-                                            onSecondaryClick={onClearCart}
-                                        />
-                                    </MediaQuery>
-                                    <MediaQuery minWidth={901}>
-                                        <Actions>
-                                            <TextButton onClick={onClearCart}>{t('empty')}</TextButton>
-                                            <ButtonWrapper>
-                                                <Button
-                                                    loadingState={loading}
-                                                    title={isFree ? t('checkout_free') : t('checkout')}
-                                                    variant={loading ? 'disabled' : disabled ? 'disabled' : 'primary'}
-                                                    onClick={loading ? undefined : onCheckout}
-                                                />
-                                            </ButtonWrapper>
-                                        </Actions>
-                                    </MediaQuery>
+                                    {
+                                        cart.cart && cart.cart.products.length > 0
+
+                                            ?
+                                            <>
+                                                <MediaQuery maxWidth={900}>
+                                                    <DoubleButtonCta
+                                                        solid={true}
+                                                        show={ctaVisible}
+                                                        loading={loading}
+                                                        variant={disabled ? 'disabled' : 'custom'}
+                                                        ctaLabel={isFree ? t('checkout_free') : t('checkout')}
+                                                        secondaryLabel={t('empty')}
+                                                        onClick={onCheckout}
+                                                        onSecondaryClick={onClearCart}
+                                                    />
+                                                </MediaQuery>
+                                                <MediaQuery minWidth={901}>
+                                                    <Actions>
+                                                        <TextButton onClick={onClearCart}>{t('empty')}</TextButton>
+                                                        <ButtonWrapper>
+                                                            <Button
+                                                                loadingState={loading}
+                                                                title={isFree ? t('checkout_free') : t('checkout')}
+                                                                variant={loading ? 'disabled' : disabled ? 'disabled' : 'primary'}
+                                                                onClick={loading ? undefined : onCheckout}
+                                                            />
+                                                        </ButtonWrapper>
+                                                    </Actions>
+                                                </MediaQuery>
+                                            </>
+
+                                            :
+                                            null
+                                    }
                                 </>
                         )
 
