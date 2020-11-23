@@ -158,7 +158,7 @@ export const EventMenu: React.FC = () => {
                 </PublishBtn>
             </Title>
             <DatesSubMenu/>
-            <CategoriesSubMenu/>
+            <CategoriesSubMenu dateCount={datesResp.data.dates.length}/>
         </AnimateSharedLayout>
     </EventMenuContainer>;
 };

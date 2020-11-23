@@ -14,16 +14,31 @@ import { useHistory, useParams } from 'react-router';
 import { eventParam } from '../../types';
 import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { PreviewBanner } from '../../../components/PreviewBanner';
+import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 
 export const DatesDashboard: React.FC = () => {
     const [ t ] = useTranslation('dates_dashboard');
 
     const history = useHistory();
 
+    const [fetchEventUuid] = useState(v4() + '@dates-dashboard-event');
     const [fetchDatesUuid] = useState(v4() + '@dates-dashboard');
     const token = useToken();
 
     const { eventId } = useParams<eventParam>();
+
+    const { response: eventResp, force: forceEvent } = useRequest<EventsSearchResponseDto>({
+        method: 'events.search',
+        args: [
+            token,
+            {
+                id: {
+                    $eq: eventId
+                }
+            }
+        ],
+        refreshRate: 50
+    }, fetchEventUuid);
 
     const { response: datesResp, force: forceDates } = useRequest<DatesSearchResponseDto>({
         method: 'dates.search',
@@ -42,8 +57,12 @@ export const DatesDashboard: React.FC = () => {
         refreshRate: 50
     }, fetchDatesUuid);
 
-    if (datesResp.loading) {
+    if (eventResp.loading || datesResp.loading) {
         return <FullPageLoading/>;
+    }
+
+    if (eventResp.error) {
+        return <Error message={t('event_fetch_error')} onRefresh={forceEvent}/>;
     }
 
     if (datesResp.error) {
@@ -60,11 +79,14 @@ export const DatesDashboard: React.FC = () => {
                     <DateCard
                     key={date.id}
                     id={date.id}
+                    eventStatus={eventResp.data.events[0].status}
+                    status={date.status}
                     name={date.metadata.name}
                     online={date.online}
                     avatar={date.metadata.avatar}
-                    primaryColor={date.metadata.signature_colors[0]}
+                    colors={date.metadata.signature_colors}
                     categoryIds={date.categories}
+                    forceRefresh={forceDates}
                     />
                 ) :
                 <NoDate>
@@ -86,7 +108,7 @@ const DatesDashboardContainer = styled.div`
     flex-wrap: wrap;
 
     & > div {
-        margin-bottom: ${props => props.theme.doubleSpacing};
+        margin-bottom: 48px;
         margin-right: ${props => props.theme.doubleSpacing};
     }
 

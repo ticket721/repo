@@ -37,6 +37,10 @@ export const CategoriesFetcher: React.FC<CategoriesFetcherProps> = ({ eventId, e
                 group_id: {
                     $eq: groupId
                 },
+                $sort: [{
+                    $field_name: 'created_at',
+                    $order: 'desc',
+                }],
             }
         ],
         refreshRate: 50
@@ -60,11 +64,13 @@ export const CategoriesFetcher: React.FC<CategoriesFetcherProps> = ({ eventId, e
             <PreviewBanner/>
             <Title>{t('categories_of')}&nbsp;<strong>{eventName}</strong></Title>
             {
-                categoriesResp.data.categories.filter(category => category.dates.length > 1).length > 0 ?
-                categoriesResp.data.categories.filter(category => category.dates.length > 1).map(category =>
+                categoriesResp.data.categories.filter(category => dates.length > 1 ? category.dates.length > 1 : true).length > 0 ?
+                categoriesResp.data.categories.filter(category => dates.length > 1 ? category.dates.length > 1 : true).map(category =>
                     <CategoryCard
                     key={category.id}
+                    eventId={eventId}
                     id={category.id}
+                    status={category.status}
                     name={category.display_name}
                     link={`/event/${eventId}/category/${category.id}`}
                     seats={category.seats}
@@ -74,9 +80,10 @@ export const CategoriesFetcher: React.FC<CategoriesFetcherProps> = ({ eventId, e
                         .filter(date => category.dates.includes(date.id))
                         .map(date => ({
                             cover: date.metadata.avatar,
-                            primaryColor: date.metadata.signature_colors[0]
+                            colors: date.metadata.signature_colors
                         }))
                     }
+                    forceRefresh={forceCategories}
                     />
                 ) :
                 <NoMultiDatesCategory>
@@ -98,14 +105,14 @@ const CategoriesDashboardContainer = styled.div`
     font-weight: 500;
 
     & > div {
-        margin-bottom: ${props => props.theme.doubleSpacing};
+        margin-bottom: 48px;
     }
 `;
 
 const Title = styled.span`
     width: 100%;
     font-size: 20px;
-    margin-bottom: ${props => props.theme.doubleSpacing};
+    margin-bottom: 48px;
 
     strong {
         text-transform: uppercase;

@@ -1,6 +1,6 @@
 import { useRequest } from '@frontend/core/lib/hooks/useRequest';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
-import { FullPageLoading, Error, Icon } from '@frontend/flib-react/lib/components';
+import { FullPageLoading, Error, Icon, Toggle } from '@frontend/flib-react/lib/components';
 import React, { useEffect, useState } from 'react';
 import { v4 } from 'uuid';
 import { useTranslation }  from 'react-i18next';
@@ -9,26 +9,47 @@ import { useHistory } from 'react-router';
 import { CategoriesCountTicketResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesCountTicketResponse.dto';
 import './locales';
 import { MultiDatesTag } from '../MultiDatesTag';
+import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
+import { EventsStatusResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsStatusResponse.dto';
+import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
+import { useDispatch } from 'react-redux';
 
 export interface CategoryCardProps {
+    eventId: string;
     id: string;
+    status: 'preview' | 'live';
     name: string;
-    link: string;
     seats: number;
     price: number;
+    link: string;
     datesInfos: {
         cover: string;
-        primaryColor: string;
+        colors: string[];
     }[];
+    forceRefresh: () => void;
 }
 
-export const CategoryCard: React.FC<CategoryCardProps> = ({ id, name, link, seats, price, datesInfos }) => {
+export const CategoryCard: React.FC<CategoryCardProps> = ({
+    eventId,
+    id,
+    status,
+    name,
+    seats,
+    price,
+    link,
+    datesInfos,
+    forceRefresh,
+}) => {
     const [ t ] = useTranslation('category_card');
     const token = useToken();
 
+    const dispatch = useDispatch();
     const history = useHistory();
 
     const [ticketCountUuid] = useState(v4() + '@ticket-count');
+    const [toggleCategoryStatusUuid] = useState(v4() + '@category-status-toggle');
+
+    const [ categoryStatusChanging, setCategoryStatusChanging ] = useState<boolean>(false);
 
     const [ currentCoverIdx, setCurrentCoverIdx ] = useState<number>(0);
 
@@ -41,6 +62,26 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ id, name, link, seat
         refreshRate: 50,
     }, ticketCountUuid);
 
+    const { response: toggleCategoryStatusResp, lazyRequest: toggleCategoryStatus } =
+    useLazyRequest<EventsStatusResponseDto>('events.status', toggleCategoryStatusUuid);
+
+    const handleLiveToggle = (checked: boolean) => {
+        if (checked === (status === 'live')) {
+            dispatch(PushNotification(t('status_already_in_state', { status }), 'error'));
+            return;
+        }
+
+        setCategoryStatusChanging(true);
+        toggleCategoryStatus([
+            token,
+            eventId,
+            {
+                categories: {
+                    [id]: checked,
+                },
+            }
+        ], { force: true });
+    }
 
     useEffect(() => {
         if (datesInfos?.length > 1) {
@@ -57,6 +98,28 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ id, name, link, seat
         }
     }, [datesInfos]);
 
+
+    useEffect(() => {
+        if (toggleCategoryStatusResp.data) {
+            forceRefresh();
+            setCategoryStatusChanging(false);
+        }
+        // eslint-disable-next-line
+    }, [toggleCategoryStatusResp.data]);
+
+    useEffect(() => {
+        if (toggleCategoryStatusResp.error) {
+            if (toggleCategoryStatusResp.error.response.data.message === 'cannot_live_category_with_no_live_dates') {
+                dispatch(PushNotification(t('no_live_date'), 'warning'));
+                setCategoryStatusChanging(false);
+                return;
+            }
+            dispatch(PushNotification(t('toggle_error'), 'error'));
+            setCategoryStatusChanging(false);
+        }
+        // eslint-disable-next-line
+    }, [toggleCategoryStatusResp.error]);
+
     if (ticketCountResp.loading) {
         return <FullPageLoading/>;
     }
@@ -65,37 +128,65 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ id, name, link, seat
         return <Error message={t('ticket_count_fetch_error')} onRefresh={forceTicketCount}/>;
     }
 
-    return <CategoryCardContainer
-    onClick={() => history.push(link)}>
-        <EditIcon className={'edit-icon'} icon={'edit'} size={'16px'} color={'white'}/>
-        <CoverCarousel cover={datesInfos[currentCoverIdx].cover}>
-            {
-                datesInfos.length > 1 ? datesInfos.map((_, dateIdx) =>
-                    <ProgressBar
-                    key={dateIdx}
-                    selected={dateIdx === currentCoverIdx}/>
-                ) :
-                null
-            }
-        </CoverCarousel>
-        <Infos>
-            <Title>
-                <Name>{name}</Name>
+    return <Container>
+        <LiveToggle disabled={categoryStatusChanging}>
+            <Toggle
+            name={'live-toggle' + id}
+            label={t(status)}
+            checked={status === 'live'}
+            gradient={datesInfos[currentCoverIdx].colors}
+            disabled={categoryStatusChanging}
+            onChange={handleLiveToggle}/>
+        </LiveToggle>
+        <CategoryCardContainer
+        live={status === 'live'}
+        onClick={() => history.push(link)}>
+            <EditIcon className={'edit-icon'} icon={'edit'} size={'16px'} color={'white'}/>
+            <CoverCarousel cover={datesInfos[currentCoverIdx].cover}>
                 {
-                    datesInfos.length > 1 ?
-                    <MultiDatesTag/> :
+                    datesInfos.length > 1 ? datesInfos.map((_, dateIdx) =>
+                        <ProgressBar
+                        key={dateIdx}
+                        selected={dateIdx === currentCoverIdx}/>
+                    ) :
                     null
                 }
-            </Title>
-            <RemainingTickets color={datesInfos[currentCoverIdx].primaryColor}>
-                <strong>{ticketCountResp.data.count}</strong>/{seats}&nbsp;{t('sold_tickets')}
-            </RemainingTickets>
-        </Infos>
-        <Price color={datesInfos[currentCoverIdx].primaryColor}>{price > 0 ? `${price/100}€` : t('free')}</Price>
-    </CategoryCardContainer>;
+            </CoverCarousel>
+            <Infos>
+                <Title>
+                    <Name>{name}</Name>
+                    {
+                        datesInfos.length > 1 ?
+                        <MultiDatesTag/> :
+                        null
+                    }
+                </Title>
+                <RemainingTickets color={datesInfos[currentCoverIdx].colors[0]}>
+                    <strong>{ticketCountResp.data.count}</strong>/{seats}&nbsp;{t('sold_tickets')}
+                </RemainingTickets>
+            </Infos>
+            <Price color={datesInfos[currentCoverIdx].colors[0]}>{price > 0 ? `${price/100}€` : t('free')}</Price>
+        </CategoryCardContainer>
+    </Container>;
 };
 
-const CategoryCardContainer = styled.div`
+const Container = styled.div`
+    position: relative;
+`;
+
+const LiveToggle = styled.div<{ disabled: boolean }>`
+    position: absolute;
+    top: -${props => props.theme.doubleSpacing};
+    right: 4px;
+    pointer-events: ${props => props.disabled ? 'none' : null};
+    filter: ${props => props.disabled ? 'greyscale(1)' : null};
+
+    label {
+        padding-top: 3px;
+    }
+`;
+
+const CategoryCardContainer = styled.div<{ live: boolean }>`
     position: relative;
     background-color: ${props => props.theme.darkerBg};
     padding: ${props => props.theme.regularSpacing};
@@ -103,6 +194,8 @@ const CategoryCardContainer = styled.div`
     display: flex;
     width: 600px;
     cursor: pointer;
+
+    filter: ${props => props.live ? null : 'grayscale(0.3)'};
 
     :hover {
         .edit-icon {
