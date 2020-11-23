@@ -5,7 +5,7 @@ import { CacheCore } from '../../cores/cache/CacheCore';
 import { ManualFetchItem, RegisterEntity, UnregisterEntity } from '../../redux/ducks/cache';
 import { useDeepEffect } from '../useDeepEffect';
 
-interface RequestResp<ReturnType> {
+export interface RequestResp<ReturnType> {
     data: ReturnType;
     error: any;
     loading: boolean;

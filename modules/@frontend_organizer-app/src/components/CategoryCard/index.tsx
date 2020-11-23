@@ -2,17 +2,18 @@ import { useRequest } from '@frontend/core/lib/hooks/useRequest';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { FullPageLoading, Error, Icon, Toggle } from '@frontend/flib-react/lib/components';
 import React, { useEffect, useState } from 'react';
-import { v4 } from 'uuid';
-import { useTranslation }  from 'react-i18next';
-import styled from 'styled-components';
-import { useHistory } from 'react-router';
+import { v4 }                               from 'uuid';
+import { useTranslation }                   from 'react-i18next';
+import styled                               from 'styled-components';
+import { useHistory }                       from 'react-router';
 import { CategoriesCountTicketResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesCountTicketResponse.dto';
 import './locales';
-import { MultiDatesTag } from '../MultiDatesTag';
-import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
-import { EventsStatusResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsStatusResponse.dto';
-import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
-import { useDispatch } from 'react-redux';
+import { MultiDatesTag }                    from '../MultiDatesTag';
+import { RequestResp, useLazyRequest }      from '@frontend/core/lib/hooks/useLazyRequest';
+import { EventsStatusResponseDto }          from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsStatusResponse.dto';
+import { PushNotification }                 from '@frontend/core/lib/redux/ducks/notifications';
+import { useDispatch }                      from 'react-redux';
+import { Dispatch }                         from 'redux';
 
 export interface CategoryCardProps {
     eventId: string;
@@ -27,6 +28,25 @@ export interface CategoryCardProps {
         colors: string[];
     }[];
     forceRefresh: () => void;
+}
+
+const handleStatus = (req: RequestResp<EventsStatusResponseDto>, history: any, dispatch: Dispatch, t: any): void => {
+    switch (req.error.response.data.message) {
+        case 'no_stripe_interface_bound':
+            dispatch(PushNotification(t('no_stripe_interface'), 'warning'));
+            history.push('/stripe/connect');
+            break;
+        case 'stripe_interface_not_ready':
+            dispatch(PushNotification(t('stripe_not_ready'), 'warning'));
+            history.push('/stripe/connect');
+            break;
+        case 'cannot_live_category_with_no_live_dates':
+            dispatch(PushNotification(t('no_live_date'), 'warning'));
+            break ;
+        default:
+            dispatch(PushNotification(t('toggle_error'), 'error'));
+            break;
+    }
 }
 
 export const CategoryCard: React.FC<CategoryCardProps> = ({
@@ -79,7 +99,8 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
                 categories: {
                     [id]: checked,
                 },
-            }
+            },
+            v4()
         ], { force: true });
     }
 
@@ -109,13 +130,8 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
 
     useEffect(() => {
         if (toggleCategoryStatusResp.error) {
-            if (toggleCategoryStatusResp.error.response.data.message === 'cannot_live_category_with_no_live_dates') {
-                dispatch(PushNotification(t('no_live_date'), 'warning'));
-                setCategoryStatusChanging(false);
-                return;
-            }
-            dispatch(PushNotification(t('toggle_error'), 'error'));
             setCategoryStatusChanging(false);
+            handleStatus(toggleCategoryStatusResp, history, dispatch, t);
         }
         // eslint-disable-next-line
     }, [toggleCategoryStatusResp.error]);

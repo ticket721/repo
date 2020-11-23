@@ -742,6 +742,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
     /**
      * Check the interfaces required by the event
      *
+     * @param user
      * @param event
      * @param categories
      * @private
@@ -752,7 +753,8 @@ export class EventsController extends ControllerBasics<EventEntity> {
         categories: CategoryEntity[],
     ): Promise<void> {
         const stripeInterfaceRequired: boolean =
-            categories.filter((cat: CategoryEntity): boolean => cat.interface === 'stripe').length !== 0;
+            categories.filter((cat: CategoryEntity): boolean => cat.interface === 'stripe' && cat.status === 'live')
+                .length !== 0;
 
         if (stripeInterfaceRequired) {
             if (isNil(event.stripe_interface)) {
@@ -882,32 +884,54 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         let eventStatus: boolean;
 
-        if (!isNil(body.event)) {
-            if (body.event === true) {
-                await this.verifyEventPublishability(user, event, dates, categories);
+        if (body.event === false && event.status === 'live') {
+            const clearDateEditsBuilder = {};
 
-                eventStatus = true;
-                event.status = 'live';
-                // Here we check if event can go live
-            } else if (body.event === false && event.status === 'live') {
-                const clearDateEditsBuilder = {};
-
-                for (const date of dates) {
-                    clearDateEditsBuilder[date.id] = false;
-                }
-
-                const [clearUpdatedDates, clearDateEdits] = this.resolveDateStatuses(dates, clearDateEditsBuilder);
-                const [, clearCategoryEdits] = this.resolveCategoryStatuses(clearUpdatedDates, categories, {});
-
-                await this.updateEntities(eventId, false, clearDateEdits, clearCategoryEdits);
-
-                return {
-                    event: {
-                        ...event,
-                        status: 'preview',
-                    },
-                };
+            for (const date of dates) {
+                clearDateEditsBuilder[date.id] = false;
             }
+
+            const [clearUpdatedDates, clearDateEdits] = this.resolveDateStatuses(dates, clearDateEditsBuilder);
+            const [, clearCategoryEdits] = this.resolveCategoryStatuses(clearUpdatedDates, categories, {});
+
+            await this.updateEntities(eventId, false, clearDateEdits, clearCategoryEdits);
+
+            return {
+                event: {
+                    ...event,
+                    status: 'preview',
+                },
+            };
+        } else if (body.event === true || event.status === 'live') {
+            await this.verifyEventPublishability(
+                user,
+                event,
+                dates.map(
+                    (_date: DateEntity): DateEntity => {
+                        if (body.dates && body.dates[_date.id] === true) {
+                            return {
+                                ..._date,
+                                status: 'live',
+                            };
+                        }
+                        return _date;
+                    },
+                ),
+                categories.map(
+                    (_category: CategoryEntity): CategoryEntity => {
+                        if (body.categories && body.categories[_category.id] === true) {
+                            return {
+                                ..._category,
+                                status: 'live',
+                            };
+                        }
+                        return _category;
+                    },
+                ),
+            );
+
+            eventStatus = true;
+            event.status = 'live';
         }
 
         if (event.status === 'live') {
