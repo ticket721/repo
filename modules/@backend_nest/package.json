@@ -60,7 +60,7 @@
         "dosojin": "file:../@public_dosojin",
         "dotenv": "8.2.0",
         "elasticsearch": "16.6.0",
-        "email-templates": "7.0.4",
+        "email-templates": "8.0.0",
         "ethereum-address": "0.0.4",
         "ethers": "4.0.45",
         "fs-extra": "8.1.0",
