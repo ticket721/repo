@@ -180,8 +180,8 @@ const frenchDictionory = {
     link: 'Lien',
     linkCopied: 'Lien copié',
     mark: 'Surbrillance',
-    newLineEmpty: "Taper / pour plus d'options",
-    newLineWithSlash: 'Continué de taper pour filtrer',
+    newLineEmpty: "Selectionnez le texte pour plus d'options (gras, italique,...)",
+    newLineWithSlash: 'Tapez pour filtrer',
     noResults: 'Aucun résultat',
     openLink: 'Ouvrir le lien',
     orderedList: 'Liste numérotée',
@@ -216,7 +216,8 @@ export const RichText: React.FunctionComponent<RichTextProps> = (props: RichText
                     props.lng === 'fr'
                         ? frenchDictionory
                         : {
-                              newLineEmpty: "Type '/' for more options",
+                              newLineEmpty: 'Select text for more options (bold, italic,...)',
+                                newLineWithSlash: 'Tap to filter',
                               searchOrPasteLink: 'link or #tag',
                           }
                 }
@@ -243,12 +244,21 @@ export const RichText: React.FunctionComponent<RichTextProps> = (props: RichText
                 }}
                 handleDOMEvents={{
                     focus: () => {
+                        const blockMenu = document.getElementById('block-menu-container');
+                        if (blockMenu) {
+                            blockMenu.style.pointerEvents = 'all';
+                            blockMenu.style.bottom = '24px';
+                        }
                         if (props.onFocus) {
                             props.onFocus();
                         }
                         return true;
                     },
                     blur: (_, e) => {
+                        const blockMenu = document.getElementById('block-menu-container');
+                        if (blockMenu) {
+                            blockMenu.style.bottom = '-800px';
+                        }
                         if (props.onBlur) {
                             props.onBlur();
                         }
