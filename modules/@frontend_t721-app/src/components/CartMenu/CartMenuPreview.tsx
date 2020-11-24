@@ -385,8 +385,6 @@ const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> 
 
 const CartContentContainer = styled.div`
   overflow: scroll;
-  height: calc(100% - 50px - env(safe-area-inset-bottom));
-  height: calc(100% - 50px - constant(safe-area-inset-bottom));
   padding-bottom: 80px;
 `
 
@@ -449,11 +447,12 @@ const CartMenuProductPreview: React.FC<CartMenuProductDisplay> = (props: CartMen
     }
 };
 
-interface CartMenuPreview {
+interface CartMenuPreviewProps {
     setChildrenLoading: (loading: boolean) => void;
+    height: number;
 }
 
-export const CartMenuPreview: React.FC<CartMenuPreview> = (props: CartMenuPreview): JSX.Element => {
+export const CartMenuPreview: React.FC<CartMenuPreviewProps> = (props: CartMenuPreviewProps): JSX.Element => {
     const [t] = useTranslation('cart');
     const cart = useContext(CartContext);
     const cartContentRef = useRef(null)
@@ -471,6 +470,9 @@ export const CartMenuPreview: React.FC<CartMenuPreview> = (props: CartMenuPrevie
     } else {
         return <CartContentContainer
             ref={cartContentRef}
+            style={{
+                height: props.height
+            }}
         >
             {cart.cart.products.map((product: Product, idx: number) => <CartMenuProductPreview
                 product={product}

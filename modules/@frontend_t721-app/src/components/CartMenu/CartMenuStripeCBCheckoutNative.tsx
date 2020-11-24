@@ -17,11 +17,10 @@ const CreditCardWrapper = styled.div`
 `;
 
 const Container = styled.div`
-  height: calc(100vh - 70px - 50px);
   overflow: scroll;
-    @media screen and (max-width: 900px) {
-        padding-bottom: 80px;
-    }
+  @media screen and (max-width: 900px) {
+      padding-bottom: 80px;
+  }
 `;
 
 const Actions = styled.div`
