@@ -163,7 +163,10 @@ const SelectedDot = styled(motion.div)`
 const TicketDashboard = styled.div`
     display: flex;
     flex-wrap: wrap;
-    width: min(100vw, 1296px);
+    width: 100vw;
+    @media screen and (min-width: 1296px) {
+      width: 1296px;
+    }
     margin-bottom: 80px;
 
     & > div {

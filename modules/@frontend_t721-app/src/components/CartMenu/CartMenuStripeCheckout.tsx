@@ -25,8 +25,7 @@ const ComingSoonText = styled.span`
 
 
 const ButtonContainer = styled.div`
-  height: calc(100% - 120px - env(safe-area-inset-bottom));
-  height: calc(100% - 120px - constant(safe-area-inset-bottom));
+  height: 100%;
   overflow: scroll;
   width: 100%;
   display: flex;

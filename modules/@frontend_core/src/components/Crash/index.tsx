@@ -21,7 +21,10 @@ const Sorry = styled.span`
 `;
 
 const ErrorOccured = styled.span`
-    width: min(70%, 500px);
+    width: 70%;
+    @media screen and (min-width: 900px) {
+        width: 500px;
+    }
     margin-top: 100px;
     font-size: 16px;
     font-weight: 300;
@@ -32,12 +35,18 @@ const Submitted = styled.span`
     font-size: 16px;
     opacity: 1;
     font-weight: 300;
-    width: min(70%, 500px);
+    width: 70%;
+    @media screen and (min-width: 900px) {
+        width: 500px;
+    }
 `;
 
 const ButtonContainer = styled.div`
     margin-top: 75px;
-    width: min(60%, 300px);
+    width: 70%;
+    @media screen and (min-width: 900px) {
+        width: 500px;
+    }
 `;
 
 const SecondaryButton = styled.span`

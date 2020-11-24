@@ -17,7 +17,10 @@ export interface TicketCategoryFetcherProps {
 }
 
 const TicketSelectionContainer = styled.div`
-    width: min(900px, 100vw);
+    width: 100vw;
+    @media screen and (min-width: 900px) {
+      width: 900px;
+    }
     padding-bottom: calc(80px + ${props => props.theme.regularSpacing} + env(safe-area-inset-bottom));
     padding-bottom: calc(80px + ${props => props.theme.regularSpacing} + constant(safe-area-inset-bottom));
 `;

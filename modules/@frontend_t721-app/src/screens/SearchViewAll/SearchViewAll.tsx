@@ -5,7 +5,10 @@ import { SearchViewAllResultList } from './SearchViewAllResultList';
 import styled from 'styled-components';
 
 const SearchWrapper = styled.div`
-    width: min(900px, 100vw);
+    width: 100vw;
+    @media screen and (min-width: 900px) {
+      width: 900px;
+    }
 `;
 
 const Search: React.FC = () => {

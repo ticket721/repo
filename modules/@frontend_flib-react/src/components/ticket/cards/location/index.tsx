@@ -45,7 +45,7 @@ const Info = styled.span`
 const Column = styled.div<LocationCardProps>`
     display: flex;
     flex-direction: column;
-    max-width: calc(100% - ${(props) => props.theme.regularSpacing} - 12px);
+    max-width: calc(100% - ${(props) => props.theme.regularSpacing} - 20px);
     color: ${(props) => props.textColor};
 
     a {
@@ -138,13 +138,8 @@ const MapContainer = styled.div`
     justify-content: center;
 
     .leaflet-container {
-        width: min(100%, 70vw);
-        padding-top: min(100%, 70vw);
-
-        @media screen and (max-width: 600px) {
-            width: 100%;
-            padding-top: 100%;
-        }
+        width: 100%;
+        padding-top: 100%;
     }
 
     .leaflet-left {

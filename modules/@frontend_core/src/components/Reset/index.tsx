@@ -122,7 +122,10 @@ const ResetWrapper = styled.div<ResetWrapperProps>`
     display: flex;
     justify-content: center;
     align-items: center;
-    width: min(100vw, 480px);
+    width: 100vw;
+    @media screen and (min-width: 900px) {
+        width: 480px;
+    }
     height: ${(props) => (props.mobile ? 'none' : 'calc(100vh - 80px)')};
 `;
 
