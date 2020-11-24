@@ -322,11 +322,11 @@ const QRHoverButton = (props: {
     onClick: () => void;
 }): JSX.Element => {
 
-    const width = useMemo(() => 65, []);
-    const height = useMemo(() => 65, []);
-    const navbar = useMemo(() => 80, []);
-    const spacing = useMemo(() => 8, []);
     const window = useWindowDimensions();
+    const width = useMemo(() => window.width < 900 ? 65 : 80, [window.width]);
+    const height = useMemo(() => window.width < 900 ? 65 : 80, [window.width]);
+    const navbar = useMemo(() => window.width < 900 ? 70 : 0, [window.width]);
+    const spacing = useMemo(() => window.width >= 900 ? 32 : 8, [window.width]);
 
     return <QRHoverContainer
         onClick={props.onClick}

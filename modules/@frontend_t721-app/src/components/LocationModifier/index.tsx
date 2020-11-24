@@ -162,5 +162,8 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
 };
 
 const Container = styled.div`
-    width: min(900px, 100vw);
+    width: 100vw;
+    @media screen and (min-width: 900px) {
+      width: 900px;
+    }
 `;

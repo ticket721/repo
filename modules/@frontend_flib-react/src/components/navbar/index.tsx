@@ -35,7 +35,11 @@ const ContentContainer = styled.div`
     align-items: center;
     display: flex;
     justify-content: space-between;
-    width: min(100%, 500px);
+    width: 100%;
+
+    @media screen and (min-width: 900px) {
+        width: 500px;
+    }
 
     a {
         align-items: center;
