@@ -792,8 +792,24 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
             };
         }
 
-        const staticFee = isNil(eventEntity.custom_static_fee) ? STATIC_FEE : eventEntity.custom_static_fee;
-        const percentFee = isNil(eventEntity.custom_percent_fee) ? PERCENT_FEE : eventEntity.custom_percent_fee;
+        let staticFee;
+        let percentFee;
+
+        if (!isNil(categoryEntity.custom_static_fee)) {
+            staticFee = categoryEntity.custom_static_fee;
+        } else if (!isNil(eventEntity.custom_static_fee)) {
+            staticFee = eventEntity.custom_static_fee;
+        } else {
+            staticFee = STATIC_FEE;
+        }
+
+        if (!isNil(categoryEntity.custom_percent_fee)) {
+            percentFee = categoryEntity.custom_percent_fee;
+        } else if (!isNil(eventEntity.custom_percent_fee)) {
+            percentFee = eventEntity.custom_percent_fee;
+        } else {
+            percentFee = PERCENT_FEE;
+        }
 
         return {
             error: null,

@@ -24,6 +24,8 @@ describe('Category Entity', function() {
                 dates: [],
                 created_at: new Date(),
                 updated_at: new Date(),
+                custom_percent_fee: 1,
+                custom_static_fee: 2,
             } as CategoryEntity;
 
             const categoryEntity = new CategoryEntity(rawCategoryEntity);
@@ -47,6 +49,8 @@ describe('Category Entity', function() {
                 dates: [null],
                 created_at: new Date(),
                 updated_at: new Date(),
+                custom_percent_fee: 1,
+                custom_static_fee: 2,
             } as CategoryEntity;
 
             const categoryEntity = new CategoryEntity(rawCategoryEntity);

@@ -8,7 +8,8 @@ import { Sort } from '@lib/common/utils/Sort.type';
 /**
  * Data model required when searching for a category
  */
-export class CategoriesSearchInputDto implements SearchInputType<CategoryEntity> {
+export class CategoriesSearchInputDto
+    implements SearchInputType<Omit<CategoryEntity, 'custom_static_fee' | 'custom_percent_fee'>> {
     /**
      * Searchable field to search by id
      */
