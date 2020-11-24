@@ -229,6 +229,8 @@ export class EventsController extends ControllerBasics<EventEntity> {
                     interface: CategoriesService.interfaceFromCurrencyAndPrice(category.currency, category.price),
                     seats: category.seats,
                     status: 'preview',
+                    custom_static_fee: null,
+                    custom_percent_fee: null,
                 }),
                 StatusCodes.InternalServerError,
             );

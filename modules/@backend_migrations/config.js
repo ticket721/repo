@@ -104,4 +104,19 @@ module.exports = [
         name: 'post_the_great_refactoring',
         timestamp: '20201001131552'
     },
+    {
+        type: 'elasticsearch',
+        name: 'pre_category_custom_fees',
+        timestamp: '20201124195029'
+    },
+    {
+        type: 'cassandra',
+        name: 'category_custom_fees',
+        timestamp: '1606247166'
+    },
+    {
+        type: 'elasticsearch',
+        name: 'post_category_custom_fees',
+        timestamp: '20201124195324'
+    }
 ];

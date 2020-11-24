@@ -78,7 +78,7 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
     async search(@Body() body: CategoriesSearchInputDto): Promise<CategoriesSearchResponseDto> {
-        const categories = await this._search(this.categoriesService, body);
+        const categories = await this._search(this.categoriesService, body as any);
 
         return {
             categories,
@@ -117,7 +117,7 @@ export class CategoriesController extends ControllerBasics<CategoryEntity> {
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
     async count(@Body() body: CategoriesCountInputDto): Promise<CategoriesCountResponseDto> {
-        const categories = await this._count(this.categoriesService, body);
+        const categories = await this._count(this.categoriesService, body as any);
 
         return {
             categories,
