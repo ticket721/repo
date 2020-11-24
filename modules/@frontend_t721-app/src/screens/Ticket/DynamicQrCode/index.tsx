@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import styled, { useTheme }           from 'styled-components';
-import { useSelector }         from 'react-redux';
-import { T721AppState }        from '../../../redux';
-import QrCode                  from 'qrcode.react';
-import { Icon }                from '@frontend/flib-react/lib/components';
-import { useWindowDimensions } from '@frontend/core/lib/hooks/useWindowDimensions';
-import { Theme }               from '@frontend/flib-react/lib/config/theme';
-import { Brightness } from '@ionic-native/brightness';
-import { motion } from 'framer';
+import { useSelector }                from 'react-redux';
+import { T721AppState }               from '../../../redux';
+import QrCode                         from 'qrcode.react';
+import { Icon }                       from '@frontend/flib-react/lib/components';
+import { useWindowDimensions }        from '@frontend/core/lib/hooks/useWindowDimensions';
+import { Theme }                      from '@frontend/flib-react/lib/config/theme';
+import { Brightness }                 from '@ionic-native/brightness';
+import { motion }                     from 'framer';
 
 export interface DynamicQrCodeProps {
     name: string;
@@ -72,20 +72,20 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
 
     return (
         <QrCodeWrapper
-        initial={{
-            top: '100vh'
-        }}
-        animate={{
-            top: 0,
-        }}
-        exit={{
-            top: '100vh',
-        }}
-        transition={{
-            type: 'spring',
-            stiffness: 200,
-            damping: 26,
-        }}>
+            initial={{
+                top: '100vh'
+            }}
+            animate={{
+                top: 0,
+            }}
+            exit={{
+                top: '100vh',
+            }}
+            transition={{
+                type: 'spring',
+                stiffness: 200,
+                damping: 26,
+            }}>
             <EventTitle>
                 <EventName>{props.name}</EventName>
                 <Category>{props.category}</Category>
@@ -100,7 +100,7 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
                                 value={qrcodeContent}
                                 bgColor={'#FFFFFF'}
                                 fgColor={theme.darkerBg}
-                                size={width}
+                                size={width > 500 ? 500 : width}
                                 renderAs={'svg'}
                                 level={'L'}
                                 includeMargin={true}

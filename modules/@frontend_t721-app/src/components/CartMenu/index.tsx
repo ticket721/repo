@@ -420,11 +420,14 @@ export const CartMenu: React.FC = (): JSX.Element => {
 
                                 ?
                                 <>
-                                    <CartMenuCheckout/>
+                                    <CartMenuCheckout
+                                        height={menuHeight - 50}
+                                    />
                                 </>
                                 :
                                 <>
                                     <CartMenuPreview
+                                        height={menuHeight - 50}
                                         setChildrenLoading={setChildrenLoading}
                                     />
                                     {
