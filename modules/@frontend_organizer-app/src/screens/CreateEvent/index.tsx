@@ -207,6 +207,7 @@ const CreateEvent: React.FC = () => {
             formik.validateForm();
             setRedirecting(true);
             setTimeout(() => {
+                localStorage.removeItem('event-creation');
                 history.push('/');
             }, 1000);
         }
