@@ -1,27 +1,28 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { CartContext }                                    from '../Cart/CartContext';
-import { Product }                     from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/entities/Purchase.entity';
-import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
-import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
-import { CategoryEntity }               from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-import { DateEntity }                      from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
-import { v4 }                       from 'uuid';
-import { useDispatch } from 'react-redux';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
-import { Error, FullPageLoading, Icon }    from '@frontend/flib-react/lib/components';
-import styled, { useTheme }                from 'styled-components';
-import { getPrice }                        from '../../utils/prices';
-import { formatShort }                     from '@frontend/core/lib/utils/date';
-import { useTranslation }                  from 'react-i18next';
-import { Theme }                           from '@frontend/flib-react/lib/config/theme';
-import { useLazyRequest }                  from '@frontend/core/lib/hooks/useLazyRequest';
-import { PurchasesSetProductsResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
-import { isNil }                           from 'lodash';
-import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
-import { PurchaseError }                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
-import { isRequestError }                  from '@frontend/core/lib/utils/isRequestError';
-import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
+import { Product }                                        from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/entities/Purchase.entity';
+import { useRequest }                                     from '@frontend/core/lib/hooks/useRequest';
+import { CategoriesSearchResponseDto }                    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { DatesSearchResponseDto }                         from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { CategoryEntity }                                 from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import { DateEntity }                                     from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { v4 }                                             from 'uuid';
+import { useDispatch }                                    from 'react-redux';
+import { useToken }                                       from '@frontend/core/lib/hooks/useToken';
+import { Error, FullPageLoading, Icon }                   from '@frontend/flib-react/lib/components';
+import styled, { useTheme }                               from 'styled-components';
+import { getPrice }                                       from '../../utils/prices';
+import { formatShort }                                    from '@frontend/core/lib/utils/date';
+import { useTranslation }                                 from 'react-i18next';
+import { Theme }                                          from '@frontend/flib-react/lib/config/theme';
+import { useLazyRequest }                                 from '@frontend/core/lib/hooks/useLazyRequest';
+import { PurchasesSetProductsResponseDto }                from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
+import { isNil }                                          from 'lodash';
+import { PushNotification }                               from '@frontend/core/lib/redux/ducks/notifications';
+import { PurchaseError }                                  from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
+import { isRequestError }                                 from '@frontend/core/lib/utils/isRequestError';
+import { getEnv }                                         from '@frontend/core/lib/utils/getEnv';
+import { HapticsImpactStyle, useHaptics }                 from '@frontend/core/lib/utils/useHaptics';
 
 const CategoryCount = styled.span`
   margin: 0;
@@ -135,6 +136,7 @@ const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> 
     const theme = useTheme() as Theme;
     const cart = useContext(CartContext);
     const dispatch = useDispatch();
+    const haptics = useHaptics();
 
     const datesFetch = useRequest<DatesSearchResponseDto>({
         method: 'dates.search',
@@ -157,6 +159,10 @@ const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> 
         switch (type) {
             case 'add': {
 
+                haptics.impact({
+                    style: HapticsImpactStyle.Light
+                });
+
                 products = cart.cart.products.map((item) => ({
                     id: item.id,
                     quantity: item.quantity,
@@ -175,6 +181,10 @@ const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> 
                 break ;
             }
             case 'remove': {
+
+                haptics.impact({
+                    style: HapticsImpactStyle.Light
+                });
 
                 products = cart.cart.products.map((item) => ({
                     id: item.id,
@@ -196,6 +206,11 @@ const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> 
                 break ;
             }
             case 'delete': {
+
+                haptics.impact({
+                    style: HapticsImpactStyle.Light
+                });
+
                 products = cart.cart.products.map((item) => ({
                     id: item.id,
                     quantity: item.quantity,

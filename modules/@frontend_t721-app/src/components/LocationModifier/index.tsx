@@ -1,16 +1,17 @@
 import React, { useEffect, useState }                                                         from 'react';
 import { CurrentLocation, LocationList, SearchInput, FullPageLoading, Error, OnlineLocation } from '@frontend/flib-react/lib/components';
-import { useFormik }                                                                          from 'formik';
-import { City, MatchingCity }                                                                 from '@common/global';
-import { useDispatch }                                                                        from 'react-redux';
-import { useTranslation }                                                                     from 'react-i18next';
-import { GetLocation, SetCustomLocation, SetLocation }                                        from '../../redux/ducks/location';
-import { v4 }                                                                                 from 'uuid';
-import { useRequest }                                                                         from '@frontend/core/lib/hooks/useRequest';
-import { GeolocFuzzySearchResponseDto }                                                       from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/geoloc/dto/GeolocFuzzySearchResponse.dto';
+import { useFormik }                                   from 'formik';
+import { City, MatchingCity }                          from '@common/global';
+import { useDispatch }                                 from 'react-redux';
+import { useTranslation }                              from 'react-i18next';
+import { GetLocation, SetCustomLocation, SetLocation } from '../../redux/ducks/location';
+import { v4 }                                          from 'uuid';
+import { useRequest }                                  from '@frontend/core/lib/hooks/useRequest';
+import { GeolocFuzzySearchResponseDto }                from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/geoloc/dto/GeolocFuzzySearchResponse.dto';
 import './locales';
-import { isRequestError }                                                                     from '@frontend/core/lib/utils/isRequestError';
-import styled from 'styled-components';
+import { isRequestError }                              from '@frontend/core/lib/utils/isRequestError';
+import styled                             from 'styled-components';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
 
 export interface LocationModifierListProps {
     query: string;
@@ -71,6 +72,7 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
         },
         onSubmit: null,
     });
+    const haptics = useHaptics();
 
     useEffect(() => {
         let timeoutId = null;
@@ -95,12 +97,18 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
     const cancel = () => {
         clearInput();
         coreProps.disableFilter();
+        haptics.impact({
+            style: HapticsImpactStyle.Light
+        })
     };
 
     const requestCurrentLocation = () => {
         dispatch(GetLocation());
         clearInput();
         coreProps.disableFilter();
+        haptics.impact({
+            style: HapticsImpactStyle.Light
+        })
     };
 
     const setOnlineEvents = () => {
@@ -112,6 +120,9 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
         }));
         clearInput();
         coreProps.disableFilter();
+        haptics.impact({
+            style: HapticsImpactStyle.Light
+        })
     }
 
     return <Container>
@@ -150,6 +161,9 @@ export const LocationModifier: React.FC<LocationModifierProps> = (coreProps: Loc
                             online: false
                         }));
                         coreProps.disableFilter();
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light
+                        });
                     }}
 
                 />

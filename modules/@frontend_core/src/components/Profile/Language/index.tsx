@@ -1,10 +1,12 @@
 import React from 'react';
 import { SelectableList } from '@frontend/flib-react/lib/components';
 import { useTranslation } from 'react-i18next';
+import { useHaptics, HapticsImpactStyle } from '../../../utils/useHaptics';
 import './locales';
 
 const Language: React.FC = () => {
     const [t, i18n] = useTranslation('language');
+    const haptics = useHaptics();
 
     const setLanguage = (lang: string) => i18n.changeLanguage(lang);
 
@@ -23,7 +25,12 @@ const Language: React.FC = () => {
                     },
                 ]}
                 selected={i18n.language.slice(0, 2)}
-                update={setLanguage}
+                update={(lang: string) => {
+                    haptics.impact({
+                        style: HapticsImpactStyle.Light,
+                    });
+                    setLanguage(lang);
+                }}
             />
         </div>
     );

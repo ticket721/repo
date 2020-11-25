@@ -9,8 +9,9 @@ import { useHistory }                  from 'react-router';
 import { getImgPath }                  from '@frontend/core/lib/utils/images';
 import { getPriceRange }               from '../../../utils/prices';
 import { useTranslation }              from 'react-i18next';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
-import styled from 'styled-components';
+import { useToken }                    from '@frontend/core/lib/hooks/useToken';
+import styled                          from 'styled-components';
+import { useHaptics, HapticsImpactStyle }                  from '@frontend/core/lib/utils/useHaptics';
 
 export interface HomeEventProps {
     date: DateEntity;
@@ -26,6 +27,7 @@ export const HomeEvent: React.FC<HomeEventProps> = (props: HomeEventProps): JSX.
     const token = useToken();
     const history = useHistory();
     const [t] = useTranslation(['home', 'common']);
+    const haptics = useHaptics();
 
     const dateString = `${eventBegin ? eventBegin : null}${eventEnd && eventBegin ? ' - ' : null}${eventEnd ? eventEnd : null}`;
 
@@ -50,7 +52,12 @@ export const HomeEvent: React.FC<HomeEventProps> = (props: HomeEventProps): JSX.
 
     return <EventContainer>
         <SingleImage
-        onClick={() => history.push(`/event/${props.date.id}`)}
+        onClick={() => {
+            haptics.impact({
+                style: HapticsImpactStyle.Light
+            })
+            history.push(`/event/${props.date.id}`)
+        }}
         id={props.idx}
         key={props.idx}
         cover={imageUrl}

@@ -49,17 +49,6 @@ export const bodyStyles = css`
             fill: rgba(255, 255, 255, 0.9);
         }
     }
-
-    div {
-        > div::before {
-            top: -2px;
-            bottom: unset;
-        }
-
-        > div > button:nth-child(n + 4):nth-child(-n + 5) {
-            display: none;
-        }
-    }
 `;
 
 export const labelStyles = css`

@@ -12,6 +12,8 @@ import './locales';
 import { getPasswordStrength } from '@common/global';
 import { useMediaQuery } from 'react-responsive';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
+import { HapticsImpactStyle, useHaptics, HapticsNotificationType } from '../../utils/useHaptics';
+import { useKeyboardState } from '../../utils/useKeyboardState';
 
 export interface RegisterProps {
     onLogin?: () => void;
@@ -21,6 +23,8 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
     const [t] = useTranslation(['registration', 'password_feedback']);
     const auth = useSelector((state: AppState): AuthState => state.auth);
     const dispatch = useDispatch();
+    const haptics = useHaptics();
+    const keyboard = useKeyboardState();
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -40,9 +44,15 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
     useDeepEffect(() => {
         if (!auth.loading) {
             if (auth.submit && !auth.errors && auth.token) {
+                haptics.notification({
+                    type: HapticsNotificationType.SUCCESS,
+                });
                 history.replace(from);
             } else {
                 if (auth.errors) {
+                    haptics.notification({
+                        type: HapticsNotificationType.SUCCESS,
+                    });
                     formik.setErrors(auth.errors);
                 }
             }
@@ -52,12 +62,19 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
     const isTabletOrMobile = useMediaQuery({ maxWidth: 900 });
 
     return (
-        <RegisterWrapper mobile={isTabletOrMobile}>
+        <RegisterWrapper mobile={isTabletOrMobile} keyboardHeight={keyboard.keyboardHeight}>
             <RegisterContainer mobile={isTabletOrMobile}>
                 <IconContainer>
                     <Icon icon={'ticket721'} size={'40px'} color={'#fff'} />
                 </IconContainer>
-                <Form onSubmit={formik.handleSubmit}>
+                <Form
+                    onSubmit={(ev) => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        formik.handleSubmit(ev);
+                    }}
+                >
                     <Inputs>
                         <TextInput
                             name={'email'}
@@ -106,7 +123,19 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
                         />
                     </Inputs>
                     <ActionsContainer>
-                        <Button variant={'primary'} type={'submit'} title={t('register')} />
+                        <Button
+                            variant={
+                                formik.isValid &&
+                                formik.values.password !== '' &&
+                                formik.values.passwordConfirmation !== '' &&
+                                formik.values.email !== '' &&
+                                formik.values.username !== ''
+                                    ? 'primary'
+                                    : 'disabled'
+                            }
+                            type={'submit'}
+                            title={t('register')}
+                        />
                         <SwitchToLogin
                             onClick={() => {
                                 if (props.onLogin) {
@@ -127,6 +156,7 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
 
 interface RegisterWrapperProps {
     mobile: boolean;
+    keyboardHeight: number;
 }
 
 const RegisterWrapper = styled.div<RegisterWrapperProps>`
@@ -134,6 +164,7 @@ const RegisterWrapper = styled.div<RegisterWrapperProps>`
     justify-content: center;
     align-items: center;
     width: 100vw;
+    padding-bottom: ${(props) => props.keyboardHeight}px;
     @media screen and (min-width: 900px) {
         width: 480px;
     }
@@ -174,7 +205,7 @@ const Inputs = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 445px;
+    height: 430px;
 `;
 
 const ActionsContainer = styled.div`
