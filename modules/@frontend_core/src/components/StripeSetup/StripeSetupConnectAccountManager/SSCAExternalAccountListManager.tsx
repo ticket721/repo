@@ -1,16 +1,16 @@
 import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import {
-    SectionWithLinkHeader,
-    FieldsContainer,
-    FieldContainer,
-    FieldTitle,
     DragToActionSelectionElementContainer,
+    FieldContainer,
+    FieldsContainer,
+    FieldTitle,
+    SectionWithLinkHeader,
 } from './StripeMenuSections';
 import styled, { useTheme } from 'styled-components';
 import { ConnectAccountExternalAccount } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
 import './SSCAExternalAccountListManager.locales';
-import { StatusText, colorFromStatus, StatusIcon } from './StatusUtils';
+import { colorFromStatus, StatusIcon, StatusText } from './StatusUtils';
 import { Theme } from '@frontend/flib-react/lib/config/theme';
 import { Icon } from '@frontend/flib-react/lib/components';
 import { useHistory } from 'react-router';
@@ -20,6 +20,7 @@ import { useDispatch } from 'react-redux';
 import { useDeepEffect } from '../../../hooks/useDeepEffect';
 import { PushNotification } from '../../../redux/ducks/notifications';
 import { useToken } from '../../../hooks/useToken';
+import { HapticsImpactStyle, useHaptics } from '../../../utils/useHaptics';
 
 const BankAccountTitle = styled.h3`
     font-size: 16px;
@@ -55,6 +56,7 @@ export const SSCAExternalAccountListManager: React.FC<SSCAExternalAccountListMan
     const removeBankAccountLazyRequest = useLazyRequest('payment.stripe.removeExternalAccount', uuid);
     const setDefaultBankAccountLazyRequest = useLazyRequest('payment.stripe.setDefaultExternalAccount', uuid);
     const dispatch = useDispatch();
+    const haptics = useHaptics();
 
     useDeepEffect(() => {
         if (setDefaultBankAccountLazyRequest.response.called) {
@@ -161,7 +163,12 @@ export const SSCAExternalAccountListManager: React.FC<SSCAExternalAccountListMan
                     icon={'plus'}
                     size={'18px'}
                     color={'white'}
-                    onClick={() => history.push('/stripe/create-bank-account')}
+                    onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        history.push('/stripe/create-bank-account');
+                    }}
                 />
             </SectionWithLinkHeader>
             {bankAccounts}

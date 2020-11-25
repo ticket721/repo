@@ -22,6 +22,7 @@ import { TopNavMargin } from '../../utils/TopNavMargin';
 import { InvisibleStatusBarMargin } from '../../utils/InvisibleStatusBarMargin';
 import { currencies, symbolOf } from '@common/global';
 import { StripeSDK } from '../../utils/StripeSDKContext';
+import { useHaptics, HapticsImpactStyle } from '../../utils/useHaptics';
 
 const StripeServiceAgreementUrl = 'https://stripe.com/legal';
 const StripeConnectedAccountAgreementUrl = 'https://stripe.com/connect-account/legal';
@@ -197,9 +198,13 @@ export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateC
                 const createStripeInterfaceLazyRequest = useLazyRequest('payment.stripe.createConnectAccount', uuid);
                 const [called, setCalled] = useState(false);
                 const [t] = useTranslation('stripe_setup_create_connect_account_manager');
+                const haptics = useHaptics();
 
                 const createAccountToken = async () => {
                     setCalled(true);
+                    haptics.impact({
+                        style: HapticsImpactStyle.Light,
+                    });
                     try {
                         const accountToken = await generateAccountToken(stripe, selection, dispatch);
                         if (!createStripeInterfaceLazyRequest.response.called) {
@@ -263,6 +268,9 @@ export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateC
                                             key={item.value}
                                             className={selection === item.value ? 'selected' : ''}
                                             onClick={() => {
+                                                haptics.impact({
+                                                    style: HapticsImpactStyle.Light,
+                                                });
                                                 setSelection(item.value);
                                             }}
                                         >
@@ -280,7 +288,12 @@ export const StripeSetupCreateConnectAccountManager: React.FC<StripeSetupCreateC
                                     <CurrencySelectInputContainer>
                                         <CurrencySelectInput
                                             options={currenciesSelectOptions}
-                                            onChange={(opt: any) => setCurrency(opt[0].value)}
+                                            onChange={(opt: any) => {
+                                                haptics.impact({
+                                                    style: HapticsImpactStyle.Light,
+                                                });
+                                                setCurrency(opt[0].value);
+                                            }}
                                         />
                                     </CurrencySelectInputContainer>
                                 </>

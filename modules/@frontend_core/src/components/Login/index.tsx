@@ -1,6 +1,6 @@
 import React from 'react';
 import { useFormik } from 'formik';
-import { Button, TextInput, Icon, PasswordInput } from '@frontend/flib-react/lib/components';
+import { Button, Icon, PasswordInput, TextInput } from '@frontend/flib-react/lib/components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { AppState } from '../../redux/ducks';
@@ -11,6 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 import './locales';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
+import { HapticsImpactStyle, useHaptics, HapticsNotificationType } from '../../utils/useHaptics';
+import { useKeyboardState } from '../../utils/useKeyboardState';
 
 export interface LoginProps {
     onRegister?: () => void;
@@ -22,6 +24,8 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
     const auth = useSelector((state: AppState): AuthState => state.auth);
     const history = useHistory();
     const dispatch = useDispatch();
+    const haptics = useHaptics();
+    const keyboard = useKeyboardState();
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -40,8 +44,14 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
         if (!auth.loading) {
             if (auth.submit && !auth.errors && auth.token) {
                 history.replace(from);
+                haptics.notification({
+                    type: HapticsNotificationType.SUCCESS,
+                });
             } else {
                 if (auth.errors) {
+                    haptics.notification({
+                        type: HapticsNotificationType.ERROR,
+                    });
                     formik.setErrors(auth.errors);
                 }
             }
@@ -49,12 +59,19 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
     }, [auth]);
 
     return (
-        <LoginWrapper mobile={isTabletOrMobile}>
+        <LoginWrapper mobile={isTabletOrMobile} keyboardHeight={keyboard.keyboardHeight}>
             <LoginContainer mobile={isTabletOrMobile}>
                 <IconContainer>
                     <Icon icon={'ticket721'} size={'40px'} color={'#fff'} />
                 </IconContainer>
-                <Form onSubmit={formik.handleSubmit}>
+                <Form
+                    onSubmit={(ev: any) => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        formik.handleSubmit(ev);
+                    }}
+                >
                     <Inputs>
                         <TextInput
                             name={'email'}
@@ -76,7 +93,15 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                         />
                     </Inputs>
                     <ActionsContainer>
-                        <Button variant={'primary'} type={'submit'} title={t('login')} />
+                        <Button
+                            variant={
+                                formik.isValid && formik.values.email !== '' && formik.values.password !== ''
+                                    ? 'primary'
+                                    : 'disabled'
+                            }
+                            type={'submit'}
+                            title={t('login')}
+                        />
                         <div
                             style={{
                                 display: 'flex',
@@ -88,6 +113,9 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                         >
                             <SwitchToRegister
                                 onClick={() => {
+                                    haptics.impact({
+                                        style: HapticsImpactStyle.Light,
+                                    });
                                     if (props.onRegister) {
                                         props.onRegister();
                                     } else {
@@ -106,6 +134,9 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                             <SwitchToReset
                                 isTabletOrMobile={isTabletOrMobile}
                                 onClick={() => {
+                                    haptics.impact({
+                                        style: HapticsImpactStyle.Light,
+                                    });
                                     history.push('/reset', {
                                         from,
                                     });
@@ -123,6 +154,7 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
 
 interface LoginWrapperProps {
     mobile: boolean;
+    keyboardHeight: number;
 }
 
 const LoginWrapper = styled.div<LoginWrapperProps>`
@@ -130,6 +162,7 @@ const LoginWrapper = styled.div<LoginWrapperProps>`
     justify-content: center;
     align-items: center;
     width: 100vw;
+    padding-bottom: ${(props) => props.keyboardHeight}px;
     @media screen and (min-width: 900px) {
         width: 480px;
     }

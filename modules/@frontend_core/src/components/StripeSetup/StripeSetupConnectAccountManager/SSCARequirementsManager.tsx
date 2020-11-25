@@ -2,19 +2,18 @@ import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common
 import { useTranslation } from 'react-i18next';
 import styled, { useTheme } from 'styled-components';
 import { Theme } from '@frontend/flib-react/lib/config/theme';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { v4 } from 'uuid';
 import { open } from '../../../utils/inAppBrowser';
-import React from 'react';
 import {
-    SectionHeader,
-    SectionElementContainer,
-    FieldsContainer,
     FieldContainer,
+    FieldsContainer,
     FieldTitle,
+    SectionElementContainer,
+    SectionHeader,
 } from './StripeMenuSections';
-import { StatusText, colorFromStatus, StatusIcon } from './StatusUtils';
+import { colorFromStatus, StatusIcon, StatusText } from './StatusUtils';
 import { getEnv } from '../../../utils/getEnv';
 import { useToken } from '../../../hooks/useToken';
 import { useLazyRequest } from '../../../hooks/useLazyRequest/index';
@@ -22,6 +21,7 @@ import { PushNotification } from '../../../redux/ducks/notifications/actions';
 import { useDeepEffect } from '../../../hooks/useDeepEffect/index';
 import { isAccountReady } from './isAccountReady';
 import './SSCARequirementsManager.locales';
+import { HapticsImpactStyle, useHaptics } from '../../../utils/useHaptics';
 
 export interface SSCARequirementsManagerProps {
     stripeInterface: StripeInterfaceEntity;
@@ -47,6 +47,7 @@ export const SSCARequirementsManager: React.FC<SSCARequirementsManagerProps> = (
     const theme = useTheme() as Theme;
     const [uuid, setUUID] = useState(v4());
     const token = useToken();
+    const haptics = useHaptics();
     const generateOnboardingUrlLazyRequest = useLazyRequest('payment.stripe.generateOnboardingUrl', uuid);
     const generateUpdateUrlLazyRequest = useLazyRequest('payment.stripe.generateUpdateUrl', uuid);
     const [called, setCalled] = useState(false);
@@ -54,6 +55,9 @@ export const SSCARequirementsManager: React.FC<SSCARequirementsManagerProps> = (
 
     const onOnboardingClick = () => {
         setCalled(true);
+        haptics.impact({
+            style: HapticsImpactStyle.Light,
+        });
         generateOnboardingUrlLazyRequest.lazyRequest(
             [
                 token,
@@ -71,6 +75,9 @@ export const SSCARequirementsManager: React.FC<SSCARequirementsManagerProps> = (
 
     const onUpdateClick = () => {
         setCalled(true);
+        haptics.impact({
+            style: HapticsImpactStyle.Light,
+        });
         generateUpdateUrlLazyRequest.lazyRequest(
             [
                 token,

@@ -1,40 +1,47 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-    Icon,
-    Gradient,
-    TicketHeader,
-    TicketInfosCard,
     DateTimeCard,
+    Gradient,
+    Icon,
     LocationCard,
     OnlineCard,
     PurchaseInfosCard,
+    TicketHeader,
+    TicketInfosCard,
 }                                              from '@frontend/flib-react/lib/components';
-import { formatDay, formatHour }               from '@frontend/core/lib/utils/date';
+import {
+    formatDay,
+    formatHour,
+}                                              from '@frontend/core/lib/utils/date';
 import { useTranslation }                      from 'react-i18next';
 import './locales';
 import styled                                  from 'styled-components';
 import { useHistory }                          from 'react-router';
-import { AnimatePresence, motion }                              from 'framer';
+import { AnimatePresence, motion }             from 'framer';
 import qrcodePreview                           from '../../../media/images/qrcodePreview.png';
 import qrcodePreview2                          from '../../../media/images/qrcodePreview2.png';
 import { getImgPath }                          from '@frontend/core/lib/utils/images';
 import { useDispatch, useSelector }            from 'react-redux';
 import { T721AppState }                        from '../../../redux';
-import { ResetTicket, StartRegenInterval } from '../../../redux/ducks/device_wallet';
-import { DynamicQrCode }                   from '../DynamicQrCode';
-import { CategoryEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-import { TicketEntity }                    from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
-import { DateEntity }                      from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
-import { EventEntity }                     from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
-import { Sticky, StickyContainer }         from 'react-sticky';
-import { useInView }                       from 'react-intersection-observer';
-import { useWindowDimensions }             from '@frontend/core/lib/hooks/useWindowDimensions';
-import { getPrice }                        from '../../../utils/prices';
-import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
-import { OnlineBadge }                     from '@frontend/flib-react/lib/components/events/single-image/OnlineTag';
+import {
+    ResetTicket,
+    StartRegenInterval,
+}                                              from '../../../redux/ducks/device_wallet';
+import { DynamicQrCode }                       from '../DynamicQrCode';
+import { CategoryEntity }                      from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import { TicketEntity }                        from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
+import { DateEntity }                          from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { EventEntity }                         from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
+import { Sticky, StickyContainer }             from 'react-sticky';
+import { useInView }                           from 'react-intersection-observer';
+import { useWindowDimensions }                 from '@frontend/core/lib/hooks/useWindowDimensions';
+import { getPrice }                            from '../../../utils/prices';
+import { PushNotification }                    from '@frontend/core/lib/redux/ducks/notifications';
+import { OnlineBadge }                         from '@frontend/flib-react/lib/components/events/single-image/OnlineTag';
 
-import { usePlatform } from '@capacitor-community/react-hooks/platform';
-import { DownloadAppModal } from '../DownloadAppModal';
+import { usePlatform }                                             from '@capacitor-community/react-hooks/platform';
+import { DownloadAppModal }                                        from '../DownloadAppModal';
+import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
 // tslint:disable-next-line:no-var-requires
 const publicIp = require('public-ip');
 // tslint:disable-next-line:no-var-requires
@@ -142,9 +149,23 @@ interface TicketDetailsDateHeaderProps {
 
 const TicketDetailsDateHeader: React.FC<TicketDetailsDateHeaderProps> = (props: TicketDetailsDateHeaderProps): JSX.Element => {
     const [t] = useTranslation('ticket_details');
+    const [isSticky, setIsSticky] = useState(false);
+    const haptics = useHaptics();
     useEffect(() => {
         if (props.isSticky) {
             props.setFocused(props.date);
+
+            if (!isSticky) {
+                setIsSticky(true);
+                haptics.impact({
+                    style: HapticsImpactStyle.Light
+                });
+            }
+
+        } else {
+            if (isSticky) {
+                setIsSticky(false);
+            }
         }
         // eslint-disable-next-line
     }, [props.isSticky, props.date, props.setFocused]);
@@ -327,9 +348,16 @@ const QRHoverButton = (props: {
     const height = useMemo(() => window.width < 900 ? 65 : 80, [window.width]);
     const navbar = useMemo(() => window.width < 900 ? 70 : 0, [window.width]);
     const spacing = useMemo(() => window.width >= 900 ? 32 : 8, [window.width]);
+    const haptics = useHaptics();
 
     return <QRHoverContainer
-        onClick={props.onClick}
+        onClick={() => {
+
+            haptics.notification({
+                type: HapticsNotificationType.SUCCESS
+            });
+            props.onClick()
+        }}
         initial={'hidden'}
         animate={!props.inView && !props.qrOpened ? 'visible' : 'hidden'}
         variants={{
@@ -398,6 +426,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
     const { width } = useWindowDimensions();
     const [qrPrev, setQrPrev] = useState<string>(qrcodePreview);
     const [modalOpened, setModalOpened] = useState<boolean>(false);
+    const haptics = useHaptics();
 
     const { platform } = usePlatform();
 
@@ -456,7 +485,12 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                         ?
                         <Banner>
                             <QrLink>
-                                <Btn onClick={() => setModalOpened(true)} ref={ref}>
+                                <Btn onClick={() => {
+                                    haptics.notification({
+                                        type: HapticsNotificationType.SUCCESS
+                                    });
+                                    setModalOpened(true)
+                                }} ref={ref}>
                                     <img src={qrPrev} alt={'qrPreview'}/>
                                     <Timer>
                                         <span>{t('next_gen_label')}</span>
@@ -506,7 +540,12 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                                                     zIndex: 1000,
                                                     cursor: 'pointer',
                                                 }}
-                                                onClick={() => history.push(`/event/${date.id}`)}
+                                                onClick={() => {
+                                                    history.push(`/event/${date.id}`)
+                                                    haptics.impact({
+                                                        style: HapticsImpactStyle.Light
+                                                    })
+                                                }}
                                             >
                                                 <TicketDetailsDateHeader date={date} setFocused={setCurrentDate} isSticky={isSticky}
                                                                          fromBottom={distanceFromBottom}/>
@@ -540,6 +579,9 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                                             start={new Date(date.timestamps.event_begin)}
                                             end={new Date(date.timestamps.event_end)}
                                             onClick={() => {
+                                                haptics.notification({
+                                                    type: HapticsNotificationType.SUCCESS
+                                                });
                                                 onlineLinkWrapper(dispatch, t, date.online_link, date);
                                             }
                                             }

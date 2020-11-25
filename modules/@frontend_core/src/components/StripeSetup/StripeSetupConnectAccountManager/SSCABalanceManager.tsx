@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { symbolOf } from '@common/global';
+import { HapticsImpactStyle, useHaptics } from '../../../utils/useHaptics';
 
 export interface BalanceCurrencyInfo {
     amount: number;
@@ -100,6 +101,7 @@ export const SSCABalanceManager: React.FC<SSCABalanceManagerProps> = (props: SSC
     const [currency, setCurrency] = useState(recoverHighestBalance(props.currencies));
     const [, i18n] = useTranslation('language');
     const history = useHistory();
+    const haptics = useHaptics();
 
     const currenciesOptions = props.currencies.length
         ? props.currencies.map((curr: BalanceCurrencyInfo) => ({
@@ -134,12 +136,22 @@ export const SSCABalanceManager: React.FC<SSCABalanceManagerProps> = (props: SSC
                     value={[currenciesOptions[selectedIdx]]}
                     options={currenciesOptions}
                     searchable={false}
-                    onChange={(curr: any) => setCurrency(curr[0].value)}
+                    onChange={(curr: any) => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        setCurrency(curr[0].value);
+                    }}
                 />
                 <BalanceButton
                     title={'Withdraw'}
                     variant={'primary'}
-                    onClick={() => history.push('/stripe/withdraw')}
+                    onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        history.push('/stripe/withdraw');
+                    }}
                 />
             </BalanceButtonsContainer>
         </>

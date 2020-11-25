@@ -7,7 +7,8 @@ import { Icon }                       from '@frontend/flib-react/lib/components'
 import { useWindowDimensions }        from '@frontend/core/lib/hooks/useWindowDimensions';
 import { Theme }                      from '@frontend/flib-react/lib/config/theme';
 import { Brightness }                 from '@ionic-native/brightness';
-import { motion }                     from 'framer';
+import { motion }                              from 'framer';
+import { HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
 
 export interface DynamicQrCodeProps {
     name: string;
@@ -50,6 +51,7 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
         state.deviceWallet.currentTicketId,
     ]);
     const theme = useTheme() as Theme;
+    const haptics = useHaptics();
 
     useEffect(() => {
         getBrightness()
@@ -117,7 +119,12 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
                         null
                 }
             </div>
-            <Close onClick={props.onClose}>
+            <Close onClick={() => {
+                haptics.notification({
+                    type: HapticsNotificationType.WARNING
+                });
+                props.onClose()
+            }}>
                 <Icon icon={'close'} size={'32px'} color={theme.darkerBg}/>
             </Close>
         </QrCodeWrapper>

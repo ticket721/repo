@@ -4,7 +4,8 @@ import { useTranslation }                  from 'react-i18next';
 import { useSelector }                     from 'react-redux';
 import { HomeEventList }                   from './HomeEventList';
 import { LocationState, T721AppState }     from '../../../redux';
-import styled                              from 'styled-components';
+import styled                             from 'styled-components';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
 
 export interface EventListProps {
     enableFilter: () => void;
@@ -14,6 +15,7 @@ export const EventList: React.FC<EventListProps> = (props: EventListProps): JSX.
 
     const [t] = useTranslation('home');
     const location = useSelector((state: T721AppState): LocationState => state.location);
+    const haptics = useHaptics();
 
     const selectedLocation = location.customLocation || location.location;
     let locationString = null;
@@ -32,7 +34,12 @@ export const EventList: React.FC<EventListProps> = (props: EventListProps): JSX.
         <LocationHeader
             location={location.requesting ? '...' : locationString}
             title={t('browsing_events_in')}
-            onFilter={props.enableFilter}
+            onFilter={() => {
+                haptics.impact({
+                    style: HapticsImpactStyle.Light
+                })
+                props.enableFilter();
+            }}
             online={selectedLocation?.online}
         />
         {

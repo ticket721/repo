@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
 import {
-    LinksContainer,
     ArrowLink,
-    WalletHeader,
-    LanguageLink,
     FullPageLoading,
+    LanguageLink,
+    LinksContainer,
+    WalletHeader,
 } from '@frontend/flib-react/lib/components';
 import { useRequest } from '../../../hooks/useRequest';
 import { v4 } from 'uuid';
@@ -19,6 +19,7 @@ import { FeatureFlag } from '../../FeatureFlag';
 import { getEnv } from '../../../utils/getEnv';
 import { isRequestError } from '../../../utils/isRequestError';
 import { useToken } from '../../../hooks/useToken';
+import { useHaptics, HapticsImpactStyle } from '../../../utils/useHaptics';
 
 export interface ProfileRootProps {
     desktop?: boolean;
@@ -33,6 +34,7 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
     const history = useHistory();
     const [t, i18n] = useTranslation(['profile', 'common']);
     const [thisIsASelfDestructVariable, die] = useState(null);
+    const haptics = useHaptics();
 
     const tickets = useRequest<TicketsCountResponseDto>(
         {
@@ -60,18 +62,27 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                     label={t('language')}
                     currentLanguage={t(i18n.language.slice(0, 2))}
                     onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
                         history.push(desktop ? history.location.pathname + '?profile=language' : 'profile/language');
                     }}
                 />
                 <ArrowLink
                     label={t('report_bug')}
                     onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
                         window.location = getEnv().REACT_APP_BUG_REPORT_LINK;
                     }}
                 />
                 <ArrowLink
                     label={t('log_out')}
                     onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
                         dispatch(Logout());
                         history.replace('/');
                     }}
@@ -80,6 +91,9 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                     <ArrowLink
                         label={t('receive_money_with_stripe')}
                         onClick={() => {
+                            haptics.impact({
+                                style: HapticsImpactStyle.Light,
+                            });
                             history.push('/stripe/connect');
                         }}
                     />
@@ -88,6 +102,9 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                     <ArrowLink
                         label={t('you_are_an_admin')}
                         onClick={() => {
+                            haptics.impact({
+                                style: HapticsImpactStyle.Light,
+                            });
                             history.push('/you/are/an/admin');
                         }}
                     />
@@ -96,6 +113,9 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                     <ArrowLink
                         label={t('self_destruct')}
                         onClick={() => {
+                            haptics.impact({
+                                style: HapticsImpactStyle.Light,
+                            });
                             die({
                                 date_of_death: new Date(Date.now()),
                             });

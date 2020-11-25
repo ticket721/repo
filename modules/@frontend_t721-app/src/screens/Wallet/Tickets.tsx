@@ -1,25 +1,31 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import styled                         from 'styled-components';
-import TicketCard                     from './TicketCard';
-import { useHistory }                 from 'react-router';
-import { CategoryEntity }             from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-import { TicketEntity }               from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
-import { DateEntity }                 from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
-import { EventEntity }                 from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
-import { Page, motion, AnimateSharedLayout, AnimatePresence } from 'framer';
-import MediaQuery from 'react-responsive';
-import { useWindowDimensions } from '@frontend/core/lib/hooks/useWindowDimensions';
+import styled                                  from 'styled-components';
+import TicketCard                              from './TicketCard';
+import { useHistory }                          from 'react-router';
+import { CategoryEntity }                      from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import { TicketEntity }                        from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
+import { DateEntity }                          from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { EventEntity }                         from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
+import {
+    Page,
+    motion,
+    AnimateSharedLayout,
+    AnimatePresence,
+}                                              from 'framer';
+import MediaQuery                              from 'react-responsive';
+import { useWindowDimensions }                 from '@frontend/core/lib/hooks/useWindowDimensions';
+import { HapticsImpactStyle, useHaptics }      from '@frontend/core/lib/utils/useHaptics';
 
 interface TicketsProps {
     tickets: TicketEntity[];
-    categories: {[key: string]: CategoryEntity};
-    dates: {[key: string]: DateEntity};
-    events: {[key: string]: EventEntity};
+    categories: { [key: string]: CategoryEntity };
+    dates: { [key: string]: DateEntity };
+    events: { [key: string]: EventEntity };
 }
 
-export const Tickets: React.FC<TicketsProps> = ({ tickets , categories, dates, events}) => {
+export const Tickets: React.FC<TicketsProps> = ({ tickets, categories, dates, events }) => {
     const history = useHistory();
-    const [ currentIdx, setCurrentIdx ] = useState<number>(0);
+    const [currentIdx, setCurrentIdx] = useState<number>(0);
     const { width } = useWindowDimensions();
     useEffect(() => {
         const ticketIdxMatch = history.location.search.match(/ticketIdx=([0-9]+)/);
@@ -27,9 +33,10 @@ export const Tickets: React.FC<TicketsProps> = ({ tickets , categories, dates, e
             setCurrentIdx(parseInt(ticketIdxMatch[1], 10));
         }
     }, [history.location.search, tickets.length]);
+    const haptics = useHaptics();
 
-    const paddingPage = useMemo(() => Math.pow(width, 2)/5000, [width]);
-    const gapPage = useMemo(() => Math.pow(width, 2)/9000, [width]);
+    const paddingPage = useMemo(() => Math.pow(width, 2) / 5000, [width]);
+    const gapPage = useMemo(() => Math.pow(width, 2) / 9000, [width]);
 
     const buildDots = (): JSX.Element => {
         const firstIdx: number = Math.max(0, Math.min(currentIdx - 3, tickets.length - 7));
@@ -39,43 +46,53 @@ export const Tickets: React.FC<TicketsProps> = ({ tickets , categories, dates, e
 
         return <Dots leftOffset={-offset}>{
             tickets
-            .map((ticket, idx) => {
-                let dotSize: number;
-                if (firstIdx > idx || idx > lastIdx) {
-                    dotSize = 0;
-                } else {
-                    dotSize = Math.max(5, 11 - 2 * Math.abs(idx - currentIdx));
-                }
-
-                return <Dot
-                key={ticket.id}
-                size={dotSize}
-                offset={(idx - firstIdx) * 14}
-                onClick={() => setCurrentIdx(idx)}>
-                    {
-                        idx === currentIdx ?
-                        <SelectedDot layoutId={'selected-dot'}/> :
-                        null
+                .map((ticket, idx) => {
+                    let dotSize: number;
+                    if (firstIdx > idx || idx > lastIdx) {
+                        dotSize = 0;
+                    } else {
+                        dotSize = Math.max(5, 11 - 2 * Math.abs(idx - currentIdx));
                     }
-                </Dot>
-            })
-        }</Dots>
+
+                    return <Dot
+                        key={ticket.id}
+                        size={dotSize}
+                        offset={(idx - firstIdx) * 14}
+                        onClick={() => {
+                            haptics.impact({
+                                style: HapticsImpactStyle.Light,
+                            });
+                            setCurrentIdx(idx);
+                        }}>
+                        {
+                            idx === currentIdx ?
+                                <SelectedDot layoutId={'selected-dot'}/> :
+                                null
+                        }
+                    </Dot>;
+                })
+        }</Dots>;
     };
 
     return <>
         <MediaQuery maxWidth={680}>
             <TicketList>
                 <Page
-                paddingLeft={paddingPage}
-                paddingRight={paddingPage}
-                width={width}
-                height={'100%'}
-                contentHeight={'auto'}
-                gap={gapPage}
-                alignment={'center'}
-                defaultEffect={'coverflow'}
-                currentPage={currentIdx}
-                onChangePage={(idx) => setCurrentIdx(idx)}>
+                    paddingLeft={paddingPage}
+                    paddingRight={paddingPage}
+                    width={width}
+                    height={'100%'}
+                    contentHeight={'auto'}
+                    gap={gapPage}
+                    alignment={'center'}
+                    defaultEffect={'coverflow'}
+                    currentPage={currentIdx}
+                    onChangePage={(idx) => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        setCurrentIdx(idx);
+                    }}>
                     {
                         tickets.map(ticket => {
                             const ticketCategory: CategoryEntity = categories[ticket.category];
@@ -88,14 +105,14 @@ export const Tickets: React.FC<TicketsProps> = ({ tickets , categories, dates, e
                 </Page>
                 {
                     tickets.length > 1 ?
-                    <AnimateSharedLayout>
-                        <AnimatePresence>
-                            {
-                                buildDots()
-                            }
-                        </AnimatePresence>
-                    </AnimateSharedLayout> :
-                    null
+                        <AnimateSharedLayout>
+                            <AnimatePresence>
+                                {
+                                    buildDots()
+                                }
+                            </AnimatePresence>
+                        </AnimateSharedLayout> :
+                        null
                 }
             </TicketList>
         </MediaQuery>
@@ -108,16 +125,16 @@ export const Tickets: React.FC<TicketsProps> = ({ tickets , categories, dates, e
                         const event: EventEntity = events[ticketDates[0].event];
 
                         return <TicketCard
-                        key={ticket.id}
-                        ticket={ticket}
-                        category={ticketCategory}
-                        dates={ticketDates}
-                        event={event}/>;
+                            key={ticket.id}
+                            ticket={ticket}
+                            category={ticketCategory}
+                            dates={ticketDates}
+                            event={event}/>;
                     })
                 }
             </TicketDashboard>
         </MediaQuery>
-    </>
+    </>;
 };
 
 const TicketList = styled.div`
