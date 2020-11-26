@@ -203,7 +203,7 @@ export class DatesController extends ControllerBasics<DateEntity> {
             online: {
                 $eq: isOnline,
             },
-            $page_size: 100
+            $page_size: 100,
         } as SortablePagedSearch);
 
         if (!isOnline) {
