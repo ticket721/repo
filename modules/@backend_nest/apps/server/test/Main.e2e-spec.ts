@@ -102,7 +102,7 @@ describe('AppController (e2e)', () => {
         console.log('FINISHED');
     }, 60000);
 
-    /*describe('Events Controller', EventsControllerTestSuite(getCtx));
+    describe('Events Controller', EventsControllerTestSuite(getCtx));
     describe('Tickets Controller', TicketsControllerTestSuite(getCtx));
     describe('Server Controller', ServerControllerTestSuite(getCtx));
     describe('Users Controller', UsersControllerTestSuite(getCtx));
@@ -111,6 +111,6 @@ describe('AppController (e2e)', () => {
     describe('Dates Controller', DatesControllerTestSuite(getCtx));
     describe('Images Controller', ImagesControllerTestSuite(getCtx));
     describe('Geoloc Controller', GeolocControllerTestSuite(getCtx));
-    describe('FeatureFlags Controller', FeatureFlagsControllerTestSuite(getCtx));*/
+    describe('FeatureFlags Controller', FeatureFlagsControllerTestSuite(getCtx));
     describe('Venmas Controller', VenmasControllerTestSuite(getCtx));
 });

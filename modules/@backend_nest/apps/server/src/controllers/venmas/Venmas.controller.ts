@@ -1,7 +1,7 @@
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { VenmasEntity } from '@lib/common/venmas/entities/Venmas.entity';
 import { VenmasService }                                                                   from '@lib/common/venmas/Venmas.service';
-import { Body, Controller, Get, HttpCode, Injectable, Param, Post, UseFilters, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Injectable, Param, Post, UseFilters, UseGuards, HttpException } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags }  from '@nestjs/swagger';
 import { AuthGuard }               from '@nestjs/passport';
 import { Roles, RolesGuard }       from '@app/server/authentication/guards/RolesGuard.guard';
@@ -14,7 +14,8 @@ import { VenmasSearchInputDto }    from '@app/server/controllers/venmas/dto/Venm
 import { VenmasSearchResponseDto } from '@app/server/controllers/venmas/dto/VenmasSearchResponse.dto';
 import { VenmasCreateInputDto }    from '@app/server/controllers/venmas/dto/VenmasCreateInput.dto';
 import { SearchInputType }         from '@lib/common/utils/SearchInput.type';
-import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
+import { UUIDToolService }         from '@lib/common/toolbox/UUID.tool.service';
+import { VenmasUpdateResponseDto } from '@app/server/controllers/venmas/dto/VenmasUpdateResponse.dto';
 
 /**
  * Venmas Controller
@@ -77,12 +78,27 @@ export class VenmasController extends ControllerBasics<VenmasEntity> {
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
-    async update(@Body() body: VenmasEntity, @Param('venmasId') venmasId: string, @User() user: UserDto) {
+    async update(@Body() body: VenmasEntity, @Param('venmasId') venmasId: string, @User() user: UserDto): Promise<VenmasUpdateResponseDto> {
+
+        const venmasToUpdate = await this._crudCall(
+            this.venmasService.findOne(venmasId),
+            StatusCodes.InternalServerError,
+        );
+
+        if (venmasToUpdate.owner !== user.id) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Unauthorized,
+                    message: 'not_venmas_entity_owner',
+                },
+                StatusCodes.Unauthorized,
+            );
+        }
+
         await this._crudCall(
             this.venmasService.update(
                 {
-                    id: venmasId,
-                    owner: user.id,
+                    id: venmasId
                 },
                 {
                     ...body,
@@ -92,6 +108,15 @@ export class VenmasController extends ControllerBasics<VenmasEntity> {
             StatusCodes.InternalServerError,
             'cannot_update_venmas_entity',
         );
+
+        const venmasUpdatedEntity = await this._crudCall(
+            this.venmasService.findOne(venmasId),
+            StatusCodes.InternalServerError,
+        );
+
+        return {
+            venmas: venmasUpdatedEntity
+        }
     }
 
     /**
@@ -106,16 +131,39 @@ export class VenmasController extends ControllerBasics<VenmasEntity> {
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
-    async delete(@Param('venmasId') venmasId: string, @User() user: UserDto) {
-        // need to verify ownership
+    async delete(@Param('venmasId') venmasId: string, @User() user: UserDto): Promise<VenmasUpdateResponseDto> {
+
+        const venmasToDelete = await this._crudCall(
+            this.venmasService.findOne(venmasId),
+            StatusCodes.InternalServerError,
+        );
+
+        if (venmasToDelete.owner !== user.id) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Unauthorized,
+                    message: 'not_venmas_entity_owner',
+                },
+                StatusCodes.Unauthorized,
+            );
+        }
+
         await this._crudCall(
             this.venmasService.delete({
                 id: venmasId,
-                owner: user.id,
             }),
             StatusCodes.InternalServerError,
             'cannot_delete_venmas_entity',
         );
+
+        const venmasDeletedEntity = await this._crudCall(
+            this.venmasService.findOne(venmasId),
+            StatusCodes.InternalServerError,
+        );
+
+        return {
+            venmas: venmasDeletedEntity
+        }
     }
 
     /**
