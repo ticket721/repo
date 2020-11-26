@@ -200,12 +200,10 @@ export class DatesController extends ControllerBasics<DateEntity> {
             status: {
                 $eq: 'live',
             },
-            'timestamps.event_begin': {
-                $gt: hour,
-            },
             online: {
                 $eq: isOnline,
             },
+            $page_size: 100
         } as SortablePagedSearch);
 
         if (!isOnline) {
@@ -255,6 +253,10 @@ export class DatesController extends ControllerBasics<DateEntity> {
                     script: {
                         source: `
                         double time = (doc['timestamps.event_begin'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+
+                        if (time < 0) {
+                            time = Math.abs(time) * 2;
+                        }
 
                         if (doc['location.location'].empty) {
                             return time
