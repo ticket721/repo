@@ -1,5 +1,6 @@
 import styled   from 'styled-components';
 import { Icon } from '@frontend/flib-react/lib/components';
+import {motion} from 'framer-motion';
 
 export interface PaymentButtonDivProps {
     color: string;
@@ -7,7 +8,7 @@ export interface PaymentButtonDivProps {
     disabled: boolean;
 }
 
-export const PaymentButtonDiv = styled.div<PaymentButtonDivProps>`
+export const PaymentButtonDiv = styled(motion.div)<PaymentButtonDivProps>`
   opacity: ${props => props.disabled ? '0.1' : '1'};
   width: 80%;
   margin: ${props => props.theme.regularSpacing};

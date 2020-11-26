@@ -7,7 +7,6 @@ import { symbolOf }                            from '@common/global';
 import { Currency }                            from './Currency';
 import { useStripeBalance }                    from '../../../hooks/useStripeBalance';
 import { HapticsImpactStyle, useHaptics }      from '../../../utils/useHaptics';
-import { HapticsImpactStyle }                  from '@capacitor/core';
 
 interface CurrencySelectorProps {
     currency: Currency;

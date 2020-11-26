@@ -115,7 +115,7 @@ const App: React.FC = () => {
         } else {
             history.replace('/');
         }
-    }, [history.length, history.goBack, history.replace]);
+    }, [history]);
 
     const flags = {
         stripe_interface_setup: useFlag('stripe_interface_setup'),

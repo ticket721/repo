@@ -3,6 +3,7 @@ import { rgba } from 'polished';
 import styled from '../../config/styled';
 import Icon from '../icon';
 import { keyframes } from 'styled-components';
+import {motion} from 'framer-motion';
 
 export interface ButtonProps extends React.ComponentProps<any> {
     title: string;
@@ -14,7 +15,7 @@ export interface ButtonProps extends React.ComponentProps<any> {
     type?: string;
 }
 
-const StyledButton = styled.button<ButtonProps>`
+const StyledButton = styled(motion.button)<ButtonProps>`
     ${(props) =>
         props.variant === 'disabled' &&
         `
@@ -149,6 +150,9 @@ export const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps)
     if (!props.hidden) {
         return (
             <StyledButton
+                whileTap={{
+                  scale: 0.95
+                }}
                 name={props.title}
                 onClick={props.onClick}
                 gradients={props.gradients}
