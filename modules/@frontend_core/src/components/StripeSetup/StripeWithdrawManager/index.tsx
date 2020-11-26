@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { Error, FullButtonCta } from '@frontend/flib-react/lib/components';
-import { useDeepEffect } from '../../../hooks/useDeepEffect';
-import { useStripeInterface } from '../../../hooks/useStripeInterface';
-import { useStripeBalance } from '../../../hooks/useStripeBalance';
-import { useDispatch } from 'react-redux';
-import { useToken } from '../../../hooks/useToken';
-import { v4 } from 'uuid';
-import { useLazyRequest } from '../../../hooks/useLazyRequest';
-import { PushNotification } from '../../../redux/ducks/notifications';
-import { useHistory } from 'react-router';
-import { useTranslation } from 'react-i18next';
-import { BankAccountSelection } from './BankAccountSelection';
+import React, { useState }                                                                from 'react';
+import styled                                                                             from 'styled-components';
+import { Error, FullButtonCta }                                                           from '@frontend/flib-react/lib/components';
+import { useDeepEffect }                                                                  from '../../../hooks/useDeepEffect';
+import { useStripeInterface }                                                             from '../../../hooks/useStripeInterface';
+import { useStripeBalance }                                                               from '../../../hooks/useStripeBalance';
+import { useDispatch }                                                                    from 'react-redux';
+import { useToken }                                                                       from '../../../hooks/useToken';
+import { v4 }                                                                             from 'uuid';
+import { useLazyRequest }                                                                 from '../../../hooks/useLazyRequest';
+import { PushNotification }                                                               from '../../../redux/ducks/notifications';
+import { useHistory }                                                                     from 'react-router';
+import { useTranslation }                                                                 from 'react-i18next';
+import { BankAccountSelection }                                                           from './BankAccountSelection';
 import { CurrencySelector, CurrencyValue, PriceSelectionContainer, PriceSelectionDrawer } from './PriceSelection';
-import { MaxBalanceSelector, PriceIndicationsContainer, TotalBalanceIndication } from './PriceIndications';
+import { MaxBalanceSelector, PriceIndicationsContainer, TotalBalanceIndication }          from './PriceIndications';
 import './StripeWithdrawManager.locales';
-import { isRequestError } from '../../../utils/isRequestError';
+import { isRequestError }                                                                 from '../../../utils/isRequestError';
+import { HapticsImpactStyle, useHaptics }                                                 from '../../../utils/useHaptics';
 
 const Container = styled.div`
     height: 100%;
@@ -69,6 +70,7 @@ export const StripeWithdrawManager: React.FC = (): JSX.Element => {
     const createStripePayoutRequest = useLazyRequest('payment.stripe.payout', uuid);
     const dispatch = useDispatch();
     const history = useHistory();
+    const haptics = useHaptics();
 
     useDeepEffect(() => {
         if (currency !== null && amount !== null && amount !== '' && amount !== '0' && clicked) {
@@ -176,7 +178,12 @@ export const StripeWithdrawManager: React.FC = (): JSX.Element => {
                 currency={currency?.currency}
             />
             <FullButtonCta
-                onClick={() => setClicked(true)}
+                onClick={() => {
+                    haptics.impact({
+                        style: HapticsImpactStyle.Light
+                    })
+                    setClicked(true)}
+                }
                 ctaLabel={t('cta_title')}
                 show={showCta(selectedAccount, amount)}
                 variant={'primary'}

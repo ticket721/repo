@@ -1,12 +1,13 @@
-import styled, { useTheme } from 'styled-components';
-import { RequestBag } from '@frontend-core/hooks/useRequest';
-import { PaymentStripeFetchInterfaceResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/payment/stripe/dto/PaymentStripeFetchInterfaceResponse.dto';
-import React from 'react';
-import { Theme } from '@frontend/flib-react/lib/config/theme';
+import styled, { useTheme }                                       from 'styled-components';
+import { RequestBag }                                             from '@frontend-core/hooks/useRequest';
+import { PaymentStripeFetchInterfaceResponseDto }                 from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/payment/stripe/dto/PaymentStripeFetchInterfaceResponse.dto';
+import React                                                      from 'react';
+import { Theme }                                                  from '@frontend/flib-react/lib/config/theme';
 import { Error, FullPageLoading, SelectableComponentListElement } from '@frontend/flib-react/lib/components';
-import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
-import { useTranslation } from 'react-i18next';
-import { isRequestError } from '../../../utils/isRequestError';
+import { StripeInterfaceEntity }                                  from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
+import { useTranslation }                                         from 'react-i18next';
+import { isRequestError }                                         from '../../../utils/isRequestError';
+import { HapticsImpactStyle, useHaptics }                                                 from '../../../utils/useHaptics';
 
 const TitleContainer = styled.div`
     width: 100%;
@@ -52,6 +53,7 @@ export const BankAccountSelection: React.FC<BankAccountSelectionProps> = (
 ): JSX.Element => {
     const theme = useTheme() as Theme;
     const [t] = useTranslation('stripe_withdraw_manager');
+    const haptics = useHaptics();
 
     if (props.stripeInterfaceRequestBag.response.loading || !props.currency) {
         return <FullPageLoading />;
@@ -88,6 +90,9 @@ export const BankAccountSelection: React.FC<BankAccountSelectionProps> = (
                     selected={props.selectedAccount === idx}
                     key={`${ext.name}${idx}`}
                     onSelection={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light
+                        })
                         props.setSelectedAccount(idx);
                     }}
                 >

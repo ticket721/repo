@@ -115,6 +115,7 @@ const RefreshIconContainer = styled(motion.div)<RefreshIconProps>`
     top: calc(16px + constant(safe-area-inset-top));
     right: 24px;
     z-index: 10000;
+    cursor: pointer;
 `;
 
 export interface StripeSetupConnectAccountManagerProps {

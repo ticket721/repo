@@ -110,12 +110,12 @@ const App: React.FC = () => {
     );
 
     const goBackOrHome = useCallback(() => {
-        if (history.length > 2) {
+        if (history.length > 1) {
             history.goBack();
         } else {
             history.replace('/');
         }
-    }, [history]);
+    }, [history.length, history.goBack, history.replace]);
 
     const flags = {
         stripe_interface_setup: useFlag('stripe_interface_setup'),

@@ -1,11 +1,13 @@
-import styled from 'styled-components';
-import { Icon } from '@frontend/flib-react/lib/components';
-import { motion } from 'framer-motion';
+import styled                                  from 'styled-components';
+import { Icon }                                from '@frontend/flib-react/lib/components';
+import { motion }                              from 'framer-motion';
 import React, { useEffect, useMemo, useState } from 'react';
-import Cleave from 'cleave.js/react';
-import { symbolOf } from '@common/global';
-import { Currency } from './Currency';
-import { useStripeBalance } from '../../../hooks/useStripeBalance';
+import Cleave                                  from 'cleave.js/react';
+import { symbolOf }                            from '@common/global';
+import { Currency }                            from './Currency';
+import { useStripeBalance }                    from '../../../hooks/useStripeBalance';
+import { HapticsImpactStyle, useHaptics }      from '../../../utils/useHaptics';
+import { HapticsImpactStyle }                  from '@capacitor/core';
 
 interface CurrencySelectorProps {
     currency: Currency;
@@ -29,6 +31,8 @@ const ChangeIcon = styled(Icon)`
 const ChangeContainer = styled(motion.div)``;
 
 export const CurrencySelector: React.FC<CurrencySelectorProps> = (props: CurrencySelectorProps) => {
+    const haptics = useHaptics();
+
     return (
         <div
             style={{
@@ -38,6 +42,9 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = (props: Currenc
                 justifyContent: 'center',
             }}
             onClick={() => {
+                haptics.impact({
+                    style: HapticsImpactStyle.Light
+                });
                 if (props.currency) {
                     props.setOpen(!props.isOpen);
                 }
@@ -239,6 +246,7 @@ export const PriceSelectionDrawer: React.FC<PriceSelectionDrawerProps> = (
     props: PriceSelectionDrawerProps,
 ): JSX.Element => {
     const stripeBalanceRequestBag = useStripeBalance();
+    const haptics = useHaptics();
 
     if (!stripeBalanceRequestBag.response!.data) {
         return null;
@@ -260,6 +268,9 @@ export const PriceSelectionDrawer: React.FC<PriceSelectionDrawerProps> = (
             {stripeBalanceRequestBag.response.data.balance.available.map((curr: Currency) => (
                 <CurrencyButton
                     onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light
+                        });
                         props.setCurrency(curr);
                         props.setOpen(false);
                     }}

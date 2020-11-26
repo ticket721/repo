@@ -1,17 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useTranslation }                  from 'react-i18next';
-import { Button }                          from '@frontend/flib-react/lib/components';
-import { v4 }                              from 'uuid';
-import { useDispatch }        from 'react-redux';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
-import { useLazyRequest }                  from '@frontend/core/lib/hooks/useLazyRequest';
-import { PurchasesSetProductsResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
-import { isNil }                           from 'lodash';
-import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
-import { PurchaseError }                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
-import { CartContext }                     from '../Cart/CartContext';
-import styled                              from 'styled-components';
-import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
+import { useTranslation }                         from 'react-i18next';
+import { Button }                                 from '@frontend/flib-react/lib/components';
+import { v4 }                                     from 'uuid';
+import { useDispatch }                            from 'react-redux';
+import { useToken }                               from '@frontend/core/lib/hooks/useToken';
+import { useLazyRequest }                         from '@frontend/core/lib/hooks/useLazyRequest';
+import { PurchasesSetProductsResponseDto }        from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
+import { isNil }                                  from 'lodash';
+import { PushNotification }                       from '@frontend/core/lib/redux/ducks/notifications';
+import { PurchaseError }                          from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
+import { CartContext }                            from '../Cart/CartContext';
+import styled                                     from 'styled-components';
+import { getEnv }                                 from '@frontend/core/lib/utils/getEnv';
+import { HapticsImpactStyle, useHaptics }         from '@frontend/core/lib/utils/useHaptics';
 
 const CartExpiredContainer = styled.div`
   width: 100%;
@@ -39,6 +40,7 @@ export const CartMenuExpired: React.FC<CartMenuExpiredProps> = (props: CartMenuE
     const token = useToken();
     const [capturedTimesstamp, setTimestamp] = useState(null);
     const dispatch = useDispatch();
+    const haptics = useHaptics();
 
     const setProductsLazyRequest = useLazyRequest<PurchasesSetProductsResponseDto>('purchases.setProducts', uuid);
 
@@ -66,6 +68,9 @@ export const CartMenuExpired: React.FC<CartMenuExpiredProps> = (props: CartMenuE
         [setProductsLazyRequest.response.data, setProductsLazyRequest.response.error, setProductsLazyRequest.response.called]);
 
     const onClear = () => {
+        haptics.impact({
+            style: HapticsImpactStyle.Light
+        });
         setProductsLazyRequest.lazyRequest([
             token,
             {
