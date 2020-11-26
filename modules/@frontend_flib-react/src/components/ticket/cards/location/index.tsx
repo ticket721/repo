@@ -3,6 +3,7 @@ import styled from '../../../../config/styled';
 import CardContainer from '../../../elements/card-container';
 import Icon from '../../../icon';
 import { Map, Marker, TileLayer, withLeaflet } from 'react-leaflet';
+import { useMediaQuery } from 'react-responsive';
 // tslint:disable-next-line:no-var-requires
 const { android, ios, macos } = require('platform-detect/os.mjs').default;
 
@@ -32,13 +33,14 @@ const Info = styled.span`
     text-overflow: ellipsis;
     line-height: 16px;
 
-    &:first-of-type {
-        margin-top: 2px;
-    }
-
     &:last-of-type {
         color: ${(props) => props.theme.textColorDark};
         margin-top: 8px;
+    }
+
+    &:first-of-type {
+        color: ${(props) => props.theme.textColor};
+        margin-top: 2px;
     }
 `;
 
@@ -86,6 +88,8 @@ const openMap = (location: string) => {
 export const LocationCard: React.FunctionComponent<LocationCardProps & { className?: string }> = (
     props: LocationCardProps,
 ): JSX.Element => {
+    const isSmall = useMediaQuery({ query: '(max-height: 700px)' });
+
     return (
         <ClickableContainer onClick={() => (!props.disabled ? openMap(props.location) : null)}>
             <CardContainer
@@ -103,24 +107,28 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
                 {props.online ? (
                     <Column iconColor={props.iconColor}>
                         <Info>{props.online_label}</Info>
-                        <Info
-                            style={{
-                                fontWeight: 400,
-                            }}
-                        >
-                            {props.online_sublabel}
-                        </Info>
+                        {!isSmall ? (
+                            <Info
+                                style={{
+                                    fontWeight: 400,
+                                }}
+                            >
+                                {props.online_sublabel}
+                            </Info>
+                        ) : null}
                     </Column>
                 ) : (
                     <Column iconColor={props.iconColor}>
                         <Info>{props.location}</Info>
-                        <Info
-                            style={{
-                                fontWeight: 400,
-                            }}
-                        >
-                            {props.subtitle}
-                        </Info>
+                        {!isSmall ? (
+                            <Info
+                                style={{
+                                    fontWeight: 400,
+                                }}
+                            >
+                                {props.subtitle}
+                            </Info>
+                        ) : null}
                     </Column>
                 )}
             </CardContainer>

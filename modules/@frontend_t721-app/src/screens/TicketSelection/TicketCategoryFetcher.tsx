@@ -42,7 +42,6 @@ const OnlineTagContainer = styled.div`
       top: calc(10px + constant(safe-area-inset-top));
       right: 14px;
     }
-    
   z-index: 9999;
 `;
 

@@ -53,11 +53,6 @@ const Wallet: React.FC = () => {
 
     return (
         <Container>
-            <Title>
-                <h1>
-                    {t('my_tickets')}
-                </h1>
-            </Title>
             {
                 ticketsResp.response.data?.tickets?.length > 0
 
@@ -87,30 +82,6 @@ const Wallet: React.FC = () => {
 const Container = styled.div`
     display: flex;
     flex-direction: column;
-`;
-
-const Title = styled.div`
-    font-weight: bold;
-    color: ${props => props.theme.textColor};
-    font-family: ${props => props.theme.fontStack};
-    margin-top: ${props => props.theme.regularSpacing};
-
-    h1 {
-        margin-bottom: 0;
-        text-align: center;
-        font-size: 16px;
-
-        @media screen and (min-width: 900px) {
-            text-align: start;
-            font-size: 24px;
-        }
-    }
-
-    @media screen and (min-width: 900px) {
-        width: 100%;
-        margin-top: ${props => props.theme.doubleSpacing};
-        padding-left: ${props => props.theme.doubleSpacing};
-    }
 `;
 
 const EmptyWallet = styled.div`

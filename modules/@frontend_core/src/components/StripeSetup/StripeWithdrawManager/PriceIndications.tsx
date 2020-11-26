@@ -1,9 +1,9 @@
-import styled                      from 'styled-components';
-import { Currency }                from '@frontend-core/components/StripeSetup/StripeWithdrawManager/Currency';
-import React                       from 'react';
-import { symbolOf }                from '@common/global';
-import { useTranslation }          from 'react-i18next';
-import { useHaptics, HapticsNotificationType }              from '../../../utils/useHaptics';
+import styled from 'styled-components';
+import { Currency } from '@frontend-core/components/StripeSetup/StripeWithdrawManager/Currency';
+import React from 'react';
+import { symbolOf } from '@common/global';
+import { useTranslation } from 'react-i18next';
+import { useHaptics, HapticsNotificationType } from '../../../utils/useHaptics';
 
 const IndicationText = styled.span`
     color: white;
@@ -64,8 +64,8 @@ export const MaxBalanceSelector: React.FC<MaxBalanceSelectorProps> = (props: Max
         <IndicationText
             onClick={() => {
                 haptics.notification({
-                    type: HapticsNotificationType.SUCCESS
-                })
+                    type: HapticsNotificationType.SUCCESS,
+                });
                 props.setAmount(props.currency.amount.toString());
                 props.closeCurrencySelection();
             }}

@@ -1,12 +1,12 @@
-import styled                                  from 'styled-components';
-import { Icon }                                from '@frontend/flib-react/lib/components';
-import { motion }                              from 'framer-motion';
+import styled from 'styled-components';
+import { Icon } from '@frontend/flib-react/lib/components';
+import { motion } from 'framer-motion';
 import React, { useEffect, useMemo, useState } from 'react';
-import Cleave                                  from 'cleave.js/react';
-import { symbolOf }                            from '@common/global';
-import { Currency }                            from './Currency';
-import { useStripeBalance }                    from '../../../hooks/useStripeBalance';
-import { HapticsImpactStyle, useHaptics }      from '../../../utils/useHaptics';
+import Cleave from 'cleave.js/react';
+import { symbolOf } from '@common/global';
+import { Currency } from './Currency';
+import { useStripeBalance } from '../../../hooks/useStripeBalance';
+import { HapticsImpactStyle, useHaptics } from '../../../utils/useHaptics';
 
 interface CurrencySelectorProps {
     currency: Currency;
@@ -42,7 +42,7 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = (props: Currenc
             }}
             onClick={() => {
                 haptics.impact({
-                    style: HapticsImpactStyle.Light
+                    style: HapticsImpactStyle.Light,
                 });
                 if (props.currency) {
                     props.setOpen(!props.isOpen);
@@ -268,7 +268,7 @@ export const PriceSelectionDrawer: React.FC<PriceSelectionDrawerProps> = (
                 <CurrencyButton
                     onClick={() => {
                         haptics.impact({
-                            style: HapticsImpactStyle.Light
+                            style: HapticsImpactStyle.Light,
                         });
                         props.setCurrency(curr);
                         props.setOpen(false);
