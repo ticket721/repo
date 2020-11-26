@@ -31,6 +31,11 @@ html {
     height: 100%;
     margin: 0;
     background: linear-gradient(91.44deg, #0a0812 0.31%, #120f1a 99.41%);
+    user-select: none; /* supported by Chrome and Opera */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
 body {

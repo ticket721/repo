@@ -119,12 +119,17 @@ export const DynamicQrCode: React.FC<DynamicQrCodeProps> = (props: DynamicQrCode
                         null
                 }
             </div>
-            <Close onClick={() => {
-                haptics.notification({
-                    type: HapticsNotificationType.WARNING
-                });
-                props.onClose()
-            }}>
+            <Close
+                onClick={() => {
+                    haptics.notification({
+                        type: HapticsNotificationType.WARNING
+                    });
+                    props.onClose()
+                }}
+                whileTap={{
+                    scale: 0.9
+                }}
+            >
                 <Icon icon={'close'} size={'32px'} color={theme.darkerBg}/>
             </Close>
         </QrCodeWrapper>
@@ -199,5 +204,5 @@ const TicketId = styled.span`
     text-transform: uppercase;
 `;
 
-const Close = styled.div`
+const Close = styled(motion.div)`
 `;

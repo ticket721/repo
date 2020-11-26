@@ -111,6 +111,9 @@ export const CartButton: React.FC = (): JSX.Element => {
             });
             cart.openMenu();
         }}
+        whileTap={{
+            scale: 0.95
+        }}
         spacing={spacing}
         navbar={navbar}
         width={width}

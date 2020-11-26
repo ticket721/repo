@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 import { OnlineBadge } from '../../events/single-image/OnlineTag';
+import { motion } from 'framer-motion';
 
 export interface SearchResultsProps extends React.ComponentProps<any> {
     noResultsLabel: string;
@@ -42,7 +43,7 @@ const ImgContainer = styled.div<{ src: string }>`
     background-position: center;
 `;
 
-const SingleResult = styled.article<React.ComponentProps<any>>`
+const SingleResult = styled(motion.article)<React.ComponentProps<any>>`
     align-items: center;
     display: flex;
     font-size: 13px;
@@ -103,7 +104,12 @@ const AbsoluteOnlineTagDiv = styled.div`
 
 export const SingleEvent = (props: Event & { customMarginBottom?: string; online?: boolean }) => {
     return (
-        <SingleResult clickable={!!props.onClick} onClick={props.onClick} customMarginBottom={props.customMarginBottom}>
+        <SingleResult
+            clickable={!!props.onClick}
+            onClick={props.onClick}
+            customMarginBottom={props.customMarginBottom}
+            whileTap={{ scale: 0.95 }}
+        >
             <ImgContainer src={props.image}>
                 {props.online ? (
                     <AbsoluteOnlineTagDiv>

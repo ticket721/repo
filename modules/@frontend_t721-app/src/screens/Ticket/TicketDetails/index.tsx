@@ -358,6 +358,9 @@ const QRHoverButton = (props: {
             });
             props.onClick()
         }}
+        whileTap={{
+            scale: 0.95
+        }}
         initial={'hidden'}
         animate={!props.inView && !props.qrOpened ? 'visible' : 'hidden'}
         variants={{
@@ -485,12 +488,18 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                         ?
                         <Banner>
                             <QrLink>
-                                <Btn onClick={() => {
-                                    haptics.notification({
-                                        type: HapticsNotificationType.SUCCESS
-                                    });
-                                    setModalOpened(true)
-                                }} ref={ref}>
+                                <Btn
+                                    onClick={() => {
+                                        haptics.notification({
+                                            type: HapticsNotificationType.SUCCESS
+                                        });
+                                        setModalOpened(true)
+                                    }}
+                                    ref={ref}
+                                    whileTap={{
+                                        scale: 0.95
+                                    }}
+                                >
                                     <img src={qrPrev} alt={'qrPreview'}/>
                                     <Timer>
                                         <span>{t('next_gen_label')}</span>
@@ -608,17 +617,17 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
             </Details>
         </TicketContent>
         <AnimatePresence>
-        {
-            modalOpened ?
-                platform === 'ios' || platform === 'android' ?
-                <DynamicQrCode
-                name={props.event.name}
-                category={props.category.display_name}
-                color={props.event.signature_colors[0]}
-                onClose={() => setModalOpened(false)}/> :
-                <DownloadAppModal closeModal={() => setModalOpened(false)}/> :
-            null
-        }
+            {
+                modalOpened ?
+                    platform === 'ios' || platform === 'android' ?
+                        <DynamicQrCode
+                            name={props.event.name}
+                            category={props.category.display_name}
+                            color={props.event.signature_colors[0]}
+                            onClose={() => setModalOpened(false)}/> :
+                        <DownloadAppModal closeModal={() => setModalOpened(false)}/> :
+                    null
+            }
         </AnimatePresence>
     </Container>;
 };
@@ -665,7 +674,7 @@ const QrLink = styled.div`
     background-color: rgba(0,0,0,0.6);
 `;
 
-const Btn = styled.div`
+const Btn = styled(motion.div)`
     display: flex;
     width: 100%;
     justify-content: space-around;

@@ -28,12 +28,15 @@ const TicketCard = ({ ticket, category, dates, event, width }: TicketCardProps) 
     const haptics = useHaptics();
 
     return (
-        <Container customWidth={width} onClick={() => {
-            history.push(`/ticket/${ticket.id}`)
-            haptics.impact({
-                style: HapticsImpactStyle.Heavy
-            });
-        }}>
+        <Container
+            customWidth={width}
+            onClick={() => {
+                history.push(`/ticket/${ticket.id}`)
+                haptics.impact({
+                    style: HapticsImpactStyle.Heavy
+                });
+            }}
+        >
             <TicketHeader
                 cover={dates[idx % dates.length].metadata.avatar}
                 datesCount={dates.length}

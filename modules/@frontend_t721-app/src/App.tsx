@@ -110,7 +110,7 @@ const App: React.FC = () => {
     );
 
     const goBackOrHome = useCallback(() => {
-        if (history.length > 2) {
+        if (history.length > 1) {
             history.goBack();
         } else {
             history.replace('/');

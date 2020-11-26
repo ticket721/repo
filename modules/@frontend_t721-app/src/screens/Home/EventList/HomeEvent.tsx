@@ -11,6 +11,7 @@ import { getPriceRange }               from '../../../utils/prices';
 import { useTranslation }              from 'react-i18next';
 import { useToken }                    from '@frontend/core/lib/hooks/useToken';
 import styled                          from 'styled-components';
+import {motion} from 'framer-motion';
 import { useHaptics, HapticsImpactStyle }                  from '@frontend/core/lib/utils/useHaptics';
 
 export interface HomeEventProps {
@@ -50,29 +51,34 @@ export const HomeEvent: React.FC<HomeEventProps> = (props: HomeEventProps): JSX.
     ], t('coming_soon'), t('free'));
 
 
-    return <EventContainer>
-        <SingleImage
-        onClick={() => {
+    return <EventContainer
+        whileTap={{
+            scale: 0.98
+        }}
+        onTap={() => {
             haptics.impact({
                 style: HapticsImpactStyle.Light
             })
             history.push(`/event/${props.date.id}`)
         }}
-        id={props.idx}
-        key={props.idx}
-        cover={imageUrl}
-        text={props.date.location ? props.date.location.location_label : t('online')}
-        online={props.date.online}
-        online_text={t('online')}
-        title={props.date.metadata.name}
-        mainColor={props.date.metadata.signature_colors[0]}
-        price={priceString}
-        dateLabel={dateString}/>
+    >
+        <SingleImage
+            id={props.idx}
+            key={props.idx}
+            cover={imageUrl}
+            text={props.date.location ? props.date.location.location_label : t('online')}
+            online={props.date.online}
+            online_text={t('online')}
+            title={props.date.metadata.name}
+            mainColor={props.date.metadata.signature_colors[0]}
+            price={priceString}
+            dateLabel={dateString}/>
     </EventContainer>
 };
 
-const EventContainer = styled.div`
+const EventContainer = styled(motion.div)`
     margin: ${props => props.theme.regularSpacing};
+    cursor: pointer;
 
     width: calc((100% - 8 * ${props => props.theme.regularSpacing}) / 4);
 

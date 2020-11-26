@@ -5,7 +5,9 @@ i18n.addResourceBundle('en', 'wallet', {
     fetch_error: 'Unable to get your tickets',
     empty_wallet: 'Empty wallet',
     return_to_search: 'Return to Search',
-    my_tickets: 'My Tickets',
+    my_tickets: 'Tickets',
+    my_past_tickets: 'Past tickets',
+    no_coming_tickets: 'No upcoming events'
 });
 
 i18n.addResourceBundle('fr', 'wallet', {
@@ -13,5 +15,7 @@ i18n.addResourceBundle('fr', 'wallet', {
     fetch_error: 'Impossible de récuperer vos tickets',
     empty_wallet: 'Wallet vide',
     return_to_search: 'Retournez à la recherche',
-    my_tickets: 'Mes Billets',
+    my_tickets: 'Billets',
+    my_past_tickets: 'Anciens billets',
+    no_coming_tickets: 'Aucun événement à venir'
 });

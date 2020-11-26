@@ -16,6 +16,7 @@ import { CurrencySelector, CurrencyValue, PriceSelectionContainer, PriceSelectio
 import { MaxBalanceSelector, PriceIndicationsContainer, TotalBalanceIndication } from './PriceIndications';
 import './StripeWithdrawManager.locales';
 import { isRequestError } from '../../../utils/isRequestError';
+import { HapticsImpactStyle, useHaptics } from '../../../utils/useHaptics';
 
 const Container = styled.div`
     height: 100%;
@@ -69,6 +70,7 @@ export const StripeWithdrawManager: React.FC = (): JSX.Element => {
     const createStripePayoutRequest = useLazyRequest('payment.stripe.payout', uuid);
     const dispatch = useDispatch();
     const history = useHistory();
+    const haptics = useHaptics();
 
     useDeepEffect(() => {
         if (currency !== null && amount !== null && amount !== '' && amount !== '0' && clicked) {
@@ -176,7 +178,12 @@ export const StripeWithdrawManager: React.FC = (): JSX.Element => {
                 currency={currency?.currency}
             />
             <FullButtonCta
-                onClick={() => setClicked(true)}
+                onClick={() => {
+                    haptics.impact({
+                        style: HapticsImpactStyle.Light,
+                    });
+                    setClicked(true);
+                }}
                 ctaLabel={t('cta_title')}
                 show={showCta(selectedAccount, amount)}
                 variant={'primary'}

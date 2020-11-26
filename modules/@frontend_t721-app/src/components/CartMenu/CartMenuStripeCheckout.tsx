@@ -127,6 +127,9 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
                 }
 
                 <PaymentButtonDiv
+                    whileTap={{
+                        scale: 0.95
+                    }}
                     disabled={true}
                     color={'#ffffff'}
                     textColor={'#000000'}
@@ -140,6 +143,9 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
                 </PaymentButtonDiv>
 
                 <PaymentButtonDiv
+                    whileTap={{
+                        scale: 0.95
+                    }}
                     disabled={false}
                     color={theme.primaryColorGradientEnd.hex}
                     textColor={'#ffffff'}
@@ -159,6 +165,9 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
                 </PaymentButtonDiv>
 
                 <PaymentButtonDiv
+                    whileTap={{
+                        scale: 0.95
+                    }}
                     disabled={false}
                     color={theme.errorColor.hex}
                     textColor={'#ffffff'}
