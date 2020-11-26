@@ -27,15 +27,32 @@ const TicketSelectionContainer = styled.div`
 
 const TicketSelectionTitle = styled.h1`
     margin-left: ${props => props.theme.regularSpacing};
+    margin-top: 0;
+    margin-bottom: 0;
 `;
 
 const OnlineTagContainer = styled.div`
-  position: fixed;
-  top: calc(10px + env(safe-area-inset-top));
-  top: calc(10px + constant(safe-area-inset-top));
-  right: 14px;
+
+    margin-left: ${props => props.theme.regularSpacing};
+
+    @media screen and (max-width: 900px) {
+      margin-left: 0;
+      position: fixed;
+      top: calc(10px + env(safe-area-inset-top));
+      top: calc(10px + constant(safe-area-inset-top));
+      right: 14px;
+    }
+    
   z-index: 9999;
 `;
+
+const TitleContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: ${props => props.theme.regularSpacing};
+`
 
 const NoCategoriesContainer = styled.div`
   width: 100%;
@@ -89,24 +106,28 @@ export const TicketCategoryFetcher: React.FC<TicketCategoryFetcherProps> = (prop
 
     return <TicketSelectionContainer>
         {
-            props.date.online
-
-                ?
-                <OnlineTagContainer>
-                    <OnlineTag
-                        online={t('online')}
-                    />
-                </OnlineTagContainer>
-
-                :
-                null
-        }
-        {
             liveCategories.length > 0
 
                 ?
                 <>
-                    <TicketSelectionTitle>{t('title')}</TicketSelectionTitle>
+                    <TitleContainer>
+                        <TicketSelectionTitle>
+                            {t('title')}
+                        </TicketSelectionTitle>
+                        {
+                            props.date.online
+
+                                ?
+                                <OnlineTagContainer>
+                                    <OnlineTag
+                                        online={t('online')}
+                                    />
+                                </OnlineTagContainer>
+
+                                :
+                                null
+                        }
+                    </TitleContainer>
                     <TicketDateCategoryList
                         categories={liveCategories}
                         date={props.date}
