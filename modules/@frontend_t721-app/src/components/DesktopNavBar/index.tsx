@@ -64,6 +64,9 @@ export const DesktopNavbar: React.FC = () => {
                 <Link to='/wallet' selected={history.location.pathname.startsWith('/wallet')}>
                     {t('my_tickets')}
                 </Link>
+                <Link to='/tags' selected={history.location.pathname.startsWith('/tags')}>
+                    {t('liked_events')}
+                </Link>
             </LeftSide>
             <UserContainer>
                 { user ?

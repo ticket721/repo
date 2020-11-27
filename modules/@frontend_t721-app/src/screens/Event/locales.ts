@@ -14,6 +14,10 @@ i18n.addResourceBundle('en', 'event', {
     coming_soon: 'Coming soon',
     online: 'Online',
     links: 'Links',
+    copied: 'Link copied to clipboard',
+    share_title: 'Share event',
+    share_text: 'Share event',
+    share_dialog: 'Share event',
 
     error_cannot_fetch_dates: 'Cannot fetch event',
     error_cannot_fetch_cart: 'Cannot recover cart',
@@ -36,6 +40,10 @@ i18n.addResourceBundle('fr', 'event', {
     coming_soon: 'Bientôt disponible',
     online: 'En ligne',
     links: 'Liens',
+    copied: 'Lien ajouté au presse-papier',
+    share_title: 'Partager l\'événement',
+    share_text: 'Partager l\'événement',
+    share_dialog: 'Partager l\'événement',
 
     error_cannot_fetch_event: 'Informations indisponibles',
     error_cannot_fetch_dates: 'Informations indisponibles',

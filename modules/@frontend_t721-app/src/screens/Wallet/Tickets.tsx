@@ -19,6 +19,7 @@ import { isNil }                          from 'lodash';
 import { useTranslation }                 from 'react-i18next';
 import { OnlineBadge }                    from '@frontend/flib-react/lib/components/events/single-image/OnlineTag';
 import { formatShort }                    from '@frontend/core/lib/utils/date';
+import { useStateWithLocalStorage }       from '@frontend/core/lib/utils/useStateWithLocalStorage';
 
 const Title = styled.div`
     font-weight: bold;
@@ -167,18 +168,6 @@ const useTime = (itv: number) => {
     }, [now, itv]);
 
     return now;
-};
-
-const useStateWithLocalStorage = (localStorageKey, initialValue = null) => {
-    const [value, setValue] = React.useState(
-        JSON.parse(localStorage.getItem(localStorageKey)) || initialValue
-    );
-
-    React.useEffect(() => {
-        localStorage.setItem(localStorageKey, JSON.stringify(value));
-    }, [value, localStorageKey]);
-
-    return [value, setValue];
 };
 
 export const Tickets: React.FC<TicketsProps> = (props: TicketsProps) => {

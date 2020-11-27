@@ -148,6 +148,13 @@ const MapContainer = styled.div`
     .leaflet-container {
         width: 100%;
         padding-top: 100%;
+        border-radius: ${(props) => props.theme.defaultRadius};
+
+        @media screen and (max-width: 900px) {
+            height: 150px;
+            padding-top: 150px;
+            border-radius: 0;
+        }
     }
 
     .leaflet-left {
