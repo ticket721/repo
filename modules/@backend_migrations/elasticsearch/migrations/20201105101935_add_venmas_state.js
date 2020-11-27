@@ -24,8 +24,18 @@ class M20201105101935_add_venmas_state extends ElasticMigration {
                                 "type": "text"
                             },
                             "points": {
-                                "cql_collection": "set",
-                                "type": "point"
+                                "cql_collection": "list",
+                                "type": "nested",
+                                "properties": {
+                                    "x": {
+                                        "cql_collection": "singleton",
+                                        "type": "float"
+                                    },
+                                    "y": {
+                                        "cql_collection": "singleton",
+                                        "type": "float"
+                                    }
+                                }
                             }
                         }
                     }
