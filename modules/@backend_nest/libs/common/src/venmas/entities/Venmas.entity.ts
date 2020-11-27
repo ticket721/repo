@@ -6,12 +6,17 @@ import {
     UpdateDateColumn,
 } from '@iaminfinity/express-cassandra';
 
+export interface Point {
+    x: number;
+    y: number;
+}
+
 export interface Sections {
     id: string;
     type: string;
     name: string;
     description: string;
-    points: [number, number][];
+    points: Point[];
 }
 
 /**
@@ -40,8 +45,18 @@ export interface Sections {
                         cql_collection: 'singleton',
                     },
                     points: {
-                        type: 'float',
-                        cql_collection: 'set',
+                        cql_collection: 'list',
+                        type: 'nested',
+                        properties: {
+                            x: {
+                                cql_collection: 'singleton',
+                                type: 'float',
+                            },
+                            y: {
+                                cql_collection: 'singleton',
+                                type: 'float',
+                            },
+                        },
                     },
                 },
             },
@@ -52,17 +67,17 @@ export class VenmasEntity {
     /**
      * Entity Builder
      *
-     * @param r
+     * @param v
      */
-    constructor(r?: VenmasEntity) {
-        if (r) {
-            this.id = r.id;
-            this.name = r.name;
-            this.owner = r.owner;
-            this.map = r.map;
-            this.sections = r.sections;
-            this.created_at = r.created_at;
-            this.updated_at = r.updated_at;
+    constructor(v?: VenmasEntity) {
+        if (v) {
+            this.id = v.id ? v.id.toString() : v.id;
+            this.name = v.name;
+            this.owner = v.owner ? v.owner.toString() : v.owner;
+            this.map = v.map;
+            this.sections = v.sections;
+            this.created_at = v.created_at;
+            this.updated_at = v.updated_at;
         }
     }
 
@@ -104,10 +119,11 @@ export class VenmasEntity {
      * Venmas entity sections
      */
     @Column({
-        type: 'text',
+        type: 'list',
+        typeDef: '<frozen<ticket721.venmas_section>>',
     })
     // tslint:disable-next-line:variable-name
-    sections: Sections;
+    sections: Sections[];
 
     /**
      * Creation timestamp

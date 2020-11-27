@@ -17,5 +17,5 @@ export class VenmasCreateInputDto {
     /**
      * Venmas entity sections
      */
-    sections: Sections;
+    sections: Sections[];
 }

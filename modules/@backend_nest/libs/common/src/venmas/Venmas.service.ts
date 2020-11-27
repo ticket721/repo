@@ -1,10 +1,8 @@
-import { VenmasRepository }                         from '@lib/common/venmas/Venmas.repository';
-import { VenmasEntity }                             from '@lib/common/venmas/entities/Venmas.entity';
-import { CategoriesService }                        from '@lib/common/categories/Categories.service';
-import { CRUDExtension }                            from '@lib/common/crud/CRUDExtension.base';
+import { VenmasRepository } from '@lib/common/venmas/Venmas.repository';
+import { VenmasEntity } from '@lib/common/venmas/entities/Venmas.entity';
+import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { BaseModel, InjectModel, InjectRepository } from '@iaminfinity/express-cassandra';
-import { ServiceResponse }                          from '@lib/common/utils/ServiceResponse.type';
-import { CategoryEntity }                           from '@lib/common/categories/entities/Category.entity';
+import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 
 /**
  * Service to CRUD VenmasEntities
@@ -15,14 +13,12 @@ export class VenmasService extends CRUDExtension<VenmasRepository, VenmasEntity>
      *
      * @param venmasRepository
      * @param venmasEntity
-     * @param categoriesService
      */
     constructor(
         @InjectRepository(VenmasRepository)
         venmasRepository: VenmasRepository,
         @InjectModel(VenmasEntity)
         venmasEntity: BaseModel<VenmasEntity>,
-        private readonly categoriesService: CategoriesService,
     ) {
         super(
             venmasEntity,
@@ -44,7 +40,6 @@ export class VenmasService extends CRUDExtension<VenmasRepository, VenmasEntity>
      * @param venmasId
      */
     async findOne(venmasId: string): Promise<ServiceResponse<VenmasEntity>> {
-        // Recover Event
         const venmasRes = await this.search({
             id: venmasId,
         });

@@ -6,3 +6,4 @@ import { VenmasEntity } from '@lib/common/venmas/entities/Venmas.entity';
  */
 @EntityRepository(VenmasEntity)
 export class VenmasRepository extends Repository<VenmasEntity> {}
+ma

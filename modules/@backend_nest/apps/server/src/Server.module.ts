@@ -38,6 +38,7 @@ import { StripeController } from '@app/server/controllers/payment/stripe/Stripe.
 import { FilestoreModule } from '@lib/common/filestore/Filestore.module';
 import { PurchasesModule } from '@lib/common/purchases/Purchases.module';
 import { PurchasesController } from '@app/server/controllers/purchases/Purchases.controller';
+import { VenmasModule } from '@lib/common/venmas/Venmas.module';
 
 @Module({
     imports: [
@@ -60,6 +61,7 @@ import { PurchasesController } from '@app/server/controllers/purchases/Purchases
         EventsModule,
         TicketsModule,
         PurchasesModule,
+        VenmasModule,
 
         StripeModule.register(),
         StripeInterfacesModule,

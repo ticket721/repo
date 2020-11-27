@@ -47,7 +47,7 @@ export class VenmasSearchInputDto implements SearchInputType<Omit<VenmasEntity, 
     @ApiPropertyOptional()
     @IsOptional()
     // tslint:disable-next-line:variable-name
-    sections: SearchableField<Sections>;
+    sections: SearchableField<Sections[]>;
 
     /**
      * Searchable field to search by created_at

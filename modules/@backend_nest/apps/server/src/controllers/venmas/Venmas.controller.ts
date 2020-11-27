@@ -1,21 +1,33 @@
 import { ControllerBasics } from '@lib/common/utils/ControllerBasics.base';
 import { VenmasEntity } from '@lib/common/venmas/entities/Venmas.entity';
-import { VenmasService }                                                                   from '@lib/common/venmas/Venmas.service';
-import { Body, Controller, Get, HttpCode, Injectable, Param, Post, UseFilters, UseGuards, HttpException } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags }  from '@nestjs/swagger';
-import { AuthGuard }               from '@nestjs/passport';
-import { Roles, RolesGuard }       from '@app/server/authentication/guards/RolesGuard.guard';
-import { HttpExceptionFilter }     from '@app/server/utils/HttpException.filter';
-import { StatusCodes }             from '@lib/common/utils/codes.value';
-import { ApiResponses }            from '@app/server/utils/ApiResponses.controller.decorator';
-import { User }                    from '@app/server/authentication/decorators/User.controller.decorator';
-import { UserDto }                 from '@lib/common/users/dto/User.dto';
-import { VenmasSearchInputDto }    from '@app/server/controllers/venmas/dto/VenmasSearchInput.dto';
+import { VenmasService } from '@lib/common/venmas/Venmas.service';
+import {
+    Body,
+    Controller,
+    Get,
+    HttpCode,
+    Injectable,
+    Param,
+    Post,
+    UseFilters,
+    UseGuards,
+    HttpException,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles, RolesGuard } from '@app/server/authentication/guards/RolesGuard.guard';
+import { HttpExceptionFilter } from '@app/server/utils/HttpException.filter';
+import { StatusCodes } from '@lib/common/utils/codes.value';
+import { ApiResponses } from '@app/server/utils/ApiResponses.controller.decorator';
+import { User } from '@app/server/authentication/decorators/User.controller.decorator';
+import { UserDto } from '@lib/common/users/dto/User.dto';
+import { VenmasSearchInputDto } from '@app/server/controllers/venmas/dto/VenmasSearchInput.dto';
 import { VenmasSearchResponseDto } from '@app/server/controllers/venmas/dto/VenmasSearchResponse.dto';
-import { VenmasCreateInputDto }    from '@app/server/controllers/venmas/dto/VenmasCreateInput.dto';
-import { SearchInputType }         from '@lib/common/utils/SearchInput.type';
-import { UUIDToolService }         from '@lib/common/toolbox/UUID.tool.service';
+import { VenmasCreateInputDto } from '@app/server/controllers/venmas/dto/VenmasCreateInput.dto';
+import { SearchInputType } from '@lib/common/utils/SearchInput.type';
+import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
 import { VenmasUpdateResponseDto } from '@app/server/controllers/venmas/dto/VenmasUpdateResponse.dto';
+import { CategoriesService } from '@lib/common/categories/Categories.service';
 
 /**
  * Venmas Controller
@@ -31,10 +43,7 @@ export class VenmasController extends ControllerBasics<VenmasEntity> {
      * @param venmasService
      * @param uuidToolService
      */
-    constructor(
-        private readonly venmasService: VenmasService,
-        private readonly uuidToolService: UUIDToolService,
-    ) {
+    constructor(private readonly venmasService: VenmasService, private readonly uuidToolService: UUIDToolService) {
         super();
     }
 
@@ -51,15 +60,13 @@ export class VenmasController extends ControllerBasics<VenmasEntity> {
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async create(@Body() body: VenmasCreateInputDto, @User() user: UserDto) {
-        const id: string = this.uuidToolService.generate();
+        const venmas: Partial<VenmasEntity> = {
+            ...body,
+            owner: user.id,
+        };
 
         await this._crudCall(
-            this.venmasService.create({
-                ...body,
-                id: id,
-                created_at: new Date(Date.now()),
-                updated_at: new Date(Date.now()),
-            } as Partial<VenmasEntity>),
+            this.venmasService.create(venmas),
             StatusCodes.InternalServerError,
             'cannot_create_venmas_entity',
         );
@@ -78,8 +85,11 @@ export class VenmasController extends ControllerBasics<VenmasEntity> {
     @HttpCode(StatusCodes.OK)
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
-    async update(@Body() body: VenmasEntity, @Param('venmasId') venmasId: string, @User() user: UserDto): Promise<VenmasUpdateResponseDto> {
-
+    async update(
+        @Body() body: VenmasEntity,
+        @Param('venmasId') venmasId: string,
+        @User() user: UserDto,
+    ): Promise<VenmasUpdateResponseDto> {
         const venmasToUpdate = await this._crudCall(
             this.venmasService.findOne(venmasId),
             StatusCodes.InternalServerError,
@@ -98,7 +108,7 @@ export class VenmasController extends ControllerBasics<VenmasEntity> {
         await this._crudCall(
             this.venmasService.update(
                 {
-                    id: venmasId
+                    id: venmasId,
                 },
                 {
                     ...body,
@@ -115,8 +125,8 @@ export class VenmasController extends ControllerBasics<VenmasEntity> {
         );
 
         return {
-            venmas: venmasUpdatedEntity
-        }
+            venmas: venmasUpdatedEntity,
+        };
     }
 
     /**
@@ -132,7 +142,6 @@ export class VenmasController extends ControllerBasics<VenmasEntity> {
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async delete(@Param('venmasId') venmasId: string, @User() user: UserDto): Promise<VenmasUpdateResponseDto> {
-
         const venmasToDelete = await this._crudCall(
             this.venmasService.findOne(venmasId),
             StatusCodes.InternalServerError,
@@ -162,8 +171,8 @@ export class VenmasController extends ControllerBasics<VenmasEntity> {
         );
 
         return {
-            venmas: venmasDeletedEntity
-        }
+            venmas: venmasDeletedEntity,
+        };
     }
 
     /**
