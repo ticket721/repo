@@ -51,7 +51,7 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps): JSX.Element =
                   })
               }}
         >
-            <Icon icon={'tags'} color='#FFFFFF' size={'22px'}/>
+            <Icon icon={'like'} color='#FFFFFF' size={'22px'}/>
         </Link>
 
         <Link replace={true} to={'/profile'} className={isNavItemActive('/profile', location)}

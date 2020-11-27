@@ -1,25 +1,31 @@
 import React                                                                   from 'react';
 import { CardContainer, DateTimeCard, Description, EventHeader, LocationCard } from '@frontend/flib-react/lib/components';
-import Border                                                                  from '@frontend/flib-react/lib/components/elements/border';
 import styled                                                                  from 'styled-components';
 import { DateEntity }                                                          from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { formatDay, formatHour }                                               from '@frontend/core/lib/utils/date';
 import { useTranslation }                                                      from 'react-i18next';
 import { useHistory }                                                          from 'react-router';
 import { getImgPath }                                                          from '@frontend/core/lib/utils/images';
-import { isNil }                                                               from 'lodash';
 import { motion }                                                              from 'framer';
-import spotifyImg                                                              from '../../../media/images/social/spotify.svg';
-import instagramImg                                                            from '../../../media/images/social/instagram.svg';
-import tiktokImg                                                               from '../../../media/images/social/tiktok.svg';
-import linked_inImg                                                            from '../../../media/images/social/linkedIn.svg';
-import emailImg                                                                from '../../../media/images/social/email.svg';
-import facebookImg                                                             from '../../../media/images/social/facebook.svg';
-import websiteImg                                                              from '../../../media/images/social/website.svg';
-import twitterImg                                                              from '../../../media/images/social/twitter.svg';
-import MediaQuery                                                              from 'react-responsive';
-import { useWindowDimensions }                                                 from '@frontend/core/lib/hooks/useWindowDimensions';
-import { HapticsImpactStyle, useHaptics }                                      from '@frontend/core/lib/utils/useHaptics';
+import spotifyImg                         from '../../../media/images/social/spotify.svg';
+import instagramImg                       from '../../../media/images/social/instagram.svg';
+import tiktokImg                          from '../../../media/images/social/tiktok.svg';
+import linked_inImg                       from '../../../media/images/social/linkedIn.svg';
+import emailImg                           from '../../../media/images/social/email.svg';
+import facebookImg                        from '../../../media/images/social/facebook.svg';
+import websiteImg                         from '../../../media/images/social/website.svg';
+import twitterImg                         from '../../../media/images/social/twitter.svg';
+import shareImg                         from '../../../media/images/social/share.svg';
+import likedOnImg                         from '../../../media/images/social/like_on.svg';
+import likedOffImg                         from '../../../media/images/social/like_off.svg';
+import { useWindowDimensions }            from '@frontend/core/lib/hooks/useWindowDimensions';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { Plugins, Capacitor }             from '@capacitor/core';
+import { useDispatch }                    from 'react-redux';
+import { PushNotification }               from '@frontend/core/lib/redux/ducks/notifications';
+import { getEnv }                         from '@frontend/core/lib/utils/getEnv';
+import { useSavedEvents }                 from '../../../utils/useSavedEvents';
+const { Share } = Plugins;
 
 export interface EventContainerProps {
     eventName: string;
@@ -61,7 +67,7 @@ const Container = styled.div`
 
 const BgContainer = styled.div`
     position: relative;
-    background-color: ${props => props.theme.darkBg};
+    background-color: ${props => props.theme.darkerBg};
 `;
 
 const OverallInfos = styled.div`
@@ -78,9 +84,13 @@ const MainInfos = styled.div`
     flex-direction: column;
     flex: 2;
     padding: ${props => props.theme.smallSpacing} ${props => props.theme.doubleSpacing};
-    margin-bottom: ${props => props.theme.doubleSpacing};
+    padding-bottom: ${props => props.theme.doubleSpacing};
+    background-color: ${props => props.theme.darkBg};
+    border-radius: ${props => props.theme.defaultRadius};
 
     @media screen and (max-width: 900px) {
+        border-radius: 0;
+        padding-bottom: 0;
         padding: 0;
     }
 `;
@@ -88,36 +98,35 @@ const MainInfos = styled.div`
 const DescContainer = styled.div`
     flex: 3;
     padding: ${props => props.theme.smallSpacing};
+    background-color: ${props => props.theme.darkerBg};
 `;
-
-const hasLinks = (date: DateEntity): boolean => {
-    return (
-        !isNil(date.metadata.spotify)
-        || !isNil(date.metadata.instagram)
-        || !isNil(date.metadata.tiktok)
-        || !isNil(date.metadata.linked_in)
-        || !isNil(date.metadata.email)
-        || !isNil(date.metadata.facebook)
-        || !isNil(date.metadata.website)
-        || !isNil(date.metadata.twitter)
-    );
-};
 
 const SocialIcon = styled(motion.img)`
   width: 40px;
   height: 40px;
-  margin-left: ${props => props.theme.regularSpacing};
-  margin-top: ${props => props.theme.regularSpacing};
+  margin: ${props => props.theme.smallSpacing};
   cursor: pointer;
 `
+
+function copyToClipboard(text, dispatch, msg) {
+    const dummy = document.createElement('textarea');
+    document.body.appendChild(dummy);
+    dummy.value = text;
+    dummy.select();
+    document.execCommand('copy');
+    document.body.removeChild(dummy);
+    dispatch(PushNotification(msg, 'info'));
+}
 
 export const EventContainer: React.FC<EventContainerProps> = (props: EventContainerProps): JSX.Element => {
 
     const imageUrl = getImgPath(props.date.metadata.avatar);
     const [t] = useTranslation('event');
     const history = useHistory();
+    const dispatch = useDispatch();
     const windowDim = useWindowDimensions();
     const haptics = useHaptics();
+    const [,addSavedEvent, removeSavedEvent, isSavedEvent] = useSavedEvents();
 
     const eventDetails = {
         eventName: props.eventName,
@@ -159,6 +168,181 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
                 }}
             />
             <BgContainer>
+                <>
+                    <CardContainer>
+                        <div>
+                            <SocialIcon
+                                whileTap={{scale: 0.8}}
+                                src={shareImg}
+                                onClick={
+                                    () => {
+                                        haptics.impact({
+                                            style: HapticsImpactStyle.Light
+                                        })
+                                        if (!Capacitor.isPluginAvailable('Share')) {
+                                            copyToClipboard(`${getEnv().REACT_APP_SELF}/event/${props.date.id}`, dispatch, t('copied'))
+                                        } else {
+                                            Share
+                                                .share({
+                                                    title: `${t('share_title')} ${props.date.metadata.name}`,
+                                                    text: `${t('share_text')} ${props.date.metadata.name}`,
+                                                    url: `${getEnv().REACT_APP_SELF}/event/${props.date.id}`,
+                                                    dialogTitle: `${t('share_dialog')} ${props.date.metadata.name}`
+                                                })
+                                                .catch(e => {
+                                                    copyToClipboard(`${getEnv().REACT_APP_SELF}/event/${props.date.id}`, dispatch, t('copied'));
+                                                })
+                                        }
+                                    }
+                                }
+                            />
+                            <SocialIcon
+                                whileTap={{scale: 0.8}}
+                                src={isSavedEvent(props.date.id.toLowerCase()) ? likedOnImg : likedOffImg}
+                                onClick={
+                                    () => {
+                                        haptics.impact({
+                                            style: HapticsImpactStyle.Light
+                                        })
+                                        if (isSavedEvent(props.date.id.toLowerCase())) {
+                                            removeSavedEvent(props.date.id.toLowerCase());
+                                        } else {
+                                            addSavedEvent(props.date.id.toLowerCase());
+                                        }
+                                    }
+                                }
+                            />
+                            {
+                                props.date.metadata.spotify
+                                    ? <SocialIcon
+                                        whileTap={{scale: 0.8}}
+                                        src={spotifyImg}
+                                        onClick={
+                                            () => {
+                                                haptics.impact({
+                                                    style: HapticsImpactStyle.Light
+                                                })
+                                                window.location.href = props.date.metadata.spotify;
+                                            }
+                                        }
+                                    />
+                                    : null
+                            }
+                            {
+                                props.date.metadata.instagram
+                                    ? <SocialIcon
+                                        whileTap={{scale: 0.8}}
+                                        src={instagramImg}
+                                        onClick={
+                                            () => {
+                                                haptics.impact({
+                                                    style: HapticsImpactStyle.Light
+                                                })
+                                                window.location.href = `https://instagram.com/${props.date.metadata.instagram}`;
+                                            }
+                                        }
+                                    />
+                                    : null
+                            }
+                            {
+                                props.date.metadata.tiktok
+                                    ? <SocialIcon
+                                        whileTap={{scale: 0.8}}
+                                        src={tiktokImg}
+                                        onClick={
+                                            () => {
+                                                haptics.impact({
+                                                    style: HapticsImpactStyle.Light
+                                                })
+                                                window.location.href = `https://tiktok.com/@${props.date.metadata.tiktok}`;
+                                            }
+                                        }
+                                    />
+                                    : null
+                            }
+                            {
+                                props.date.metadata.linked_in
+                                    ? <SocialIcon
+                                        whileTap={{scale: 0.8}}
+                                        src={linked_inImg}
+                                        onClick={
+                                            () => {
+                                                haptics.impact({
+                                                    style: HapticsImpactStyle.Light
+                                                })
+                                                window.location.href = props.date.metadata.linked_in;
+                                            }
+                                        }
+                                    />
+                                    : null
+                            }
+                            {
+                                props.date.metadata.email
+                                    ? <SocialIcon
+                                        whileTap={{scale: 0.8}}
+                                        src={emailImg}
+                                        onClick={
+                                            () => {
+                                                haptics.impact({
+                                                    style: HapticsImpactStyle.Light
+                                                })
+                                                window.location.href = `mailto:${props.date.metadata.email}`;
+                                            }
+                                        }
+                                    />
+                                    : null
+                            }
+                            {
+                                props.date.metadata.facebook
+                                    ? <SocialIcon
+                                        whileTap={{scale: 0.8}}
+                                        src={facebookImg}
+                                        onClick={
+                                            () => {
+                                                haptics.impact({
+                                                    style: HapticsImpactStyle.Light
+                                                })
+                                                window.location.href = props.date.metadata.facebook;
+                                            }
+                                        }
+                                    />
+                                    : null
+                            }
+                            {
+                                props.date.metadata.website
+                                    ? <SocialIcon
+                                        whileTap={{scale: 0.8}}
+                                        src={websiteImg}
+                                        onClick={
+                                            () => {
+                                                haptics.impact({
+                                                    style: HapticsImpactStyle.Light
+                                                })
+                                                window.location.href = props.date.metadata.website;
+                                            }
+                                        }
+                                    />
+                                    : null
+                            }
+                            {
+                                props.date.metadata.twitter
+                                    ? <SocialIcon
+                                        whileTap={{scale: 0.8}}
+                                        src={twitterImg}
+                                        onClick={
+                                            () => {
+                                                haptics.impact({
+                                                    style: HapticsImpactStyle.Light
+                                                })
+                                                window.location.href = `https://twitter.com/${props.date.metadata.twitter}`;
+                                            }
+                                        }
+                                    />
+                                    : null
+                            }
+                        </div>
+                    </CardContainer>
+                </>
                 <OverallInfos>
                     <MainInfos>
                         <DateTimeCard
@@ -191,9 +375,6 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
                                 />
                         }
                     </MainInfos>
-                    <MediaQuery maxWidth={900}>
-                        <Border/>
-                    </MediaQuery>
                     <DescContainer>
                         <Description
                             color={eventDetails.mainColor}
@@ -203,156 +384,6 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
                         />
                     </DescContainer>
                 </OverallInfos>
-                {
-                    hasLinks(props.date)
-
-                        ?
-                        <>
-                            <Border/>
-                            <CardContainer>
-                                <div className={'row aic jcsb'}>
-                                    <h3>{t('links')}</h3>
-                                </div>
-                                <div
-                                    style={{
-                                        marginTop: 8
-                                    }}
-                                >
-                                    {
-                                        props.date.metadata.spotify
-                                            ? <SocialIcon
-                                                whileTap={{scale: 0.8}}
-                                                src={spotifyImg}
-                                                onClick={
-                                                    () => {
-                                                        haptics.impact({
-                                                            style: HapticsImpactStyle.Light
-                                                        })
-                                                        window.location.href = props.date.metadata.spotify;
-                                                    }
-                                                }
-                                            />
-                                            : null
-                                    }
-                                    {
-                                        props.date.metadata.instagram
-                                            ? <SocialIcon
-                                                whileTap={{scale: 0.8}}
-                                                src={instagramImg}
-                                                onClick={
-                                                    () => {
-                                                        haptics.impact({
-                                                            style: HapticsImpactStyle.Light
-                                                        })
-                                                        window.location.href = `https://instagram.com/${props.date.metadata.instagram}`;
-                                                    }
-                                                }
-                                            />
-                                            : null
-                                    }
-                                    {
-                                        props.date.metadata.tiktok
-                                            ? <SocialIcon
-                                                whileTap={{scale: 0.8}}
-                                                src={tiktokImg}
-                                                onClick={
-                                                    () => {
-                                                        haptics.impact({
-                                                            style: HapticsImpactStyle.Light
-                                                        })
-                                                        window.location.href = `https://tiktok.com/@${props.date.metadata.tiktok}`;
-                                                    }
-                                                }
-                                            />
-                                            : null
-                                    }
-                                    {
-                                        props.date.metadata.linked_in
-                                            ? <SocialIcon
-                                                whileTap={{scale: 0.8}}
-                                                src={linked_inImg}
-                                                onClick={
-                                                    () => {
-                                                        haptics.impact({
-                                                            style: HapticsImpactStyle.Light
-                                                        })
-                                                        window.location.href = props.date.metadata.linked_in;
-                                                    }
-                                                }
-                                            />
-                                            : null
-                                    }
-                                    {
-                                        props.date.metadata.email
-                                            ? <SocialIcon
-                                                whileTap={{scale: 0.8}}
-                                                src={emailImg}
-                                                onClick={
-                                                    () => {
-                                                        haptics.impact({
-                                                            style: HapticsImpactStyle.Light
-                                                        })
-                                                        window.location.href = `mailto:${props.date.metadata.email}`;
-                                                    }
-                                                }
-                                            />
-                                            : null
-                                    }
-                                    {
-                                        props.date.metadata.facebook
-                                            ? <SocialIcon
-                                                whileTap={{scale: 0.8}}
-                                                src={facebookImg}
-                                                onClick={
-                                                    () => {
-                                                        haptics.impact({
-                                                            style: HapticsImpactStyle.Light
-                                                        })
-                                                        window.location.href = props.date.metadata.facebook;
-                                                    }
-                                                }
-                                            />
-                                            : null
-                                    }
-                                    {
-                                        props.date.metadata.website
-                                            ? <SocialIcon
-                                                whileTap={{scale: 0.8}}
-                                                src={websiteImg}
-                                                onClick={
-                                                    () => {
-                                                        haptics.impact({
-                                                            style: HapticsImpactStyle.Light
-                                                        })
-                                                        window.location.href = props.date.metadata.website;
-                                                    }
-                                                }
-                                            />
-                                            : null
-                                    }
-                                    {
-                                        props.date.metadata.twitter
-                                            ? <SocialIcon
-                                                whileTap={{scale: 0.8}}
-                                                src={twitterImg}
-                                                onClick={
-                                                    () => {
-                                                        haptics.impact({
-                                                            style: HapticsImpactStyle.Light
-                                                        })
-                                                        window.location.href = `https://twitter.com/${props.date.metadata.twitter}`;
-                                                    }
-                                                }
-                                            />
-                                            : null
-                                    }
-                                </div>
-                            </CardContainer>
-                        </>
-
-                        :
-                        null
-                }
             </BgContainer>
         </Container></>;
 
