@@ -16,7 +16,8 @@ i18n.addResourceBundle('en', 'event', {
     links: 'Links',
     copied: 'Link copied to clipboard',
     share_title: 'Share event',
-    share_text: 'Share event',
+    share_text: 'Check out',
+    share_text_end: 'event on Ticket721 ! ',
     share_dialog: 'Share event',
 
     error_cannot_fetch_dates: 'Cannot fetch event',
@@ -42,7 +43,8 @@ i18n.addResourceBundle('fr', 'event', {
     links: 'Liens',
     copied: 'Lien ajouté au presse-papier',
     share_title: 'Partager l\'événement',
-    share_text: 'Partager l\'événement',
+    share_text: 'Viens voir l\'événement',
+    share_text_end: 'sur Ticket721 ! ',
     share_dialog: 'Partager l\'événement',
 
     error_cannot_fetch_event: 'Informations indisponibles',

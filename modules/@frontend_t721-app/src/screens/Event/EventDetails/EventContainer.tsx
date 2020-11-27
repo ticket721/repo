@@ -185,7 +185,7 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
                                             Share
                                                 .share({
                                                     title: `${t('share_title')} ${props.date.metadata.name}`,
-                                                    text: `${t('share_text')} ${props.date.metadata.name}`,
+                                                    text: `${t('share_text')} "${props.date.metadata.name}" ${t('share_text_end')}`,
                                                     url: `${getEnv().REACT_APP_SELF}/event/${props.date.id}`,
                                                     dialogTitle: `${t('share_dialog')} ${props.date.metadata.name}`
                                                 })
@@ -353,7 +353,7 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
                                 startTime: eventDetails.startTime,
                                 endTime: eventDetails.endTime,
                             }]}
-                            paddingOverride={windowDim.width > 900 ? '24px 0' : props.date.online ? '24px 24px 0' : '24px'}
+                            paddingOverride={windowDim.width > 900 ? '24px 0' : '24px'}
                             removeBg
                         />
                         {
