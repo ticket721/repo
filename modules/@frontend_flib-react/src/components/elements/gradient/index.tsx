@@ -20,9 +20,9 @@ const GradientBar = styled.div<GradientProps>`
     ${(props) =>
         !props.blurOnly &&
         `
-    background: linear-gradient(180deg, transparent, ${props.values[0]} calc( 2 * ${
+    background: linear-gradient(180deg, transparent, ${props.gradientValues[0]} calc( 2 * ${
             props.theme.doubleSpacing
-        }), ${props.values.slice(1).join(', ')});
+        }), ${props.gradientValues.slice(1).join(', ')});
   `}
     bottom: 0;
     content: '';
@@ -36,7 +36,7 @@ const GradientBar = styled.div<GradientProps>`
 `;
 
 export const Gradient: React.FunctionComponent<GradientProps> = (props: GradientProps): JSX.Element => {
-    return <GradientBar values={props.values} blurOnly={props.blurOnly} />;
+    return <GradientBar gradientValues={props.values} blurOnly={props.blurOnly} />;
 };
 
 export default Gradient;

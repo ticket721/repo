@@ -171,7 +171,7 @@ const computeModalMenuHeight = (window, isKeyboardOpen, keyboardHeight, platform
 
 }
 
-const getMenuBottom = (cart, isSmallScreen, keyboard, window, platform): number => {
+const getMenuBottom = (cart, isSmallScreen, keyboard, window, platform, menuHeight): number => {
     if (cart.open) {
         if (platform === 'android') {
             return !isSmallScreen ? ((window.height - 600) / 2) : 0
@@ -183,7 +183,7 @@ const getMenuBottom = (cart, isSmallScreen, keyboard, window, platform): number 
             : keyboard.keyboardHeight
     }
 
-    return -window.height * 2;
+    return - (window.height * 2) - menuHeight;
 }
 
 
@@ -388,7 +388,7 @@ export const CartMenu: React.FC = (): JSX.Element => {
                 duration: 0.75,
             }}
             animate={{
-                bottom: getMenuBottom(cart, isSmallScreen, keyboard, window, platform.platform)
+                bottom: getMenuBottom(cart, isSmallScreen, keyboard, window, platform.platform, menuHeight)
             }}
         >
             <MenuContainerHeaderContainer>

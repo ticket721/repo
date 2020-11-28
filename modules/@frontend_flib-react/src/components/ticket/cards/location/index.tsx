@@ -24,6 +24,8 @@ export interface LocationCardProps extends React.ComponentProps<any> {
     online_label?: string;
     online_sublabel?: string;
     paddingOverride?: string;
+    ticketFormat?: boolean;
+    bottomLeftRadius?: string;
 }
 
 const Info = styled.span`
@@ -134,27 +136,48 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
             </CardContainer>
             {props.coords ? (
                 <>
-                    <LeafletMap coords={props.coords} />
+                    <LeafletMap
+                        coords={props.coords}
+                        ticketFormat={props.ticketFormat}
+                        bottomLeftRadius={props.bottomLeftRadius}
+                    />
                 </>
             ) : null}
         </ClickableContainer>
     );
 };
 
-const MapContainer = styled.div`
+interface MapContainerProps {
+    ticketFormat: boolean;
+    bottomLeftRadius: string;
+}
+
+const MapContainer = styled.div<MapContainerProps>`
     display: flex;
     justify-content: center;
 
     .leaflet-container {
+        -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+        overflow: hidden;
+        border-bottom-left-radius: ${(props) => props.bottomLeftRadius};
+
+        ${(props) =>
+            props.ticketFormat
+                ? `
+        width: 100%;
+        height: 150px;
+        padding-top: 150px;
+    `
+                : `
         width: 100%;
         padding-top: 100%;
-        border-radius: ${(props) => props.theme.defaultRadius};
-
+        border-radius: ${props.theme.defaultRadius};
         @media screen and (max-width: 900px) {
             height: 150px;
             padding-top: 150px;
             border-radius: 0;
         }
+    `}
     }
 
     .leaflet-left {
@@ -163,7 +186,7 @@ const MapContainer = styled.div`
 `;
 
 const LeafletMap = withLeaflet((props: any) => (
-    <MapContainer>
+    <MapContainer ticketFormat={props.ticketFormat} bottomLeftRadius={props.bottomLeftRadius || '0px'}>
         <Map
             center={{ lat: props.coords.lat, lng: props.coords.lon }}
             zoom={18}

@@ -12,6 +12,7 @@ export interface PurchaseInfosCardProps extends React.ComponentProps<any> {
     priceLabel: string;
     removeBg?: boolean;
     wSeparator?: boolean;
+    wBottomLeftRadius?: boolean;
 }
 
 const IconContainer = styled.div`
@@ -36,7 +37,7 @@ export const PurchaseInfosCard: React.FunctionComponent<PurchaseInfosCardProps> 
     props: PurchaseInfosCardProps,
 ): JSX.Element => {
     return (
-        <CardContainer removeBg={props.removeBg}>
+        <CardContainer removeBg={props.removeBg} wBottomLeftRadius={props.wBottomLeftRadius}>
             <IconContainer>
                 <Icon icon={'ticket'} size={'18px'} color={props.iconColor} />
             </IconContainer>
