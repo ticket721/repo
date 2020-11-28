@@ -110,7 +110,11 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
                     {props.dates[0].startDate === props.dates[props.dates.length - 1].endDate ? (
                         <>
                             <Info>{props.dates[0].startDate}</Info>
-                            <Info>
+                            <Info
+                                style={{
+                                    fontWeight: 400,
+                                }}
+                            >
                                 {props.dates[0].startTime}
                                 <Icon icon={'arrow'} size={'12px'} />
                                 {props.dates[props.dates.length - 1].endTime}
@@ -122,7 +126,11 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
                                 {props.dates[0].startDate} - {props.dates[0].startTime}
                             </Info>
                             {!isSmall ? (
-                                <Info>
+                                <Info
+                                    style={{
+                                        fontWeight: 400,
+                                    }}
+                                >
                                     {props.dates[props.dates.length - 1].endDate} -{' '}
                                     {props.dates[props.dates.length - 1].endTime}
                                 </Info>

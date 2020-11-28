@@ -647,6 +647,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                                                 coords={date.location.location}
                                                 iconColor={date.metadata.signature_colors[0]}
                                                 get_directions={t('get_directions')}
+                                                subtitle={t('get_directions')}
                                                 ticketFormat={true}
                                                 bottomLeftRadius={idx < dates.length - 1 ? '12px' : theme.defaultRadius}
                                             />
