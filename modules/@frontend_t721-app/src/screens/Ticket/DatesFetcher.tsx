@@ -2,7 +2,6 @@ import React                      from 'react';
 import { useRequest }             from '@frontend/core/lib/hooks/useRequest';
 import { useTranslation }         from 'react-i18next';
 import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
-import { Redirect }               from 'react-router';
 import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { CategoryEntity }         from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { TicketEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
@@ -42,20 +41,16 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
         return <FullPageLoading/>;
     }
 
-    if (isRequestError(datesResp)) {
+    if (isRequestError(datesResp) || datesResp.response.data.dates.length === 0) {
         return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={datesResp.force}/>);
     }
 
     const dates = datesResp.response.data.dates;
 
-    if (dates) {
-        return <EventFetcher
-            uuid={uuid}
-            ticket={ticket}
-            category={category}
-            dates={dates}
-        />;
-    } else {
-        return <Redirect to={'/'}/>;
-    }
+    return <EventFetcher
+        uuid={uuid}
+        ticket={ticket}
+        category={category}
+        dates={dates}
+    />;
 };

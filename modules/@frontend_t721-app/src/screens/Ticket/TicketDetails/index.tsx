@@ -32,22 +32,20 @@ import { CategoryEntity }                      from '@common/sdk/lib/@backend_ne
 import { TicketEntity }                        from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
 import { DateEntity }                          from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { EventEntity }                         from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
-import { Sticky, StickyContainer }             from 'react-sticky';
 import { useInView }                           from 'react-intersection-observer';
 import { useWindowDimensions }                 from '@frontend/core/lib/hooks/useWindowDimensions';
 import { getPrice }                            from '../../../utils/prices';
 import { PushNotification }                    from '@frontend/core/lib/redux/ducks/notifications';
 import { OnlineBadge }                         from '@frontend/flib-react/lib/components/events/single-image/OnlineTag';
-
 import { usePlatform }                                             from '@capacitor-community/react-hooks/platform';
 import { DownloadAppModal }                                        from '../DownloadAppModal';
 import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
 import { Theme }                                                   from '@frontend/flib-react/lib/config/theme';
+import Sticky from 'react-stickynode';
 // tslint:disable-next-line:no-var-requires
 const publicIp = require('public-ip');
 // tslint:disable-next-line:no-var-requires
 const safeAreaInsets = require('safe-area-insets');
-
 
 interface TicketDetailsDateHeaderContainerProps {
     sticky: boolean;
@@ -146,7 +144,6 @@ interface TicketDetailsDateHeaderProps {
     date: DateEntity;
     setFocused: (date: DateEntity) => void;
     isSticky: boolean;
-    fromBottom: number;
 }
 
 const TicketDetailsDateHeader: React.FC<TicketDetailsDateHeaderProps> = (props: TicketDetailsDateHeaderProps): JSX.Element => {
@@ -178,7 +175,7 @@ const TicketDetailsDateHeader: React.FC<TicketDetailsDateHeaderProps> = (props: 
 
     return <>
         <TicketDetailsDateHeaderContainer
-            sticky={props.isSticky && props.fromBottom > 50}
+            sticky={props.isSticky}
         >
             <div
                 style={{
@@ -435,6 +432,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
     const dispatch = useDispatch();
     const [currentDate, setCurrentDate] = useState<DateEntity>(null);
     const theme = useTheme() as Theme;
+    const [fixedStates, setFixedStates] = useState({})
 
     const { width } = useWindowDimensions();
     const [qrPrev, setQrPrev] = useState<string>(qrcodePreview);
@@ -565,94 +563,97 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                                         }}
                                     />
                                 </div>
-                                <StickyContainer
+                                <div
                                     style={{
                                         overflow: 'hidden',
                                         borderBottomLeftRadius: idx < dates.length - 1 ? '12px' : theme.defaultRadius
                                     }}
                                 >
-                                    <div
-                                        style={{
-                                            zIndex: 1001,
-                                            position: 'relative',
+                                    <Sticky
+                                        enabled={true}
+                                        top={width <= 900 ? 48 + safeAreaInsets.top : 0}
+                                        bottomBoundary={`#content-${date.id}`}
+                                        innerZ={1001}
+                                        onStateChange={({status}) => {
+                                            setFixedStates({
+                                                ...fixedStates,
+                                                [date.id]: status > 0
+                                            })
                                         }}
                                     >
-                                        <Sticky
-                                            topOffset={width <= 900 ? -(48 + safeAreaInsets.top) : 0}
-                                            bottomOffset={width <= 900 ? 48 + safeAreaInsets.top : 0}
+                                        <div
+                                            style={{
+                                                cursor: 'pointer'
+                                            }}
+                                            onClick={() => {
+                                                history.push(`/event/${date.id}`)
+                                                haptics.impact({
+                                                    style: HapticsImpactStyle.Light
+                                                })
+                                            }}
                                         >
-                                            {({ style, isSticky, distanceFromBottom }) => (
-                                                <div
-                                                    style={{
-                                                        ...style,
-                                                        marginTop: width <= 900 && isSticky ? (48 + safeAreaInsets.top) : 0,
-                                                        zIndex: 1000,
-                                                        cursor: 'pointer',
-                                                    }}
+                                            <TicketDetailsDateHeader
+                                                date={date}
+                                                setFocused={setCurrentDate}
+                                                isSticky={!!fixedStates[date.id]}
+                                            />
+                                        </div>
+                                    </Sticky>
+                                    <div
+                                        id={`content-${date.id}`}
+                                    >
+
+                                        <DateTimeCard
+                                            dates={[{
+                                                id: date.id,
+                                                name: date.metadata.name,
+                                                startDate: formatDay(date.timestamps.event_begin),
+                                                endDate: formatDay(date.timestamps.event_end),
+                                                startTime: formatHour(date.timestamps.event_begin),
+                                                endTime: formatHour(date.timestamps.event_end),
+                                                location: date.location?.location_label,
+                                            }]}
+                                            iconColor={date.metadata.signature_colors[0]}
+                                            label={t('show_all_dates_label')}
+                                            labelCollapse={t('collapse_dates_label')}
+                                            onClick={(dateId: string) => history.push('/event/' + dateId)}
+                                        />
+                                        {
+                                            date.online
+
+                                                ?
+                                                <OnlineCard
+                                                    online={true}
+                                                    start={new Date(date.timestamps.event_begin)}
+                                                    end={new Date(date.timestamps.event_end)}
                                                     onClick={() => {
-                                                        history.push(`/event/${date.id}`)
-                                                        haptics.impact({
-                                                            style: HapticsImpactStyle.Light
-                                                        })
-                                                    }}
-                                                >
-                                                    <TicketDetailsDateHeader date={date} setFocused={setCurrentDate} isSticky={isSticky}
-                                                                             fromBottom={distanceFromBottom}/>
-                                                </div>
-                                            )}
-                                        </Sticky>
-
+                                                        haptics.notification({
+                                                            type: HapticsNotificationType.SUCCESS
+                                                        });
+                                                        onlineLinkWrapper(dispatch, t, date.online_link, date);
+                                                    }
+                                                    }
+                                                    online_link={date.online_link}
+                                                    live_title={t('live_title')}
+                                                    offline_title={t('offline_title')}
+                                                    waiting_link_subtitle={t('waiting_link_subtitle')}
+                                                    ended_subtitle={t('ended_subtitle')}
+                                                    live_subtitle={t('live_subtitle')}
+                                                    soon_subtitle={t('soon_subtitle')}
+                                                />
+                                                :
+                                                <LocationCard
+                                                    location={date.location.location_label}
+                                                    coords={date.location.location}
+                                                    iconColor={date.metadata.signature_colors[0]}
+                                                    get_directions={t('get_directions')}
+                                                    subtitle={t('get_directions')}
+                                                    ticketFormat={true}
+                                                    bottomLeftRadius={idx < dates.length - 1 ? '12px' : theme.defaultRadius}
+                                                />
+                                        }
                                     </div>
-                                    <DateTimeCard
-                                        dates={[{
-                                            id: date.id,
-                                            name: date.metadata.name,
-                                            startDate: formatDay(date.timestamps.event_begin),
-                                            endDate: formatDay(date.timestamps.event_end),
-                                            startTime: formatHour(date.timestamps.event_begin),
-                                            endTime: formatHour(date.timestamps.event_end),
-                                            location: date.location?.location_label,
-                                        }]}
-                                        iconColor={date.metadata.signature_colors[0]}
-                                        label={t('show_all_dates_label')}
-                                        labelCollapse={t('collapse_dates_label')}
-                                        onClick={(dateId: string) => history.push('/event/' + dateId)}
-                                    />
-                                    {
-                                        date.online
-
-                                            ?
-                                            <OnlineCard
-                                                online={true}
-                                                start={new Date(date.timestamps.event_begin)}
-                                                end={new Date(date.timestamps.event_end)}
-                                                onClick={() => {
-                                                    haptics.notification({
-                                                        type: HapticsNotificationType.SUCCESS
-                                                    });
-                                                    onlineLinkWrapper(dispatch, t, date.online_link, date);
-                                                }
-                                                }
-                                                online_link={date.online_link}
-                                                live_title={t('live_title')}
-                                                offline_title={t('offline_title')}
-                                                waiting_link_subtitle={t('waiting_link_subtitle')}
-                                                ended_subtitle={t('ended_subtitle')}
-                                                live_subtitle={t('live_subtitle')}
-                                                soon_subtitle={t('soon_subtitle')}
-                                            />
-                                            :
-                                            <LocationCard
-                                                location={date.location.location_label}
-                                                coords={date.location.location}
-                                                iconColor={date.metadata.signature_colors[0]}
-                                                get_directions={t('get_directions')}
-                                                subtitle={t('get_directions')}
-                                                ticketFormat={true}
-                                                bottomLeftRadius={idx < dates.length - 1 ? '12px' : theme.defaultRadius}
-                                            />
-                                    }
-                                </StickyContainer>
+                                </div>
                             </div>
                         ))
                 }
