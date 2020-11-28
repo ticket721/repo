@@ -49,6 +49,9 @@ const SavedEventsFetcher = () => {
                 {
                     id: {
                         $in: savedEvents
+                    },
+                    status: {
+                        $eq: 'live'
                     }
                 },
             ],
@@ -66,6 +69,12 @@ const SavedEventsFetcher = () => {
 
     if (isRequestError(dates)) {
         return <Error message={t('error_cannot_fetch_dates')} retryLabel={t('common:retrying_in')} onRefresh={dates.force}/>
+    }
+
+    if (dates.response.data.dates.length === 0) {
+        return <Body>
+            <EmptyMessage>{t('no_liked_events')}</EmptyMessage>
+        </Body>
     }
 
     return <EventContainer>
