@@ -586,10 +586,14 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                                                 cursor: 'pointer'
                                             }}
                                             onClick={() => {
-                                                history.push(`/event/${date.id}`)
                                                 haptics.impact({
                                                     style: HapticsImpactStyle.Light
                                                 })
+                                                if (date.status === 'live') {
+                                                    history.push(`/event/${date.id}`)
+                                                } else {
+                                                    dispatch(PushNotification(t('event_unpublished'), 'warning'));
+                                                }
                                             }}
                                         >
                                             <TicketDetailsDateHeader

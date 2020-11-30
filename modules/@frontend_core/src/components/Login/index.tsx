@@ -13,10 +13,12 @@ import './locales';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
 import { HapticsImpactStyle, useHaptics, HapticsNotificationType } from '../../utils/useHaptics';
 import { useKeyboardState } from '../../utils/useKeyboardState';
+import { getEnv } from '../../utils/getEnv';
 
 export interface LoginProps {
     onRegister?: () => void;
     externalRegister?: string;
+    createEvent?: boolean;
 }
 
 export const Login: React.FC<LoginProps> = (props: LoginProps) => {
@@ -104,6 +106,7 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                         />
                         <div
                             style={{
+                                width: '200%',
                                 display: 'flex',
                                 flexDirection: isTabletOrMobile ? 'column' : 'row',
                                 alignItems: 'center',
@@ -112,6 +115,7 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                             }}
                         >
                             <SwitchToRegister
+                                isTabletOrMobile={isTabletOrMobile}
                                 onClick={() => {
                                     haptics.impact({
                                         style: HapticsImpactStyle.Light,
@@ -131,6 +135,19 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                             >
                                 {t('register_switch')}
                             </SwitchToRegister>
+                            {props.createEvent ? (
+                                <SwitchToReset
+                                    isTabletOrMobile={isTabletOrMobile}
+                                    onClick={() => {
+                                        haptics.impact({
+                                            style: HapticsImpactStyle.Light,
+                                        });
+                                        window.location = getEnv().REACT_APP_EVENT_CREATION_LINK;
+                                    }}
+                                >
+                                    {t('create_event')}
+                                </SwitchToReset>
+                            ) : null}
                             <SwitchToReset
                                 isTabletOrMobile={isTabletOrMobile}
                                 onClick={() => {
@@ -207,7 +224,7 @@ const Inputs = styled.div`
 `;
 
 const ActionsContainer = styled.div`
-    width: 60%;
+    width: 50%;
     margin-top: 25px;
     display: flex;
     flex-direction: column;
@@ -217,18 +234,18 @@ const ActionsContainer = styled.div`
 const SwitchToReset = styled.span<{ isTabletOrMobile: boolean }>`
     font-size: 11px;
     line-height: 15px;
-    margin-top: 5px;
     margin-left: ${(props) => (props.isTabletOrMobile ? '0' : props.theme.regularSpacing)};
+    margin-top: ${(props) => (props.isTabletOrMobile ? props.theme.regularSpacing : '5px')};
     text-decoration: underline;
     text-align: center;
     cursor: pointer;
     color: #ccc;
 `;
 
-const SwitchToRegister = styled.span`
+const SwitchToRegister = styled.span<{ isTabletOrMobile: boolean }>`
     font-size: 11px;
     line-height: 15px;
-    margin-top: 5px;
+    margin-top: ${(props) => (props.isTabletOrMobile ? props.theme.regularSpacing : '5px')};
     text-decoration: underline;
     text-align: center;
     cursor: pointer;

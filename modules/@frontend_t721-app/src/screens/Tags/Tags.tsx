@@ -39,7 +39,7 @@ const SavedEventsFetcher = () => {
     const [savedEvents] = useSavedEvents();
     const [uuid] = useState(v4());
     const token = useToken();
-    const [t] = useTranslation(['home', 'common']);
+    const [t] = useTranslation(['tags', 'common']);
 
     const dates = useRequest<DatesSearchResponseDto>(
         {

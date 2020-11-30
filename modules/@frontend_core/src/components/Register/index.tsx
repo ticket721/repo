@@ -14,9 +14,11 @@ import { useMediaQuery } from 'react-responsive';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
 import { HapticsImpactStyle, useHaptics, HapticsNotificationType } from '../../utils/useHaptics';
 import { useKeyboardState } from '../../utils/useKeyboardState';
+import { getEnv } from '../../utils/getEnv';
 
 export interface RegisterProps {
     onLogin?: () => void;
+    createEvent?: boolean;
 }
 
 export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
@@ -136,17 +138,42 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
                             type={'submit'}
                             title={t('register')}
                         />
-                        <SwitchToLogin
-                            onClick={() => {
-                                if (props.onLogin) {
-                                    props.onLogin();
-                                } else {
-                                    history.replace('/login', { from });
-                                }
+                        <div
+                            style={{
+                                width: '200%',
+                                display: 'flex',
+                                flexDirection: isTabletOrMobile ? 'column' : 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                textAlign: 'center',
                             }}
                         >
-                            {t('login_switch')}
-                        </SwitchToLogin>
+                            <SwitchToLogin
+                                isTabletOrMobile={isTabletOrMobile}
+                                onClick={() => {
+                                    if (props.onLogin) {
+                                        props.onLogin();
+                                    } else {
+                                        history.replace('/login', { from });
+                                    }
+                                }}
+                            >
+                                {t('login_switch')}
+                            </SwitchToLogin>
+                            {props.createEvent ? (
+                                <SwitchToReset
+                                    isTabletOrMobile={isTabletOrMobile}
+                                    onClick={() => {
+                                        haptics.impact({
+                                            style: HapticsImpactStyle.Light,
+                                        });
+                                        window.location = getEnv().REACT_APP_EVENT_CREATION_LINK;
+                                    }}
+                                >
+                                    {t('create_event')}
+                                </SwitchToReset>
+                            ) : null}
+                        </div>
                     </ActionsContainer>
                 </Form>
             </RegisterContainer>
@@ -208,18 +235,29 @@ const Inputs = styled.div`
     height: 430px;
 `;
 
+const SwitchToReset = styled.span<{ isTabletOrMobile: boolean }>`
+    font-size: 11px;
+    line-height: 15px;
+    margin-left: ${(props) => (props.isTabletOrMobile ? '0' : props.theme.regularSpacing)};
+    margin-top: ${(props) => (props.isTabletOrMobile ? props.theme.regularSpacing : '5px')};
+    text-decoration: underline;
+    text-align: center;
+    cursor: pointer;
+    color: #ccc;
+`;
+
 const ActionsContainer = styled.div`
-    width: 60%;
+    width: 50%;
     margin-top: 25px;
     display: flex;
     flex-direction: column;
     align-items: center;
 `;
 
-const SwitchToLogin = styled.span`
+const SwitchToLogin = styled.span<{ isTabletOrMobile: boolean }>`
     font-size: 10px;
-    margin-top: 5px;
     text-decoration: underline;
+    margin-top: ${(props) => (props.isTabletOrMobile ? props.theme.regularSpacing : '5px')};
     white-space: nowrap;
     cursor: pointer;
     color: #ccc;
