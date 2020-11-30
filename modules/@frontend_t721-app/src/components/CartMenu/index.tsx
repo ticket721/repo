@@ -1,62 +1,33 @@
 import './locales';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import styled                                              from 'styled-components';
-import { motion }                 from 'framer-motion';
-import { useWindowDimensions }    from '@frontend/core/lib/hooks/useWindowDimensions';
-import { CartContext }            from '../Cart/CartContext';
-import { CartMenuPreview }                 from './CartMenuPreview';
-import { UserContext }                     from '@frontend/core/lib/utils/UserContext';
-import { ValidateEmailComponent }          from '@frontend/core/lib/components/ValidateEmail';
-import { Button, DoubleButtonCta }                 from '@frontend/flib-react/lib/components';
-import { isNil }                           from 'lodash';
-import { useDispatch }        from 'react-redux';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
-import { v4 }                              from 'uuid';
-import { useLazyRequest }                  from '@frontend/core/lib/hooks/useLazyRequest';
-import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
-import { PurchasesSetProductsResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
-import { PurchasesCheckoutResponseDto }    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesCheckoutResponse.dto';
-import { PurchaseError }                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
-import { useTranslation }                  from 'react-i18next';
-import { CartMenuCheckout }                from './CartMenuCheckout';
-import { CartMenuExpired }                 from './CartMenuExpired';
-import Countdown                           from 'react-countdown';
-import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
-import MediaQuery, { useMediaQuery } from 'react-responsive';
-import { KeyboardInfo, Plugins, Capacitor }     from '@capacitor/core';
+import { motion }                                          from 'framer-motion';
+import { useWindowDimensions }                             from '@frontend/core/lib/hooks/useWindowDimensions';
+import { CartContext }                                     from '../Cart/CartContext';
+import { CartMenuPreview }                                 from './CartMenuPreview';
+import { UserContext }                                     from '@frontend/core/lib/utils/UserContext';
+import { ValidateEmailComponent }                          from '@frontend/core/lib/components/ValidateEmail';
+import { Button, DoubleButtonCta }                         from '@frontend/flib-react/lib/components';
+import { isNil }                                           from 'lodash';
+import { useDispatch }                                     from 'react-redux';
+import { useToken }                                        from '@frontend/core/lib/hooks/useToken';
+import { v4 }                                              from 'uuid';
+import { useLazyRequest }                                  from '@frontend/core/lib/hooks/useLazyRequest';
+import { PushNotification }                                from '@frontend/core/lib/redux/ducks/notifications';
+import { PurchasesSetProductsResponseDto }                 from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
+import { PurchasesCheckoutResponseDto }                    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesCheckoutResponse.dto';
+import { PurchaseError }                                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
+import { useTranslation }                                  from 'react-i18next';
+import { CartMenuCheckout }                                from './CartMenuCheckout';
+import { CartMenuExpired }                                 from './CartMenuExpired';
+import Countdown                                           from 'react-countdown';
+import { getEnv }                                          from '@frontend/core/lib/utils/getEnv';
+import MediaQuery, { useMediaQuery }                       from 'react-responsive';
+import { usePlatform }                                     from '@capacitor-community/react-hooks/platform';
+import { useKeyboardState }                                        from '@frontend/core/lib/utils/useKeyboardState';
+import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
 // tslint:disable-next-line:no-var-requires
 const SAI = require('safe-area-insets');
-
-const useKeyboardState = () => {
-
-    const [keyboardState, setKeyboardState] = useState({
-        isOpen: false,
-        keyboardHeight: 0
-    });
-
-    useEffect(() => {
-
-        if (Capacitor.isPluginAvailable('Keyboard')) {
-
-            Plugins.Keyboard.addListener('keyboardDidShow', (info: KeyboardInfo) => {
-                setKeyboardState({
-                    isOpen: true,
-                    keyboardHeight: info.keyboardHeight
-                });
-            });
-
-            Plugins.Keyboard.addListener('keyboardDidHide', () => {
-                setKeyboardState({
-                    isOpen: false,
-                    keyboardHeight: 0
-                });
-            })
-        }
-
-    }, []);
-
-    return keyboardState;
-}
 
 const Shadow = styled(motion.div)`
     position: fixed;
@@ -175,18 +146,24 @@ const generateErrorMessage = (t: any, error: PurchaseError): string => {
     return t(error.reason, error.context);
 }
 
-const computeMenuHeight = (window, isKeyboardOpen, keyboardHeight) => {
+const computeMenuHeight = (window, isKeyboardOpen, keyboardHeight, platform) => {
 
     if (isKeyboardOpen) {
+        if (platform === 'android') {
+            return window.height - SAI.top - SAI.bottom;
+        }
         return window.height - keyboardHeight - SAI.top;
     }
 
     return (Math.floor(window.height * 0.7) < 500 ? window.height : Math.floor(window.height * 0.7)) + SAI.bottom - SAI.top;
 }
 
-const computeModalMenuHeight = (window, isKeyboardOpen, keyboardHeight) => {
+const computeModalMenuHeight = (window, isKeyboardOpen, keyboardHeight, platform) => {
 
     if (isKeyboardOpen) {
+        if (platform === 'android') {
+            return window.height - SAI.top - SAI.bottom;
+        }
         return window.height - keyboardHeight - SAI.top;
     }
 
@@ -194,19 +171,36 @@ const computeModalMenuHeight = (window, isKeyboardOpen, keyboardHeight) => {
 
 }
 
+const getMenuBottom = (cart, isSmallScreen, keyboard, window, platform, menuHeight): number => {
+    if (cart.open) {
+        if (platform === 'android') {
+            return !isSmallScreen ? ((window.height - 600) / 2) : 0
+        }
+        return !isSmallScreen ?
+            (!keyboard.isOpen ? (
+                (window.height - 600) / 2
+            ) : keyboard.keyboardHeight)
+            : keyboard.keyboardHeight
+    }
+
+    return - (window.height * 2) - menuHeight;
+}
+
+
 export const CartMenu: React.FC = (): JSX.Element => {
 
     const [t] = useTranslation('cart');
     const window = useWindowDimensions();
     const cart = useContext(CartContext);
     const user = useContext(UserContext);
-    const isSmallScreen= useMediaQuery({ maxWidth: 900 });
+    const isSmallScreen = useMediaQuery({ maxWidth: 900 });
+    const platform = usePlatform();
     const keyboard = useKeyboardState();
     const menuHeight = useMemo(
         () => isSmallScreen
-            ? computeMenuHeight(window, keyboard.isOpen, keyboard.keyboardHeight)
-            : computeModalMenuHeight(window, keyboard.isOpen, keyboard.keyboardHeight),
-        [window, isSmallScreen, keyboard]
+            ? computeMenuHeight(window, keyboard.isOpen, keyboard.keyboardHeight, platform.platform)
+            : computeModalMenuHeight(window, keyboard.isOpen, keyboard.keyboardHeight, platform.platform),
+        [window, isSmallScreen, keyboard, platform.platform]
     );
     const token = useToken();
     const [uuid] = useState(v4());
@@ -225,8 +219,13 @@ export const CartMenu: React.FC = (): JSX.Element => {
             && cart.cart.payment.status === 'waiting',
         [cart]
     );
+    const haptics = useHaptics();
 
     const onClearCart = () => {
+
+        haptics.impact({
+            style: HapticsImpactStyle.Light
+        });
 
         setClearTimestamp(cart.last_update);
         clearCartLazyRequest.lazyRequest([
@@ -273,6 +272,9 @@ export const CartMenu: React.FC = (): JSX.Element => {
     useEffect(() => {
             if (checkoutLazyRequest.response.called) {
                 if (checkoutLazyRequest.response.error) {
+                    haptics.notification({
+                        type: HapticsNotificationType.ERROR
+                    });
                     setCheckoutTimestamp(null);
                 } else if (checkoutLazyRequest.response.data) {
 
@@ -282,6 +284,9 @@ export const CartMenu: React.FC = (): JSX.Element => {
                         (data.product_errors && data.product_errors.filter((elem): boolean => !isNil(elem)).length > 0)
                         || data.payment_error
                     ) {
+                        haptics.notification({
+                            type: HapticsNotificationType.ERROR
+                        });
                         if (data.product_errors) {
                             const errors = data.product_errors.filter((elem): boolean => !isNil(elem))
                             for (const error of errors) {
@@ -293,6 +298,9 @@ export const CartMenu: React.FC = (): JSX.Element => {
                         }
                         setCheckoutTimestamp(null);
                     } else {
+                        haptics.notification({
+                            type: HapticsNotificationType.SUCCESS
+                        });
                         cart.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
                     }
 
@@ -380,18 +388,7 @@ export const CartMenu: React.FC = (): JSX.Element => {
                 duration: 0.75,
             }}
             animate={{
-                bottom: (
-                    cart.open
-                        ? (
-                            !isSmallScreen ?
-                                !keyboard.isOpen ? (
-                                    (window.height - 600) / 2
-                                ) : keyboard.keyboardHeight
-                                : keyboard.keyboardHeight)
-                        : (
-                            - window.height * 2
-                        )
-                )
+                bottom: getMenuBottom(cart, isSmallScreen, keyboard, window, platform.platform, menuHeight)
             }}
         >
             <MenuContainerHeaderContainer>
@@ -402,7 +399,12 @@ export const CartMenu: React.FC = (): JSX.Element => {
                     date={new Date(cart.cart.checked_out_at).getTime() + 15 * 60 * 1000}
                 /> : null}
                 <MenuContainerHeaderClose
-                    onClick={cart.closeMenu}
+                    onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light
+                        });
+                        cart.closeMenu()
+                    }}
                 >{t('close')}</MenuContainerHeaderClose>
             </MenuContainerHeaderContainer>
             {
@@ -420,11 +422,14 @@ export const CartMenu: React.FC = (): JSX.Element => {
 
                                 ?
                                 <>
-                                    <CartMenuCheckout/>
+                                    <CartMenuCheckout
+                                        height={menuHeight - 50}
+                                    />
                                 </>
                                 :
                                 <>
                                     <CartMenuPreview
+                                        height={menuHeight - 50}
                                         setChildrenLoading={setChildrenLoading}
                                     />
                                     {

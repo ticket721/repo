@@ -3,6 +3,7 @@ import styled from '../../../../config/styled';
 import CardContainer from '../../../elements/card-container';
 import Icon from '../../../icon';
 import { Map, Marker, TileLayer, withLeaflet } from 'react-leaflet';
+import { useMediaQuery } from 'react-responsive';
 // tslint:disable-next-line:no-var-requires
 const { android, ios, macos } = require('platform-detect/os.mjs').default;
 
@@ -23,6 +24,8 @@ export interface LocationCardProps extends React.ComponentProps<any> {
     online_label?: string;
     online_sublabel?: string;
     paddingOverride?: string;
+    ticketFormat?: boolean;
+    bottomLeftRadius?: string;
 }
 
 const Info = styled.span`
@@ -32,20 +35,21 @@ const Info = styled.span`
     text-overflow: ellipsis;
     line-height: 16px;
 
-    &:first-of-type {
-        margin-top: 2px;
-    }
-
     &:last-of-type {
         color: ${(props) => props.theme.textColorDark};
         margin-top: 8px;
+    }
+
+    &:first-of-type {
+        color: ${(props) => props.theme.textColor};
+        margin-top: 2px;
     }
 `;
 
 const Column = styled.div<LocationCardProps>`
     display: flex;
     flex-direction: column;
-    max-width: calc(100% - ${(props) => props.theme.regularSpacing} - 12px);
+    max-width: calc(100% - ${(props) => props.theme.regularSpacing} - 20px);
     color: ${(props) => props.textColor};
 
     a {
@@ -86,6 +90,8 @@ const openMap = (location: string) => {
 export const LocationCard: React.FunctionComponent<LocationCardProps & { className?: string }> = (
     props: LocationCardProps,
 ): JSX.Element => {
+    const isSmall = useMediaQuery({ query: '(max-height: 700px)' });
+
     return (
         <ClickableContainer onClick={() => (!props.disabled ? openMap(props.location) : null)}>
             <CardContainer
@@ -103,48 +109,75 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
                 {props.online ? (
                     <Column iconColor={props.iconColor}>
                         <Info>{props.online_label}</Info>
-                        <Info
-                            style={{
-                                fontWeight: 400,
-                            }}
-                        >
-                            {props.online_sublabel}
-                        </Info>
+                        {!isSmall ? (
+                            <Info
+                                style={{
+                                    fontWeight: 400,
+                                }}
+                            >
+                                {props.online_sublabel}
+                            </Info>
+                        ) : null}
                     </Column>
                 ) : (
                     <Column iconColor={props.iconColor}>
                         <Info>{props.location}</Info>
-                        <Info
-                            style={{
-                                fontWeight: 400,
-                            }}
-                        >
-                            {props.subtitle}
-                        </Info>
+                        {!isSmall ? (
+                            <Info
+                                style={{
+                                    fontWeight: 400,
+                                }}
+                            >
+                                {props.subtitle}
+                            </Info>
+                        ) : null}
                     </Column>
                 )}
             </CardContainer>
             {props.coords ? (
                 <>
-                    <LeafletMap coords={props.coords} />
+                    <LeafletMap
+                        coords={props.coords}
+                        ticketFormat={props.ticketFormat}
+                        bottomLeftRadius={props.bottomLeftRadius}
+                    />
                 </>
             ) : null}
         </ClickableContainer>
     );
 };
 
-const MapContainer = styled.div`
+interface MapContainerProps {
+    ticketFormat: boolean;
+    bottomLeftRadius: string;
+}
+
+const MapContainer = styled.div<MapContainerProps>`
     display: flex;
     justify-content: center;
 
     .leaflet-container {
-        width: min(100%, 70vw);
-        padding-top: min(100%, 70vw);
+        -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+        overflow: hidden;
+        border-bottom-left-radius: ${(props) => props.bottomLeftRadius};
 
-        @media screen and (max-width: 600px) {
-            width: 100%;
-            padding-top: 100%;
+        ${(props) =>
+            props.ticketFormat
+                ? `
+        width: 100%;
+        height: 150px;
+        padding-top: 150px;
+    `
+                : `
+        width: 100%;
+        padding-top: 100%;
+        border-radius: ${props.theme.defaultRadius};
+        @media screen and (max-width: 900px) {
+            height: 150px;
+            padding-top: 150px;
+            border-radius: 0;
         }
+    `}
     }
 
     .leaflet-left {
@@ -153,7 +186,7 @@ const MapContainer = styled.div`
 `;
 
 const LeafletMap = withLeaflet((props: any) => (
-    <MapContainer>
+    <MapContainer ticketFormat={props.ticketFormat} bottomLeftRadius={props.bottomLeftRadius || '0px'}>
         <Map
             center={{ lat: props.coords.lat, lng: props.coords.lon }}
             zoom={18}

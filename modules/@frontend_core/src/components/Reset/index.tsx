@@ -13,6 +13,8 @@ import { getEnv } from '../../utils/getEnv';
 import { useDispatch } from 'react-redux';
 import { PushNotification } from '../../redux/ducks/notifications';
 import { useHistory } from 'react-router';
+import { HapticsImpactStyle, useHaptics, HapticsNotificationType } from '../../utils/useHaptics';
+import { useKeyboardState } from '../../utils/useKeyboardState';
 
 export const Reset: React.FC = () => {
     const [t] = useTranslation('reset');
@@ -20,20 +22,30 @@ export const Reset: React.FC = () => {
     const resetPasswordLazyRequest = useLazyRequest<ResetPasswordResponseDto>('resetPassword', uuid);
     const dispatch = useDispatch();
     const history = useHistory();
+    const haptics = useHaptics();
+    const keyboard = useKeyboardState();
     const formik = useFormik({
         initialValues: {
             email: '',
         },
         validationSchema: resetValidationSchema,
         onSubmit: async (values) => {
-            console.log(values);
+            haptics.impact({
+                style: HapticsImpactStyle.Light,
+            });
             resetPasswordLazyRequest.lazyRequest([values.email, `${getEnv().REACT_APP_SELF}/reset-form`, v4()]);
         },
     });
     useEffect(() => {
         if (resetPasswordLazyRequest.response.error) {
+            haptics.notification({
+                type: HapticsNotificationType.ERROR,
+            });
             dispatch(PushNotification(t('reset_email_error'), 'error'));
         } else if (resetPasswordLazyRequest.response.data) {
+            haptics.notification({
+                type: HapticsNotificationType.SUCCESS,
+            });
             dispatch(PushNotification(t('reset_email_success'), 'success'));
             history.goBack();
         }
@@ -41,7 +53,7 @@ export const Reset: React.FC = () => {
     const isTabletOrMobile = useMediaQuery({ maxWidth: 900 });
 
     return (
-        <ResetWrapper mobile={isTabletOrMobile}>
+        <ResetWrapper mobile={isTabletOrMobile} keyboardHeight={keyboard.keyboardHeight}>
             <ResetContainer mobile={isTabletOrMobile}>
                 <IconContainer>
                     <Icon icon={'ticket721'} size={'40px'} color={'#fff'} />
@@ -60,7 +72,16 @@ export const Reset: React.FC = () => {
                         />
                     </Inputs>
                     <ActionsContainer>
-                        <StyledButton variant={'danger'} title={t('cancel')} onClick={() => history.goBack()} />
+                        <StyledButton
+                            variant={'danger'}
+                            title={t('cancel')}
+                            onClick={() => {
+                                haptics.impact({
+                                    style: HapticsImpactStyle.Light,
+                                });
+                                history.goBack();
+                            }}
+                        />
                         <StyledButton
                             variant={formik.isValid && formik.values.email !== '' ? 'primary' : 'disabled'}
                             type={'submit'}
@@ -116,13 +137,18 @@ const ResetInstructions = styled.span`
 
 interface ResetWrapperProps {
     mobile: boolean;
+    keyboardHeight: number;
 }
 
 const ResetWrapper = styled.div<ResetWrapperProps>`
     display: flex;
     justify-content: center;
     align-items: center;
-    width: min(100vw, 480px);
+    width: 100vw;
+    padding-bottom: ${(props) => props.keyboardHeight}px;
+    @media screen and (min-width: 900px) {
+        width: 480px;
+    }
     height: ${(props) => (props.mobile ? 'none' : 'calc(100vh - 80px)')};
 `;
 

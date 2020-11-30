@@ -12,15 +12,21 @@ import './locales';
 import { getPasswordStrength } from '@common/global';
 import { useMediaQuery } from 'react-responsive';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
+import { HapticsImpactStyle, useHaptics, HapticsNotificationType } from '../../utils/useHaptics';
+import { useKeyboardState } from '../../utils/useKeyboardState';
+import { getEnv } from '../../utils/getEnv';
 
 export interface RegisterProps {
     onLogin?: () => void;
+    createEvent?: boolean;
 }
 
 export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
     const [t] = useTranslation(['registration', 'password_feedback']);
     const auth = useSelector((state: AppState): AuthState => state.auth);
     const dispatch = useDispatch();
+    const haptics = useHaptics();
+    const keyboard = useKeyboardState();
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -40,9 +46,15 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
     useDeepEffect(() => {
         if (!auth.loading) {
             if (auth.submit && !auth.errors && auth.token) {
+                haptics.notification({
+                    type: HapticsNotificationType.SUCCESS,
+                });
                 history.replace(from);
             } else {
                 if (auth.errors) {
+                    haptics.notification({
+                        type: HapticsNotificationType.SUCCESS,
+                    });
                     formik.setErrors(auth.errors);
                 }
             }
@@ -52,12 +64,19 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
     const isTabletOrMobile = useMediaQuery({ maxWidth: 900 });
 
     return (
-        <RegisterWrapper mobile={isTabletOrMobile}>
+        <RegisterWrapper mobile={isTabletOrMobile} keyboardHeight={keyboard.keyboardHeight}>
             <RegisterContainer mobile={isTabletOrMobile}>
                 <IconContainer>
                     <Icon icon={'ticket721'} size={'40px'} color={'#fff'} />
                 </IconContainer>
-                <Form onSubmit={formik.handleSubmit}>
+                <Form
+                    onSubmit={(ev) => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        formik.handleSubmit(ev);
+                    }}
+                >
                     <Inputs>
                         <TextInput
                             name={'email'}
@@ -106,18 +125,55 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
                         />
                     </Inputs>
                     <ActionsContainer>
-                        <Button variant={'primary'} type={'submit'} title={t('register')} />
-                        <SwitchToLogin
-                            onClick={() => {
-                                if (props.onLogin) {
-                                    props.onLogin();
-                                } else {
-                                    history.replace('/login', { from });
-                                }
+                        <Button
+                            variant={
+                                formik.isValid &&
+                                formik.values.password !== '' &&
+                                formik.values.passwordConfirmation !== '' &&
+                                formik.values.email !== '' &&
+                                formik.values.username !== ''
+                                    ? 'primary'
+                                    : 'disabled'
+                            }
+                            type={'submit'}
+                            title={t('register')}
+                        />
+                        <div
+                            style={{
+                                width: '200%',
+                                display: 'flex',
+                                flexDirection: isTabletOrMobile ? 'column' : 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                textAlign: 'center',
                             }}
                         >
-                            {t('login_switch')}
-                        </SwitchToLogin>
+                            <SwitchToLogin
+                                isTabletOrMobile={isTabletOrMobile}
+                                onClick={() => {
+                                    if (props.onLogin) {
+                                        props.onLogin();
+                                    } else {
+                                        history.replace('/login', { from });
+                                    }
+                                }}
+                            >
+                                {t('login_switch')}
+                            </SwitchToLogin>
+                            {props.createEvent ? (
+                                <SwitchToReset
+                                    isTabletOrMobile={isTabletOrMobile}
+                                    onClick={() => {
+                                        haptics.impact({
+                                            style: HapticsImpactStyle.Light,
+                                        });
+                                        window.location = getEnv().REACT_APP_EVENT_CREATION_LINK;
+                                    }}
+                                >
+                                    {t('create_event')}
+                                </SwitchToReset>
+                            ) : null}
+                        </div>
                     </ActionsContainer>
                 </Form>
             </RegisterContainer>
@@ -127,13 +183,18 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
 
 interface RegisterWrapperProps {
     mobile: boolean;
+    keyboardHeight: number;
 }
 
 const RegisterWrapper = styled.div<RegisterWrapperProps>`
     display: flex;
     justify-content: center;
     align-items: center;
-    width: min(100vw, 480px);
+    width: 100vw;
+    padding-bottom: ${(props) => props.keyboardHeight}px;
+    @media screen and (min-width: 900px) {
+        width: 480px;
+    }
     height: ${(props) => (props.mobile ? 'none' : 'calc(100vh - 80px)')};
 `;
 
@@ -171,21 +232,32 @@ const Inputs = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 445px;
+    height: 430px;
+`;
+
+const SwitchToReset = styled.span<{ isTabletOrMobile: boolean }>`
+    font-size: 11px;
+    line-height: 15px;
+    margin-left: ${(props) => (props.isTabletOrMobile ? '0' : props.theme.regularSpacing)};
+    margin-top: ${(props) => (props.isTabletOrMobile ? props.theme.regularSpacing : '5px')};
+    text-decoration: underline;
+    text-align: center;
+    cursor: pointer;
+    color: #ccc;
 `;
 
 const ActionsContainer = styled.div`
-    width: 60%;
+    width: 50%;
     margin-top: 25px;
     display: flex;
     flex-direction: column;
     align-items: center;
 `;
 
-const SwitchToLogin = styled.span`
+const SwitchToLogin = styled.span<{ isTabletOrMobile: boolean }>`
     font-size: 10px;
-    margin-top: 5px;
     text-decoration: underline;
+    margin-top: ${(props) => (props.isTabletOrMobile ? props.theme.regularSpacing : '5px')};
     white-space: nowrap;
     cursor: pointer;
     color: #ccc;

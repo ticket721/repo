@@ -68,6 +68,9 @@ export const useApplePay = (sdk: StripeSDK, cart: CartState): ApplePayStatus => 
 
                 setButton(
                     <PaymentButtonDiv
+                        whileTap={{
+                            scale: 0.95
+                        }}
                         disabled={false}
                         color={'#000000'}
                         textColor={'#ffffff'}
@@ -146,6 +149,9 @@ export const useApplePay = (sdk: StripeSDK, cart: CartState): ApplePayStatus => 
 
                     setButton(
                         <PaymentButtonDiv
+                            whileTap={{
+                                scale: 0.95
+                            }}
                             disabled={false}
                             color={'#000000'}
                             textColor={'#ffffff'}

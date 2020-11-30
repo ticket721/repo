@@ -5,8 +5,13 @@ import Icon from '../../../icon';
 import { keyframes } from 'styled-components';
 import { useMemo } from 'react';
 
-const ClickableContainer = styled.div`
+interface ClickableContainerProps {
+    bottomLeftRadius: string;
+}
+
+const ClickableContainer = styled.div<ClickableContainerProps>`
     cursor: pointer;
+    border-bottom-left-radius: ${(props) => props.bottomLeftRadius};
 `;
 
 const ChevronIcon = styled(Icon)`
@@ -234,6 +239,7 @@ export interface OnlineCardProps extends React.ComponentProps<any> {
     online_link: string;
     live_title: string;
     offline_title: string;
+    bottomLeftRadius?: string;
 }
 
 export const OnlineCard: React.FunctionComponent<OnlineCardProps & { className?: string }> = (
@@ -246,7 +252,10 @@ export const OnlineCard: React.FunctionComponent<OnlineCardProps & { className?:
     ]);
 
     return (
-        <ClickableContainer onClick={props.online_link ? props.onClick : undefined}>
+        <ClickableContainer
+            onClick={props.online_link ? props.onClick : undefined}
+            bottomLeftRadius={props.bottomLeftRadius || '0px'}
+        >
             <CardContainer removeBg={false}>
                 <LiveComponent
                     status={status}

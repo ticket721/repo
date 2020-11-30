@@ -200,12 +200,10 @@ export class DatesController extends ControllerBasics<DateEntity> {
             status: {
                 $eq: 'live',
             },
-            'timestamps.event_begin': {
-                $gt: hour,
-            },
             online: {
                 $eq: isOnline,
             },
+            $page_size: 100,
         } as SortablePagedSearch);
 
         if (!isOnline) {
@@ -213,19 +211,9 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 script: {
                     script: {
                         source: `
-                        if (doc['location.location'].empty) {
-                            return false;
-                        }
-
-                        double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
-                        return distance < params.maxDistance;
-                    `,
+                            return !doc['location.location'].empty;
+                        `,
                         lang: 'painless',
-                        params: {
-                            maxDistance: 100,
-                            lon: body.lon,
-                            lat: body.lat,
-                        },
                     },
                 },
             };
@@ -234,14 +222,9 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 script: {
                     script: {
                         source: `
-                        return doc['location.location'].empty;
-                    `,
+                            return doc['location.location'].empty;
+                        `,
                         lang: 'painless',
-                        params: {
-                            maxDistance: 100,
-                            lon: body.lon,
-                            lat: body.lat,
-                        },
                     },
                 },
             };
@@ -255,6 +238,10 @@ export class DatesController extends ControllerBasics<DateEntity> {
                     script: {
                         source: `
                         double time = (doc['timestamps.event_begin'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+
+                        if (time < 0) {
+                            time = Math.abs(time) * 2;
+                        }
 
                         if (doc['location.location'].empty) {
                             return time
@@ -453,6 +440,8 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 interface: CategoriesService.interfaceFromCurrencyAndPrice(category.currency, category.price),
                 seats: category.seats,
                 status: 'preview',
+                custom_static_fee: null,
+                custom_percent_fee: null,
             }),
             StatusCodes.InternalServerError,
         );

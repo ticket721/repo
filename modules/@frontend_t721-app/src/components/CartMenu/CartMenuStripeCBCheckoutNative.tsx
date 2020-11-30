@@ -1,27 +1,27 @@
-import { StripeSDK }                   from '@frontend/core/lib/utils/StripeSDKContext';
-import React, { useContext, useState }        from 'react';
-import styled, { useTheme }                   from 'styled-components';
-import { useTranslation }                     from 'react-i18next';
-import { useDispatch }                        from 'react-redux';
-import { Theme }                              from '@frontend/flib-react/lib/config/theme';
-import { TextInput, DoubleButtonCta, Button } from '@frontend/flib-react/lib/components';
-import { PushNotification }                   from '@frontend/core/lib/redux/ducks/notifications';
-import { CartContext }                        from '../Cart/CartContext';
-import { useDeepEffect }                      from '@frontend/core/lib/hooks/useDeepEffect';
-import { UserContext }                        from '@frontend/core/lib/utils/UserContext';
-import { getEnv }                             from '@frontend/core/lib/utils/getEnv';
-import MediaQuery                             from 'react-responsive';
+import { StripeSDK }                                               from '@frontend/core/lib/utils/StripeSDKContext';
+import React, { useContext, useState }                             from 'react';
+import styled, { useTheme }                                        from 'styled-components';
+import { useTranslation }                                          from 'react-i18next';
+import { useDispatch }                                             from 'react-redux';
+import { Theme }                                                   from '@frontend/flib-react/lib/config/theme';
+import { Button, DoubleButtonCta, TextInput }                      from '@frontend/flib-react/lib/components';
+import { PushNotification }                                        from '@frontend/core/lib/redux/ducks/notifications';
+import { CartContext }                                             from '../Cart/CartContext';
+import { useDeepEffect }                                           from '@frontend/core/lib/hooks/useDeepEffect';
+import { UserContext }                                             from '@frontend/core/lib/utils/UserContext';
+import { getEnv }                                                  from '@frontend/core/lib/utils/getEnv';
+import MediaQuery                                                  from 'react-responsive';
+import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
 
 const CreditCardWrapper = styled.div`
   padding: ${props => props.theme.regularSpacing};
 `;
 
 const Container = styled.div`
-  height: calc(100vh - 70px - 50px);
   overflow: scroll;
-    @media screen and (max-width: 900px) {
-        padding-bottom: 80px;
-    }
+  @media screen and (max-width: 900px) {
+      padding-bottom: 80px;
+  }
 `;
 
 const Actions = styled.div`
@@ -71,6 +71,7 @@ export const CartMenuStripeCBCheckoutNative: React.FC<CartMenuStripeCBCheckoutNa
         const theme = useTheme() as Theme;
         const cart = useContext(CartContext);
         const user = useContext(UserContext);
+        const haptics = useHaptics();
 
         useDeepEffect(() => {
 
@@ -158,17 +159,26 @@ export const CartMenuStripeCBCheckoutNative: React.FC<CartMenuStripeCBCheckoutNa
                 console.log(error, 'error');
 
                 if (error) {
+                    haptics.notification({
+                        type: HapticsNotificationType.ERROR
+                    });
                     dispatch(PushNotification(error.message, 'error'));
                     setSubmitted(false);
                     return;
                 }
 
             } catch (e) {
+                haptics.notification({
+                    type: HapticsNotificationType.ERROR
+                });
                 dispatch(PushNotification(e.message, 'error'));
                 setSubmitted(false);
                 return;
             }
 
+            haptics.notification({
+                type: HapticsNotificationType.SUCCESS
+            });
             cart.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
 
         };
@@ -270,12 +280,22 @@ export const CartMenuStripeCBCheckoutNative: React.FC<CartMenuStripeCBCheckoutNa
                     onClick={handleSubmit}
                     loading={submitted}
                     variant={submittable ? 'custom' : 'disabled'}
-                    onSecondaryClick={props.back}
+                    onSecondaryClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light
+                        });
+                        props.back();
+                    }}
                 />
             </MediaQuery>
             <MediaQuery minWidth={901}>
                 <Actions>
-                    <TextButton onClick={props.back}>{t('back')}</TextButton>
+                    <TextButton onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light
+                        });
+                        props.back()
+                    }}>{t('back')}</TextButton>
                     <ButtonWrapper>
                         <Button
                             loadingState={submitted}

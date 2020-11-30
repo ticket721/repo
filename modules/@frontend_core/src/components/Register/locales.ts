@@ -12,6 +12,7 @@ i18n.addResourceBundle('en', 'registration', {
     username_placeholder: 'Username',
     register: 'Register',
     login_switch: 'Already registered ? Login here !',
+    create_event: 'Create event',
 
     // errors
     email_required: 'email is required',
@@ -36,6 +37,7 @@ i18n.addResourceBundle('fr', 'registration', {
     username_placeholder: "Nom d'utilisateur",
     register: 'Inscription',
     login_switch: 'Déjà un compte ? Connectez vous ici !',
+    create_event: 'Créer un événement',
 
     // errors
     email_required: 'email requis',

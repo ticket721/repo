@@ -44,6 +44,8 @@ export class CategoryEntity {
             this.id = c.id ? c.id.toString() : c.id;
             this.group_id = c.group_id;
             this.category_name = c.category_name;
+            this.custom_percent_fee = c.custom_percent_fee;
+            this.custom_static_fee = c.custom_static_fee;
             this.display_name = c.display_name;
             this.sale_begin = c.sale_begin;
             this.sale_end = c.sale_end;
@@ -63,6 +65,24 @@ export class CategoryEntity {
      */
     @GeneratedUUidColumn()
     id: string;
+
+    /**
+     * Custom fee to override static fees
+     */
+    @Column({
+        type: 'int',
+    })
+    // tslint:disable-next-line:variable-name
+    custom_static_fee: number;
+
+    /**
+     * Custom fee to override percent fee
+     */
+    @Column({
+        type: 'double',
+    })
+    // tslint:disable-next-line:variable-name
+    custom_percent_fee: number;
 
     /**
      * Group ID of the category

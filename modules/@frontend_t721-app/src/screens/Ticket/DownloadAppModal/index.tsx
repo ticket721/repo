@@ -86,8 +86,11 @@ const Modal = styled(motion.div)`
     left: 0;
     margin: 10% auto;
     height: fit-content;
-    width: min(100vw, 600px);
-    left: calc((100vw - min(100vw, 600px)) / 2);
+    width: 100vw;
+    @media screen and (min-width: 600px) {
+      width: 600px;
+      left: calc((100vw - 600px) / 2);
+    }
     z-index: 9999;
     border-radius: ${props => props.theme.defaultRadius};
     background-color: ${props => props.theme.darkerBg};

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Icon, Button } from '@frontend/flib-react/lib/components';
+import { Button, Icon } from '@frontend/flib-react/lib/components';
 import { useTranslation } from 'react-i18next';
 import './locales';
 import { useMediaQuery } from 'react-responsive';
@@ -9,6 +9,7 @@ import { useToken } from '../../hooks/useToken';
 import { v4 } from 'uuid';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
 import { getEnv } from '../../utils/getEnv';
+import { HapticsImpactStyle, useHaptics } from '../../utils/useHaptics';
 
 const isElapsed = (elapsed: number, multiplicator: number): boolean => {
     return elapsed > multiplicator * 10;
@@ -26,6 +27,7 @@ export const ValidateEmailComponent = () => {
     const [lastCalled, setLastCalled] = useState(0);
     const [elapsed, setElapsed] = useState(0);
     const token = useToken();
+    const haptics = useHaptics();
 
     const lazyResendEmail = useLazyRequest<{}>('resendValidation', uuid);
 
@@ -49,6 +51,9 @@ export const ValidateEmailComponent = () => {
 
     const resendEmail = () => {
         if (!lazyResendEmail.response.called) {
+            haptics.impact({
+                style: HapticsImpactStyle.Light,
+            });
             lazyResendEmail.lazyRequest([token, `${getEnv().REACT_APP_SELF}/validate-email`, multiplicator], {
                 force: true,
             });

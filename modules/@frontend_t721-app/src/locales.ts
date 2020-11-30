@@ -2,10 +2,12 @@ import i18n from '@frontend/core/lib/utils/i18n';
 
 i18n.addResourceBundle('en', 'common', {
     retrying_in: 'press to refresh',
+    create_event: 'Create Event'
 });
 
 i18n.addResourceBundle('fr', 'common', {
     retrying_in: 'touchez pour réessayer',
+    create_event: 'Créer un événement'
 });
 
 i18n.addResourceBundle('en', 'handphone', {

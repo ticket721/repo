@@ -2,17 +2,18 @@ import React, { useContext, useEffect, useState } from 'react';
 import styled                                     from 'styled-components';
 import { FullPageLoading, Icon, WalletHeader } from '@frontend/flib-react/lib/components';
 
-import { DrawerAccount, ProfileRoute }       from '@frontend/core/lib/components/DrawerAccount';
-import { useTranslation }                    from 'react-i18next';
-import { truncate } from '@frontend/core/lib/utils';
-import { useHistory }                        from 'react-router';
-import { NavLink }                           from 'react-router-dom';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
+import { DrawerAccount, ProfileRoute } from '@frontend/core/lib/components/DrawerAccount';
+import { useTranslation }              from 'react-i18next';
+import { truncate }                    from '@frontend/core/lib/utils';
+import { useHistory }                  from 'react-router';
+import { NavLink }                     from 'react-router-dom';
+import { useToken }                    from '@frontend/core/lib/hooks/useToken';
 import './locales';
-import { v4 }                                from 'uuid';
-import { TicketsCountResponseDto }           from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
-import { UserContext }                       from '@frontend/core/lib/utils/UserContext';
-import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
+import { v4 }                          from 'uuid';
+import { TicketsCountResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
+import { UserContext }                 from '@frontend/core/lib/utils/UserContext';
+import { useLazyRequest }              from '@frontend/core/lib/hooks/useLazyRequest';
+import { getEnv }                      from '@frontend/core/lib/utils/getEnv';
 
 export const DesktopNavbar: React.FC = () => {
     const { t } = useTranslation('navbar');
@@ -64,8 +65,14 @@ export const DesktopNavbar: React.FC = () => {
                 <Link to='/wallet' selected={history.location.pathname.startsWith('/wallet')}>
                     {t('my_tickets')}
                 </Link>
+                <Link to='/tags' selected={history.location.pathname.startsWith('/tags')}>
+                    {t('liked_events')}
+                </Link>
             </LeftSide>
             <UserContainer>
+                <BasicLink href={getEnv().REACT_APP_EVENT_CREATION_LINK}>
+                    {t('create_event')}
+                </BasicLink>
                 { user ?
                     <Profile
                         onClick={
@@ -113,6 +120,14 @@ const Link = styled(NavLink)<{ selected: boolean }>`
         `color: ${props.theme.textColor};`
         : null
     }
+
+    :hover {
+        color: ${props => props.theme.textColor};
+    }
+`;
+
+const BasicLink = styled.a`
+    margin-right: ${props => props.theme.regularSpacing};
 
     :hover {
         color: ${props => props.theme.textColor};

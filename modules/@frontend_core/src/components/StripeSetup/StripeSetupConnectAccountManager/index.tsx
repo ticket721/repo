@@ -1,15 +1,17 @@
 import { PasswordlessUserDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
 import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { Icon } from '@frontend/flib-react/lib/components';
-import { SSCABalanceManager, BalanceCurrencyInfo } from './SSCABalanceManager';
+import { BalanceCurrencyInfo, SSCABalanceManager } from './SSCABalanceManager';
 import { SSCARequirementsManager } from './SSCARequirementsManager';
 import { SSCACapabilitiesManager } from './SSCACapabilitiesManager';
 import { isAccountReady } from './isAccountReady';
 import { SSCAExternalAccountListManager } from './SSCAExternalAccountListManager';
 import { StripeContext } from '../index';
 import { SSCATransactionListListManager } from './SSCATransactionListManager';
+import { HapticsImpactStyle, useHaptics } from '../../../utils/useHaptics';
+import { motion } from 'framer-motion';
 
 const BalanceContainerPlaceholder = styled.div`
     height: calc(250px + env(safe-area-inset-top));
@@ -106,13 +108,14 @@ interface RefreshIconProps {
     extraTopMargin: number;
 }
 
-const RefreshIcon = styled(Icon)<RefreshIconProps>`
+const RefreshIconContainer = styled(motion.div)<RefreshIconProps>`
     position: fixed;
     margin-top: ${(props) => props.extraTopMargin}px;
     top: calc(16px + env(safe-area-inset-top));
     top: calc(16px + constant(safe-area-inset-top));
     right: 24px;
     z-index: 10000;
+    cursor: pointer;
 `;
 
 export interface StripeSetupConnectAccountManagerProps {
@@ -126,6 +129,8 @@ export const StripeSetupConnectAccountManager: React.FC<StripeSetupConnectAccoun
     props: StripeSetupConnectAccountManagerProps,
 ): JSX.Element => {
     const stripeOptions = useContext(StripeContext);
+    const haptics = useHaptics();
+    const [rotate, setRotationValue] = useState(0);
 
     return (
         <GlobalContainer>
@@ -135,13 +140,24 @@ export const StripeSetupConnectAccountManager: React.FC<StripeSetupConnectAccoun
                     name={props.stripeInterface.connect_account_name}
                 />
             </BalanceContainer>
-            <RefreshIcon
-                color={'white'}
-                icon={'refresh'}
-                size={16}
-                onClick={props.forceFetchInterface}
+            <RefreshIconContainer
+                animate={{
+                    rotate,
+                    transition: {
+                        duration: 0.5,
+                    },
+                }}
+                onClick={() => {
+                    haptics.impact({
+                        style: HapticsImpactStyle.Heavy,
+                    });
+                    setRotationValue(rotate - 360);
+                    props.forceFetchInterface();
+                }}
                 extraTopMargin={stripeOptions.marginTop}
-            />
+            >
+                <Icon color={'white'} icon={'refresh'} size={'16px'} />
+            </RefreshIconContainer>
             <BalanceContainerPlaceholder />
             <MenuContainer>
                 <SSCARequirementsManager

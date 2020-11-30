@@ -51,7 +51,11 @@ const aggregateFees = (cart) => {
     return 0
 }
 
-export const CartMenuCheckout = () => {
+interface CartMenuCheckoutProps {
+    height: number;
+}
+
+export const CartMenuCheckout: React.FC<CartMenuCheckoutProps> = (props: CartMenuCheckoutProps) => {
 
     const cart = useContext(CartContext);
     const [t] = useTranslation('cart');
@@ -68,7 +72,12 @@ export const CartMenuCheckout = () => {
 
     switch (cart.cart.payment_interface) {
         case null: {
-            return <>
+            return <div
+                style={{
+                    height: props.height,
+                    overflow: 'scroll'
+                }}
+            >
                 <PriceContainer>
                     <PriceText>{t('total')}</PriceText>
                     <PriceSectionContainer>
@@ -88,11 +97,20 @@ export const CartMenuCheckout = () => {
                         }
                     </PriceSectionContainer>
                 </PriceContainer>
-                <CartMenuNoneCheckout />
-            </>
+                <div style={{
+                }}
+                >
+                    <CartMenuNoneCheckout />
+                </div>
+            </div>
         }
         case 'stripe': {
-            return <>
+            return <div
+                style={{
+                    height: props.height,
+                    overflow: 'scroll'
+                }}
+            >
                 <PriceContainer>
                     <PriceText>{t('total')}</PriceText>
                     <PriceSectionContainer>
@@ -112,8 +130,13 @@ export const CartMenuCheckout = () => {
                         }
                     </PriceSectionContainer>
                 </PriceContainer>
-                <CartMenuStripeCheckout cart={cart}/>
-            </>
+                <div style={{
+                    height: props.height - 70
+                }}
+                >
+                    <CartMenuStripeCheckout cart={cart}/>
+                </div>
+            </div>
         }
     }
 }

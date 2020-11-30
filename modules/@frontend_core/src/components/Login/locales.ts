@@ -8,6 +8,7 @@ i18n.addResourceBundle('en', 'login', {
     login: 'Login',
     register_switch: 'Register here !',
     forgot_password: 'Forgot password ?',
+    create_event: 'Create event',
 
     // errors
     email_required: 'email is required',
@@ -21,6 +22,7 @@ i18n.addResourceBundle('fr', 'login', {
     login: 'Connexion',
     register_switch: 'Inscrivez vous ici !',
     forgot_password: 'Mot de passe oublié ?',
+    create_event: 'Créer un événement',
 
     // errors
     email_required: 'email requis',

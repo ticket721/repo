@@ -55,7 +55,8 @@
         "styled-components": "5.1.0",
         "typescript": "3.7.5",
         "uuid": "8.0.0",
-        "yup": "0.28.5"
+        "yup": "0.28.5",
+        "copyfiles": "2.4.1"
     },
     "devDependencies": {
         "jest": "25.4.0",
@@ -66,13 +67,14 @@
         "tslint": "6.0.0"
     },
     "scripts": {
-        "build": "rm -rf lib && tsc",
-        "watch": "watch 'npx tsc && echo \"Done !\"' src",
+        "ts_build": "tsc && copyfiles -u 1 src/**/*.png ./lib",
+        "build": "rm -rf lib && yarn ts_build",
+        "watch": "watch 'yarn ts_build && echo \"Done !\"' src",
         "test": "jest --expand --verbose",
         "lint": "tslint --project .",
         "format": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
         "format:check": "prettier --check \"src/**/*.ts\" \"src/**/*.tsx\"",
-        "@lerna/postinstall": "yarn build",
+        "@lerna/postinstall": "yarn ts_build",
         "@lerna/postclean": "rm -rf lib"
     },
     "eslintConfig": {

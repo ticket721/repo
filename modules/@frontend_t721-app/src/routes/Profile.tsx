@@ -1,11 +1,33 @@
-import { StatusBarMargin } from '@frontend/core/lib/utils/StatusBarMargin';
-import { NavbarMargin }             from '@frontend/core/lib/utils/NavbarMargin';
-import ProfileRoot                  from '@frontend/core/lib/components/Profile/Root';
-import React          from 'react';
+import { StatusBarMargin }                from '@frontend/core/lib/utils/StatusBarMargin';
+import { NavbarMargin }                   from '@frontend/core/lib/utils/NavbarMargin';
+import ProfileRoot                        from '@frontend/core/lib/components/Profile/Root';
+import React                              from 'react';
+import { ArrowLink }                      from '@frontend/flib-react/lib/components';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { getEnv }                         from '@frontend/core/lib/utils/getEnv';
+import { useTranslation }                 from 'react-i18next';
 
 const T721Profile: React.FC = (): JSX.Element => {
 
-    return <ProfileRoot/>
+    const haptics = useHaptics();
+    const [t] = useTranslation('common');
+
+    const extraButtons = [
+        <ArrowLink
+            key={'create_event'}
+            label={t('create_event')}
+            onClick={() => {
+                haptics.impact({
+                    style: HapticsImpactStyle.Light,
+                });
+                window.location = getEnv().REACT_APP_EVENT_CREATION_LINK;
+            }}
+        />
+    ]
+
+    return <ProfileRoot
+        extraButtons={extraButtons}
+    />
 
 };
 

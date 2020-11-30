@@ -16,7 +16,8 @@ import { useHistory }                       from 'react-router';
 import { UsersSetDeviceAddressResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersSetDeviceAddressResponse.dto';
 import { TicketsContext }                   from '@frontend/core/lib/utils/TicketsContext';
 import { isRequestError }                   from '@frontend/core/lib/utils/isRequestError';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
+import { useToken }                       from '@frontend/core/lib/hooks/useToken';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
 
 const Wallet: React.FC = () => {
     const history = useHistory();
@@ -24,6 +25,7 @@ const Wallet: React.FC = () => {
     const token = useToken();
     const devicePk = useSelector((state: T721AppState) => state.deviceWallet.pk);
     const [uuid] = useState<string>(v4() + '@wallet');
+    const haptics = useHaptics();
 
     const { lazyRequest: postAddress } = useLazyRequest<UsersSetDeviceAddressResponseDto>('users.setDeviceAddress', uuid);
 
@@ -51,11 +53,6 @@ const Wallet: React.FC = () => {
 
     return (
         <Container>
-            <Title>
-                <h1>
-                    {t('my_tickets')}
-                </h1>
-            </Title>
             {
                 ticketsResp.response.data?.tickets?.length > 0
 
@@ -67,7 +64,12 @@ const Wallet: React.FC = () => {
                     :
                     <EmptyWallet>
                         <span>{t('empty_wallet')}</span>
-                        <div onClick={() => history.push('/search')}>
+                        <div onClick={() => {
+                            history.push('/search')
+                            haptics.impact({
+                                style: HapticsImpactStyle.Light
+                            });
+                        }}>
                             <span>{t('return_to_search')}</span>
                             <Icon icon={'chevron'} size={'8px'} color={'#2143AB'}/>
                         </div>
@@ -80,30 +82,6 @@ const Wallet: React.FC = () => {
 const Container = styled.div`
     display: flex;
     flex-direction: column;
-`;
-
-const Title = styled.div`
-    font-weight: bold;
-    color: ${props => props.theme.textColor};
-    font-family: ${props => props.theme.fontStack};
-    margin-top: ${props => props.theme.regularSpacing};
-
-    h1 {
-        margin-bottom: 0;
-        text-align: center;
-        font-size: 16px;
-
-        @media screen and (min-width: 900px) {
-            text-align: start;
-            font-size: 24px;
-        }
-    }
-
-    @media screen and (min-width: 900px) {
-        width: 100%;
-        margin-top: ${props => props.theme.doubleSpacing};
-        padding-left: ${props => props.theme.doubleSpacing};
-    }
 `;
 
 const EmptyWallet = styled.div`

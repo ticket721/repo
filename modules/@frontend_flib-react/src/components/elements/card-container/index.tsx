@@ -5,6 +5,7 @@ export interface CardContainerProps extends React.ComponentProps<any> {
     removeBg?: boolean;
     small?: boolean;
     paddingOverride?: string;
+    wBottomLeftRadius?: boolean;
 }
 
 const Container = styled.section<CardContainerProps>`
@@ -14,6 +15,7 @@ const Container = styled.section<CardContainerProps>`
     font-size: 14px;
     font-weight: 500;
     padding: ${(props) => props.paddingOverride || (props.small ? '12px 24px' : props.theme.biggerSpacing)};
+    border-bottom-left-radius: ${(props) => (props.wBottomLeftRadius ? '12px' : '0px')};
     position: relative;
     transition: background-color 300ms;
 `;
@@ -27,6 +29,7 @@ export const CardContainer: React.FunctionComponent<CardContainerProps & { class
             paddingOverride={props.paddingOverride}
             removeBg={props.removeBg}
             small={props.small}
+            wBottomLeftRadius={props.wBottomLeftRadius}
         >
             {props.children}
         </Container>

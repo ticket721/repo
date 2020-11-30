@@ -1,19 +1,20 @@
-import { CategoryEntity }                                      from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { FullButtonCta }                                       from '@frontend/flib-react/lib/components';
-import { useTranslation } from 'react-i18next';
-import { useDispatch }        from 'react-redux';
-import { useHistory, useLocation }         from 'react-router';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
-import { CartContext }                     from '../../components/Cart/CartContext';
-import { isNil }                           from 'lodash';
-import { useLazyRequest }                  from '@frontend/core/lib/hooks/useLazyRequest';
-import { v4 }                              from 'uuid';
-import { PurchasesSetProductsResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
-import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
-import { PurchaseError }                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
-import { UserContext }                     from '@frontend/core/lib/utils/UserContext';
-import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
+import { CategoryEntity }                                          from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import React, { useCallback, useContext, useEffect, useState }     from 'react';
+import { FullButtonCta }                                           from '@frontend/flib-react/lib/components';
+import { useTranslation }                                          from 'react-i18next';
+import { useDispatch }                                             from 'react-redux';
+import { useHistory, useLocation }                                 from 'react-router';
+import { useToken }                                                from '@frontend/core/lib/hooks/useToken';
+import { CartContext }                                             from '../../components/Cart/CartContext';
+import { isNil }                                                   from 'lodash';
+import { useLazyRequest }                                          from '@frontend/core/lib/hooks/useLazyRequest';
+import { v4 }                                                      from 'uuid';
+import { PurchasesSetProductsResponseDto }                         from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
+import { PushNotification }                                        from '@frontend/core/lib/redux/ducks/notifications';
+import { PurchaseError }                                           from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
+import { UserContext }                                             from '@frontend/core/lib/utils/UserContext';
+import { getEnv }                                                  from '@frontend/core/lib/utils/getEnv';
+import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
 
 export interface TicketSelectionCtaProps {
     category: CategoryEntity;
@@ -37,6 +38,7 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
     const cart = useContext(CartContext);
     const user = useContext(UserContext);
     const [capturedTimesstamp, setTimestamp] = useState(null);
+    const haptics = useHaptics();
 
     const disabled = isNil(cart.cart);
 
@@ -78,11 +80,17 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
     useEffect(() => {
             if (addToCartLazyRequest.response.called) {
                 if (addToCartLazyRequest.response.error) {
+                    haptics.notification({
+                        type: HapticsNotificationType.ERROR
+                    });
                     setTimestamp(null);
                 } else if (addToCartLazyRequest.response.data) {
 
                     const data = addToCartLazyRequest.response.data;
                     if (data.errors.filter((elem): boolean => !isNil(elem)).length > 0) {
+                        haptics.notification({
+                            type: HapticsNotificationType.ERROR
+                        });
                         const errors = data.errors.filter((elem): boolean => !isNil(elem))
                         for (const error of errors) {
                             dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
@@ -90,6 +98,9 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
                         setTimestamp(null);
                         props.clearSelection();
                     } else {
+                        haptics.notification({
+                            type: HapticsNotificationType.SUCCESS
+                        });
                         force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
                         props.clearSelection();
                     }
@@ -115,7 +126,12 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
             gradients={props.gradients}
             ctaLabel={t('login_or_register')}
             variant={'custom'}
-            onClick={redirectToLogin}
+            onClick={() => {
+                haptics.impact({
+                    style: HapticsImpactStyle.Light
+                });
+                redirectToLogin();
+            }}
             show={props.category !== null}
         />;
     } else {
@@ -124,7 +140,9 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
             gradients={props.gradients}
             ctaLabel={t('checkout')}
             variant={disabled ? 'disabled' : 'custom'}
-            onClick={onAddToCart}
+            onClick={() => {
+                onAddToCart();
+            }}
             show={props.category !== null}
         />;
     }

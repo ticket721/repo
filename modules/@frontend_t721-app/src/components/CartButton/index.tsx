@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState, useEffect } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import { CartContext }                                     from '../Cart/CartContext';
 import { motion, useAnimation }                            from 'framer-motion';
 import { useWindowDimensions }                             from '@frontend/core/lib/hooks/useWindowDimensions';
@@ -6,6 +6,7 @@ import styled                                              from 'styled-componen
 import { Icon }                                            from '@frontend/flib-react/lib/components';
 import { PaymentError }                                    from '@backend/nest/libs/common/src/purchases/PaymentHandler.base.service';
 import { isNil }                                           from 'lodash';
+import { HapticsImpactStyle, useHaptics }                  from '@frontend/core/lib/utils/useHaptics';
 
 interface ContainerProps {
     spacing: number;
@@ -76,7 +77,6 @@ export const CartButton: React.FC = (): JSX.Element => {
     const cart = useContext(CartContext);
     const controls = useAnimation();
     const window = useWindowDimensions();
-    const [mouseState, setMouseState] = useState({ down: false, moved: false });
     const visible = useMemo(() => cart.cart ? cart.cart.products.length > 0 && !cart.open : false, [cart]);
     const productCount = useMemo(() => cart.cart?.products.length ? cart.cart.products
         .map((p) => p.quantity)
@@ -100,52 +100,19 @@ export const CartButton: React.FC = (): JSX.Element => {
     const navbar = useMemo(() => window.width < 900 ? 70 : 0, [window.width]);
     const spacing = useMemo(() => window.width >= 900 ? 32 : 8, [window.width]);
 
+    const haptics = useHaptics();
+
     const isError = checkIfError(cart.errors);
 
     return <Container
-        onMouseMove={() => {
-            if (mouseState.down && !mouseState.moved) {
-                setMouseState({
-                    down: true,
-                    moved: true,
-                });
-            }
+        onClick={() => {
+            haptics.impact({
+                style: HapticsImpactStyle.Medium
+            });
+            cart.openMenu();
         }}
-        onMouseDown={() => setMouseState({ down: true, moved: false })}
-        onMouseUp={() => {
-            let cb = false;
-            if (!mouseState.moved) {
-                cb = true;
-            }
-
-            setMouseState({ down: false, moved: false });
-
-            if (cb) {
-                cart.openMenu();
-            }
-
-        }}
-        onTouchMove={() => {
-            if (mouseState.down && !mouseState.moved) {
-                setMouseState({
-                    down: true,
-                    moved: true,
-                });
-            }
-        }}
-        onTouchStart={() => setMouseState({ down: true, moved: false })}
-        onTouchEnd={() => {
-            let cb = false;
-            if (!mouseState.moved) {
-                cb = true;
-            }
-
-            setMouseState({ down: false, moved: false });
-
-            if (cb) {
-                cart.openMenu();
-            }
-
+        whileTap={{
+            scale: 0.95
         }}
         spacing={spacing}
         navbar={navbar}

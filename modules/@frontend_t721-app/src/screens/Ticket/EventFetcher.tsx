@@ -2,7 +2,6 @@ import React                      from 'react';
 import { useRequest }              from '@frontend/core/lib/hooks/useRequest';
 import { useTranslation }          from 'react-i18next';
 import { Error, FullPageLoading }  from '@frontend/flib-react/lib/components';
-import { Redirect }                from 'react-router';
 import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 import { TicketDetails }           from './TicketDetails';
 import { CategoryEntity }          from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
@@ -45,20 +44,16 @@ export const EventFetcher: React.FC<EventFetcherProps> = (
         return <FullPageLoading/>;
     }
 
-    if (isRequestError(eventResp)) {
+    if (isRequestError(eventResp) || eventResp.response.data.events.length === 0) {
         return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={eventResp.force}/>);
     }
 
     const event = eventResp.response.data.events[0];
 
-    if (event) {
-        return <TicketDetails
-            ticket={ticket}
-            category={category}
-            dates={dates}
-            event={event}
-        />;
-    } else {
-        return <Redirect to={'/'}/>;
-    }
+    return <TicketDetails
+        ticket={ticket}
+        category={category}
+        dates={dates}
+        event={event}
+    />;
 };

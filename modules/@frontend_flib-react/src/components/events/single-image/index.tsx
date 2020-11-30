@@ -24,7 +24,6 @@ const Container = styled.div<SingleImageProps>`
     border-radius: ${(props) => props.theme.defaultRadius};
     width: 100%;
     overflow: hidden;
-    height: 0;
     cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
     background-image: url(${(props) => props.cover});
     background-size: cover;
@@ -37,8 +36,8 @@ const Filter = styled.div`
     top: 0;
     left: 0;
     border-radius: ${(props) => props.theme.defaultRadius};
-    width: 100%;
-    height: 100%;
+    width: 110%;
+    height: 110%;
     background: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 15%, transparent);
 `;
 

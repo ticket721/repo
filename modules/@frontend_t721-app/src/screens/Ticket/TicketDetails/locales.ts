@@ -23,7 +23,8 @@ i18n.addResourceBundle('en', 'ticket_details', {
     live_subtitle: 'Click to join live',
     soon_subtitle: 'Stream starting soon',
     offline_title: 'offline',
-    ip_fetch_error: 'Check your connection and try again'
+    ip_fetch_error: 'Check your connection and try again',
+    event_unpublished: 'This event has been unpublished'
 });
 i18n.addResourceBundle('fr', 'ticket_details', {
     show_all_dates_label: 'Voir toutes les dates',
@@ -48,5 +49,6 @@ i18n.addResourceBundle('fr', 'ticket_details', {
     live_subtitle: 'Cliquez pour rejoindre le live',
     soon_subtitle: 'Le stream commence bientôt',
     offline_title: 'offline',
-    ip_fetch_error: 'Verfiez votre connection et réessayez'
+    ip_fetch_error: 'Verfiez votre connection et réessayez',
+    event_unpublished: 'Cet évènement n\'est plus publié'
 });

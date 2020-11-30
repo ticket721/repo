@@ -11,6 +11,7 @@ import { v4 } from 'uuid';
 import { useLazyRequest } from '../../hooks/useLazyRequest';
 import { useDeepEffect } from '../../hooks/useDeepEffect/index';
 import { PushNotification } from '../../redux/ducks/notifications/actions';
+import { useHaptics, HapticsImpactStyle } from '../../utils/useHaptics';
 
 const Container = styled.div`
     padding: ${(props) => props.theme.regularSpacing};
@@ -42,6 +43,7 @@ export const StripeSetupCreateStripeInterfaceManager: React.FC<StripeSetupCreate
         const [uuid, setUUID] = useState(v4());
         const stripeInterfaceLazyRequest = useLazyRequest('payment.stripe.createInterface', uuid);
         const dispatch = useDispatch();
+        const haptics = useHaptics();
 
         const onClick = () => {
             stripeInterfaceLazyRequest.lazyRequest([token], {
@@ -70,7 +72,12 @@ export const StripeSetupCreateStripeInterfaceManager: React.FC<StripeSetupCreate
                     <Description>{t('description')}</Description>
                 </ContentContainer>
                 <Button
-                    onClick={onClick}
+                    onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        onClick();
+                    }}
                     title={t('get_started')}
                     variant={'primary'}
                     loadingState={stripeInterfaceLazyRequest.response.loading}

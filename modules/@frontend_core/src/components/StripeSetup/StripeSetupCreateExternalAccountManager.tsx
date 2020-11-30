@@ -22,6 +22,8 @@ import { getEnv } from '../../utils/getEnv';
 import qs from 'qs';
 import { currencies, symbolOf } from '@common/global';
 import { StripeSDK } from '../../utils/StripeSDKContext';
+import { useKeyboardState } from '../../utils/useKeyboardState';
+import { HapticsImpactStyle, useHaptics } from '../../utils/useHaptics';
 
 const StripeNativeEndpointUrl = 'https://api.stripe.com/v1';
 
@@ -32,8 +34,13 @@ export interface StripeSetupManagerCreateExternalAccountProps {
     onDone?: () => void;
 }
 
-const Container = styled.div`
+interface ContainerProps {
+    keyboardHeight: number;
+}
+
+const Container = styled.div<ContainerProps>`
     padding: ${(props) => props.theme.regularSpacing};
+    padding-bottom: ${(props) => props.keyboardHeight}px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -161,12 +168,17 @@ export const StripeSetupCreateExternalAccountManager: React.FC<StripeSetupManage
                 const stripe = useCustomStripe();
                 const dispatch = useDispatch();
                 const token = useToken();
+                const keyboard = useKeyboardState();
+                const haptics = useHaptics();
                 const [uuid] = useState(v4());
                 const addExternalAccountLazyRequest = useLazyRequest('payment.stripe.addExternalAccount', uuid);
                 const [called, setCalled] = useState(false);
                 const [t] = useTranslation('stripe_setup_create_external_account_manager');
 
                 const createBankAccountToken = async () => {
+                    haptics.impact({
+                        style: HapticsImpactStyle.Light,
+                    });
                     setCalled(true);
                     try {
                         const bankAccountToken = await generateBankAccountToken(
@@ -214,7 +226,7 @@ export const StripeSetupCreateExternalAccountManager: React.FC<StripeSetupManage
                 }, [called, addExternalAccountLazyRequest.response]);
 
                 return (
-                    <Container>
+                    <Container keyboardHeight={keyboard.keyboardHeight}>
                         <Title>{t('title')}</Title>
                         <ContentContainer>
                             <Description>{t('description')}</Description>

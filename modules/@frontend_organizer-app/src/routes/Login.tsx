@@ -1,4 +1,5 @@
-import { MobileWarning } from '../utils/MobileWarning';
-import { Login }         from '@frontend/core/lib/components';
+import { MobileWarning }    from '../utils/MobileWarning';
+import { Login }            from '@frontend/core/lib/components';
+import { FullPageCentered } from '@frontend/core/lib/utils/FullPageCentered';
 
-export default MobileWarning(Login);
+export default MobileWarning(FullPageCentered(Login));

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 import { OnlineBadge } from '../../events/single-image/OnlineTag';
+import { motion } from 'framer-motion';
 
 export interface SearchResultsProps extends React.ComponentProps<any> {
     noResultsLabel: string;
@@ -32,21 +33,21 @@ const Container = styled.div<SearchResultsProps>`
 
 const ImgContainer = styled.div<{ src: string }>`
     border-radius: ${(props) => props.theme.defaultRadius};
-    padding-top: max(80px, 10vw);
-    margin-right: max(${(props) => props.theme.regularSpacing}, 1.5vw);
+    padding-top: 80px;
+    margin-right: ${(props) => props.theme.regularSpacing};
+    width: 80px;
     overflow: hidden;
-    width: max(80px, 10vw);
     position: relative;
     background-image: url(${(props) => props.src});
     background-size: cover;
     background-position: center;
 `;
 
-const SingleResult = styled.article<React.ComponentProps<any>>`
+const SingleResult = styled(motion.article)<React.ComponentProps<any>>`
     align-items: center;
     display: flex;
-    font-size: max(13px, 1vw);
-    margin-bottom: max(${(props) => props.theme.regularSpacing}, 5%);
+    font-size: 13px;
+    margin-bottom: ${(props) => props.theme.regularSpacing};
     width: 100%;
     cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
 
@@ -57,10 +58,10 @@ const SingleResult = styled.article<React.ComponentProps<any>>`
     & > div:last-child > span {
         color: ${(props) => props.theme.textColorDark};
         display: block;
-        margin-top: max(12px, 12%);
+        margin-top: 12px;
 
         &:first-of-type {
-            margin-top: max(${(props) => props.theme.smallSpacing}, 8%);
+            margin-top: ${(props) => props.theme.smallSpacing};
         }
     }
 `;
@@ -69,7 +70,7 @@ const CategorySection = styled.section`
     padding: ${(props) => props.theme.biggerSpacing} ${(props) => props.theme.biggerSpacing};
 
     h2 {
-        font-size: max(18px, 1.4vw);
+        font-size: 18px;
         margin-bottom: ${(props) => props.theme.regularSpacing};
     }
 
@@ -89,7 +90,7 @@ const EllipsedTitle = styled.h4`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: max(12px, 1.4vw);
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -103,7 +104,12 @@ const AbsoluteOnlineTagDiv = styled.div`
 
 export const SingleEvent = (props: Event & { customMarginBottom?: string; online?: boolean }) => {
     return (
-        <SingleResult clickable={!!props.onClick} onClick={props.onClick} customMarginBottom={props.customMarginBottom}>
+        <SingleResult
+            clickable={!!props.onClick}
+            onClick={props.onClick}
+            customMarginBottom={props.customMarginBottom}
+            whileTap={{ scale: 0.95 }}
+        >
             <ImgContainer src={props.image}>
                 {props.online ? (
                     <AbsoluteOnlineTagDiv>

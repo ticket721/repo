@@ -10,7 +10,8 @@ import { DateEntity }            from '@common/sdk/lib/@backend_nest/libs/common
 import { EventEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
 import TicketPreview             from '@frontend/flib-react/lib/components/ticket/infos';
 import { useIncrement }          from '../../../utils/useIncrement';
-import { formatDay, formatHour } from '@frontend/core/lib/utils/date';
+import { formatDay, formatHour }          from '@frontend/core/lib/utils/date';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
 
 interface TicketCardProps {
     ticket: Omit<TicketEntity, 'category'>;
@@ -24,9 +25,18 @@ const TicketCard = ({ ticket, category, dates, event, width }: TicketCardProps) 
     const history = useHistory();
     const [t] = useTranslation('ticket');
     const idx = useIncrement(7000);
+    const haptics = useHaptics();
 
     return (
-        <Container customWidth={width} onClick={() => history.push(`/ticket/${ticket.id}`)}>
+        <Container
+            customWidth={width}
+            onClick={() => {
+                history.push(`/ticket/${ticket.id}`)
+                haptics.impact({
+                    style: HapticsImpactStyle.Heavy
+                });
+            }}
+        >
             <TicketHeader
                 cover={dates[idx % dates.length].metadata.avatar}
                 datesCount={dates.length}

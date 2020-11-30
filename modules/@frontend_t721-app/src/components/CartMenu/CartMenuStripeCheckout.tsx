@@ -1,21 +1,22 @@
-import React, { useEffect, useState }      from 'react';
-import styled, { useTheme }                from 'styled-components';
-import { Theme }                           from '@frontend/flib-react/lib/config/theme';
-import { useTranslation }                  from 'react-i18next';
-import { v4 }                              from 'uuid';
-import { useDispatch }        from 'react-redux';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
-import { useLazyRequest }                  from '@frontend/core/lib/hooks/useLazyRequest';
-import { PurchasesSetProductsResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
-import { isNil }                           from 'lodash';
-import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
-import { PurchaseError }                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
-import { CartState }                       from '../Cart/CartContext';
-import { CartMenuStripeCBCheckout }        from './CartMenuStripeCBCheckout';
-import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
-import { useCustomStripe }                 from '@frontend/core/lib/utils/useCustomStripe';
+import React, { useEffect, useState }          from 'react';
+import styled, { useTheme }                    from 'styled-components';
+import { Theme }                               from '@frontend/flib-react/lib/config/theme';
+import { useTranslation }                      from 'react-i18next';
+import { v4 }                                  from 'uuid';
+import { useDispatch }                         from 'react-redux';
+import { useToken }                            from '@frontend/core/lib/hooks/useToken';
+import { useLazyRequest }                      from '@frontend/core/lib/hooks/useLazyRequest';
+import { PurchasesSetProductsResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
+import { isNil }                               from 'lodash';
+import { PushNotification }                    from '@frontend/core/lib/redux/ducks/notifications';
+import { PurchaseError }                       from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
+import { CartState }                           from '../Cart/CartContext';
+import { CartMenuStripeCBCheckout }            from './CartMenuStripeCBCheckout';
+import { getEnv }                              from '@frontend/core/lib/utils/getEnv';
+import { useCustomStripe }                     from '@frontend/core/lib/utils/useCustomStripe';
 import { useApplePay }                         from './useApplePay';
 import { PaymentButtonDiv, PaymentButtonIcon } from './PaymentButton';
+import { HapticsImpactStyle, useHaptics }      from '@frontend/core/lib/utils/useHaptics';
 
 const ComingSoonText = styled.span`
   opacity: 0.7;
@@ -25,8 +26,8 @@ const ComingSoonText = styled.span`
 
 
 const ButtonContainer = styled.div`
-  height: calc(100% - 120px - env(safe-area-inset-bottom));
-  height: calc(100% - 120px - constant(safe-area-inset-bottom));
+  height: 100%;
+  overflow: scroll;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -56,6 +57,7 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
         stripe_account: paymentInfos.stripe_account,
     });
     const apple = useApplePay(sdk, props.cart);
+    const haptics = useHaptics();
 
     const setProductsLazyRequest = useLazyRequest<PurchasesSetProductsResponseDto>('purchases.setProducts', uuid);
 
@@ -125,6 +127,9 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
                 }
 
                 <PaymentButtonDiv
+                    whileTap={{
+                        scale: 0.95
+                    }}
                     disabled={true}
                     color={'#ffffff'}
                     textColor={'#000000'}
@@ -138,10 +143,16 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
                 </PaymentButtonDiv>
 
                 <PaymentButtonDiv
+                    whileTap={{
+                        scale: 0.95
+                    }}
                     disabled={false}
                     color={theme.primaryColorGradientEnd.hex}
                     textColor={'#ffffff'}
                     onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light
+                        });
                         setPaymentMethod('cb');
                     }}
                 >
@@ -154,10 +165,18 @@ export const CartMenuStripeCheckout: React.FC<CartMenuStripeCheckoutProps> = (pr
                 </PaymentButtonDiv>
 
                 <PaymentButtonDiv
+                    whileTap={{
+                        scale: 0.95
+                    }}
                     disabled={false}
                     color={theme.errorColor.hex}
                     textColor={'#ffffff'}
-                    onClick={onClear}
+                    onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light
+                        });
+                        onClear();
+                    }}
                 >
                     <span>{t('cancel')}</span>
                     <PaymentButtonIcon

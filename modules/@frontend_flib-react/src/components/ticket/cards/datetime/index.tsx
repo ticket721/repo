@@ -4,6 +4,7 @@ import CardContainer from '../../../elements/card-container';
 import Separator from '../../../elements/separator';
 import Icon from '../../../icon';
 import { useEffect, useState } from 'react';
+import { useMediaQuery } from 'react-responsive';
 
 interface EventDates {
     id?: string;
@@ -41,72 +42,20 @@ const TileContainer = styled.div<{ datesHeight: string }>`
 `;
 
 const Info = styled.span`
-    &:first-of-type {
-        margin-top: 2px;
-    }
-
     &:last-of-type {
         color: ${(props) => props.theme.textColorDark};
         margin-top: 8px;
+    }
+
+    &:first-of-type {
+        color: ${(props) => props.theme.textColor};
+        margin-top: 2px;
     }
 `;
 
 const DatesRange = styled.div<DateTimeCardProps>`
     display: flex;
     flex-direction: column;
-`;
-
-const DateItem = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: ${(props) => props.theme.regularSpacing};
-`;
-
-const DateDetails = styled.div`
-    display: flex;
-    flex-direction: column;
-    width: calc(100% - 12px);
-`;
-
-const DateName = styled.h2`
-    font-size: 16px;
-    text-transform: uppercase;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-`;
-
-const Range = styled.div`
-    display: flex;
-    margin: ${(props) => props.theme.regularSpacing} 0;
-
-    & > span:first-child {
-        margin-right: ${(props) => props.theme.smallSpacing};
-    }
-`;
-
-const DatesAndTimes = styled.div`
-    display: flex;
-    flex-direction: column;
-`;
-
-const DateLocation = styled.div`
-    display: flex;
-
-    span:first-child {
-        margin-right: ${(props) => props.theme.smallSpacing};
-    }
-
-    span:last-child {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-    }
-`;
-
-const Arrow = styled(Icon)`
-    transform: rotate(-90deg);
 `;
 
 const IconContainer = styled.div`
@@ -137,6 +86,7 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
     const [collapsed, setCollapsed] = useState<boolean>(true);
     const [collapsing, setCollapsing] = useState<boolean>(false);
     const [datesHeight, setDatesHeight] = useState<string>('');
+    const isSmall = useMediaQuery({ query: '(max-height: 700px)' });
 
     useEffect(() => setDatesHeight(props.dates.length * 136 + 'px'), []);
 
@@ -153,72 +103,41 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
                 </IconContainer>
             ) : null}
             <TileContainer className={collapsing || collapsed ? 'collapsed' : undefined} datesHeight={datesHeight}>
-                {collapsed ? (
-                    <DatesRange
-                        onClick={() => (props.dates.length > 1 ? setCollapsed(false) : null)}
-                        iconColor={props.iconColor}
-                    >
-                        {props.dates[0].startDate === props.dates[props.dates.length - 1].endDate ? (
-                            <>
-                                <Info>{props.dates[0].startDate}</Info>
-                                <Info>
-                                    {props.dates[0].startTime}
-                                    <Icon icon={'arrow'} size={'12px'} />
-                                    {props.dates[props.dates.length - 1].endTime}
-                                </Info>
-                            </>
-                        ) : (
-                            <>
-                                <Info>
-                                    {props.dates[0].startDate} - {props.dates[0].startTime}
-                                </Info>
-                                <Info>
+                <DatesRange
+                    onClick={() => (props.dates.length > 1 ? setCollapsed(false) : null)}
+                    iconColor={props.iconColor}
+                >
+                    {props.dates[0].startDate === props.dates[props.dates.length - 1].endDate ? (
+                        <>
+                            <Info>{props.dates[0].startDate}</Info>
+                            <Info
+                                style={{
+                                    fontWeight: 400,
+                                }}
+                            >
+                                {props.dates[0].startTime}
+                                <Icon icon={'arrow'} size={'12px'} />
+                                {props.dates[props.dates.length - 1].endTime}
+                            </Info>
+                        </>
+                    ) : (
+                        <>
+                            <Info>
+                                {props.dates[0].startDate} - {props.dates[0].startTime}
+                            </Info>
+                            {!isSmall ? (
+                                <Info
+                                    style={{
+                                        fontWeight: 400,
+                                    }}
+                                >
                                     {props.dates[props.dates.length - 1].endDate} -{' '}
                                     {props.dates[props.dates.length - 1].endTime}
                                 </Info>
-                            </>
-                        )}
-                    </DatesRange>
-                ) : (
-                    <div>
-                        {props.dates.map((date, idx) => (
-                            <DateItem
-                                key={date.startDate + idx}
-                                onClick={() => (props.onClick && date.id ? props.onClick(date.id) : null)}
-                            >
-                                <DateDetails>
-                                    <DateName>
-                                        #{idx} {date.name}
-                                    </DateName>
-                                    <Range>
-                                        <Icon
-                                            icon={'calendar'}
-                                            size={'16px'}
-                                            color={props.iconColor ? props.iconColor : '#FFF'}
-                                        />
-                                        <DatesAndTimes>
-                                            <Info>
-                                                {date.startDate} - {date.endDate}
-                                            </Info>
-                                            <Info>
-                                                {date.startTime} - {date.endTime}
-                                            </Info>
-                                        </DatesAndTimes>
-                                    </Range>
-                                    <DateLocation>
-                                        <Icon
-                                            icon={'pin'}
-                                            size={'16px'}
-                                            color={props.iconColor ? props.iconColor : '#FFF'}
-                                        />
-                                        <span>{date.location}</span>
-                                    </DateLocation>
-                                </DateDetails>
-                                <Arrow icon={'chevron'} size={'12px'} color={'#FFF'} />
-                            </DateItem>
-                        ))}
-                    </div>
-                )}
+                            ) : null}
+                        </>
+                    )}
+                </DatesRange>
             </TileContainer>
             {props.dates.length > 1 ? (
                 <Collapser
