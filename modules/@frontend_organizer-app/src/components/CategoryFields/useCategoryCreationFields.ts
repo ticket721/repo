@@ -4,7 +4,7 @@ import './locales';
 import { useTranslation }              from 'react-i18next';
 
 import { useField } from 'formik';
-import { checkFormatDate, formatShort } from '@frontend/core/lib/utils/date';
+import { checkFormatDate } from '@frontend/core/lib/utils/date';
 import { useState } from 'react';
 import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
 import { evaluateError } from '../../utils/extractError';
@@ -12,6 +12,7 @@ import { useParams } from 'react-router';
 import { categoryParam } from '../../screens/types';
 
 export interface DateRange {
+    name: string;
     eventBegin: Date;
     eventEnd: Date;
 }
@@ -48,7 +49,7 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
     const [ datesField, datesMeta, datesHelper ] = useField<number[]>(`${parentField ? parentField + '.' : ''}dates`);
 
     const dateOptions = dateRanges.map((date, dateIdx) => ({
-        label: `date n•${dateIdx + 1} - ${formatShort(date.eventBegin)} => ${formatShort(date.eventEnd)}`,
+        label: date.name,
         value: dateIdx.toString(),
     }));
 

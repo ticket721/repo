@@ -50,6 +50,7 @@ export const CreateCategory: React.FC = () => {
     return <CreateCategoryForm
     dates={datesResp.response.data.dates.map(date => ({
         id: date.id,
+        name: date.metadata.name,
         eventBegin: checkFormatDate(date.timestamps.event_begin),
         eventEnd: checkFormatDate(date.timestamps.event_end),
     }))}/>;

@@ -10,9 +10,11 @@ import './locales';
 
 import { CategoryFields } from '../../../components/CategoryFields';
 import { useCategoryCreation } from './useCategoryCreation';
+import { formatDay } from '@frontend/core/lib/utils/date';
 
 interface DateItem {
     id: string;
+    name: string;
     eventBegin: Date;
     eventEnd: Date;
 }
@@ -33,6 +35,7 @@ export const CreateCategoryForm: React.FC<CreateCategoryFormProps> = ({ dates })
             <Title>{t('category_title')}</Title>
             <CategoryFields
                 dateRanges={dates.map(date => ({
+                    name: `${date.name.toUpperCase()} | ${formatDay(date.eventBegin)}`,
                     eventBegin: date.eventBegin,
                     eventEnd: date.eventEnd,
                 }))}

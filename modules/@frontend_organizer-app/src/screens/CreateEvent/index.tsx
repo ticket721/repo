@@ -27,6 +27,7 @@ import { v4 } from 'uuid';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { b64ImgtoBlob } from '../../utils/b64ImgtoBlob';
 import { useUploadImage } from '@frontend/core/lib/hooks/useUploadImage';
+import { uploadImageWithSdk } from '../../utils/uploadImageWithSdk';
 
 export interface FormProps {
     onComplete: () => void;
@@ -154,6 +155,16 @@ const CreateEvent: React.FC = () => {
         switch (currentStep) {
             case 0: return <GeneralInfoForm
                 primaryColor={formik.values.imagesMetadata.signatureColors[0]}
+                uploadDescImage={token ? async (file: File) => {
+                    const url = await uploadImageWithSdk(token, file);
+
+                    if (!url) {
+                        dispatch(PushNotification(t('upload_error'), 'error'));
+                        return;
+                    }
+
+                    return url;
+                } : undefined}
                 />;
             case 1: return <StylesForm
                 eventName={formik.values.textMetadata.name}

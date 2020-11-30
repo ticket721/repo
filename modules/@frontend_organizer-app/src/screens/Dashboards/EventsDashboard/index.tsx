@@ -33,7 +33,7 @@ export const EventsDashboard: React.FC = () => {
                 },
                 $sort: [{
                     $field_name: 'updated_at',
-                    $order: 'asc',
+                    $order: 'desc',
                 }]
             }
         ],

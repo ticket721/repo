@@ -50,6 +50,7 @@ export const EditCategory: React.FC = () => {
     return <EditCategoryForm
     dates={datesResp.response.data.dates.map(date => ({
         id: date.id,
+        name: date.metadata.name,
         eventBegin: checkFormatDate(date.timestamps.event_begin),
         eventEnd: checkFormatDate(date.timestamps.event_end),
     }))}/>;

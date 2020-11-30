@@ -51,6 +51,10 @@ export const DatesDashboard: React.FC = () => {
                 $sort: [{
                     $field_name: 'timestamps.event_end',
                     $order: 'asc',
+                },
+                {
+                    $field_name: 'created_at',
+                    $order: 'asc',
                 }]
             }
         ],
