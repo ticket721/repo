@@ -20,11 +20,47 @@ import { getEnv } from '../../../utils/getEnv';
 import { isRequestError } from '../../../utils/isRequestError';
 import { useToken } from '../../../hooks/useToken';
 import { useHaptics, HapticsImpactStyle } from '../../../utils/useHaptics';
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
+// tslint:disable-next-line:no-var-requires
+const StripeLogo = require('./stripe.png');
 
 export interface ProfileRootProps {
     desktop?: boolean;
     extraButtons?: JSX.Element[];
 }
+
+const RoundButtonContainer = styled.div`
+    padding: ${(props) => props.theme.regularSpacing};
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+`;
+
+interface RoundButtonProps {
+    avatar: string;
+}
+
+const RoundButton = styled(motion.div)<RoundButtonProps>`
+    border-radius: 100%;
+    width: 65px;
+    height: 65px;
+    background-image: url(${(props) => props.avatar});
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: ${(props) => props.theme.darkBg};
+    margin: ${(props) => props.theme.smallSpacing};
+    cursor: pointer;
+`;
+
+const Section = styled.section`
+    padding: ${(props) => props.theme.biggerSpacing} 0;
+
+    h2 {
+        padding-left: ${(props) => props.theme.biggerSpacing};
+    }
+`;
 
 const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: ProfileRootProps): JSX.Element => {
     const [uuid] = useState(v4());
@@ -56,6 +92,23 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                 picture={'/favicon.ico'}
                 tickets={isRequestError(tickets) ? '?' : tickets.response.data.tickets.count}
             />
+            <Section>
+                <h2>{t('payments')}</h2>
+                <RoundButtonContainer>
+                    <RoundButton
+                        whileTap={{
+                            scale: 0.95,
+                        }}
+                        avatar={`${StripeLogo}`}
+                        onClick={() => {
+                            haptics.impact({
+                                style: HapticsImpactStyle.Light,
+                            });
+                            history.push('/stripe/connect');
+                        }}
+                    />
+                </RoundButtonContainer>
+            </Section>
             <LinksContainer title={t('account')}>
                 {extraButtons || null}
                 <LanguageLink
@@ -87,17 +140,6 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                         history.replace('/');
                     }}
                 />
-                <FeatureFlag flag={'stripe_interface_setup'}>
-                    <ArrowLink
-                        label={t('receive_money_with_stripe')}
-                        onClick={() => {
-                            haptics.impact({
-                                style: HapticsImpactStyle.Light,
-                            });
-                            history.push('/stripe/connect');
-                        }}
-                    />
-                </FeatureFlag>
                 <FeatureFlag flag={'admin_flag'}>
                     <ArrowLink
                         label={t('you_are_an_admin')}

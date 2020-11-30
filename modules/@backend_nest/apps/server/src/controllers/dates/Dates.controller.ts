@@ -211,19 +211,9 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 script: {
                     script: {
                         source: `
-                        if (doc['location.location'].empty) {
-                            return false;
-                        }
-
-                        double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
-                        return distance < params.maxDistance;
-                    `,
+                            return !doc['location.location'].empty;
+                        `,
                         lang: 'painless',
-                        params: {
-                            maxDistance: 100,
-                            lon: body.lon,
-                            lat: body.lat,
-                        },
                     },
                 },
             };
@@ -232,14 +222,9 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 script: {
                     script: {
                         source: `
-                        return doc['location.location'].empty;
-                    `,
+                            return doc['location.location'].empty;
+                        `,
                         lang: 'painless',
-                        params: {
-                            maxDistance: 100,
-                            lon: body.lon,
-                            lat: body.lat,
-                        },
                     },
                 },
             };

@@ -1,13 +1,13 @@
-import React, { useState }          from 'react';
-import { useRequest }               from '@frontend/core/lib/hooks/useRequest';
-import { TicketsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsSearchResponse.dto';
-import { useParams }      from 'react-router';
-import { v4 }                       from 'uuid';
-import { useTranslation }           from 'react-i18next';
-import { CategoryFetcher }          from './CategoryFetcher';
-import { Error, FullPageLoading }   from '@frontend/flib-react/lib/components';
-import { isRequestError }           from '@frontend/core/lib/utils/isRequestError';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
+import React, { useState } from 'react';
+import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
+import { TicketsSearchResponseDto }    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsSearchResponse.dto';
+import { useParams }                   from 'react-router';
+import { v4 }                          from 'uuid';
+import { useTranslation }              from 'react-i18next';
+import { CategoryFetcher }             from './CategoryFetcher';
+import { Error, FullPageLoading }      from '@frontend/flib-react/lib/components';
+import { isRequestError }              from '@frontend/core/lib/utils/isRequestError';
+import { useToken }                    from '@frontend/core/lib/hooks/useToken';
 
 const Ticket: React.FC = () => {
     const { id } = useParams();
@@ -21,7 +21,7 @@ const Ticket: React.FC = () => {
                 {
                     id: {
                         $eq: id
-                    },
+                    }
                 },
             ],
             refreshRate: 60,
