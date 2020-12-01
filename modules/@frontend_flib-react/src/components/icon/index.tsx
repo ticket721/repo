@@ -33,7 +33,7 @@ export const Icon: React.FunctionComponent<IconProps & { className?: string }> =
 const IconSpan = styled.span<IconProps>`
     display: block;
     flex-shrink: 0;
-    font-size: ${(props) => props.size};
+    font-size: ${(props) => props.size} !important;
     transition: all 300ms ease;
     color: ${(props) =>
         props.color

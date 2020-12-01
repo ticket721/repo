@@ -11,7 +11,7 @@ module.exports = ({
 
     sdk.connect(SERVER_HOST, SERVER_PORT, SERVER_PROTOCOL);
 
-    const urls = [
+    const baseUrls = [
         {
             url: '/',
             lastmod: new Date(Date.now())
@@ -34,13 +34,10 @@ module.exports = ({
 
     ]
 
-    const base = `
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset
-  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-  http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+    const base =
+        `<?xml version="1.0" encoding="UTF-8"?>
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 `
 
@@ -61,12 +58,18 @@ module.exports = ({
 
         editedBase = `${editedBase}
 
+  <!-- Injected ${_urls.length - baseUrls.length} links -->
+
 </urlset>
 `;
         return editedBase;
     }
 
     return (req, res) => {
+
+        const urls = [
+            ...baseUrls
+        ];
 
         sdk
             .dates
@@ -89,11 +92,13 @@ module.exports = ({
                     });
 
                 }
+                res.set('Content-Type', 'text/xml');
                 res.send(inject(urls));
             })
             .catch(e => {
                 console.error('An error occured while fetching dates');
                 console.error(e);
+                res.set('Content-Type', 'text/xml');
                 res.send(inject(urls));
             });
 
