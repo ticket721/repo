@@ -1,6 +1,10 @@
+declare global {
+    const injectedEnv: any;
+}
+
 export const getEnv = (): any => {
     return {
         ...process.env,
-        ...((window as any).injectedEnv || {}),
+        ...(injectedEnv || {}),
     };
 };

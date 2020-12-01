@@ -34,12 +34,13 @@
     <link rel="shortcut icon" type="image/png" href="%PUBLIC_URL%/assets/icon/favicon.png" />
 
     <script type="text/javascript">
+      var injectedEnv;
       console.log("// {{ ENV }} //");
     </script>
 
     <script>
       var token = "__REACT_APP_SEGMENT_API_KEY__";
-      if (token !== 'UNSET') {
+      if (token !== 'UNSET' && token.indexOf('__REACT_APP_SEGMENT_API_KEY_') === -1) {
         !function() {
           var analytics = window.analytics = window.analytics || [];
           if (!analytics.initialize) if (analytics.invoked) window.console && console.error && console.error("Segment snippet included twice."); else {
