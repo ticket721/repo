@@ -27,6 +27,9 @@ spec:
     spec:
       serviceAccountName: {{ include "platform.fullname" . }}--platform--sa
       volumes:
+        - name: t721app-config-server-config
+          configMap:
+            name: {{ template "platform.fullname" . }}--t721app-config-server-config--cfmp
         - name: t721app-config-well-known
           configMap:
             name: {{ template "platform.fullname" . }}--t721app-config-well-known--cfmp
@@ -77,6 +80,9 @@ spec:
               memory: "512Mi"
               cpu: "250m"
           volumeMounts:
+            - name: t721app-config-server-config
+              mountPath: /repo/modules/@frontend_t721-app/server.config.js
+              subPath: server.config.js
             - name: t721app-config-well-known
               mountPath: /repo/modules/@frontend_t721-app/build/.well-known/apple-app-site-association
               subPath: apple-app-site-association
