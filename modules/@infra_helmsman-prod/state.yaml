@@ -257,6 +257,7 @@ apps:
       config.t721app.playStoreLink: "${CONFIG_PRODUCTION_T721APP_PLAYSTORE_LINK}"
       config.t721app.self: "app.ticket721.com"
       config.t721app.createEventLink: "https://organizer.ticket721.com/create-event"
+      config.t721app.sitemapEnabled: "true"
 
       config.t721app.webMerchantId: "${CONFIG_PRODUCTION_T721APP_APPLE_MERCHANT_ID}"
       config.organizer.webMerchantId: "${CONFIG_PRODUCTION_T721APP_APPLE_MERCHANT_ID}"

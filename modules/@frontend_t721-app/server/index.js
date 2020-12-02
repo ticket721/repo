@@ -6,6 +6,7 @@ const template = require('./template');
 const createLocaleMiddleware = require('express-locale');
 const {getLanguage} = require('./utils');
 const sitemap = require('./sitemap');
+const {Crawler} = require('es6-crawler-detect')
 
 const configPath = path.resolve(process.argv[2]);
 const options = require(configPath);
@@ -109,17 +110,34 @@ const headInjector = (req, res) => {
 
     res.set('Cache-Control', 'no-store');
 
+    const crawler = new Crawler(req);
+
+    if (crawler.isCrawler()) {
+        console.log('Crawler detected:');
+        console.log(crawler.getMatches())
+        console.log(indexHtmlEdited);
+        console.log();
+    }
+
     res.send(indexHtmlEdited);
 };
 
 app.get('/', headInjector);
 
 app.get('/robots.txt', (req, res) => {
-    res.send(`User-Agent: *
+
+    if (process.env.SITEMAP_ENABLED === 'true') {
+        res.send(`User-Agent: *
 Allow: /  
 
 Sitemap: ${APP_URL}/sitemap.xml
 `)
+    } else {
+        res.send(`User-Agent: *
+Disallow: /  
+`)
+    }
+
 });
 
 app.get('/sitemap.xml', sitemap(options));

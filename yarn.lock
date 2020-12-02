@@ -13711,6 +13711,11 @@ es5-shim@^4.5.13:
   resolved "https://registry.yarnpkg.com/es5-shim/-/es5-shim-4.5.14.tgz#90009e1019d0ea327447cb523deaff8fe45697ef"
   integrity sha512-7SwlpL+2JpymWTt8sNLuC2zdhhc+wrfe5cMPI2j0o6WsPdfAiPwmFy2f0AocPB4RQVBOZ9kNTgi5YF7TdhkvEg==
 
+es6-crawler-detect@3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/es6-crawler-detect/-/es6-crawler-detect-3.1.2.tgz#1ed0fe47be7e3b26aafb877ee7e4df26bfc122de"
+  integrity sha512-m0TnbB/bhbOmQnkBRDPsB003lP3Zxhix56+oUgSTysSqtrzsvJQAo3Wy+NXf9ugEiR2DK52LryKgMznn50KPOQ==
+
 es6-iterator@2.0.3, es6-iterator@^2.0.1, es6-iterator@^2.0.3, es6-iterator@~2.0.1, es6-iterator@~2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/es6-iterator/-/es6-iterator-2.0.3.tgz#a7de889141a05a94b0854403b2d0a0fbfa98f3b7"

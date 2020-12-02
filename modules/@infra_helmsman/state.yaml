@@ -261,6 +261,7 @@ apps:
       config.organizer.iosMerchantId: "${CONFIG_STAGING_IOS_T721APP_APPLE_MERCHANT_ID}"
       config.staff.iosMerchantId: "${CONFIG_STAGING_IOS_T721APP_APPLE_MERCHANT_ID}"
       config.t721app.createEventLink: "https://organizer.staging.ticket721.com/create-event"
+      config.t721app.sitemapEnabled: "false"
 
       config.staff.segmentApiKey: "${CONFIG_STAGING_STAFF_SEGMENT_API_KEY}"
       config.staff.organizerUrl: "https://organizer.staging.ticket721.com"
