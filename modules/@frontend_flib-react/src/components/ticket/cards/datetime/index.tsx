@@ -4,7 +4,6 @@ import CardContainer from '../../../elements/card-container';
 import Separator from '../../../elements/separator';
 import Icon from '../../../icon';
 import { useEffect, useState } from 'react';
-import { useMediaQuery } from 'react-responsive';
 
 interface EventDates {
     id?: string;
@@ -25,6 +24,7 @@ export interface DateTimeCardProps extends React.ComponentProps<any> {
     wSeparator?: boolean;
     onClick?: (dateId: string) => void;
     small?: boolean;
+    smallContent?: boolean;
     paddingOverride?: string;
 }
 
@@ -86,7 +86,6 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
     const [collapsed, setCollapsed] = useState<boolean>(true);
     const [collapsing, setCollapsing] = useState<boolean>(false);
     const [datesHeight, setDatesHeight] = useState<string>('');
-    const isSmall = useMediaQuery({ query: '(max-height: 700px)' });
 
     useEffect(() => setDatesHeight(props.dates.length * 136 + 'px'), []);
 
@@ -125,7 +124,7 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
                             <Info>
                                 {props.dates[0].startDate} - {props.dates[0].startTime}
                             </Info>
-                            {!isSmall ? (
+                            {!props.smallContent ? (
                                 <Info
                                     style={{
                                         fontWeight: 400,

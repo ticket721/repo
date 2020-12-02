@@ -6,6 +6,7 @@ import DateTimeCard from '../cards/datetime';
 import Gradient from '../../elements/gradient';
 import { motion, useAnimation } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { useMediaQuery } from 'react-responsive';
 
 export interface PreviewInfosProps extends React.ComponentProps<any> {
     ticket: TicketInterface;
@@ -179,6 +180,8 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
         props.online_sublabel,
     ]);
 
+    const isSmall = useMediaQuery({ query: '(max-height: 700px)' });
+
     return (
         <Wrapper>
             <TicketHeaderInfos>
@@ -191,7 +194,7 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
             <Separator bgColor={props.bgColor} />
             <PreviewContainer>
                 <motion.div animate={x}>
-                    <DateTime dates={[time]} iconColor={props.ticket.mainColor} removeBg small />
+                    <DateTime dates={[time]} iconColor={props.ticket.mainColor} removeBg small smallContent={isSmall} />
                 </motion.div>
                 <motion.div animate={x}>
                     <Location
@@ -203,6 +206,7 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
                         online={online.online}
                         online_label={online.online_label}
                         online_sublabel={online.online_sublabel}
+                        small={isSmall}
                     />
                 </motion.div>
                 <div>
