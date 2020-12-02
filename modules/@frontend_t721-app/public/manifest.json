@@ -4,6 +4,11 @@
     "orientation": "portrait",
     "icons": [
         {
+            "src": "/favicon.ico",
+            "sizes": "64x64 32x32 24x24 16x16",
+            "type": "image/x-icon"
+        },
+        {
             "src": "/android-chrome-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
@@ -17,5 +22,6 @@
     "theme_color": "#0a0812",
     "background_color": "#0a0812",
     "display": "standalone",
-    "start_url": "."
+    "start_url": ".",
+    "prefer_related_applications": "false"
 }

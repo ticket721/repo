@@ -3,7 +3,6 @@ import styled from '../../../../config/styled';
 import CardContainer from '../../../elements/card-container';
 import Icon from '../../../icon';
 import { Map, Marker, TileLayer, withLeaflet } from 'react-leaflet';
-import { useMediaQuery } from 'react-responsive';
 // tslint:disable-next-line:no-var-requires
 const { android, ios, macos } = require('platform-detect/os.mjs').default;
 
@@ -26,6 +25,7 @@ export interface LocationCardProps extends React.ComponentProps<any> {
     paddingOverride?: string;
     ticketFormat?: boolean;
     bottomLeftRadius?: string;
+    small?: boolean;
 }
 
 const Info = styled.span`
@@ -90,8 +90,6 @@ const openMap = (location: string) => {
 export const LocationCard: React.FunctionComponent<LocationCardProps & { className?: string }> = (
     props: LocationCardProps,
 ): JSX.Element => {
-    const isSmall = useMediaQuery({ query: '(max-height: 700px)' });
-
     return (
         <ClickableContainer onClick={() => (!props.disabled ? openMap(props.location) : null)}>
             <CardContainer
@@ -109,7 +107,7 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
                 {props.online ? (
                     <Column iconColor={props.iconColor}>
                         <Info>{props.online_label}</Info>
-                        {!isSmall ? (
+                        {!props.small ? (
                             <Info
                                 style={{
                                     fontWeight: 400,
@@ -122,7 +120,7 @@ export const LocationCard: React.FunctionComponent<LocationCardProps & { classNa
                 ) : (
                     <Column iconColor={props.iconColor}>
                         <Info>{props.location}</Info>
-                        {!isSmall ? (
+                        {!props.small ? (
                             <Info
                                 style={{
                                     fontWeight: 400,

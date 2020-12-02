@@ -7,6 +7,8 @@ const createLocaleMiddleware = require('express-locale');
 const {getLanguage} = require('./utils');
 const sitemap = require('./sitemap');
 const {Crawler} = require('es6-crawler-detect')
+const compression = require('compression')
+
 
 const configPath = path.resolve(process.argv[2]);
 const options = require(configPath);
@@ -31,6 +33,7 @@ const app = express();
 
 app.use(createLocaleMiddleware());
 app.use(cors());
+app.use(compression());
 
 const overrides = fs.readdirSync(path.join(__dirname, 'overrides'));
 
@@ -84,8 +87,8 @@ function replaceRange(s, start, end, substitute) {
     return s.substring(0, start) + substitute + s.substring(end);
 }
 
-const RANGE_START_TAG = '<icicacommence>';
-const RANGE_END_TAG = '</icicafinit>';
+const RANGE_START_TAG = '<title>Ticket721</title>';
+const RANGE_END_TAG = '<title>Ticket721</title>';
 
 const headInjector = (req, res) => {
 

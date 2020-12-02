@@ -185,11 +185,11 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
                                             Share
                                                 .share({
                                                     title: `${t('share_title')} ${props.date.metadata.name}`,
-                                                    text: `${t('share_text')} "${props.date.metadata.name}" ${t('share_text_end')}`,
                                                     url: `${getEnv().REACT_APP_SELF}/event/${props.date.id}`,
                                                     dialogTitle: `${t('share_dialog')} ${props.date.metadata.name}`
                                                 })
                                                 .catch(e => {
+                                                    console.error(e);
                                                     copyToClipboard(`${getEnv().REACT_APP_SELF}/event/${props.date.id}`, dispatch, t('copied'));
                                                 })
                                         }
