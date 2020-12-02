@@ -69,7 +69,7 @@ spec:
             - name: REACT_APP_SELF
               value: 'https://{{ required "[t721app] Missing config.t721app.self value" .Values.config.t721app.self }}'
             - name: SITEMAP_ENABLED
-              value: {{ required "[t721app] Missing config.t721app.sitemapEnabled value" .Values.config.t721app.sitemapEnabled }}
+              value: '{{ required "[t721app] Missing config.t721app.sitemapEnabled value" .Values.config.t721app.sitemapEnabled }}'
           ports:
             - name: http
               containerPort: 5000
