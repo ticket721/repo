@@ -97,6 +97,32 @@ const Title = styled.div`
     }
 `;
 
+interface PricesProps {
+    colors: string[];
+}
+
+const Prices = styled.h3<PricesProps>`
+    text-align: center;
+    font-size: 20px;
+    margin-top: calc(2 * ${(props) => props.theme.regularSpacing});
+    background: -webkit-linear-gradient(0deg, ${(props) => props.colors[0]}, ${(props) => props.colors[1]});
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+`;
+
+const EventTitle = styled.h2`
+    font-size: 14px;
+    opacity: 0.4;
+    font-weight: 400;
+    margin: ${(props) => props.theme.smallSpacing};
+`;
+
+const DateTitle = styled.h2`
+    font-size: 22px;
+    font-weight: 500;
+    margin: ${(props) => props.theme.smallSpacing};
+`;
+
 export const EventHeader: React.FunctionComponent<EventHeaderProps> = (props: EventHeaderProps): JSX.Element => {
     return (
         <>
@@ -109,11 +135,11 @@ export const EventHeader: React.FunctionComponent<EventHeaderProps> = (props: Ev
                         </OnlineTagContainer>
                     ) : null}
                     <Title>
-                        <h3>{props.preName}</h3>
-                        <h2>{props.name}</h2>
+                        <EventTitle>{props.preName}</EventTitle>
+                        <DateTitle>{props.name}</DateTitle>
                     </Title>
                     <div>
-                        <h4>{props.prices}</h4>
+                        <Prices colors={props.colors}>{props.prices}</Prices>
                         <VisibiltySensor onChange={props.onChange}>
                             <Button
                                 variant={'custom'}

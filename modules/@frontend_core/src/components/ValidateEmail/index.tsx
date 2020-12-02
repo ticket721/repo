@@ -10,6 +10,8 @@ import { v4 } from 'uuid';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
 import { getEnv } from '../../utils/getEnv';
 import { HapticsImpactStyle, useHaptics } from '../../utils/useHaptics';
+import { useDispatch } from 'react-redux';
+import { Logout } from '../../redux/ducks/auth';
 
 const isElapsed = (elapsed: number, multiplicator: number): boolean => {
     return elapsed > multiplicator * 10;
@@ -19,7 +21,15 @@ const remaining = (elapsed: number, multiplicator: number): number => {
     return multiplicator * 10 - elapsed;
 };
 
-export const ValidateEmailComponent = () => {
+const CancelText = styled.span`
+    margin: 0;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.5;
+`;
+
+export const ValidateEmailComponent: React.FC<ValidateEmailProps> = ({ forcedMode }: ValidateEmailProps) => {
     const isTabletOrMobile = useMediaQuery({ maxWidth: 900 });
     const { t } = useTranslation('validate_email');
     const [uuid, setUUID] = useState(v4());
@@ -28,8 +38,11 @@ export const ValidateEmailComponent = () => {
     const [elapsed, setElapsed] = useState(0);
     const token = useToken();
     const haptics = useHaptics();
+    const dispatch = useDispatch();
 
     const lazyResendEmail = useLazyRequest<{}>('resendValidation', uuid);
+
+    const mobile = forcedMode === 'mobile' ? true : forcedMode === 'desktop' ? false : isTabletOrMobile;
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -61,7 +74,7 @@ export const ValidateEmailComponent = () => {
         }
     };
     return (
-        <ValidateEmailContainer mobile={isTabletOrMobile}>
+        <ValidateEmailContainer mobile={mobile}>
             <MailIcon icon={'mail'} color={'#fff'} size={'80px'} />
             <MessageFirstLine>{t('message')}</MessageFirstLine>
             <span>{t('check_your_mailbox')}</span>
@@ -76,11 +89,22 @@ export const ValidateEmailComponent = () => {
                 onClick={resendEmail}
             />
             {multiplicator > 1 ? <MaybeSpam>{t('maybe_spam')}</MaybeSpam> : null}
+            <CancelText
+                onClick={() => {
+                    dispatch(Logout());
+                }}
+            >
+                {t('cancel')}
+            </CancelText>
         </ValidateEmailContainer>
     );
 };
 
-export const ValidateEmail: React.FC = () => {
+interface ValidateEmailProps {
+    forcedMode?: string;
+}
+
+export const ValidateEmail: React.FC<ValidateEmailProps> = ({ forcedMode }: ValidateEmailProps) => {
     return (
         <div
             style={{
@@ -97,7 +121,7 @@ export const ValidateEmail: React.FC = () => {
                     padding: 60,
                 }}
             >
-                <ValidateEmailComponent />
+                <ValidateEmailComponent forcedMode={forcedMode} />
             </div>
         </div>
     );
@@ -131,6 +155,7 @@ const MailIcon = styled(Icon)`
 
 const MaybeSpam = styled.span`
     margin-top: ${(props) => props.theme.regularSpacing};
+    margin-bottom: ${(props) => props.theme.regularSpacing};
     font-size: 12px;
     color: ${(props) => props.theme.textColorDark};
     text-align: center;

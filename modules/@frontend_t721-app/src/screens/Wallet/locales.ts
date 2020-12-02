@@ -7,7 +7,8 @@ i18n.addResourceBundle('en', 'wallet', {
     return_to_search: 'Return to Search',
     my_tickets: 'Tickets',
     my_past_tickets: 'Past tickets',
-    no_coming_tickets: 'No upcoming events'
+    no_coming_tickets: 'No upcoming events',
+    no_past_tickets: 'No past tickets'
 });
 
 i18n.addResourceBundle('fr', 'wallet', {
@@ -17,5 +18,6 @@ i18n.addResourceBundle('fr', 'wallet', {
     return_to_search: 'Retournez à la recherche',
     my_tickets: 'Billets',
     my_past_tickets: 'Anciens billets',
-    no_coming_tickets: 'Aucun événement à venir'
+    no_coming_tickets: 'Aucun événement à venir',
+    no_past_tickets: 'Aucun ancien billet'
 });

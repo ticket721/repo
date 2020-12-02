@@ -498,30 +498,46 @@ const PastTickets: React.FC<TicketsProps & {changeMode: () => void}> = (
         <MediaQuery maxWidth={680}>
             <PastTicketList>
                 {
-                    sortedTickets.map((ms: MonthSection, idx: number) => (
-                        <TicketSection
-                            section={ms}
-                            now={now}
-                            categories={categories}
-                            dates={dates}
-                            key={idx}
-                        />
-                    ))
+                    sortedTickets.length === 0
+
+                        ?
+                        <EmptyWallet>
+                            <span>{t('no_past_tickets')}</span>
+                        </EmptyWallet>
+
+                        :
+                        sortedTickets.map((ms: MonthSection, idx: number) => (
+                            <TicketSection
+                                section={ms}
+                                now={now}
+                                categories={categories}
+                                dates={dates}
+                                key={idx}
+                            />
+                        ))
                 }
             </PastTicketList>
         </MediaQuery>
         <MediaQuery minWidth={681}>
             <PastTicketDashboard>
                 {
-                    sortedTickets.map((ms: MonthSection, idx: number) => (
-                        <TicketSection
-                            section={ms}
-                            now={now}
-                            categories={categories}
-                            dates={dates}
-                            key={idx}
-                        />
-                    ))
+                    sortedTickets.length === 0
+
+                        ?
+                        <EmptyWallet>
+                            <span>{t('no_past_tickets')}</span>
+                        </EmptyWallet>
+
+                        :
+                        sortedTickets.map((ms: MonthSection, idx: number) => (
+                            <TicketSection
+                                section={ms}
+                                now={now}
+                                categories={categories}
+                                dates={dates}
+                                key={idx}
+                            />
+                        ))
                 }
             </PastTicketDashboard>
         </MediaQuery>
