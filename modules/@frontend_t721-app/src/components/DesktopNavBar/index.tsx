@@ -90,9 +90,18 @@ export const DesktopNavbar: React.FC = () => {
                     </Connect>
                 }
             </UserContainer>
-            <DrawerAccount
-                route={profileRoute}
-                onClose={() => history.push(history.location.pathname)}/>
+            {
+                user
+
+                    ?
+                    <DrawerAccount
+                        route={profileRoute}
+                        onClose={() => history.push(history.location.pathname)}/>
+
+                    :
+                    null
+
+            }
         </Container>
     );
 };
@@ -117,9 +126,9 @@ const Link = styled(NavLink)<{ selected: boolean }>`
     margin-left: ${props => props.theme.biggerSpacing};
 
     ${props => props.selected ?
-        `color: ${props.theme.textColor};`
-        : null
-    }
+    `color: ${props.theme.textColor};`
+    : null
+}
 
     :hover {
         color: ${props => props.theme.textColor};
