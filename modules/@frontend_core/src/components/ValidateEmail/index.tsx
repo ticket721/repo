@@ -94,7 +94,7 @@ export const ValidateEmailComponent: React.FC<ValidateEmailProps> = ({ forcedMod
                     dispatch(Logout());
                 }}
             >
-                Cancel
+                {t('cancel')}
             </CancelText>
         </ValidateEmailContainer>
     );
