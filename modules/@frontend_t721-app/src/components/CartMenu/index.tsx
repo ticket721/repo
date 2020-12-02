@@ -5,7 +5,7 @@ import { motion }                                          from 'framer-motion';
 import { useWindowDimensions }                             from '@frontend/core/lib/hooks/useWindowDimensions';
 import { CartContext }                                     from '../Cart/CartContext';
 import { CartMenuPreview }                                 from './CartMenuPreview';
-import { UserContext }                                     from '@frontend/core/lib/utils/UserContext';
+import { UserContext }                                     from '@frontend/core/lib/contexts/UserContext';
 import { ValidateEmailComponent }                          from '@frontend/core/lib/components/ValidateEmail';
 import { Button, DoubleButtonCta }                         from '@frontend/flib-react/lib/components';
 import { isNil }                                           from 'lodash';
@@ -24,8 +24,8 @@ import Countdown                                                   from 'react-c
 import { getEnv }                                                  from '@frontend/core/lib/utils/getEnv';
 import MediaQuery, { useMediaQuery }                               from 'react-responsive';
 import { usePlatform }                                             from '@capacitor-community/react-hooks/platform';
-import { useKeyboardState }                                        from '@frontend/core/lib/utils/useKeyboardState';
-import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { useKeyboardState }                                        from '@frontend/core/lib/hooks/useKeyboardState';
+import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 import { event }                                                   from '@frontend/core/lib/tracking/registerEvent';
 // tslint:disable-next-line:no-var-requires
 const SAI = require('safe-area-insets');

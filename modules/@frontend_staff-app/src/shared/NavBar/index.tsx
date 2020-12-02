@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Icon, Navbar }               from '@frontend/flib-react/lib/components';
 import { Link, useLocation } from 'react-router-dom';
-import { UserContext }                from '@frontend/core/lib/utils/UserContext';
+import { UserContext }                from '@frontend/core/lib/contexts/UserContext';
 import { isNavItemActive }   from '@frontend/core/lib/utils/isNavItemActive';
 
 interface StaffNavbarProps {

@@ -1,12 +1,15 @@
-import './locales';
+import '../locales';
 import React, { PropsWithChildren, useState } from 'react';
 import { AppState } from '@frontend-core/redux';
 import { useSelector } from 'react-redux';
 import { v4 } from 'uuid';
-import { Token } from '../redux/ducks/auth';
-import { FullPageLoading } from '@frontend/flib-react/lib/components';
-import { RequestBag, useRequest } from '../hooks/useRequest';
+import { Token } from '../../redux/ducks/auth';
+import { FullPageLoading, Error } from '@frontend/flib-react/lib/components';
+import { RequestBag, useRequest } from '../../hooks/useRequest';
 import { TicketsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsSearchResponse.dto';
+
+import { useTranslation } from 'react-i18next';
+import { isRequestError } from '../../utils/isRequestError';
 
 export const TicketsContext = React.createContext<RequestBag<TicketsSearchResponseDto>>(undefined);
 
@@ -17,8 +20,9 @@ interface LoggedInTicketsGuardProps {
 const LoggedInTicketsGuard: React.FC<PropsWithChildren<LoggedInTicketsGuardProps>> = (
     props: PropsWithChildren<LoggedInTicketsGuardProps>,
 ) => {
-    const [uuid] = useState<string>(v4() + '@userguard');
+    const [uuid] = useState<string>(v4() + '@ticketsguard');
 
+    const [t] = useTranslation('utils');
     const ticketsReq = useRequest<TicketsSearchResponseDto>(
         {
             method: 'tickets.search',
@@ -37,6 +41,14 @@ const LoggedInTicketsGuard: React.FC<PropsWithChildren<LoggedInTicketsGuardProps
         },
         uuid,
     );
+
+    if (ticketsReq.response.loading) {
+        return <FullPageLoading />;
+    }
+
+    if (isRequestError(ticketsReq)) {
+        return <Error message={t('cannot_reach_server')} retryLabel={t('retrying_in')} onRefresh={ticketsReq.force} />;
+    }
 
     return <TicketsContext.Provider value={ticketsReq}>{props.children}</TicketsContext.Provider>;
 };

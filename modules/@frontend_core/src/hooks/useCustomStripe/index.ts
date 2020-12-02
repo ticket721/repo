@@ -1,8 +1,8 @@
 import { Plugins } from '@capacitor/core';
-import { getEnv } from './getEnv';
+import { getEnv } from '../../utils/getEnv';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
-import { StripeSDK, StripeSDKContext } from './StripeSDKContext';
+import { StripeSDK, StripeSDKContext } from '../../contexts/StripeSDKContext';
 
 const { Stripe } = Plugins;
 

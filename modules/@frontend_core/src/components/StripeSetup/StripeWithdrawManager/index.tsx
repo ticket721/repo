@@ -16,7 +16,7 @@ import { CurrencySelector, CurrencyValue, PriceSelectionContainer, PriceSelectio
 import { MaxBalanceSelector, PriceIndicationsContainer, TotalBalanceIndication } from './PriceIndications';
 import './StripeWithdrawManager.locales';
 import { isRequestError } from '../../../utils/isRequestError';
-import { HapticsImpactStyle, useHaptics } from '../../../utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '../../../hooks/useHaptics';
 
 const Container = styled.div`
     height: 100%;

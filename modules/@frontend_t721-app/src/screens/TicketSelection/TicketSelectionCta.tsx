@@ -12,10 +12,10 @@ import { v4 }                                                      from 'uuid';
 import { PurchasesSetProductsResponseDto }                         from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
 import { PushNotification }                                        from '@frontend/core/lib/redux/ducks/notifications';
 import { PurchaseError }                                           from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
-import { UserContext }                                             from '@frontend/core/lib/utils/UserContext';
+import { UserContext }                                             from '@frontend/core/lib/contexts/UserContext';
 import { getEnv }                                                  from '@frontend/core/lib/utils/getEnv';
-import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
 import { event }                                                    from '@frontend/core/lib/tracking/registerEvent';
+import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 
 export interface TicketSelectionCtaProps {
     category: CategoryEntity;

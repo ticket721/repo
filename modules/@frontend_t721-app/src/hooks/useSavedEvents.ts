@@ -1,4 +1,4 @@
-import { useStateWithLocalStorage } from '@frontend/core/lib/utils/useStateWithLocalStorage';
+import { useStateWithLocalStorage } from '@frontend/core/lib/hooks/useStateWithLocalStorage';
 import { useCallback }              from 'react';
 
 type SavedEvents = string[];

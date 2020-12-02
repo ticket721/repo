@@ -6,7 +6,7 @@ import { useDeepEffect }                                  from '@frontend/core/l
 import { PurchasesFetchResponseDto }                      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesFetchResponse.dto';
 import { PurchaseError }                                  from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
 import { eq, isNil }                                      from 'lodash';
-import { UserContext }                                    from '@frontend/core/lib/utils/UserContext';
+import { UserContext }                                    from '@frontend/core/lib/contexts/UserContext';
 import { useHistory }                                     from 'react-router';
 import { modalview }                                      from '@frontend/core/lib/tracking/modalview';
 import { pageview }                                       from '@frontend/core/lib/tracking/pageview';

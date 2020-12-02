@@ -1,17 +1,17 @@
-import './locales';
+import '../locales';
 import React, { PropsWithChildren, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 } from 'uuid';
-import { SetToken, Token } from '../redux/ducks/auth';
+import { SetToken, Token } from '../../redux/ducks/auth';
 import { FullPageLoading, Error } from '@frontend/flib-react/lib/components';
-import { useRequest } from '../hooks/useRequest';
+import { useRequest } from '../../hooks/useRequest';
 import { UsersMeResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersMeResponse.dto';
 import { PasswordlessUserDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/PasswordlessUser.dto';
-import { useDeepEffect } from '../hooks/useDeepEffect';
+import { useDeepEffect } from '../../hooks/useDeepEffect';
 import { useTranslation } from 'react-i18next';
-import { isRequestError } from '../utils/isRequestError';
-import { AppState } from '../redux';
-import { onId } from '../tracking/id';
+import { isRequestError } from '../../utils/isRequestError';
+import { AppState } from '../../redux';
+import { onId } from '../../tracking/id';
 
 export const UserContext = React.createContext<PasswordlessUserDto>(undefined);
 

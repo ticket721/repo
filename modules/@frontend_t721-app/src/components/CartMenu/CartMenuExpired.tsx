@@ -12,7 +12,7 @@ import { PurchaseError }                          from '@common/sdk/lib/@backend
 import { CartContext }                            from '../Cart/CartContext';
 import styled                                     from 'styled-components';
 import { getEnv }                                 from '@frontend/core/lib/utils/getEnv';
-import { HapticsImpactStyle, useHaptics }         from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, useHaptics }         from '@frontend/core/lib/hooks/useHaptics';
 
 const CartExpiredContainer = styled.div`
   width: 100%;

@@ -14,12 +14,12 @@ import {
 }                                         from 'framer';
 import MediaQuery                         from 'react-responsive';
 import { useWindowDimensions }            from '@frontend/core/lib/hooks/useWindowDimensions';
-import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 import { isNil }                          from 'lodash';
 import { useTranslation }                 from 'react-i18next';
 import { OnlineBadge }                    from '@frontend/flib-react/lib/components/events/single-image/OnlineTag';
 import { formatShort }                    from '@frontend/core/lib/utils/date';
-import { useStateWithLocalStorage }       from '@frontend/core/lib/utils/useStateWithLocalStorage';
+import { useStateWithLocalStorage }       from '@frontend/core/lib/hooks/useStateWithLocalStorage';
 
 const Title = styled.div`
     font-weight: bold;

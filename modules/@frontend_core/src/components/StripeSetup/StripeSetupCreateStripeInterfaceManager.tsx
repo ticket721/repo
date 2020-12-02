@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from '@frontend/flib-react/lib/components';
 import { useTranslation } from 'react-i18next';
-import { TopNavMargin } from '../../utils/TopNavMargin';
-import { InvisibleStatusBarMargin } from '../../utils/InvisibleStatusBarMargin';
+import { TopNavMargin } from '../../utils/margins/TopNavMargin';
+import { InvisibleStatusBarMargin } from '../../utils/margins/InvisibleStatusBarMargin';
 import styled from 'styled-components';
 import './StripeSetupCreateStripeInterfaceManager.locales';
 import { useToken } from '../../hooks/useToken';
@@ -11,7 +11,7 @@ import { v4 } from 'uuid';
 import { useLazyRequest } from '../../hooks/useLazyRequest';
 import { useDeepEffect } from '../../hooks/useDeepEffect/index';
 import { PushNotification } from '../../redux/ducks/notifications/actions';
-import { useHaptics, HapticsImpactStyle } from '../../utils/useHaptics';
+import { useHaptics, HapticsImpactStyle } from '../../hooks/useHaptics';
 
 const Container = styled.div`
     padding: ${(props) => props.theme.regularSpacing};

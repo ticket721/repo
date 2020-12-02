@@ -1,4 +1,4 @@
-import i18n from './i18n';
+import i18n from '../utils/i18n';
 
 i18n.addResourceBundle('en', 'utils', {
     cannot_reach_server: 'Cannot reach server',

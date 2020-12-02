@@ -14,10 +14,10 @@ import { v4 }                               from 'uuid';
 import { CategoriesFetcher }                from './CategoriesFetcher';
 import { useHistory }                       from 'react-router';
 import { UsersSetDeviceAddressResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/users/dto/UsersSetDeviceAddressResponse.dto';
-import { TicketsContext }                   from '@frontend/core/lib/utils/TicketsContext';
+import { TicketsContext }                   from '@frontend/core/lib/contexts/TicketsContext';
 import { isRequestError }                   from '@frontend/core/lib/utils/isRequestError';
 import { useToken }                       from '@frontend/core/lib/hooks/useToken';
-import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 
 const Wallet: React.FC = () => {
     const history = useHistory();

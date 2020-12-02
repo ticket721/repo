@@ -12,7 +12,7 @@ import './locales';
 
 import { v4 }                          from 'uuid';
 import { TicketsCountResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
-import { UserContext }                 from '@frontend/core/lib/utils/UserContext';
+import { UserContext }                 from '@frontend/core/lib/contexts/UserContext';
 import { useLazyRequest }              from '@frontend/core/lib/hooks/useLazyRequest';
 import { getEnv }                      from '@frontend/core/lib/utils/getEnv';
 

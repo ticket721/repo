@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 import { useDeepEffect } from '../../../hooks/useDeepEffect';
 import { PushNotification } from '../../../redux/ducks/notifications';
 import { useToken } from '../../../hooks/useToken';
-import { HapticsImpactStyle, useHaptics } from '../../../utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '../../../hooks/useHaptics';
 
 const BankAccountTitle = styled.h3`
     font-size: 16px;

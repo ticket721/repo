@@ -7,7 +7,7 @@ import { Error, FullPageLoading, SelectableComponentListElement } from '@fronten
 import { StripeInterfaceEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/stripeinterface/entities/StripeInterface.entity';
 import { useTranslation } from 'react-i18next';
 import { isRequestError } from '../../../utils/isRequestError';
-import { HapticsImpactStyle, useHaptics } from '../../../utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '../../../hooks/useHaptics';
 
 const TitleContainer = styled.div`
     width: 100%;

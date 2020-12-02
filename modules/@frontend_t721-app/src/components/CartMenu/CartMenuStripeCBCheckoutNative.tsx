@@ -1,4 +1,4 @@
-import { StripeSDK }                                               from '@frontend/core/lib/utils/StripeSDKContext';
+import { StripeSDK }                                               from '@frontend/core/lib/contexts/StripeSDKContext';
 import React, { useContext, useState }                             from 'react';
 import styled, { useTheme }                                        from 'styled-components';
 import { useTranslation }                                          from 'react-i18next';
@@ -8,10 +8,10 @@ import { Button, DoubleButtonCta, TextInput }                      from '@fronte
 import { PushNotification }                                        from '@frontend/core/lib/redux/ducks/notifications';
 import { CartContext }                                             from '../Cart/CartContext';
 import { useDeepEffect }                                           from '@frontend/core/lib/hooks/useDeepEffect';
-import { UserContext }                                             from '@frontend/core/lib/utils/UserContext';
+import { UserContext }                                             from '@frontend/core/lib/contexts/UserContext';
 import { getEnv }                                                  from '@frontend/core/lib/utils/getEnv';
 import MediaQuery                                                  from 'react-responsive';
-import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 
 const CreditCardWrapper = styled.div`
   padding: ${props => props.theme.regularSpacing};
