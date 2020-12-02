@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { FormikProvider } from 'formik';
 
 import { Button } from '@frontend/flib-react/lib/components';
@@ -10,34 +9,38 @@ import './locales';
 
 import { CategoryFields } from '../../../components/CategoryFields';
 import { useCategoryCreation } from './useCategoryCreation';
-import { formatDay } from '@frontend/core/lib/utils/date';
+import { checkFormatDate, formatDay } from '@frontend/core/lib/utils/date';
+import { DatesContext } from '../../../components/Fetchers/DatesFetcher';
+import { CategoriesContext } from '../../../components/Fetchers/CategoriesFetcher';
 
-interface DateItem {
-    id: string;
-    name: string;
-    eventBegin: Date;
-    eventEnd: Date;
-}
-
-export interface CreateCategoryFormProps {
-    dates: DateItem[];
-};
-
-export const CreateCategoryForm: React.FC<CreateCategoryFormProps> = ({ dates }) => {
+export const CreateCategoryView: React.FC = () => {
     const { t } = useTranslation(['create_category', 'common']);
 
-    const token = useToken();
+    const { dates, forceFetch: fetchDates } = useContext(DatesContext);
+    const { forceFetch: fetchCategories } = useContext(CategoriesContext);
 
-    const { onDuplicate, formik } = useCategoryCreation(token, dates);
+    const { onDuplicate, formik } = useCategoryCreation(
+        dates
+        .map(date => ({
+            id: date.id,
+            name: date.metadata.name,
+            eventBegin: checkFormatDate(date.timestamps.event_begin),
+            eventEnd: checkFormatDate(date.timestamps.event_end),
+        })),
+        () => {
+            fetchDates();
+            fetchCategories();
+        }
+    );
 
     return <FormikProvider value={formik}>
         <Form onSubmit={formik.handleSubmit}>
             <Title>{t('category_title')}</Title>
             <CategoryFields
                 dateRanges={dates.map(date => ({
-                    name: `${date.name.toUpperCase()} | ${formatDay(date.eventBegin)}`,
-                    eventBegin: date.eventBegin,
-                    eventEnd: date.eventEnd,
+                    name: `${date.metadata.name.toUpperCase()} | ${formatDay(date.timestamps.event_begin)}`,
+                    eventBegin: date.timestamps.event_begin,
+                    eventEnd: date.timestamps.event_end,
                 }))}
                 onDuplicate={onDuplicate}
             />

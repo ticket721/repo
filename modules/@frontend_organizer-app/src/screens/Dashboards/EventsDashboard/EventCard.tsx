@@ -1,88 +1,53 @@
-import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
-import { useRequest } from '@frontend/core/lib/hooks/useRequest';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
-import { FullPageLoading, Error } from '@frontend/flib-react/lib/components';
-import React, { useEffect, useState } from 'react';
-import { v4 } from 'uuid';
+import React, { useContext, useMemo } from 'react';
 import { useTranslation }  from 'react-i18next';
 import styled from 'styled-components';
-import { formatDay } from '@frontend/core/lib/utils/date';
+import { checkFormatDate, formatDay } from '@frontend/core/lib/utils/date';
 import { useHistory } from 'react-router';
+import { DatesContext } from '../../../components/Fetchers/DatesFetcher';
 
 export interface EventCardProps {
     id: string;
     name: string;
     avatar: string;
     primaryColor: string;
-    dateIds: string[];
 }
 
-export const EventCard: React.FC<EventCardProps> = ({ id, name, avatar, primaryColor, dateIds }) => {
+export const EventCard: React.FC<EventCardProps> = ({ id, name, avatar, primaryColor }) => {
     const [ t ] = useTranslation('events_dashboard');
-    const token = useToken();
 
     const history = useHistory();
 
-    const [fetchDatesUuid] = useState(v4() + '@dates-fetch');
+    const { dates } = useContext(DatesContext);
 
-    const [ dateRange, setDateRange ] = useState<{ start: string, end: string }>();
-
-    const { response: datesResp, force: forceDates } = useRequest<DatesSearchResponseDto>({
-        method: 'dates.search',
-        args: [
-            token,
-            {
-                id: {
-                    $in: dateIds
-                },
-                $sort: [{
-                    $field_name: 'timestamps.event_begin',
-                    $order: 'asc',
-                }]
-            },
-        ],
-        refreshRate: 50,
-    }, fetchDatesUuid);
-
-    useEffect(() => {
-        if (datesResp.data?.dates) {
-            const endDate = datesResp.data.dates
+    const dateRange = useMemo<{ start: string, end: string }>(() => {
+        const endDate = dates
             .map(date => date.timestamps.event_end)
-            .sort((date, nextDate)  => Date.parse(nextDate) - Date.parse(date))[0];
-            setDateRange({
-                start: formatDay(datesResp.data.dates[0].timestamps.event_begin),
-                end: formatDay(endDate),
-            });
+            .sort((date, nextDate)  => checkFormatDate(nextDate).getTime() - checkFormatDate(date).getTime())[0];
+
+        return {
+            start: formatDay(dates[0].timestamps.event_begin),
+            end: formatDay(endDate),
         }
-    // eslint-disable-next-line
-    }, [datesResp.data?.dates]);
-
-    if (datesResp.loading) {
-        return <FullPageLoading/>;
-    }
-
-    if (datesResp.error) {
-        return <Error message={t('dates_fetch_error')} onRefresh={forceDates}/>;
-    }
+    }, [dates]);
 
     return <Container>
         <Card
         cover={avatar}
         onClick={() => history.push(`/event/${id}`)}>
-                <Filter/>
-                <Content>
-                    <Name>{name}</Name>
-                    {
-                        datesResp.data.dates.length > 0 ?
-                        <DateRange primaryColor={primaryColor}>
-                            {t('from')}&nbsp;
-                            <strong>{dateRange?.start || '___'}</strong>
-                            &nbsp;{t('to')}&nbsp;
-                            <strong>{dateRange?.end || '___'}</strong>
-                        </DateRange> :
-                        null
-                    }
-                </Content>
+            <Filter/>
+            <Content>
+                <Name>{name}</Name>
+                {
+                    dates.length > 0 ?
+                    <DateRange primaryColor={primaryColor}>
+                        {t('from')}&nbsp;
+                        <strong>{dateRange.start || '___'}</strong>
+                        &nbsp;{t('to')}&nbsp;
+                        <strong>{dateRange.end || '___'}</strong>
+                    </DateRange> :
+                    null
+                }
+            </Content>
         </Card>
     </Container>;
 };

@@ -1,24 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { useRequest }    from '@frontend/core/lib/hooks/useRequest';
-import { EventsSearchResponseDto }    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
+import React, { useContext, useEffect, useState } from 'react';
 import { v4 }                                   from 'uuid';
 import { useToken }                             from '@frontend/core/lib/hooks/useToken';
-import { FullPageLoading, Error, Icon, Button } from '@frontend/flib-react/lib/components';
+import { Icon, Button } from '@frontend/flib-react/lib/components';
 import { useTranslation }                       from 'react-i18next';
 import './locales';
-import { useHistory, useRouteMatch }            from 'react-router';
-import { eventParam }                  from '../../../screens/types';
+import { useHistory }            from 'react-router';
 import styled                          from 'styled-components';
-import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { EventsStatusResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsStatusResponse.dto';
 import { CategoriesSubMenu }           from './CategoriesSubMenu';
 import { AnimateSharedLayout, motion } from 'framer';
 import { DatesSubMenu }                from './DatesSubMenu';
-import { useDeepEffect }               from '@frontend/core/lib/hooks/useDeepEffect';
 import { useLazyRequest, RequestResp }  from '@frontend/core/lib/hooks/useLazyRequest';
 import { useDispatch }                 from 'react-redux';
 import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
 import { Dispatch }                    from 'redux';
+import { DatesContext } from '../../../components/Fetchers/DatesFetcher';
+import { EventsContext } from '../../../components/Fetchers/EventsFetcher';
+import { CategoriesContext } from '../../../components/Fetchers/CategoriesFetcher';
 
 const handleStatus = (req: RequestResp<EventsStatusResponseDto>, history: any, dispatch: Dispatch, t: any): void => {
     switch (req.error.response.data.message) {
@@ -37,98 +35,44 @@ const handleStatus = (req: RequestResp<EventsStatusResponseDto>, history: any, d
     }
 }
 
-export const EventMenu: React.FC = () => {
+export const EventMenuView: React.FC<{ eventId: string }> = ({ eventId }) => {
     const [t] = useTranslation('event_menu');
     const token = useToken();
-    const [fetchEventUuid] = useState<string>(v4() + '@event-search');
-    const [fetchDatesUuid] = useState<string>(v4() + '@dates-search');
     const [publishEventUuid] = useState<string>(v4() + '@publish');
 
-    const dispatch = useDispatch();
-    const match = useRouteMatch<eventParam>('/event/:eventId');
+    const { events, forceFetch: fetchEvents } = useContext(EventsContext);
+    const { dates, forceFetch: fetchDates } = useContext(DatesContext);
+    const { categories, forceFetch: fetchCategories } = useContext(CategoriesContext);
 
-    const [params, setParams] = useState<eventParam>();
+    const dispatch = useDispatch();
 
     const history = useHistory();
-
-    const { response: eventResp, force: forceEvent } = useRequest<EventsSearchResponseDto>({
-        method: 'events.search',
-        args: [
-            token,
-            {
-                id: {
-                    $eq: params?.eventId,
-                },
-            },
-        ],
-        refreshRate: 50,
-    }, fetchEventUuid);
-
-    const { response: datesResp, force: forceDates } = useRequest<DatesSearchResponseDto>({
-        method: 'dates.search',
-        args: [
-            token,
-            {
-                event: {
-                    $eq: params?.eventId,
-                },
-                $sort: [{
-                    $field_name: 'timestamps.event_end',
-                    $order: 'asc',
-                }],
-            },
-        ],
-        refreshRate: 50,
-    }, fetchDatesUuid);
 
     const { response: publishResp, lazyRequest: publish } = useLazyRequest<EventsStatusResponseDto>('events.status', publishEventUuid);
 
     useEffect(() => {
-        forceEvent();
-        forceDates();
-        // eslint-disable-next-line
-    }, []);
-
-    useDeepEffect(() => {
-        if (match?.params) {
-            setParams(match.params);
-        }
-    }, [match?.params]);
-
-    useEffect(() => {
         if (publishResp.data?.event) {
             dispatch(PushNotification(t('publish_success'), 'success'));
-            forceEvent();
-            forceDates();
+            fetchEvents();
+            fetchDates();
+            fetchCategories();
         }
         // eslint-disable-next-line
     }, [publishResp.data?.event]);
 
     useEffect(() => {
-
         if (publishResp.error) {
             handleStatus(publishResp, history, dispatch, t);
         }
         // eslint-disable-next-line
     }, [publishResp.error]);
 
-    if (eventResp.loading || datesResp.loading) {
-        return <FullPageLoading/>;
-    }
-
-    if (eventResp.error || datesResp.error) {
-        return <Error message={t('event_fetch_error')} onRefresh={() => {
-            forceEvent();
-            forceDates();
-        }}/>;
-    }
-
     return <EventMenuContainer>
         <AnimateSharedLayout>
             <Title
                 focused={history.location.pathname.endsWith('/edit')}
-                onClick={() => history.push(`/event/${params.eventId}/edit`)}>
-                {eventResp.data.events[0].name}
+                onClick={() => history.push(`/event/${eventId}/edit`)}>
+                {events[0].name}
                 <Icon className={'edit'} icon={'edit'} size={'18px'} color={'white'}/>
                 {
                     history.location.pathname.endsWith('/edit') ?
@@ -137,21 +81,21 @@ export const EventMenu: React.FC = () => {
                 }
                 <PublishBtn>
                     <Button
-                        title={t(eventResp.data.events[0].status === 'preview' ? 'publish' : 'published')}
-                        variant={eventResp.data.events[0].status === 'preview' ? 'primary' : 'disabled'}
+                        title={t(events[0].status === 'preview' ? 'publish' : 'published')}
+                        variant={events[0].status === 'preview' ? 'primary' : 'disabled'}
                         onClick={() => {
-                            const dates: string[] = eventResp.data.events[0].dates;
-                            const categories: string[] = [...new Set(datesResp.data.dates.flatMap(date => date.categories))];
+                            const dateIds: string[] = events[0].dates;
+                            const categoryIds: string[] = [...new Set(dates.flatMap(date => date.categories))];
                             publish([
                                 token,
-                                params?.eventId,
+                                eventId,
                                 {
                                     event: true,
-                                    dates: dates.reduce((acc: any, date: string) => {
+                                    dates: dateIds.reduce((acc: any, date: string) => {
                                         acc[date] = true;
                                         return acc;
                                     }, {}),
-                                    categories: categories.reduce((acc: any, category: string) => {
+                                    categories: categoryIds.reduce((acc: any, category: string) => {
                                         acc[category] = true;
                                         return acc;
                                     }, {}),
@@ -162,8 +106,8 @@ export const EventMenu: React.FC = () => {
                         }/>
                 </PublishBtn>
             </Title>
-            <DatesSubMenu/>
-            <CategoriesSubMenu dateCount={datesResp.data.dates.length}/>
+            <DatesSubMenu eventId={eventId} dates={dates}/>
+            <CategoriesSubMenu categories={categories} dateCount={dates.length}/>
         </AnimateSharedLayout>
     </EventMenuContainer>;
 };

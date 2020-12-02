@@ -1,46 +1,32 @@
 import React, { useState } from 'react';
-import { useRequest } from '@frontend/core/lib/hooks/useRequest';
-import { v4 } from 'uuid';
-import { useToken } from  '@frontend/core/lib/hooks/useToken';
-import { FullPageLoading, Error, Icon } from '@frontend/flib-react/lib/components';
+import { Icon } from '@frontend/flib-react/lib/components';
 import { useTranslation } from 'react-i18next';
 import './locales';
 import { useHistory, useRouteMatch } from 'react-router';
-import { eventParam } from '../../../../screens/types';
+import { categoryParam, eventParam } from '../../../../screens/types';
 import styled from 'styled-components';
 import { motion } from 'framer';
-import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { MultiDatesTag } from '../../../../components/MultiDatesTag';
 import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
+import { CategoryEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 
-export const DatesSubMenu: React.FC = () => {
-    const [ t ] = useTranslation('dates_submenu');
-    const token = useToken();
-    const [fetchDatesUuid] = useState<string>(v4() + '@dates-search');
+export interface CategoriesSubMenuProps {
+    categories: CategoryEntity[];
+    dateCount: number;
+}
 
-    const match = useRouteMatch<eventParam>('/event/:eventId');
+export const CategoriesSubMenu: React.FC<CategoriesSubMenuProps> = ({ categories, dateCount }) => {
+    const [ t ] = useTranslation('categories_submenu');
+
+    const match = useRouteMatch<eventParam & categoryParam>([
+        '/event/:eventId/category/:categoryId',
+        '/event/:eventId']);
+
+    const [  params, setParams ] = useState<eventParam & categoryParam>();
 
     const history = useHistory();
 
-    const [ collapsed, setCollapsed ] = useState<boolean>(false);
-
-    const [  params, setParams ] = useState<eventParam>();
-
-    const { response: datesResp, force: forceDates } = useRequest<DatesSearchResponseDto>({
-        method: 'dates.search',
-        args: [
-            token,
-            {
-                event: {
-                    $eq: params?.eventId
-                },
-                $sort: [{
-                    $field_name: 'timestamps.event_end',
-                    $order: 'asc',
-                }]
-            },
-        ],
-        refreshRate: 50,
-    }, fetchDatesUuid);
+    const [ collapsed, setCollapsed ] = useState<boolean>(true);
 
     useDeepEffect(() => {
         if (match?.params) {
@@ -48,42 +34,41 @@ export const DatesSubMenu: React.FC = () => {
         }
     }, [match?.params]);
 
-    if (datesResp.loading) {
-        return <FullPageLoading/>;
-    }
-
-    if (datesResp.error) {
-        return <Error message={t('date_fetch_error')} onRefresh={forceDates}/>;
-    }
-
-    return <DatesMenuContainer>
-        <Title
+    return <CategoriesMenuContainer>
+        <Header
         focused={!collapsed}
         onClick={(e) => {
             if ((e.target as any).className.includes('chevron')) {
                 if (!collapsed) {
-                    history.push(`/event/${params?.eventId}/edit`);
+                    history.push(`/event/${params.eventId}`);
                 } else {
-                    history.push(`/event/${params?.eventId}`);
+                    history.push(`/event/${params.eventId}/categories`);
                 }
                 setCollapsed(!collapsed);
             } else {
-                if (collapsed && datesResp.data?.dates.length > 0) {
+                if (collapsed && categories.length > 0) {
                     setCollapsed(false);
                 }
 
-                history.push(`/event/${params?.eventId}`);
+                history.push(`/event/${params.eventId}/categories`);
             }
         }}>
-            {t('dates_title')}
+            <Title>
+                {t('categories_title')}
+                {
+                    dateCount > 1 ?
+                    <MultiDatesTag/> :
+                    null
+                }
+            </Title>
             {
-                datesResp.data.dates.length > 0 ?
+                categories.filter(category => dateCount > 1 ? category.dates.length > 1 : true).length > 0 ?
                     <Chevron
                     className={'chevron'}
                     rotate={
                         collapsed ?
                         'top' :
-                        history.location.pathname === `/event/${params?.eventId}` ?
+                        history.location.pathname.endsWith('/categories') ?
                         'right' :
                         'bottom'
                     }>
@@ -91,47 +76,57 @@ export const DatesSubMenu: React.FC = () => {
                     </Chevron> :
                     null
             }
-        </Title>
-        <DatesContainer
+        </Header>
+        <CategoriesContainer
         collapsed={collapsed}
-        categoriesCount={datesResp.data.dates.length}>
+        categoriesCount={
+            categories
+            .filter(category => dateCount > 1 ? category.dates.length > 1 : true).length
+        }>
             {
-                datesResp.data.dates
-                .map(date => (
+                categories
+                .filter(category => dateCount > 1 ? category.dates.length > 1 : true)
+                .map(category => (
                     <Link
-                    key={date.id}
-                    onClick={() => history.push(`/event/${params?.eventId}/date/${date.id}/dates-typology`)}>
-                        <span>{date.metadata.name}</span>
-                        <Icon className={'arrow'} icon={'arrow'} size={'16px'} color={'white'}/>
+                    key={category.id}
+                    selected={params?.categoryId === category.id}
+                    onClick={() => history.push(`/event/${params.eventId}/category/${category.id}`)}>
+                        <span>{category.display_name}</span>
+                        {
+                            params?.categoryId === category.id && !collapsed ?
+                            <Arrow layoutId={'selected'}/> :
+                            null
+                        }
                     </Link>
                 ))
             }
-        </DatesContainer>
-        <NewDateLink
-        key={'new-date'}
-        selected={history.location.pathname.endsWith('/date')}
+        </CategoriesContainer>
+        <NewCategoryLink
+        key={'new-category'}
+        selected={history.location.pathname.endsWith('/category')}
         onClick={() => {
             setCollapsed(false);
-            history.push(`/event/${params?.eventId}/date`);
+            history.push(`/event/${params.eventId}/category`);
         }}>
             <Plus>+</Plus>
-            <span>{t('new_date')}</span>
+            <span>{t('new_category')}</span>
             {
-                history.location.pathname.endsWith('/date') ?
+                history.location.pathname.endsWith('/category') ?
                     <Arrow layoutId={'selected'}/> :
                 null
             }
-        </NewDateLink>
-    </DatesMenuContainer>;
+        </NewCategoryLink>
+    </CategoriesMenuContainer>;
 }
 
-const DatesMenuContainer = styled.div`
+const CategoriesMenuContainer = styled.div`
+    margin-top: ${props => props.theme.regularSpacing};
     background-color: ${props => props.theme.darkBg};
     border-radius: ${props => props.theme.defaultRadius};
     padding: ${props => props.theme.biggerSpacing} ${props => props.theme.biggerSpacing} calc(${props => props.theme.biggerSpacing} / 2);
 `;
 
-const Title = styled.div<{ focused: boolean }>`
+const Header = styled.div<{ focused: boolean }>`
     display: flex;
     justify-content: space-between;
     color: ${props => props.focused ? props.theme.textColor : props.theme.textColorDarker};
@@ -139,6 +134,15 @@ const Title = styled.div<{ focused: boolean }>`
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
+`;
+
+const Title = styled.div`
+    display: flex;
+    align-items: center;
+
+    div {
+        margin-left: ${props => props.theme.smallSpacing};
+    }
 `;
 
 const Chevron = styled.div<{ rotate: 'top' | 'right' | 'bottom' }>`
@@ -156,7 +160,7 @@ const Chevron = styled.div<{ rotate: 'top' | 'right' | 'bottom' }>`
     }}
 `;
 
-const DatesContainer = styled.div<{ collapsed: boolean, categoriesCount: number }>`
+const CategoriesContainer = styled.div<{ collapsed: boolean, categoriesCount: number }>`
     overflow: ${props => props.collapsed ? 'hidden' : 'visible'};
     height: ${props => props.collapsed ? 0 : `${36 * props.categoriesCount}px`};
     border-top: 1px solid ${props => props.theme.componentColorLighter};
@@ -166,37 +170,17 @@ const DatesContainer = styled.div<{ collapsed: boolean, categoriesCount: number 
     box-sizing: content-box;
 `;
 
-const Link = styled.div`
+const Link = styled.div<{ selected: boolean }>`
     display: flex;
-    justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    padding: ${props => `
-        calc(${props.theme.biggerSpacing} / 2)
-        ${props.theme.regularSpacing}
-        calc(${props.theme.biggerSpacing} / 2)
-        ${props.theme.regularSpacing}
-    `};
-    color: ${props => props.theme.textColorDarker};
-    text-transform: uppercase;
+    padding: calc(${props => props.theme.biggerSpacing} / 2) 0 calc(${props => props.theme.biggerSpacing} / 2) ${props => props.theme.regularSpacing};
+    color: ${props => props.selected ? props.theme.textColor : props.theme.textColorDarker};
     font-size: 14px;
-    font-weight: 500;
-
-    .arrow {
-        opacity: 0;
-    }
-
-    :hover {
-        color: ${props => props.theme.textColor};
-
-        .arrow {
-            opacity: 1;
-        }
-    }
-
+    font-weight: 600;
 `;
 
-const NewDateLink = styled.div<{ selected: boolean }>`
+const NewCategoryLink = styled.div<{ selected: boolean }>`
     display: flex;
     align-items: center;
     cursor: pointer;

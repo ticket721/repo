@@ -1,18 +1,18 @@
 import React from 'react';
-import { useParams } from 'react-router';
-import { eventParam } from '../../types';
+import { useRouteMatch }            from 'react-router';
+import { eventParam }                  from '../../../screens/types';
 import { EventsFetcher } from '../../../components/Fetchers/EventsFetcher';
 import { DatesFetcher } from '../../../components/Fetchers/DatesFetcher';
 import { CategoriesFetcher } from '../../../components/Fetchers/CategoriesFetcher';
-import { DatesView } from './DatesView';
+import { EventMenuView } from './View';
 
-export const DatesDashboard: React.FC = () => {
-    const { eventId } = useParams<eventParam>();
+export const EventMenu: React.FC = () => {
+    const match = useRouteMatch<eventParam>('/event/:eventId');
 
-    return <EventsFetcher eventId={eventId}>
+    return <EventsFetcher eventId={match?.params.eventId}>
         <DatesFetcher>
             <CategoriesFetcher>
-                <DatesView eventId={eventId}/>
+                <EventMenuView eventId={match?.params.eventId}/>
             </CategoriesFetcher>
         </DatesFetcher>
     </EventsFetcher>;

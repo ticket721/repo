@@ -1,9 +1,9 @@
 import React from 'react';
 import { EventsFetcher } from '../../../components/Fetchers/EventsFetcher';
-import { EventsView } from './EventsView';
+import { DashboardMenuView } from './View';
 
-export const EventsDashboard: React.FC = () => {
+export const DashboardMenu: React.FC = () => {
     return <EventsFetcher>
-        <EventsView/>
+        <DashboardMenuView/>
     </EventsFetcher>;
-};
+}

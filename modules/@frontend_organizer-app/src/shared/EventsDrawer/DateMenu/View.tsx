@@ -1,99 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import { useRequest } from '@frontend/core/lib/hooks/useRequest';
-import { v4 } from 'uuid';
-import { useToken } from  '@frontend/core/lib/hooks/useToken';
-import { FullPageLoading, Error } from '@frontend/flib-react/lib/components';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import './locales';
-import { useHistory, useRouteMatch } from 'react-router';
-import { categoryParam, dateParam, eventParam } from '../../../screens/types';
+import { useHistory } from 'react-router';
 import styled from 'styled-components';
-import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { CategoriesSubMenu } from './CategoriesSubMenu';
 import { AnimateSharedLayout, motion } from 'framer';
-import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
 import { format } from '@frontend/core/lib/utils/date';
-import { OnlineTag } from '../../OnlineTag';
-import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
+import { OnlineTag } from '../../../components/OnlineTag';
+import { DatesContext } from '../../../components/Fetchers/DatesFetcher';
+import { EventsContext } from '../../../components/Fetchers/EventsFetcher';
+import { CategoriesContext } from '../../../components/Fetchers/CategoriesFetcher';
 
-export const DateMenu: React.FC = () => {
+export const DateMenuView: React.FC<{ eventId: string, dateId: string }> = ({ eventId, dateId }) => {
     const [ t ] = useTranslation('date_menu');
-    const token = useToken();
-    const [fetchEventUuid] = useState<string>(v4() + '@event-search');
-    const [fetchDateUuid] = useState<string>(v4() + '@date-search');
 
-    const match = useRouteMatch<eventParam & dateParam & categoryParam>([
-        '/event/:eventId/date/:dateId/category/:categoryId',
-        '/event/:eventId/date/:dateId']);
-
-    const [  params, setParams ] = useState<eventParam & dateParam & categoryParam>();
     const history = useHistory();
 
-    const { response: eventResp, force: forceEvent } = useRequest<EventsSearchResponseDto>({
-        method: 'events.search',
-        args: [
-            token,
-            {
-                id: {
-                    $eq: params?.eventId
-                }
-            },
-        ],
-        refreshRate: 50,
-    }, fetchEventUuid);
-
-    const { response: dateResp, force: forceDate } = useRequest<DatesSearchResponseDto>({
-        method: 'dates.search',
-        args: [
-            token,
-            {
-                id: {
-                    $eq: params?.dateId
-                }
-            },
-        ],
-        refreshRate: 50,
-    }, fetchDateUuid);
-
-    useEffect(() => {
-        forceDate();
-    // eslint-disable-next-line
-    }, []);
-
-    useDeepEffect(() => {
-        if (match?.params) {
-            setParams(match.params);
-        }
-    }, [match?.params]);
-
-    if (dateResp.loading || eventResp.loading) {
-        return <FullPageLoading/>;
-    }
-
-    if (eventResp.error) {
-        return <Error message={t('event_fetch_error')} onRefresh={forceEvent}/>;
-    }
-
-    if (dateResp.error) {
-        return <Error message={t('date_fetch_error')} onRefresh={forceDate}/>;
-    }
+    const { events } = useContext(EventsContext);
+    const { dates } = useContext(DatesContext);
+    const { categories } = useContext(CategoriesContext);
 
     return <>
             <Header>
-                <EventTitle>{eventResp.data.events[0].name}</EventTitle>
+                <EventTitle>{events[0].name}</EventTitle>
                 <Title>
-                    {dateResp.data.dates[0].metadata.name}
+                    {dates[0].metadata.name}
                     {
-                        dateResp.data.dates[0].online ?
+                        dates[0].online ?
                         <OnlineTag/> :
                         null
                     }
                 </Title>
                 <DateRange>
                     {t('from')}&nbsp;
-                    <strong>{format(dateResp.data.dates[0].timestamps.event_begin)}</strong>
+                    <strong>{format(dates[0].timestamps.event_begin)}</strong>
                     &nbsp;{t('to')}&nbsp;
-                    <strong>{format(dateResp.data.dates[0].timestamps.event_end)}</strong>
+                    <strong>{format(dates[0].timestamps.event_end)}</strong>
                 </DateRange>
             </Header>
             <AnimateSharedLayout>
@@ -102,7 +44,7 @@ export const DateMenu: React.FC = () => {
                         <Link
                         key={'dates_and_typology'}
                         selected={history.location.pathname.endsWith('/dates-typology')}
-                        onClick={() => history.push(`/event/${dateResp.data.dates[0].event}/date/${params.dateId}/dates-typology`)}>
+                        onClick={() => history.push(`/event/${eventId}/date/${dateId}/dates-typology`)}>
                             {t('dates_and_typology')}
                             {
                                 history.location.pathname.endsWith('/dates-typology') ?
@@ -113,7 +55,7 @@ export const DateMenu: React.FC = () => {
                         <Link
                         key={'general_infos'}
                         selected={history.location.pathname.endsWith('/general-infos')}
-                        onClick={() => history.push(`/event/${dateResp.data.dates[0].event}/date/${params.dateId}/general-infos`)}>
+                        onClick={() => history.push(`/event/${eventId}/date/${dateId}/general-infos`)}>
                             {t('general_infos')}
                             {
                                 history.location.pathname.endsWith('/general-infos') ?
@@ -124,7 +66,7 @@ export const DateMenu: React.FC = () => {
                         <Link
                         key={'styles'}
                         selected={history.location.pathname.endsWith('/styles')}
-                        onClick={() => history.push(`/event/${dateResp.data.dates[0].event}/date/${params.dateId}/styles`)}>
+                        onClick={() => history.push(`/event/${eventId}/date/${dateId}/styles`)}>
                             {t('styles')}
                             {
                                 history.location.pathname.endsWith('/styles') ?
@@ -133,7 +75,7 @@ export const DateMenu: React.FC = () => {
                             }
                         </Link>
                 </EditDateContainer>
-                <CategoriesSubMenu/>
+                <CategoriesSubMenu eventId={eventId} dateId={dateId} categories={categories}/>
             </AnimateSharedLayout>
     </>;
 }

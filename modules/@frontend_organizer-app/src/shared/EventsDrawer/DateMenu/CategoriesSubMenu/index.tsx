@@ -1,121 +1,53 @@
-import React, { useEffect, useState } from 'react';
-import { useRequest } from '@frontend/core/lib/hooks/useRequest';
-import { v4 } from 'uuid';
-import { useToken } from  '@frontend/core/lib/hooks/useToken';
-import { FullPageLoading, Error, Icon } from '@frontend/flib-react/lib/components';
+import React, { useState } from 'react';
+import { Icon } from '@frontend/flib-react/lib/components';
 import { useTranslation } from 'react-i18next';
 import './locales';
 import { useHistory, useRouteMatch } from 'react-router';
-import { categoryParam, eventParam } from '../../../../screens/types';
+import { categoryParam, dateParam, eventParam } from '../../../../screens/types';
 import styled from 'styled-components';
-import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
-import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 import { motion } from 'framer';
-import { MultiDatesTag } from '../../../MultiDatesTag';
-import { useDeepEffect } from '@frontend/core/lib/hooks/useDeepEffect';
+import { MultiDatesTag } from '../../../../components/MultiDatesTag';
+import { CategoryEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 
-export const CategoriesSubMenu: React.FC<{ dateCount: number }> = ({ dateCount }) => {
+export interface CategoriesSubMenuProps {
+    eventId: string;
+    dateId: string;
+    categories: CategoryEntity[];
+}
+
+export const CategoriesSubMenu: React.FC<CategoriesSubMenuProps> = ({ eventId, dateId, categories }) => {
     const [ t ] = useTranslation('categories_submenu');
-    const token = useToken();
-    const [fetchEventUuid] = useState<string>(v4() + '@event-search');
-    const [fetchCategoriesUuid] = useState<string>(v4() + '@categories-search');
 
-    const match = useRouteMatch<eventParam & categoryParam>([
-        '/event/:eventId/category/:categoryId',
-        '/event/:eventId']);
-
-    const [  params, setParams ] = useState<eventParam & categoryParam>();
+    const match = useRouteMatch<eventParam & dateParam & categoryParam>(
+        '/event/:eventId/date/:dateId/category/:categoryId'
+    );
 
     const history = useHistory();
 
     const [ collapsed, setCollapsed ] = useState<boolean>(true);
 
-    const { response: eventResp, force: forceEvent } = useRequest<EventsSearchResponseDto>({
-        method: 'events.search',
-        args: [
-            token,
-            {
-                id: {
-                    $eq: params?.eventId,
-                }
-            }
-        ],
-        refreshRate: 50,
-    }, fetchEventUuid);
-
-    const { response: categoriesResp, lazyRequest: fetchCategories } =
-        useLazyRequest<CategoriesSearchResponseDto>('categories.search', fetchCategoriesUuid);
-
-    const onFetchCategories = () => {
-        if (eventResp.data?.events) {
-            fetchCategories([
-                token,
-                {
-                    group_id: {
-                        $eq: eventResp.data?.events[0].group_id,
-                    },
-                    $sort: [{
-                        $field_name: 'created_at',
-                        $order: 'asc',
-                    }]
-                }
-            ], { force: true});
-        }
-    };
-
-    useEffect(() => {
-        onFetchCategories();
-    // eslint-disable-next-line
-    }, [eventResp.data?.events, history.location]);
-
-    useDeepEffect(() => {
-        if (match?.params) {
-            setParams(match.params);
-        }
-    }, [match?.params]);
-
-    if (eventResp.loading || categoriesResp.loading) {
-        return <FullPageLoading/>;
-    }
-
-    if (eventResp.error) {
-        return <Error message={t('event_fetch_error')} onRefresh={forceEvent}/>;
-    }
-
-    if (categoriesResp.error) {
-        return <Error message={t('categories_fetch_error')} onRefresh={onFetchCategories}/>;
-    }
-
     return <CategoriesMenuContainer>
-        <Header
+        <Title
         focused={!collapsed}
         onClick={(e) => {
             if ((e.target as any).className.includes('chevron')) {
                 if (!collapsed) {
-                    history.push(`/event/${params.eventId}`);
+                    history.push(`/event/${eventId}/date/${dateId}/dates-typology`);
                 } else {
-                    history.push(`/event/${params.eventId}/categories`);
+                    history.push(`/event/${eventId}/date/${dateId}/categories`);
                 }
                 setCollapsed(!collapsed);
             } else {
-                if (collapsed && categoriesResp.data?.categories.length > 0) {
+                if (collapsed && categories.length > 0) {
                     setCollapsed(false);
                 }
 
-                history.push(`/event/${params.eventId}/categories`);
+                history.push(`/event/${eventId}/date/${dateId}/categories`);
             }
         }}>
-            <Title>
-                {t('categories_title')}
-                {
-                    dateCount > 1 ?
-                    <MultiDatesTag/> :
-                    null
-                }
-            </Title>
+            {t('categories_title')}
             {
-                categoriesResp.data?.categories.filter(category => dateCount > 1 ? category.dates.length > 1 : true).length > 0 ?
+                categories.length > 0 ?
                     <Chevron
                     className={'chevron'}
                     rotate={
@@ -129,24 +61,22 @@ export const CategoriesSubMenu: React.FC<{ dateCount: number }> = ({ dateCount }
                     </Chevron> :
                     null
             }
-        </Header>
-        <CategoriesContainer
-        collapsed={collapsed}
-        categoriesCount={
-            categoriesResp.data?.categories
-            .filter(category => dateCount > 1 ? category.dates.length > 1 : true).length
-        }>
+        </Title>
+        <CategoriesContainer collapsed={collapsed} categoriesCount={categories.length}>
             {
-                categoriesResp.data?.categories
-                .filter(category => dateCount > 1 ? category.dates.length > 1 : true)
-                .map(category => (
+                categories.map(category => (
                     <Link
                     key={category.id}
-                    selected={params.categoryId === category.id}
-                    onClick={() => history.push(`/event/${params.eventId}/category/${category.id}`)}>
+                    selected={match?.params?.categoryId === category.id}
+                    onClick={() => history.push(`/event/${eventId}${dateId ? `/date/${dateId}` : ''}/category/${category.id}`)}>
                         <span>{category.display_name}</span>
                         {
-                            params.categoryId === category.id && !collapsed ?
+                            category.dates.length > 1 ?
+                            <MultiDatesTag/> :
+                            null
+                        }
+                        {
+                            match?.params?.categoryId === category.id && !collapsed ?
                             <Arrow layoutId={'selected'}/> :
                             null
                         }
@@ -159,7 +89,7 @@ export const CategoriesSubMenu: React.FC<{ dateCount: number }> = ({ dateCount }
         selected={history.location.pathname.endsWith('/category')}
         onClick={() => {
             setCollapsed(false);
-            history.push(`/event/${params.eventId}/category`);
+            history.push(`/event/${eventId}${dateId ? `/date/${dateId}` : ''}/category`, { dates: [dateId] });
         }}>
             <Plus>+</Plus>
             <span>{t('new_category')}</span>
@@ -179,7 +109,7 @@ const CategoriesMenuContainer = styled.div`
     padding: ${props => props.theme.biggerSpacing} ${props => props.theme.biggerSpacing} calc(${props => props.theme.biggerSpacing} / 2);
 `;
 
-const Header = styled.div<{ focused: boolean }>`
+const Title = styled.div<{ focused: boolean }>`
     display: flex;
     justify-content: space-between;
     color: ${props => props.focused ? props.theme.textColor : props.theme.textColorDarker};
@@ -187,15 +117,6 @@ const Header = styled.div<{ focused: boolean }>`
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-`;
-
-const Title = styled.div`
-    display: flex;
-    align-items: center;
-
-    div {
-        margin-left: ${props => props.theme.smallSpacing};
-    }
 `;
 
 const Chevron = styled.div<{ rotate: 'top' | 'right' | 'bottom' }>`
@@ -215,11 +136,11 @@ const Chevron = styled.div<{ rotate: 'top' | 'right' | 'bottom' }>`
 
 const CategoriesContainer = styled.div<{ collapsed: boolean, categoriesCount: number }>`
     overflow: ${props => props.collapsed ? 'hidden' : 'visible'};
-    height: ${props => props.collapsed ? 0 : `${36 * props.categoriesCount}px`};
+    height: ${props => props.collapsed ? 0 : `${44 * props.categoriesCount}px`};
     border-top: 1px solid ${props => props.theme.componentColorLighter};
     padding: ${props => props.collapsed ? 0 : props.theme.smallSpacing} 0 0;
     margin-top: ${props => props.theme.smallSpacing};
-    transition: height 300ms ease, padding 300ms ease;
+    transition: height 300ms ease, padding 300ms ease, overflow 300ms;
     box-sizing: content-box;
 `;
 
@@ -231,6 +152,14 @@ const Link = styled.div<{ selected: boolean }>`
     color: ${props => props.selected ? props.theme.textColor : props.theme.textColorDarker};
     font-size: 14px;
     font-weight: 600;
+
+    > span {
+        padding: 6px 0 2px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin-right: ${props => props.theme.smallSpacing};
+    }
 `;
 
 const NewCategoryLink = styled.div<{ selected: boolean }>`
@@ -257,3 +186,4 @@ const Arrow = styled(motion.div)`
     border-bottom: 12px solid transparent;
     border-right: 12px solid #0c0915;
 `;
+

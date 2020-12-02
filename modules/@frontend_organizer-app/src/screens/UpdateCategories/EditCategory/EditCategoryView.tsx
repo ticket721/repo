@@ -1,58 +1,43 @@
-import React from 'react';
-import { useParams } from 'react-router';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
-import { FormikProvider } from 'formik';
-
-import { FullPageLoading, Error as ErrorComponent, Button } from '@frontend/flib-react/lib/components';
 
 import './locales';
-
-import { categoryParam } from '../../types';
-import { CategoryFields } from '../../../components/CategoryFields';
+import { Button } from '@frontend/flib-react/lib/components';
+import { checkFormatDate, formatDay }        from '@frontend/core/lib/utils/date';
+import { DatesContext } from '../../../components/Fetchers/DatesFetcher';
 import { useCategoryEdition } from './useCategoryEdition';
-import { formatDay } from '@frontend/core/lib/utils/date';
+import { CategoriesContext } from '../../../components/Fetchers/CategoriesFetcher';
+import { FormikProvider } from 'formik';
+import { CategoryFields } from '../../../components/CategoryFields';
+import styled from 'styled-components';
 
-interface DateItem {
-    id: string;
-    name: string;
-    eventBegin: Date;
-    eventEnd: Date;
-}
-
-export interface EditCategoryFormProps {
-    dates: DateItem[];
-};
-
-export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({ dates }) => {
+export const EditCategoryView: React.FC = () => {
     const { t } = useTranslation(['edit_category', 'common']);
 
-    const token = useToken();
-    const { categoryId } = useParams<categoryParam>();
+    const { dates, forceFetch: fetchDates } = useContext(DatesContext);
+    const { categories, forceFetch: fetchCategories } = useContext(CategoriesContext);
 
-    const { loading, error, forceCategoryReq, onDuplicate, formik } = useCategoryEdition(token, categoryId, dates);
-
-    if (loading) {
-        return <FullPageLoading/>;
-    }
-
-    if (error) {
-        return <ErrorComponent
-            message={t('common:error_cannot_fetch', { entity: 'date'})}
-            retryLabel={t('common:retrying_in')}
-            onRefresh={forceCategoryReq}
-        />;
-    }
+    const { onDuplicate, formik } = useCategoryEdition(
+        categories[0],
+        dates.map(date => ({
+            id: date.id,
+            eventBegin: checkFormatDate(date.timestamps.event_begin),
+            eventEnd: checkFormatDate(date.timestamps.event_end),
+        })),
+        () => {
+            fetchDates();
+            fetchCategories();
+        }
+    );
 
     return <FormikProvider value={formik}>
         <Form onSubmit={formik.handleSubmit}>
             <Title>{t('category_title')}</Title>
             <CategoryFields
                 dateRanges={dates.map(date => ({
-                    name: `${date.name.toUpperCase()} | ${formatDay(date.eventBegin)}`,
-                    eventBegin: date.eventBegin,
-                    eventEnd: date.eventEnd,
+                    name: `${date.metadata.name.toUpperCase()} | ${formatDay(date.timestamps.event_begin)}`,
+                    eventBegin: date.timestamps.event_begin,
+                    eventEnd: date.timestamps.event_end,
                 }))}
                 onDuplicate={onDuplicate}
             />
