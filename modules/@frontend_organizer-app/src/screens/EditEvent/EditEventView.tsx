@@ -18,11 +18,14 @@ import { checkEventGenericInfos, EventGenericInfosPayload } from '@common/global
 import { EditEventFields } from './EditEventFields';
 import { v4 } from 'uuid';
 import { EventsContext } from '../../components/Fetchers/EventsFetcher';
+import { useHistory } from 'react-router';
 
 export const EditEventView: React.FC = () => {
     const { t } = useTranslation(['edit_event', 'common']);
 
     const dispatch = useDispatch();
+
+    const history = useHistory();
 
     const [editUuid] = React.useState('@edit-event' + v4());
     const token = useToken();
@@ -56,6 +59,7 @@ export const EditEventView: React.FC = () => {
         if (editResp.data?.event) {
             dispatch(PushNotification(t('edit_successful'), 'success'));
             fetchEvents();
+            history.push(`/event/${events[0].id}`);
         }
     // eslint-disable-next-line
     }, [editResp.data?.event]);

@@ -26,7 +26,10 @@ export const CategoriesSubMenu: React.FC<CategoriesSubMenuProps> = ({ categories
 
     const history = useHistory();
 
-    const [ collapsed, setCollapsed ] = useState<boolean>(true);
+    const [ collapsed, setCollapsed ] = useState<boolean>(
+        !history.location.pathname.endsWith('/categories') &&
+        !history.location.pathname.includes('/category')
+    );
 
     useDeepEffect(() => {
         if (match?.params) {
@@ -66,10 +69,10 @@ export const CategoriesSubMenu: React.FC<CategoriesSubMenuProps> = ({ categories
                     <Chevron
                     className={'chevron'}
                     rotate={
-                        collapsed ?
-                        'top' :
                         history.location.pathname.endsWith('/categories') ?
                         'right' :
+                        collapsed ?
+                        'top' :
                         'bottom'
                     }>
                         <Icon className={'chevron'} icon={'chevron'} size={'8px'} color={'white'}/>

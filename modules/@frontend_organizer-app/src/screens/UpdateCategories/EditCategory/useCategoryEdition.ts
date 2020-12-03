@@ -144,7 +144,8 @@ export const useCategoryEdition = (currCategory: CategoryEntity, dates: DateItem
         if (editCategoryResp.data?.category) {
             dispatch(PushNotification(t('edit_successful'), 'success'));
             refetch();
-            history.replace(history.location.pathname);
+            const truncatedPath = history.location.pathname.substring(0, history.location.pathname.search('/category'));
+            history.push(truncatedPath + '/categories');
         }
     // eslint-disable-next-line
     }, [editCategoryResp.data?.category]);

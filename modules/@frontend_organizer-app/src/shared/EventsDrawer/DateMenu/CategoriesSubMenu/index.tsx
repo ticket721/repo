@@ -24,7 +24,10 @@ export const CategoriesSubMenu: React.FC<CategoriesSubMenuProps> = ({ eventId, d
 
     const history = useHistory();
 
-    const [ collapsed, setCollapsed ] = useState<boolean>(true);
+    const [ collapsed, setCollapsed ] = useState<boolean>(
+        !history.location.pathname.endsWith('/categories') &&
+        !history.location.pathname.includes('/category')
+    );
 
     return <CategoriesMenuContainer>
         <Title
