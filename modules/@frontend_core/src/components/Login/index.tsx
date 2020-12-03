@@ -14,6 +14,7 @@ import { useDeepEffect } from '../../hooks/useDeepEffect';
 import { HapticsImpactStyle, useHaptics, HapticsNotificationType } from '../../utils/useHaptics';
 import { useKeyboardState } from '../../utils/useKeyboardState';
 import { getEnv } from '../../utils/getEnv';
+import { event } from '../../tracking/registerEvent';
 
 export interface LoginProps {
     onRegister?: () => void;
@@ -49,6 +50,7 @@ export const Login: React.FC<LoginProps> = (props: LoginProps) => {
                 haptics.notification({
                     type: HapticsNotificationType.SUCCESS,
                 });
+                event('Auth', 'Login', 'User logged in');
             } else {
                 if (auth.errors) {
                     haptics.notification({

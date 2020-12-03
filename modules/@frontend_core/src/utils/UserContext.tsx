@@ -10,7 +10,8 @@ import { PasswordlessUserDto } from '@common/sdk/lib/@backend_nest/apps/server/s
 import { useDeepEffect } from '../hooks/useDeepEffect';
 import { useTranslation } from 'react-i18next';
 import { isRequestError } from '../utils/isRequestError';
-import { AppState } from '@frontend-core/redux';
+import { AppState } from '../redux';
+import { onId } from '../tracking/id';
 
 export const UserContext = React.createContext<PasswordlessUserDto>(undefined);
 
@@ -45,6 +46,12 @@ const LoggedInUserGuard: React.FC<PropsWithChildren<LoggedOutUserGuardProps>> = 
             }
         }
     }, [userReq.response.error]);
+
+    useDeepEffect(() => {
+        if (userReq.response.data?.user) {
+            onId(userReq.response.data.user.id);
+        }
+    }, [userReq.response.data]);
 
     if (userReq.response.loading) {
         return <FullPageLoading />;

@@ -12,6 +12,7 @@ import { getEnv } from '../../utils/getEnv';
 import { HapticsImpactStyle, useHaptics } from '../../utils/useHaptics';
 import { useDispatch } from 'react-redux';
 import { Logout } from '../../redux/ducks/auth';
+import { event } from '../../tracking/registerEvent';
 
 const isElapsed = (elapsed: number, multiplicator: number): boolean => {
     return elapsed > multiplicator * 10;
@@ -71,6 +72,7 @@ export const ValidateEmailComponent: React.FC<ValidateEmailProps> = ({ forcedMod
                 force: true,
             });
             setLastCalled(multiplicator);
+            event('Auth', 'Resend Email', 'User asked for a new email to be sent');
         }
     };
     return (
@@ -91,6 +93,10 @@ export const ValidateEmailComponent: React.FC<ValidateEmailProps> = ({ forcedMod
             {multiplicator > 1 ? <MaybeSpam>{t('maybe_spam')}</MaybeSpam> : null}
             <CancelText
                 onClick={() => {
+                    event('Auth', 'Logout', 'User logged out');
+                    haptics.impact({
+                        style: HapticsImpactStyle.Light,
+                    });
                     dispatch(Logout());
                 }}
             >

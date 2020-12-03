@@ -15,17 +15,18 @@ import { v4 }                                              from 'uuid';
 import { useLazyRequest }                                  from '@frontend/core/lib/hooks/useLazyRequest';
 import { PushNotification }                                from '@frontend/core/lib/redux/ducks/notifications';
 import { PurchasesSetProductsResponseDto }                 from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
-import { PurchasesCheckoutResponseDto }                    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesCheckoutResponse.dto';
-import { PurchaseError }                                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
-import { useTranslation }                                  from 'react-i18next';
-import { CartMenuCheckout }                                from './CartMenuCheckout';
-import { CartMenuExpired }                                 from './CartMenuExpired';
-import Countdown                                           from 'react-countdown';
-import { getEnv }                                          from '@frontend/core/lib/utils/getEnv';
-import MediaQuery, { useMediaQuery }                       from 'react-responsive';
-import { usePlatform }                                     from '@capacitor-community/react-hooks/platform';
+import { PurchasesCheckoutResponseDto }                            from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesCheckoutResponse.dto';
+import { PurchaseError }                                           from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
+import { useTranslation }                                          from 'react-i18next';
+import { CartMenuCheckout }                                        from './CartMenuCheckout';
+import { CartMenuExpired }                                         from './CartMenuExpired';
+import Countdown                                                   from 'react-countdown';
+import { getEnv }                                                  from '@frontend/core/lib/utils/getEnv';
+import MediaQuery, { useMediaQuery }                               from 'react-responsive';
+import { usePlatform }                                             from '@capacitor-community/react-hooks/platform';
 import { useKeyboardState }                                        from '@frontend/core/lib/utils/useKeyboardState';
 import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { event }                                                   from '@frontend/core/lib/tracking/registerEvent';
 // tslint:disable-next-line:no-var-requires
 const SAI = require('safe-area-insets');
 
@@ -301,6 +302,11 @@ export const CartMenu: React.FC = (): JSX.Element => {
                         haptics.notification({
                             type: HapticsNotificationType.SUCCESS
                         });
+                        event(
+                            'Purchase',
+                            'Cart checkout',
+                            'User proceeds to payment'
+                        );
                         cart.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
                     }
 

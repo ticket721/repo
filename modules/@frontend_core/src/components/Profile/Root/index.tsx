@@ -22,6 +22,7 @@ import { useToken } from '../../../hooks/useToken';
 import { useHaptics, HapticsImpactStyle } from '../../../utils/useHaptics';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import { event } from '../../../tracking/registerEvent';
 // tslint:disable-next-line:no-var-requires
 const StripeLogo = require('./stripe.png');
 
@@ -138,6 +139,7 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                         });
                         dispatch(Logout());
                         history.replace('/');
+                        event('Auth', 'Logout', 'User logged out');
                     }}
                 />
                 <FeatureFlag flag={'admin_flag'}>
