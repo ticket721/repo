@@ -35,10 +35,10 @@ const Filter = styled.div`
     position: absolute;
     top: 0;
     left: 0;
-    border-radius: ${props => props.theme.defaultRadius};
+    border-radius: ${(props) => props.theme.defaultRadius};
     width: 110%;
     height: 110%;
-    background: linear-gradient(0deg, rgba(0,0,0,0.6) 15%, transparent);
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 15%, transparent);
 `;
 
 const Details = styled.div<SingleImageProps>`

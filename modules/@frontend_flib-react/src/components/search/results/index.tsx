@@ -108,7 +108,8 @@ export const SingleEvent = (props: Event & { customMarginBottom?: string; online
             clickable={!!props.onClick}
             onClick={props.onClick}
             customMarginBottom={props.customMarginBottom}
-            whileTap={{ scale: 0.95 }}>
+            whileTap={{ scale: 0.95 }}
+        >
             <ImgContainer src={props.image}>
                 {props.online ? (
                     <AbsoluteOnlineTagDiv>

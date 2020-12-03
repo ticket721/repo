@@ -123,7 +123,6 @@ const DateTitle = styled.h2`
     margin: ${(props) => props.theme.smallSpacing};
 `;
 
-
 export const EventHeader: React.FunctionComponent<EventHeaderProps> = (props: EventHeaderProps): JSX.Element => {
     return (
         <>
