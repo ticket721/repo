@@ -15,6 +15,7 @@ import { PurchaseError }                                           from '@common
 import { UserContext }                                             from '@frontend/core/lib/utils/UserContext';
 import { getEnv }                                                  from '@frontend/core/lib/utils/getEnv';
 import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { event }                                                    from '@frontend/core/lib/tracking/registerEvent';
 
 export interface TicketSelectionCtaProps {
     category: CategoryEntity;
@@ -102,6 +103,12 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
                             type: HapticsNotificationType.SUCCESS
                         });
                         force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
+                        event(
+                            'Purchase',
+                            'Add ticket to cart',
+                            'User added a ticket to cart',
+                            props.category.id
+                        );
                         props.clearSelection();
                     }
 

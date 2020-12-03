@@ -29,7 +29,7 @@ i18n.addResourceBundle('en', 'registration', {
 });
 i18n.addResourceBundle('fr', 'registration', {
     email_label: 'email',
-    email_placeholder: 'Addresse email',
+    email_placeholder: 'Adresse email',
     password_label: 'mot de passe',
     password_placeholder: 'Mot de passe',
     password_confirmation_label: 'Confirmation du mot de passe',
@@ -42,14 +42,14 @@ i18n.addResourceBundle('fr', 'registration', {
     // errors
     email_required: 'email requis',
     invalid_email: "le format de l'adresse email est incorrect",
-    email_already_in_use: 'cette addresse email est déjà utilisée',
+    email_already_in_use: 'cette adresse email est déjà utilisée',
     password_required: 'mot de passe requis',
     password_confirmation_required: 'confirmation de mot de passe requise',
     username_required: "nom d'utilisateur requis",
     username_too_short: "nom d'utilisateur trop court (min. 4 caractères)",
     username_too_long: "nom d'utilisateur trop long (max. 20 caractères)",
     username_already_in_use: "ce nom d'utilisateur est déjà utilisé",
-    address_already_in_use: 'cette addresse est déjà utilisée',
+    address_already_in_use: 'cette adresse est déjà utilisée',
     different_password: 'les mots de passe doivent être identiques',
 });
 

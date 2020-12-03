@@ -16,7 +16,7 @@ i18n.addResourceBundle('en', 'login', {
 });
 i18n.addResourceBundle('fr', 'login', {
     email_label: 'email',
-    email_placeholder: 'Addresse email',
+    email_placeholder: 'Adresse email',
     password_label: 'mot de passe',
     password_placeholder: 'Mot de passe',
     login: 'Connexion',
