@@ -12,22 +12,6 @@ module.exports = ({
       url: '/',
       lastmod: new Date(Date.now())
     },
-
-    {
-      url: '/search',
-      lastmod: new Date(Date.now())
-    },
-
-    {
-      url: '/login',
-      lastmod: new Date(Date.now())
-    },
-
-    {
-      url: '/register',
-      lastmod: new Date(Date.now())
-    },
-
   ]
 
   const base =

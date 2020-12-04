@@ -5,6 +5,7 @@ import {
     LanguageLink,
     LinksContainer,
     WalletHeader,
+    InfoLine,
 } from '@frontend/flib-react/lib/components';
 import { useRequest } from '../../../hooks/useRequest';
 import { v4 } from 'uuid';
@@ -167,6 +168,49 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                     />
                     {thisIsASelfDestructVariable}
                 </FeatureFlag>
+            </LinksContainer>
+            <LinksContainer title={t('about')}>
+                <InfoLine discrete={true} label={t('release')} content={getEnv().REACT_APP_RELEASE} />
+                <ArrowLink
+                    discrete={true}
+                    label={t('cgo')}
+                    onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        history.push('/about/cgo');
+                    }}
+                />
+                <ArrowLink
+                    discrete={true}
+                    label={t('cgu')}
+                    onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        history.push('/about/cgu');
+                    }}
+                />
+                <ArrowLink
+                    discrete={true}
+                    label={t('privacy')}
+                    onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        history.push('/about/privacy');
+                    }}
+                />
+                <ArrowLink
+                    discrete={true}
+                    label={t('acknowledgements')}
+                    onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        history.push('/about/acknowledgements');
+                    }}
+                />
             </LinksContainer>
         </>
     );

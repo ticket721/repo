@@ -34,6 +34,10 @@ import StripeSetupPage                                                  from './
 import StripeTransactionsPage                                           from './routes/StripeTransactions';
 import StripeWithdrawPage                                               from './routes/StripeWithdraw';
 import StripeCreateBankAccountPage                                      from './routes/StripeCreateBankAccount';
+import CGOPage                                                          from './routes/CGO';
+import CGUPage                                                          from './routes/CGU';
+import PrivacyPage                                                      from './routes/Privacy';
+import AcknowledgementsPage                                             from './routes/Acknowledgements';
 import { useKeyboardVisibility }                                        from '@frontend/core/lib/utils/useKeyboardVisibility';
 import { UserContextGuard }                                             from '@frontend/core/lib/utils/UserContext';
 import DeepLinksListener                                                from './components/DeepLinksListener';
@@ -192,6 +196,22 @@ const App: React.FC = () => {
                                             <AdminRoutePage/>
                                         </ProtectedRoute>
                                     ) : null}
+
+                                    <Route path={'/about/acknowledgements'} exact={true}>
+                                        <AcknowledgementsPage/>
+                                    </Route>
+
+                                    <Route path={'/about/privacy'} exact={true}>
+                                        <PrivacyPage/>
+                                    </Route>
+
+                                    <Route path={'/about/cgo'} exact={true}>
+                                        <CGOPage/>
+                                    </Route>
+
+                                    <Route path={'/about/cgu'} exact={true}>
+                                        <CGUPage/>
+                                    </Route>
 
                                     <Route path={'/_/redirect/close'} exact={true}>
                                         <CloseRedirectPage/>
