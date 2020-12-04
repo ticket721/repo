@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { detect } from 'detect-browser';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,8 @@ import { ArrowBackIos } from '@material-ui/icons';
 import ProfileRoot from '../Profile/Root';
 import Language from '../Profile/Language';
 import './locales';
+import { UserContext } from '../../contexts/UserContext';
+import { ValidateEmail } from '../ValidateEmail';
 
 export type ProfileRoute = 'root' | 'activities' | 'language';
 
@@ -21,6 +23,15 @@ export const DrawerAccount: React.FC<DrawerAccountProps> = ({ route, onClose }: 
     const [t] = useTranslation('drawer_account');
     const history = useHistory();
     const browser = detect();
+    const user = useContext(UserContext);
+
+    if (!user.valid) {
+        return (
+            <Drawer anchor='right' open={route !== null} onClose={onClose} browsername={browser?.name}>
+                <ValidateEmail forcedMode={'mobile'} />
+            </Drawer>
+        );
+    }
 
     return (
         <Drawer anchor='right' open={route !== null} onClose={onClose} browsername={browser?.name}>

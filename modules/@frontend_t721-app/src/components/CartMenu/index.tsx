@@ -365,20 +365,16 @@ export const CartMenu: React.FC = (): JSX.Element => {
                     display: 'block',
                     opacity: 0.75,
                     transition: {
-                        duration: 1.1,
-                        left: {
-                            duration: 0,
-                        },
+                        duration: 0.3,
                     },
                 },
                 hidden: {
                     display: 'none',
                     opacity: 0,
-                    left: '-100vw',
                     transition: {
-                        duration: 1,
-                        left: {
-                            delay: 1.1,
+                        duration: 0.3,
+                        display: {
+                            delay: 0.3,
                             duration: 0,
                         },
                     },

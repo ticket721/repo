@@ -46,8 +46,8 @@ const ImgContainer = styled.div<{ src: string }>`
 const SingleResult = styled(motion.article)<React.ComponentProps<any>>`
     align-items: center;
     display: flex;
-    font-size: max(13px, 1vw);
-    margin-bottom: max(${(props) => props.theme.regularSpacing}, 5%);
+    font-size: 13px;
+    margin-bottom: ${(props) => props.theme.regularSpacing};
     width: 100%;
     cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
 
