@@ -12,8 +12,8 @@ import './locales';
 import { getPasswordStrength } from '@common/global';
 import { useMediaQuery } from 'react-responsive';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
-import { HapticsImpactStyle, useHaptics, HapticsNotificationType } from '../../utils/useHaptics';
-import { useKeyboardState } from '../../utils/useKeyboardState';
+import { HapticsImpactStyle, useHaptics, HapticsNotificationType } from '../../hooks/useHaptics';
+import { useKeyboardState } from '../../hooks/useKeyboardState';
 import { getEnv } from '../../utils/getEnv';
 import { event } from '../../tracking/registerEvent';
 

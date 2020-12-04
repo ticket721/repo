@@ -9,7 +9,7 @@ import { useToken } from '../../hooks/useToken';
 import { v4 } from 'uuid';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
 import { getEnv } from '../../utils/getEnv';
-import { HapticsImpactStyle, useHaptics } from '../../utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '../../hooks/useHaptics';
 import { useDispatch } from 'react-redux';
 import { Logout } from '../../redux/ducks/auth';
 import { event } from '../../tracking/registerEvent';

@@ -11,7 +11,7 @@ import './locales';
 import { v4 }                                from 'uuid';
 import { useRequest }                        from '@frontend/core/lib/hooks/useRequest';
 import { TicketsCountResponseDto }           from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
-import { UserContext }                       from '@frontend/core/lib/utils/UserContext';
+import { UserContext }                       from '@frontend/core/lib/contexts/UserContext';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 const AuthNavBar: React.FC = () => {
@@ -41,7 +41,7 @@ const AuthNavBar: React.FC = () => {
             token,
             {}
         ],
-        refreshRate: 50,
+        refreshRate: 10,
     }, uuid);
 
     if (tickets.response.loading) {

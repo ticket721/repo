@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useToken } from '../../hooks/useToken';
 import { FullPageLoading } from '@frontend/flib-react/lib/components';
 import { useRequest } from '../../hooks/useRequest';
-import { UserContext } from '../../utils/UserContext';
+import { UserContext } from '../../contexts/UserContext';
 import { PushNotification } from '../../redux/ducks/notifications';
 
 import { useTranslation } from 'react-i18next';

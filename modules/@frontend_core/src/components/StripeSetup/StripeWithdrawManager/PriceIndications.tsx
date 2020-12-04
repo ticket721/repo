@@ -3,7 +3,7 @@ import { Currency } from '@frontend-core/components/StripeSetup/StripeWithdrawMa
 import React from 'react';
 import { symbolOf } from '@common/global';
 import { useTranslation } from 'react-i18next';
-import { useHaptics, HapticsNotificationType } from '../../../utils/useHaptics';
+import { useHaptics, HapticsNotificationType } from '../../../hooks/useHaptics';
 
 const IndicationText = styled.span`
     color: white;

@@ -12,7 +12,7 @@ import { useTranslation }              from 'react-i18next';
 import { useToken }                    from '@frontend/core/lib/hooks/useToken';
 import styled                          from 'styled-components';
 import {motion} from 'framer-motion';
-import { useHaptics, HapticsImpactStyle }                  from '@frontend/core/lib/utils/useHaptics';
+import { useHaptics, HapticsImpactStyle }                  from '@frontend/core/lib/hooks/useHaptics';
 
 export interface HomeEventProps {
     date: DateEntity;

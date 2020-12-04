@@ -10,7 +10,7 @@ import { isAccountReady } from './isAccountReady';
 import { SSCAExternalAccountListManager } from './SSCAExternalAccountListManager';
 import { StripeContext } from '../index';
 import { SSCATransactionListListManager } from './SSCATransactionListManager';
-import { HapticsImpactStyle, useHaptics } from '../../../utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '../../../hooks/useHaptics';
 import { motion } from 'framer-motion';
 
 const BalanceContainerPlaceholder = styled.div`

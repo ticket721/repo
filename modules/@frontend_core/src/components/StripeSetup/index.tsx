@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { UserContext } from '../../utils/UserContext';
+import { UserContext } from '../../contexts/UserContext';
 import { FullPageLoading } from '@frontend/flib-react/lib/components';
 import { StripeSetupManager } from './StripeSetupManager';
 import { StripeCreateBankAccountManager } from './StripeCreateBankAccountManager';

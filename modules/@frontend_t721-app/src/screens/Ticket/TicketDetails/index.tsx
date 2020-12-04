@@ -39,7 +39,7 @@ import { PushNotification }                    from '@frontend/core/lib/redux/du
 import { OnlineBadge }                         from '@frontend/flib-react/lib/components/events/single-image/OnlineTag';
 import { usePlatform }                                             from '@capacitor-community/react-hooks/platform';
 import { DownloadAppModal }                                        from '../DownloadAppModal';
-import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 import { Theme }                                                   from '@frontend/flib-react/lib/config/theme';
 import Sticky from 'react-stickynode';
 // tslint:disable-next-line:no-var-requires

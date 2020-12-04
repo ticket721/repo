@@ -9,8 +9,8 @@ import { ArrowBackIos } from '@material-ui/icons';
 import ProfileRoot from '../Profile/Root';
 import Language from '../Profile/Language';
 import './locales';
-import { UserContext } from '../../utils/UserContext';
-import { ValidateEmail } from '../../components/ValidateEmail';
+import { UserContext } from '../../contexts/UserContext';
+import { ValidateEmail } from '../ValidateEmail';
 
 export type ProfileRoute = 'root' | 'activities' | 'language';
 

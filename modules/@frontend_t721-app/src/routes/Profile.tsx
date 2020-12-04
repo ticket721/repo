@@ -1,9 +1,9 @@
-import { StatusBarMargin }                from '@frontend/core/lib/utils/StatusBarMargin';
-import { NavbarMargin }                   from '@frontend/core/lib/utils/NavbarMargin';
+import { StatusBarMargin }                from '@frontend/core/lib/utils/margins/StatusBarMargin';
+import { NavbarMargin }                   from '@frontend/core/lib/utils/margins/NavbarMargin';
 import ProfileRoot                        from '@frontend/core/lib/components/Profile/Root';
 import React                              from 'react';
 import { ArrowLink }                      from '@frontend/flib-react/lib/components';
-import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 import { getEnv }                         from '@frontend/core/lib/utils/getEnv';
 import { useTranslation }                 from 'react-i18next';
 

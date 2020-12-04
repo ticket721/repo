@@ -3,7 +3,7 @@ import React, { useState }  from 'react';
 import { LocationModifier } from '../../components/LocationModifier';
 import { SearchResultList } from './SearchResultList';
 import styled               from 'styled-components';
-import { useKeyboardState } from '@frontend/core/lib/utils/useKeyboardState';
+import { useKeyboardState } from '@frontend/core/lib/hooks/useKeyboardState';
 
 interface SearchWrapperProps {
     keyboardHeight: number;

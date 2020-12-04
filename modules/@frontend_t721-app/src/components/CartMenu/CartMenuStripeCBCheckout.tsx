@@ -3,7 +3,7 @@ import { FullPageLoading }                from '@frontend/flib-react/lib/compone
 import { Elements }                       from '@stripe/react-stripe-js';
 import { CartMenuStripeCBCheckoutWeb }    from './CartMenuStripeCBCheckoutWeb';
 import { CartMenuStripeCBCheckoutNative } from './CartMenuStripeCBCheckoutNative';
-import { StripeSDK }                      from '@frontend/core/lib/utils/StripeSDKContext';
+import { StripeSDK }                      from '@frontend/core/lib/contexts/StripeSDKContext';
 
 interface CartMenuStripeCBCheckoutProps {
     stripeAccount: string;

@@ -22,7 +22,7 @@ import { PushNotification }                               from '@frontend/core/l
 import { PurchaseError }                                  from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
 import { isRequestError }                                 from '@frontend/core/lib/utils/isRequestError';
 import { getEnv }                                         from '@frontend/core/lib/utils/getEnv';
-import { HapticsImpactStyle, useHaptics }                 from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, useHaptics }                 from '@frontend/core/lib/hooks/useHaptics';
 
 const CategoryCount = styled.span`
   margin: 0;

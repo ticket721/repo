@@ -6,7 +6,7 @@ import styled                                              from 'styled-componen
 import { Icon }                                            from '@frontend/flib-react/lib/components';
 import { PaymentError }                                    from '@backend/nest/libs/common/src/purchases/PaymentHandler.base.service';
 import { isNil }                                           from 'lodash';
-import { HapticsImpactStyle, useHaptics }                  from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, useHaptics }                  from '@frontend/core/lib/hooks/useHaptics';
 
 interface ContainerProps {
     spacing: number;

@@ -1,4 +1,4 @@
-import { StripeSDK }                                                from '@frontend/core/lib/utils/StripeSDKContext';
+import { StripeSDK }                                                from '@frontend/core/lib/contexts/StripeSDKContext';
 import { CartState }                                                from '../Cart/CartContext';
 import React, { useEffect, useState }                               from 'react';
 import { PaymentRequest, PaymentRequestPaymentMethodEvent, Stripe } from '@stripe/stripe-js';

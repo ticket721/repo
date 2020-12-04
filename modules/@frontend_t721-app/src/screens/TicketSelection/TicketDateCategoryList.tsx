@@ -2,7 +2,7 @@ import React                              from 'react';
 import { CategoryEntity }                 from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { DateEntity }                     from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { TicketCategoryDetails }          from './TicketCategoryDetails';
-import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 
 export interface TicketDateCategoryListProps {
     date: DateEntity;

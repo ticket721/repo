@@ -21,7 +21,7 @@ import { PushNotification } from '../../../redux/ducks/notifications/actions';
 import { useDeepEffect } from '../../../hooks/useDeepEffect/index';
 import { isAccountReady } from './isAccountReady';
 import './SSCARequirementsManager.locales';
-import { HapticsImpactStyle, useHaptics } from '../../../utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '../../../hooks/useHaptics';
 
 export interface SSCARequirementsManagerProps {
     stripeInterface: StripeInterfaceEntity;

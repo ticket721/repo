@@ -10,7 +10,6 @@ import { ConfirmDeletion } from './ConfirmDeletion';
 import { useTranslation } from 'react-i18next';
 import './locales';
 import { Button } from '@frontend/flib-react/lib/components';
-
 const initialDate: DatePayload = {
     name: '',
     online: false,
@@ -36,10 +35,13 @@ export const DatesStep: React.FC = () => {
         const dateCount = formikCtx.values.datesConfiguration.length;
         setCurrentEditingDate(dateCount);
         setNewDate(true);
-        formikCtx.setFieldValue(`datesConfiguration[${dateCount}]`, {
-            ...initialDate,
-            name: formikCtx.values.textMetadata.name,
-        });
+        formikCtx.setFieldValue(
+            `datesConfiguration[${dateCount}]`,
+            {
+                ...initialDate,
+                name: formikCtx.values.textMetadata.name + (dateCount > 0 ? ` (${dateCount})` : ''),
+            },
+        );
     };
 
     return (

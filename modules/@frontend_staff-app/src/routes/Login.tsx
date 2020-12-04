@@ -1,4 +1,4 @@
-import { StatusBarMargin } from '@frontend/core/lib/utils/StatusBarMargin';
+import { StatusBarMargin } from '@frontend/core/lib/utils/margins/StatusBarMargin';
 import { Login }           from '@frontend/core/lib/components';
 import { getEnv }          from '@frontend/core/lib/utils/getEnv';
 

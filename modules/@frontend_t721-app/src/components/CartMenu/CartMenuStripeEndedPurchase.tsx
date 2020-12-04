@@ -12,7 +12,7 @@ import { isNil }                     from 'lodash';
 import { PushNotification }          from '@frontend/core/lib/redux/ducks/notifications';
 import { PurchaseError }             from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
 import { useTranslation }            from 'react-i18next';
-import { TicketsContext }            from '@frontend/core/lib/utils/TicketsContext';
+import { TicketsContext }            from '@frontend/core/lib/contexts/TicketsContext';
 import { getEnv }                    from '@frontend/core/lib/utils/getEnv';
 import { timing }                    from '@frontend/core/lib/tracking/timing';
 import { event }                     from '@frontend/core/lib/tracking/registerEvent';

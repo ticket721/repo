@@ -11,7 +11,7 @@ import { GeolocFuzzySearchResponseDto }                from '@common/sdk/lib/@ba
 import './locales';
 import { isRequestError }                              from '@frontend/core/lib/utils/isRequestError';
 import styled                             from 'styled-components';
-import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 
 export interface LocationModifierListProps {
     query: string;

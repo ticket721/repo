@@ -7,7 +7,7 @@ import styled                                               from 'styled-compone
 import { StaffNavbar }                                      from './shared/NavBar';
 import { useDispatch }      from 'react-redux';
 import { SetupDate }        from './redux/ducks/current_event';
-import { UserContextGuard } from '@frontend/core/lib/utils/UserContext';
+import { UserContextGuard } from '@frontend/core/lib/contexts/UserContext';
 import LoginPage        from './routes/Login';
 import ResetFormPage     from './routes/ResetForm';
 import ResetPage         from './routes/Reset';
@@ -15,7 +15,7 @@ import ScanPage          from './routes/Scan';
 import GuestListPage     from './routes/GuestList';
 import StatsPage         from './routes/Stats';
 import AdminPage         from './routes/Admin';
-import { useFlag }       from '@frontend/core/lib/utils/useFlag';
+import { useFlag }       from '@frontend/core/lib/hooks/useFlag';
 import { getEnv }        from '@frontend/core/lib/utils/getEnv';
 import * as Sentry       from '@sentry/react';
 import { Integrations }  from '@sentry/tracing';

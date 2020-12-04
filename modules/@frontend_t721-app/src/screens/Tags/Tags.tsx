@@ -2,7 +2,7 @@ import React, { useState }        from 'react';
 import styled                     from 'styled-components';
 import { useTranslation }         from 'react-i18next';
 import './locales';
-import { useSavedEvents }         from '../../utils/useSavedEvents';
+import { useSavedEvents }         from '../../hooks/useSavedEvents';
 import { v4 }                     from 'uuid';
 import { useToken }               from '@frontend/core/lib/hooks/useToken';
 import { useRequest }             from '@frontend/core/lib/hooks/useRequest';

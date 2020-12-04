@@ -3,7 +3,7 @@ import i18n from '@frontend/core/lib/utils/i18n';
 i18n.addResourceBundle('en', 'event_styles', {
     drag_and_drop: 'Drag and drop an image',
     browse: 'or Browse to choose a file',
-    image_recommendation: 'Use a high-quality image. Recommended size 2000x1000px (2:1)',
+    image_recommendation: 'Use a high-quality image. Recommended size: min. 1920x1080px (16:9)',
     cover_required: 'provide a cover for your event',
     primary_color: 'Primary color',
     secondary_color: 'Secondary color',
@@ -13,7 +13,7 @@ i18n.addResourceBundle('en', 'event_styles', {
 i18n.addResourceBundle('fr', 'event_styles', {
     drag_and_drop: 'Déposez une image',
     browse: 'ou Sélectionnez un fichier',
-    image_recommendation: 'Utilisez une image de bonne qualité. Recommandée: 2000x1000px (2:1)',
+    image_recommendation: 'Utilisez une image de bonne qualité. Recommandée: min. 1920x1080px (16:9)',
     cover_required: 'veuillez fournir une image pour votre évènement',
     primary_color: 'Couleur primaire',
     secondary_color: 'Couleur secondaire',

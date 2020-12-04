@@ -38,17 +38,17 @@ import CGOPage                                                          from './
 import CGUPage                                                          from './routes/CGU';
 import PrivacyPage                                                      from './routes/Privacy';
 import AcknowledgementsPage                                             from './routes/Acknowledgements';
-import { useKeyboardVisibility }                                        from '@frontend/core/lib/utils/useKeyboardVisibility';
-import { UserContextGuard }                                             from '@frontend/core/lib/utils/UserContext';
+import { useKeyboardVisibility }                                        from '@frontend/core/lib/hooks/useKeyboardVisibility';
+import { UserContextGuard }                                             from '@frontend/core/lib/contexts/UserContext';
 import DeepLinksListener                                                from './components/DeepLinksListener';
 import { useMediaQuery }                                                from 'react-responsive';
-import { useFlag }                                                      from '@frontend/core/lib/utils/useFlag';
+import { useFlag }                                                      from '@frontend/core/lib/hooks/useFlag';
 import { useToken }                                                     from '@frontend/core/lib/hooks/useToken';
 import { CartContext, CartContextManager }                              from './components/Cart/CartContext';
 import { CartButton }                                                   from './components/CartButton';
 import { CartMenu }                                                     from './components/CartMenu';
-import { TicketsContextGuard }                                          from '@frontend/core/lib/utils/TicketsContext';
-import { StripeSDKManager }                                             from '@frontend/core/lib/utils/StripeSDKContext';
+import { TicketsContextGuard }                                          from '@frontend/core/lib/contexts/TicketsContext';
+import { StripeSDKManager }                                             from '@frontend/core/lib/contexts/StripeSDKContext';
 import * as Sentry                                                      from '@sentry/react';
 import { Integrations }                                                 from '@sentry/tracing';
 import { getEnv }                                                       from '@frontend/core/lib/utils/getEnv';
@@ -56,7 +56,7 @@ import { Crash }                                                        from '@f
 import { ErrorBoundary }                                                from 'react-error-boundary';
 import { DesktopNavbar }                                                from './components/DesktopNavBar';
 import { usePlatform }                                                  from '@capacitor-community/react-hooks/platform';
-import { useHaptics, HapticsImpactStyle }                               from '@frontend/core/lib/utils/useHaptics';
+import { useHaptics, HapticsImpactStyle }                               from '@frontend/core/lib/hooks/useHaptics';
 
 const TopNavWrapper = (props: { back: () => void }): JSX.Element => {
     const [scrolled, setScrolled] = useState(false);
@@ -104,6 +104,7 @@ const App: React.FC = () => {
     const history = useHistory();
     const keyboardIsVisible = useKeyboardVisibility();
     const token = useToken();
+
     const isUnder900 = useMediaQuery({ maxWidth: 900 });
     const platform = usePlatform();
     const isMobileNavigation = useMemo(() =>
