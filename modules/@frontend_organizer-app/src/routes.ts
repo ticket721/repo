@@ -1,5 +1,9 @@
 import React, { lazy }                    from 'react';
 import Admin from './routes/Admin';
+import CGUPage from './routes/CGU';
+import CGOPage from './routes/CGO';
+import PrivacyPage from './routes/Privacy';
+import AcknowledgementsPage from './routes/Acknowledgements';
 
 export interface RouteDatum {
     path: string;
@@ -12,6 +16,22 @@ export interface RouteDatum {
 }
 
 export const routes: RouteDatum[] = [
+    {
+        path: '/about/cgu',
+        page: CGUPage,
+    },
+    {
+        path: '/about/cgo',
+        page: CGOPage,
+    },
+    {
+        path: '/about/privacy',
+        page: PrivacyPage,
+    },
+    {
+        path: '/about/acknowledgements',
+        page: AcknowledgementsPage,
+    },
     {
         path: '/event/:eventId/date/:dateId/category/:categoryId',
         page: lazy(() => import('./routes/EditCategory')),

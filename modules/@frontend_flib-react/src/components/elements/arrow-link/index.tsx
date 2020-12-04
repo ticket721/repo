@@ -8,12 +8,13 @@ export interface ArrowLinkProps extends React.ComponentProps<any> {
     location?: string;
     onClick?: () => void;
     badged?: boolean;
+    discrete?: boolean;
 }
 
-const LinkContainer = styled.div`
+const LinkContainer = styled.div<{ discrete?: boolean }>`
     align-items: center;
     appearance: none;
-    background-color: ${(props) => props.theme.darkBg};
+    background-color: ${(props) => (props.discrete ? 'transparente' : props.theme.darkBg)};
     display: inline-flex;
     justify-content: space-between;
     margin: 0 auto;
@@ -86,7 +87,11 @@ export const ArrowLink: React.FunctionComponent<ArrowLinkProps & { className?: s
 ): JSX.Element => {
     // TODO -- Update to use link from react-router
     return (
-        <LinkContainer onClick={props.onClick} style={{ cursor: props.onClick ? 'pointer' : undefined }}>
+        <LinkContainer
+            onClick={props.onClick}
+            style={{ cursor: props.onClick ? 'pointer' : undefined }}
+            discrete={props.discrete}
+        >
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                 <span>{props.label}</span>
                 {props.badged ? <Badge /> : null}
@@ -102,6 +107,38 @@ export const ArrowLink: React.FunctionComponent<ArrowLinkProps & { className?: s
                     <Arrow icon={'arrow'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
                 </IconContainer>
             )}
+        </LinkContainer>
+    );
+};
+
+export interface InfoLineProps extends React.ComponentProps<any> {
+    label: string;
+    content: string;
+    location?: string;
+    discrete?: boolean;
+}
+
+const InfoText = styled.span`
+    font-weight: 400;
+    font-size: 11px;
+    user-select: all;
+`;
+
+export const InfoLine: React.FC<InfoLineProps> = (props: InfoLineProps) => {
+    return (
+        <LinkContainer onClick={props.onClick} discrete={props.discrete}>
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                }}
+            >
+                <span>{props.label}</span>
+                <InfoText>{props.content}</InfoText>
+            </div>
         </LinkContainer>
     );
 };

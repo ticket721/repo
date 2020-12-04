@@ -47,11 +47,11 @@ for (const override of overrides) {
 
 const i18n = {
     en: {
-        title: 'Ticket721',
-        description: 'Ticket721 is a ticketing platform focused on security and user experience.'
+        title: 'Ticket721 - Discover online, physical and hybrid events',
+        description: 'Ticket721 is a ticketing platform focused on security and user experience. Register now and start browsing or creating events !.'
     },
     fr: {
-        title: 'Ticket721',
+        title: 'Ticket721 - Découvrez des événements en ligne, physiques et hybrides',
         description: "Ticket721 est une plateforme améliorant l'expérience des participants lors d’un événement sur deux volets : sécurisation et fan engagement.",
     }
 }

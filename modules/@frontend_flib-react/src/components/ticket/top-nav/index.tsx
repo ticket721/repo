@@ -98,7 +98,7 @@ export const TopNav: React.FunctionComponent<TopNavProps> = (props: TopNavProps)
         <SafeOffsetContainer className={props.scrolled ? 'scrolled' : ''}>
             <Container>
                 <a onClick={props.onPress}>
-                    <Icon icon={'back-arrow'} size={'16px'} color={'rgba(255, 255, 255, 0.9)'} />
+                    <Icon icon={'back-arrow'} size={'16px'} color={'white'} />
                 </a>
                 <span>{props.label}</span>
                 <span>
