@@ -39,7 +39,7 @@ const SafeOffsetContainer = styled.div`
     &.scrolled {
         background-color: rgba(33, 29, 45, 1);
         @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
-            background-color: rgba(0, 0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(16px);
         }
     }
@@ -54,12 +54,13 @@ const Container = styled.div`
     font-weight: 500;
     justify-content: space-between;
     left: 0;
-    padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
+    padding: ${(props) => props.theme.regularSpacing};
     top: constant(safe-area-inset-top);
     top: env(safe-area-inset-top);
     transition: top 500ms ease;
     position: fixed;
     width: 100%;
+    height: 48px;
     z-index: 9999;
 `;
 
@@ -91,15 +92,44 @@ const IconDots = styled(Icon)`
     height: 4px;
 `;
 
+interface BackgroundHidderProps {
+    scrolled?: boolean;
+}
+
+const BackgroundHidder = styled.div<BackgroundHidderProps>`
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ${(props) =>
+        props.scrolled
+            ? `
+    background-color: transparent;
+  `
+            : `
+
+        background-color: rgba(33, 29, 45, 1);
+        @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+            background-color: rgba(0, 0, 0, 0);
+            backdrop-filter: blur(16px);
+        }
+    `}
+`;
+
 export const TopNav: React.FunctionComponent<TopNavProps> = (props: TopNavProps): JSX.Element => {
     const [showSub, setshowSub] = React.useState(false);
 
     return (
         <SafeOffsetContainer className={props.scrolled ? 'scrolled' : ''}>
             <Container>
-                <a onClick={props.onPress}>
-                    <Icon icon={'back-arrow'} size={'16px'} color={'white'} />
-                </a>
+                <BackgroundHidder scrolled={props.scrolled}>
+                    <a onClick={props.onPress}>
+                        <Icon icon={'back-arrow'} size={'14px'} color={'white'} />
+                    </a>
+                </BackgroundHidder>
                 <span>{props.label}</span>
                 <span>
                     {props.subNav?.length && (
