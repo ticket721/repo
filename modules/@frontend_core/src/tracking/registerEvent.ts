@@ -12,5 +12,6 @@ const gaEvent = (category: string, action: string, label: string, value?: any) =
 };
 
 export const event = (category: string, action: string, label: string, value?: any) => {
+    console.log(category, action, label, value);
     gaEvent(category, action, label, value);
 };

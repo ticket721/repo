@@ -29,6 +29,7 @@ const gaInit = () => {
             },
         });
         ReactGA.ga('set', 'checkProtocolTask', null);
+        ReactGA.pageview(window.location.pathname + window.location.search);
     }
 };
 

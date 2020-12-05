@@ -47,7 +47,6 @@ const PageViewTracker: React.FC<PropsWithChildren<any>> = ({children}: PropsWith
 
     useEffect(() => {
         if (_history) {
-            pageview(`${_history.location.pathname}${_history.location.search}`);
             _history.listen((location): void => {
                 pageview(`${location.pathname}${location.search}`);
             });

@@ -49,7 +49,7 @@ const LoggedInUserGuard: React.FC<PropsWithChildren<LoggedOutUserGuardProps>> = 
 
     useDeepEffect(() => {
         if (userReq.response.data?.user) {
-            onId(userReq.response.data.user.id);
+            onId(userReq.response.data.user.id, userReq.response.data.user.email);
         }
     }, [userReq.response.data]);
 

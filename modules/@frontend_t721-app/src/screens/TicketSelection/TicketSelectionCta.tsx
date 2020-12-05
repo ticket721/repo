@@ -14,10 +14,13 @@ import { PushNotification }                                        from '@fronte
 import { PurchaseError }                                           from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
 import { UserContext }                                             from '@frontend/core/lib/contexts/UserContext';
 import { getEnv }                                                  from '@frontend/core/lib/utils/getEnv';
-import { event }                                                    from '@frontend/core/lib/tracking/registerEvent';
+import { event }                                                   from '@frontend/core/lib/tracking/registerEvent';
 import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
+import { DateEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { conversionEvent }                                         from '@frontend/core/lib/tracking/conversionEvent';
 
 export interface TicketSelectionCtaProps {
+    date: DateEntity;
     category: CategoryEntity;
     gradients: string[];
     clearSelection: () => void;
@@ -109,6 +112,7 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
                             'User added a ticket to cart',
                             props.category.id
                         );
+                        conversionEvent(`AddToCart${props.date.id.split('-').join('').toUpperCase()}`)
                         props.clearSelection();
                     }
 
