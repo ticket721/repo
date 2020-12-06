@@ -6,7 +6,7 @@ android {
         applicationId "com.ticket721.t721"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 22
+        versionCode 23
         versionName "2.0.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
