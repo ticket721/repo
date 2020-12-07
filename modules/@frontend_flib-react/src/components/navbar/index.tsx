@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from '../../config/styled';
+import { injectBlur } from '../../utils/blur';
 
 interface StyledNavbar {
     visible: boolean;
@@ -7,11 +8,8 @@ interface StyledNavbar {
 }
 
 const StyledNavbar = styled.nav<StyledNavbar>`
-    background-color: rgba(33, 29, 45, 1);
-    @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
-        background-color: rgba(33, 29, 45, 0.6);
-        backdrop-filter: blur(6px);
-    }
+    ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
+
     border-top-left-radius: ${(props) => props.theme.doubleSpacing};
     border-top-right-radius: ${(props) => props.theme.doubleSpacing};
     transition: bottom 500ms ease;

@@ -106,7 +106,7 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
                     onClick={() => (props.dates.length > 1 ? setCollapsed(false) : null)}
                     iconColor={props.iconColor}
                 >
-                    {props.dates[0].startDate === props.dates[props.dates.length - 1].endDate ? (
+                    {props.dates[0].startDate === props.dates[0].endDate ? (
                         <>
                             <Info>{props.dates[0].startDate}</Info>
                             <Info
@@ -114,9 +114,9 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
                                     fontWeight: 400,
                                 }}
                             >
-                                {props.dates[0].startTime}
-                                <Icon icon={'arrow'} size={'12px'} />
-                                {props.dates[props.dates.length - 1].endTime}
+                                <span>
+                                    {props.dates[0].startTime} - {props.dates[0].endTime}
+                                </span>
                             </Info>
                         </>
                     ) : (
@@ -130,8 +130,7 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
                                         fontWeight: 400,
                                     }}
                                 >
-                                    {props.dates[props.dates.length - 1].endDate} -{' '}
-                                    {props.dates[props.dates.length - 1].endTime}
+                                    {props.dates[0].endDate} - {props.dates[0].endTime}
                                 </Info>
                             ) : null}
                         </>

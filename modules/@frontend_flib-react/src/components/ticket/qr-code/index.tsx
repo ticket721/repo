@@ -9,7 +9,6 @@ const Button = styled.button`
     align-items: center;
     appearance: none;
     background-color: ${(props) => props.theme.textColor};
-    backdrop-filter: blur(4px);
     border-radius: ${(props) => props.theme.defaultRadius};
     color: #1b1725;
     display: inline-flex;

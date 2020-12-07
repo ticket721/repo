@@ -9,6 +9,8 @@ i18n.addResourceBundle('en', 'home', {
     online_events: 'Online',
     coming_soon: 'Coming soon',
     free: 'Free',
+    day_to: 'to',
+    hour_to: 'to',
 
     error_cannot_fetch_dates: 'Cannot fetch events'
 });
@@ -21,6 +23,8 @@ i18n.addResourceBundle('fr', 'home', {
     online_events: 'En Ligne',
     coming_soon: 'Bientôt disponible',
     free: 'Gratuit',
+    day_to: 'au',
+    hour_to: 'à',
 
     error_cannot_fetch_dates: 'Évènements indisponibles'
 });

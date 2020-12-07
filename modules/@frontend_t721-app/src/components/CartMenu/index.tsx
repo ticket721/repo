@@ -27,6 +27,7 @@ import { usePlatform }                                             from '@capaci
 import { useKeyboardState }                                        from '@frontend/core/lib/hooks/useKeyboardState';
 import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 import { event }                                                   from '@frontend/core/lib/tracking/registerEvent';
+import { injectBlur }                                              from '@frontend/flib-react/lib/utils/blur';
 // tslint:disable-next-line:no-var-requires
 const SAI = require('safe-area-insets');
 
@@ -64,12 +65,7 @@ const MenuContainer = styled(motion.div) <MenuContainerProps>`
         border-radius: 12px;
     }
 
-    background-color: rgba(33, 29, 45, 1);
-    @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
-        background-color: rgba(33, 29, 45, 0.6);
-        backdrop-filter: blur(8px);
-    }
-
+    ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
 `;
 
 const MenuContainerHeaderContainer = styled.div`

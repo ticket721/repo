@@ -11,7 +11,17 @@ const gaEvent = (category: string, action: string, label: string, value?: any) =
     }
 };
 
+const segmentEvent = (category: string, action: string, label: string, value?: any) => {
+    if (getEnv().REACT_APP_SEGMENT_API_KEY && !!(window as any).analytics) {
+        (window as any).analytics.track(action, {
+            category,
+            label,
+            value,
+        });
+    }
+};
+
 export const event = (category: string, action: string, label: string, value?: any) => {
-    console.log(category, action, label, value);
     gaEvent(category, action, label, value);
+    segmentEvent(category, action, label, value);
 };

@@ -147,7 +147,6 @@ const QrCodeWrapper = styled(motion.div)`
     justify-content: space-evenly;
     align-items: center;
     background-color: #ffffff;
-    backdrop-filter: blur(6px);
     padding: 6vh ${props => props.theme.biggerSpacing};
 `;
 
