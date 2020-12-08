@@ -1,5 +1,5 @@
-import React, { PropsWithChildren, useEffect } from 'react';
-import ReactDOM                                from 'react-dom';
+import React, { PropsWithChildren, Suspense, useEffect }                   from 'react';
+import ReactDOM                                                            from 'react-dom';
 import './index.css';
 import './native';
 import './routes/locales';
@@ -25,6 +25,8 @@ import { splashSaga }                                                      from 
 import { init }                                                            from '@frontend/core/lib/tracking/init';
 import { pageview }                                                        from '@frontend/core/lib/tracking/pageview';
 import { useHistory }                                                      from 'react-router';
+import { UserContextGuard }                                                from '@frontend/core/lib/contexts/UserContext';
+import { FullPageLoading }                                                 from '@frontend/flib-react/lib/components';
 
 const store: Store<T721AppState> = configureStore<any>({
     location: LocationReducer,
@@ -60,20 +62,24 @@ const PageViewTracker: React.FC<PropsWithChildren<any>> = ({children}: PropsWith
 const Root = () => {
 
     return <EnvValidator schema={T721AppEnvSchema}>
-        <Provider store={store}>
-            <ConnectedRouter history={history}>
-                <ThemeProvider theme={customThemes['t721']}>
-                    <GlobalStyles/>
-                    <BrowserRouter>
-                        <PageViewTracker>
-                            <ScrollToTop>
-                                <App/>
-                            </ScrollToTop>
-                        </PageViewTracker>
-                    </BrowserRouter>
-                </ThemeProvider>
-            </ConnectedRouter>
-        </Provider>
+        <ThemeProvider theme={customThemes['t721']}>
+            <Provider store={store}>
+                <Suspense fallback={<FullPageLoading/>}>
+                    <UserContextGuard>
+                        <ConnectedRouter history={history}>
+                            <GlobalStyles/>
+                            <BrowserRouter>
+                                <PageViewTracker>
+                                    <ScrollToTop>
+                                        <App/>
+                                    </ScrollToTop>
+                                </PageViewTracker>
+                            </BrowserRouter>
+                        </ConnectedRouter>
+                    </UserContextGuard>
+                </Suspense>
+            </Provider>
+        </ThemeProvider>
     </EnvValidator>;
 
 }

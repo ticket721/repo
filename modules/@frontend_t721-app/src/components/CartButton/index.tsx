@@ -28,6 +28,7 @@ const Container = styled(motion.div)<ContainerProps>`
   cursor: pointer;
 
   ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
+  border: 1px solid #cccccc10;
 
   display: flex;
   justify-content: center;
@@ -94,7 +95,7 @@ export const CartButton: React.FC = (): JSX.Element => {
 
     const width = useMemo(() => window.width < 900 ? 65 : 80, [window.width]);
     const height = useMemo(() => window.width < 900 ? 65 : 80, [window.width]);
-    const navbar = useMemo(() => window.width < 900 ? 70 : 0, [window.width]);
+    const navbar = useMemo(() => window.width < 900 ? 80 : 0, [window.width]);
     const spacing = useMemo(() => window.width >= 900 ? 32 : 8, [window.width]);
 
     const haptics = useHaptics();

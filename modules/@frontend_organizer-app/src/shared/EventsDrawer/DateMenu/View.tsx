@@ -21,62 +21,62 @@ export const DateMenuView: React.FC<{ eventId: string, dateId: string }> = ({ ev
     const { categories } = useContext(CategoriesContext);
 
     return <>
-            <Header>
-                <EventTitle>{events[0].name}</EventTitle>
-                <Title>
-                    {dates[0].metadata.name}
-                    {
-                        dates[0].online ?
+        <Header>
+            <EventTitle>{events[0].name}</EventTitle>
+            <Title>
+                {dates[0].metadata.name}
+                {
+                    dates[0].online ?
                         <OnlineTag/> :
                         null
+                }
+            </Title>
+            <DateRange>
+                {t('from')}&nbsp;
+                <strong>{format(dates[0].timestamps.event_begin)}</strong>
+                &nbsp;{t('to')}&nbsp;
+                <strong>{format(dates[0].timestamps.event_end)}</strong>
+            </DateRange>
+        </Header>
+        <AnimateSharedLayout>
+            <EditDateContainer selectedEdit={history.location.pathname.substring(history.location.pathname.lastIndexOf('/') + 1)}>
+                <EditTitle>{t('edit_title')}</EditTitle>
+                <Link
+                    key={'dates_and_typology'}
+                    selected={history.location.pathname.endsWith('/dates-typology')}
+                    onClick={() => history.push(`/event/${eventId}/date/${dateId}/dates-typology`)}>
+                    {t('dates_and_typology')}
+                    {
+                        history.location.pathname.endsWith('/dates-typology') ?
+                            <Arrow layoutId={'selected'}/> :
+                            null
                     }
-                </Title>
-                <DateRange>
-                    {t('from')}&nbsp;
-                    <strong>{format(dates[0].timestamps.event_begin)}</strong>
-                    &nbsp;{t('to')}&nbsp;
-                    <strong>{format(dates[0].timestamps.event_end)}</strong>
-                </DateRange>
-            </Header>
-            <AnimateSharedLayout>
-                <EditDateContainer selectedEdit={history.location.pathname.substring(history.location.pathname.lastIndexOf('/') + 1)}>
-                        <EditTitle>{t('edit_title')}</EditTitle>
-                        <Link
-                        key={'dates_and_typology'}
-                        selected={history.location.pathname.endsWith('/dates-typology')}
-                        onClick={() => history.push(`/event/${eventId}/date/${dateId}/dates-typology`)}>
-                            {t('dates_and_typology')}
-                            {
-                                history.location.pathname.endsWith('/dates-typology') ?
-                                <Arrow layoutId={'selected'}/> :
-                                null
-                            }
-                        </Link>
-                        <Link
-                        key={'general_infos'}
-                        selected={history.location.pathname.endsWith('/general-infos')}
-                        onClick={() => history.push(`/event/${eventId}/date/${dateId}/general-infos`)}>
-                            {t('general_infos')}
-                            {
-                                history.location.pathname.endsWith('/general-infos') ?
-                                <Arrow layoutId={'selected'}/> :
-                                null
-                            }
-                        </Link>
-                        <Link
-                        key={'styles'}
-                        selected={history.location.pathname.endsWith('/styles')}
-                        onClick={() => history.push(`/event/${eventId}/date/${dateId}/styles`)}>
-                            {t('styles')}
-                            {
-                                history.location.pathname.endsWith('/styles') ?
-                                <Arrow layoutId={'selected'}/> :
-                                null
-                            }
-                        </Link>
-                </EditDateContainer>
-                <CategoriesSubMenu eventId={eventId} dateId={dateId} categories={categories}/>
-            </AnimateSharedLayout>
+                </Link>
+                <Link
+                    key={'general_infos'}
+                    selected={history.location.pathname.endsWith('/general-infos')}
+                    onClick={() => history.push(`/event/${eventId}/date/${dateId}/general-infos`)}>
+                    {t('general_infos')}
+                    {
+                        history.location.pathname.endsWith('/general-infos') ?
+                            <Arrow layoutId={'selected'}/> :
+                            null
+                    }
+                </Link>
+                <Link
+                    key={'styles'}
+                    selected={history.location.pathname.endsWith('/styles')}
+                    onClick={() => history.push(`/event/${eventId}/date/${dateId}/styles`)}>
+                    {t('styles')}
+                    {
+                        history.location.pathname.endsWith('/styles') ?
+                            <Arrow layoutId={'selected'}/> :
+                            null
+                    }
+                </Link>
+            </EditDateContainer>
+            <CategoriesSubMenu eventId={eventId} dateId={dateId} categories={categories}/>
+        </AnimateSharedLayout>
     </>;
 }
 

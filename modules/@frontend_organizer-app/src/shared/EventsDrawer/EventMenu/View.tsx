@@ -10,13 +10,14 @@ import { EventsStatusResponseDto }     from '@common/sdk/lib/@backend_nest/apps/
 import { CategoriesSubMenu }           from './CategoriesSubMenu';
 import { AnimateSharedLayout, motion } from 'framer';
 import { DatesSubMenu }                from './DatesSubMenu';
-import { useLazyRequest, RequestResp }  from '@frontend/core/lib/hooks/useLazyRequest';
+import { useLazyRequest, RequestResp } from '@frontend/core/lib/hooks/useLazyRequest';
 import { useDispatch }                 from 'react-redux';
 import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
 import { Dispatch }                    from 'redux';
-import { DatesContext } from '../../../components/Fetchers/DatesFetcher';
-import { EventsContext } from '../../../components/Fetchers/EventsFetcher';
-import { CategoriesContext } from '../../../components/Fetchers/CategoriesFetcher';
+import { DatesContext }                from '../../../components/Fetchers/DatesFetcher';
+import { EventsContext }               from '../../../components/Fetchers/EventsFetcher';
+import { CategoriesContext }           from '../../../components/Fetchers/CategoriesFetcher';
+import { StatsSubMenu }                from './StatsSubMenu';
 
 const handleStatus = (req: RequestResp<EventsStatusResponseDto>, history: any, dispatch: Dispatch, t: any): void => {
     switch (req.error.response.data.message) {
@@ -108,6 +109,7 @@ export const EventMenuView: React.FC<{ eventId: string }> = ({ eventId }) => {
             </Title>
             <DatesSubMenu eventId={eventId} dates={dates}/>
             <CategoriesSubMenu categories={categories} dateCount={dates.length}/>
+            <StatsSubMenu eventId={eventId}/>
         </AnimateSharedLayout>
     </EventMenuContainer>;
 };

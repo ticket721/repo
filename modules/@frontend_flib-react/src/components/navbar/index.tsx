@@ -27,6 +27,7 @@ const StyledNavbar = styled.nav<StyledNavbar>`
     align-items: center;
     display: flex;
     justify-content: center;
+    border-top: 1px solid #cccccc07;
 `;
 
 const ContentContainer = styled.div`

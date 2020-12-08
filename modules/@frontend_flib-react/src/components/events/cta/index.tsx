@@ -20,6 +20,7 @@ const CtaContainer = styled.div<EventCtaProps>`
     align-items: center;
 
     ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
+    border-top: 1px solid #cccccc07;
 
     border-top-left-radius: ${(props) => props.theme.bigRadius};
     border-top-right-radius: ${(props) => props.theme.bigRadius};

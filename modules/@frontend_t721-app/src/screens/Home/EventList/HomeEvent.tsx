@@ -1,18 +1,20 @@
 import React, { useState }                    from 'react';
 import { formatDay, formatHour, formatShort } from '@frontend/core/lib/utils/date';
 import { v4 }                                 from 'uuid';
-import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
-import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { SingleImage }                 from '@frontend/flib-react/lib/components';
-import { DateEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
-import { useHistory }                  from 'react-router';
-import { getImgPath }                  from '@frontend/core/lib/utils/images';
-import { getPriceRange }               from '../../../utils/prices';
-import { useTranslation }              from 'react-i18next';
-import { useToken }                    from '@frontend/core/lib/hooks/useToken';
-import styled                          from 'styled-components';
-import {motion} from 'framer-motion';
-import { useHaptics, HapticsImpactStyle }                  from '@frontend/core/lib/hooks/useHaptics';
+import { useRequest }                     from '@frontend/core/lib/hooks/useRequest';
+import {
+    CategoriesSearchResponseDto
+}    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { SingleImage }                    from '@frontend/flib-react/lib/components';
+import { DateEntity }                     from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { useHistory }                     from 'react-router';
+import { getImgPath }                     from '@frontend/core/lib/utils/images';
+import { useTranslation }                 from 'react-i18next';
+import { useToken }                       from '@frontend/core/lib/hooks/useToken';
+import styled                             from 'styled-components';
+import {motion}                           from 'framer-motion';
+import { useHaptics, HapticsImpactStyle } from '@frontend/core/lib/hooks/useHaptics';
+import { getPriceRange }                  from '@frontend/core/lib/utils/prices';
 
 export interface HomeEventProps {
     date: DateEntity;

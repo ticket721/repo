@@ -38,6 +38,7 @@ const SafeOffsetContainer = styled.div`
 
     &.scrolled {
         ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
+        border-bottom: 1px solid #cccccc07;
     }
 `;
 
@@ -105,7 +106,9 @@ const BackgroundHidder = styled.div<BackgroundHidderProps>`
             ? `
     background-color: transparent;
   `
-            : injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
+            : `
+              ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
+              `}
 `;
 
 export const TopNav: React.FunctionComponent<TopNavProps> = (props: TopNavProps): JSX.Element => {
