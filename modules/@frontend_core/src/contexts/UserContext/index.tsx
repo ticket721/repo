@@ -48,10 +48,10 @@ const LoggedInUserGuard: React.FC<PropsWithChildren<LoggedOutUserGuardProps>> = 
     }, [userReq.response.error]);
 
     useDeepEffect(() => {
-        if (userReq.response.data?.user) {
+        if (userReq.response.data?.user?.valid) {
             onId(userReq.response.data.user.id, userReq.response.data.user.email);
         }
-    }, [userReq.response.data]);
+    }, [userReq.response.data?.user]);
 
     if (userReq.response.loading) {
         return <FullPageLoading />;

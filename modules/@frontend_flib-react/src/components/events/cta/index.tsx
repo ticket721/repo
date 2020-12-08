@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from '../../../config/styled';
 import { detect } from 'detect-browser';
 import Button from '../../button';
+import { injectBlur } from '../../../utils/blur';
 
 const browser = detect();
 
@@ -18,11 +19,8 @@ export interface EventCtaProps extends React.ComponentProps<any> {
 const CtaContainer = styled.div<EventCtaProps>`
     align-items: center;
 
-    background-color: rgba(33, 29, 45, 1);
-    @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
-        background-color: rgba(33, 29, 45, 0.6);
-        backdrop-filter: blur(6px);
-    }
+    ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
+    border-top: 1px solid #cccccc07;
 
     border-top-left-radius: ${(props) => props.theme.bigRadius};
     border-top-right-radius: ${(props) => props.theme.bigRadius};

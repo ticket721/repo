@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 import Icon from '../../../components/icon';
+import { injectBlur } from '../../../utils/blur';
 
 export interface LinkProps extends React.ComponentProps<any> {
     image?: string;
@@ -11,8 +12,7 @@ export interface LinkProps extends React.ComponentProps<any> {
 const LinkContainer = styled.div`
     align-items: center;
     appearance: none;
-    background-color: ${(props) => props.theme.componentColorLighter};
-    backdrop-filter: blur(4px);
+    ${(props) => injectBlur('rgba(33, 29, 45, 0.2)', props.theme.componentColorLighter)};
     border-radius: ${(props) => props.theme.defaultRadius};
     display: inline-flex;
     justify-content: space-between;

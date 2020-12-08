@@ -16,6 +16,7 @@ const segmentOnId = (_id: string, email: string) => {
 };
 
 export const onId = (_id: string, email: string) => {
+    console.log(`Identifying ${_id} ${email}`);
     gaOnId(_id);
     segmentOnId(_id, email);
 };

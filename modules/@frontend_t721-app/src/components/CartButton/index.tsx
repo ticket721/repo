@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useMemo } from 'react';
-import { CartContext }                                     from '../Cart/CartContext';
-import { motion, useAnimation }                            from 'framer-motion';
-import { useWindowDimensions }                             from '@frontend/core/lib/hooks/useWindowDimensions';
-import styled                                              from 'styled-components';
-import { Icon }                                            from '@frontend/flib-react/lib/components';
-import { PaymentError }                                    from '@backend/nest/libs/common/src/purchases/PaymentHandler.base.service';
-import { isNil }                                           from 'lodash';
-import { HapticsImpactStyle, useHaptics }                  from '@frontend/core/lib/hooks/useHaptics';
+import { CartContext }                           from '../Cart/CartContext';
+import { motion, useAnimation }                  from 'framer-motion';
+import { useWindowDimensions }                   from '@frontend/core/lib/hooks/useWindowDimensions';
+import styled                                    from 'styled-components';
+import { Icon }                                  from '@frontend/flib-react/lib/components';
+import { PaymentError }                          from '@backend/nest/libs/common/src/purchases/PaymentHandler.base.service';
+import { isNil }                                 from 'lodash';
+import { HapticsImpactStyle, useHaptics }        from '@frontend/core/lib/hooks/useHaptics';
+import { injectBlur }                            from '@frontend/flib-react/lib/utils/blur';
 
 interface ContainerProps {
     spacing: number;
@@ -26,11 +27,8 @@ const Container = styled(motion.div)<ContainerProps>`
   z-index: 99999;
   cursor: pointer;
 
-  background-color: rgba(43, 39, 55, 1);
-  @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
-    background-color: rgba(43, 39, 55, 0.6);
-    backdrop-filter: blur(4px);
-  }
+  ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
+  border: 1px solid #cccccc10;
 
   display: flex;
   justify-content: center;
@@ -97,7 +95,7 @@ export const CartButton: React.FC = (): JSX.Element => {
 
     const width = useMemo(() => window.width < 900 ? 65 : 80, [window.width]);
     const height = useMemo(() => window.width < 900 ? 65 : 80, [window.width]);
-    const navbar = useMemo(() => window.width < 900 ? 70 : 0, [window.width]);
+    const navbar = useMemo(() => window.width < 900 ? 80 : 0, [window.width]);
     const spacing = useMemo(() => window.width >= 900 ? 32 : 8, [window.width]);
 
     const haptics = useHaptics();

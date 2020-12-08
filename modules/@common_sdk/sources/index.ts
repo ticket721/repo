@@ -38,7 +38,7 @@ import {
     eventsCount,
     eventsCreate,
     eventsSearch,
-    eventsGuestlist, eventsAddDate, eventsEdit, eventsStatus, eventsBindStripeInterface, eventsOwner,
+    eventsGuestlist, eventsAddDate, eventsEdit, eventsStatus, eventsBindStripeInterface, eventsOwner, eventsAttendees, eventsExport,
 } from './app/api/events';
 
 // CATEGORIES
@@ -126,6 +126,8 @@ export class T721SDK {
         this.events.status = this.events.status.bind(this);
         this.events.bindStripeInterface = this.events.bindStripeInterface.bind(this);
         this.events.owner = this.events.owner.bind(this);
+        this.events.attendees = this.events.attendees.bind(this);
+        this.events.export = this.events.export.bind(this);
 
         this.categories.count = this.categories.count.bind(this);
         this.categories.search = this.categories.search.bind(this);
@@ -293,14 +295,6 @@ export class T721SDK {
         setDeviceAddress: usersSetDeviceAddress,
     };
 
-    // public actions = {
-    //     search: actionsSearch,
-    //     count: actionsCount,
-    //     update: actionsUpdate,
-    //     create: actionsCreate,
-    //     consumeUpdate: actionsConsumeUpdate,
-    // };
-
     public dates = {
         search: datesSearch,
         homeSearch: datesHomeSearch,
@@ -316,6 +310,8 @@ export class T721SDK {
         search: eventsSearch,
         count: eventsCount,
         owner: eventsOwner,
+        attendees: eventsAttendees,
+        export: eventsExport,
         create: {
             create: eventsCreate,
         },
@@ -325,10 +321,6 @@ export class T721SDK {
         status: eventsStatus,
         bindStripeInterface: eventsBindStripeInterface,
     };
-
-    // public rights = {
-    //     search: rightsSearch,
-    // };
 
     public categories = {
         search: categoriesSearch,
@@ -344,21 +336,6 @@ export class T721SDK {
     public images = {
         upload: uploadImage,
     };
-
-    // public txs = {
-    //     search: txsSearch,
-    //     count: txsCount,
-    //     subscribe: txsSubscribe,
-    //     infos: txsInfos,
-    // };
-
-    // public contracts = {
-    //     fetch: contractsFetch,
-    // };
-
-    // public metadatas = {
-    //     fetch: metadatasFetch,
-    // };
 
     public tickets = {
         search: ticketsSearch,

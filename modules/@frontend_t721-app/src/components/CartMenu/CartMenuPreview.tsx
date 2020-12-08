@@ -11,18 +11,18 @@ import { useDispatch }                                    from 'react-redux';
 import { useToken }                                       from '@frontend/core/lib/hooks/useToken';
 import { Error, FullPageLoading, Icon }                   from '@frontend/flib-react/lib/components';
 import styled, { useTheme }                               from 'styled-components';
-import { getPrice }                                       from '../../utils/prices';
-import { formatShort }                                    from '@frontend/core/lib/utils/date';
-import { useTranslation }                                 from 'react-i18next';
-import { Theme }                                          from '@frontend/flib-react/lib/config/theme';
-import { useLazyRequest }                                 from '@frontend/core/lib/hooks/useLazyRequest';
-import { PurchasesSetProductsResponseDto }                from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
-import { isNil }                                          from 'lodash';
-import { PushNotification }                               from '@frontend/core/lib/redux/ducks/notifications';
-import { PurchaseError }                                  from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
-import { isRequestError }                                 from '@frontend/core/lib/utils/isRequestError';
-import { getEnv }                                         from '@frontend/core/lib/utils/getEnv';
-import { HapticsImpactStyle, useHaptics }                 from '@frontend/core/lib/hooks/useHaptics';
+import { formatShort }                     from '@frontend/core/lib/utils/date';
+import { useTranslation }                  from 'react-i18next';
+import { Theme }                           from '@frontend/flib-react/lib/config/theme';
+import { useLazyRequest }                  from '@frontend/core/lib/hooks/useLazyRequest';
+import { PurchasesSetProductsResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
+import { isNil }                           from 'lodash';
+import { PushNotification }                from '@frontend/core/lib/redux/ducks/notifications';
+import { PurchaseError }                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
+import { isRequestError }                  from '@frontend/core/lib/utils/isRequestError';
+import { getEnv }                          from '@frontend/core/lib/utils/getEnv';
+import { HapticsImpactStyle, useHaptics }  from '@frontend/core/lib/hooks/useHaptics';
+import { getPrice }                        from '@frontend/core/lib/utils/prices';
 
 const CategoryCount = styled.span`
   margin: 0;
@@ -319,7 +319,7 @@ const CartMenuCategoryDatesPreview: React.FC<CartMenuCategoryDatesPreviewProps> 
                                     size={'16px'}
                                 /> : null}{date.metadata.name}
                             </DateTitle>
-                            <DateDate>{formatShort(date.timestamps.event_end)}</DateDate>
+                            <DateDate>{formatShort(date.timestamps.event_begin)}</DateDate>
                         </div>
                     </div>
                 ))

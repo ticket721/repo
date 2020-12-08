@@ -3,6 +3,7 @@ import styled from '../../../config/styled';
 import Icon from '../../icon';
 import Countdown from 'react-countdown';
 import { useEffect, useState } from 'react';
+import { injectBlur } from '../../../utils/blur';
 
 const DTFormatShort = new Intl.DateTimeFormat('default', {
     month: 'short',
@@ -108,8 +109,7 @@ const DisabledContainer = styled.div<DisabledContainerProps>`
     height: 100%;
     top: 0;
     left: 0;
-    backdrop-filter: blur(3px);
-    background-color: rgba(0, 0, 0, 0.4);
+    ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
     display: flex;
     justify-content: center;
     align-items: center;

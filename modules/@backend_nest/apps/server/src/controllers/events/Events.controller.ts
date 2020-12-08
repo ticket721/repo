@@ -54,6 +54,16 @@ import { EventsStatusResponseDto } from '@app/server/controllers/events/dto/Even
 import { isNil } from '@nestjs/common/utils/shared.utils';
 import { StripeInterfaceEntity } from '@lib/common/stripeinterface/entities/StripeInterface.entity';
 import { EventsOwnerResponseDto } from '@app/server/controllers/events/dto/EventsOwnerResponse.dto';
+import { EventsAttendeesInputDto } from '@app/server/controllers/events/dto/EventsAttendeesInput.dto';
+import { EventsAttendeesResponseDto } from '@app/server/controllers/events/dto/EventsAttendeesResponse.dto';
+import { TicketsService } from '@lib/common/tickets/Tickets.service';
+import { UsersService } from '@lib/common/users/Users.service';
+import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
+import { UserEntity } from '@lib/common/users/entities/User.entity';
+import { PurchasesService } from '@lib/common/purchases/Purchases.service';
+import { PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
+import { EventsExportInputDto } from '@app/server/controllers/events/dto/EventsExportInput.dto';
+import { EventsExportResponseDto } from '@app/server/controllers/events/dto/EventsExportResponse.dto';
 
 /**
  * Placeholder address
@@ -71,16 +81,21 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * Dependency Injection
      *
      * @param eventsService
+     * @param ticketsService
      * @param datesService
      * @param categoriesService
      * @param uuidToolsService
+     * @param usersService
      * @param stripeInterfacesService
      */
     constructor(
         private readonly eventsService: EventsService,
+        private readonly ticketsService: TicketsService,
         private readonly datesService: DatesService,
         private readonly categoriesService: CategoriesService,
         private readonly uuidToolsService: UUIDToolService,
+        private readonly usersService: UsersService,
+        private readonly purchasesService: PurchasesService,
         private readonly stripeInterfacesService: StripeInterfacesService,
     ) {
         super();
@@ -117,6 +132,158 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         return {
             owner: event.owner,
+        };
+    }
+
+    /**
+     * Full export
+     *
+     * @param eventId
+     * @param body
+     */
+    @Post('/:event/export')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
+    async _export(
+        @Param('event') eventId: string,
+        @Body() body: EventsExportInputDto,
+    ): Promise<EventsExportResponseDto> {
+        const event = await this._crudCall(this.eventsService.findOne(eventId), StatusCodes.InternalServerError);
+
+        const categoriesOfEvent = await this._crudCall(
+            this.categoriesService.findAllByGroupId(event.group_id),
+            StatusCodes.InternalServerError,
+        );
+
+        let filterCategories: string[] = categoriesOfEvent.map((cat: CategoryEntity) => cat.id);
+
+        if (body.categories) {
+            for (const categoryId of body.categories) {
+                if (categoriesOfEvent.findIndex((cat: CategoryEntity) => cat.id === categoryId) === -1) {
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Forbidden,
+                            message: 'invalid_category_id',
+                        },
+                        StatusCodes.Forbidden,
+                    );
+                }
+            }
+            filterCategories = body.categories;
+        }
+
+        const ticketsTotal = await this._crudCall(
+            this.ticketsService.countAllByCategories(filterCategories),
+            StatusCodes.InternalServerError,
+        );
+        const tickets = await this._crudCall(
+            this.ticketsService.findAllByCategories(filterCategories, ticketsTotal, 0),
+            StatusCodes.InternalServerError,
+        );
+
+        const userIds = tickets.map((ticket: TicketEntity) => ticket.owner);
+        const users = await this._serviceCall(this.usersService.findByIds(userIds), StatusCodes.InternalServerError);
+
+        const purchasesIds = tickets.map((ticket: TicketEntity) => ticket.receipt);
+        const purchases = await this._serviceCall(
+            this.purchasesService.findMany(purchasesIds),
+            StatusCodes.InternalServerError,
+        );
+
+        return {
+            attendees: tickets.map((ticket: TicketEntity) => {
+                const user = users[users.findIndex((_user: UserEntity) => _user.id.toString() === ticket.owner)];
+                const purchase =
+                    purchases[purchases.findIndex((_purchase: PurchaseEntity) => _purchase.id === ticket.receipt)];
+
+                return {
+                    ticket: ticket.id,
+                    category: ticket.category,
+                    date: ticket.created_at,
+                    price: purchase ? purchase.price || 0 : null,
+                    currency: purchase ? purchase.currency || 'FREE' : null,
+                    email: user?.email || null,
+                };
+            }),
+            total: ticketsTotal,
+        };
+    }
+
+    /**
+     * Attendees recovery
+     *
+     * @param eventId
+     * @param body
+     */
+    @Post('/:event/attendees')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
+    async attendees(
+        @Param('event') eventId: string,
+        @Body() body: EventsAttendeesInputDto,
+    ): Promise<EventsAttendeesResponseDto> {
+        const event = await this._crudCall(this.eventsService.findOne(eventId), StatusCodes.InternalServerError);
+
+        const categoriesOfEvent = await this._crudCall(
+            this.categoriesService.findAllByGroupId(event.group_id),
+            StatusCodes.InternalServerError,
+        );
+
+        let filterCategories: string[] = categoriesOfEvent.map((cat: CategoryEntity) => cat.id);
+
+        if (body.categories) {
+            for (const categoryId of body.categories) {
+                if (categoriesOfEvent.findIndex((cat: CategoryEntity) => cat.id === categoryId) === -1) {
+                    throw new HttpException(
+                        {
+                            status: StatusCodes.Forbidden,
+                            message: 'invalid_category_id',
+                        },
+                        StatusCodes.Forbidden,
+                    );
+                }
+            }
+            filterCategories = body.categories;
+        }
+
+        const ticketsTotal = await this._crudCall(
+            this.ticketsService.countAllByCategories(filterCategories),
+            StatusCodes.InternalServerError,
+        );
+        const tickets = await this._crudCall(
+            this.ticketsService.findAllByCategories(filterCategories, body.page_size, body.page_number),
+            StatusCodes.InternalServerError,
+        );
+
+        const userIds = tickets.map((ticket: TicketEntity) => ticket.owner);
+        const users = await this._serviceCall(this.usersService.findByIds(userIds), StatusCodes.InternalServerError);
+
+        const purchasesIds = tickets.map((ticket: TicketEntity) => ticket.receipt);
+        const purchases = await this._serviceCall(
+            this.purchasesService.findMany(purchasesIds),
+            StatusCodes.InternalServerError,
+        );
+
+        return {
+            attendees: tickets.map((ticket: TicketEntity) => {
+                const user = users[users.findIndex((_user: UserEntity) => _user.id.toString() === ticket.owner)];
+                const purchase =
+                    purchases[purchases.findIndex((_purchase: PurchaseEntity) => _purchase.id === ticket.receipt)];
+
+                return {
+                    ticket: ticket.id,
+                    category: ticket.category,
+                    date: ticket.created_at,
+                    price: purchase ? purchase.price || 0 : null,
+                    currency: purchase ? purchase.currency || 'FREE' : null,
+                    email: user?.email || null,
+                };
+            }),
+            page_size: body.page_size,
+            page_number: body.page_number,
+            total: ticketsTotal,
         };
     }
 

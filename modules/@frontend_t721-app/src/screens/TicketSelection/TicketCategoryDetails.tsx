@@ -3,11 +3,11 @@ import { Error, FullPageLoading, TicketType } from '@frontend/flib-react/lib/com
 import { CategoryEntity }                     from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { DateEntity }                         from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { useTranslation }                     from 'react-i18next';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
+import { useToken }                           from '@frontend/core/lib/hooks/useToken';
 import { v4 }                                 from 'uuid';
-import { getPrice }                           from '../../utils/prices';
 import { useRequest }                         from '@frontend/core/lib/hooks/useRequest';
 import { isRequestError }                     from '@frontend/core/lib/utils/isRequestError';
+import { getPrice }                           from '@frontend/core/lib/utils/prices';
 
 export interface TicketCategoryDetailsProps {
     idx: number;

@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from '../../../config/styled';
 import { detect } from 'detect-browser';
 import Button from '../../button';
+import { injectBlur } from '../../../utils/blur';
 
 const browser = detect();
 
@@ -18,57 +19,55 @@ export interface DoubleButtonCtaProps extends React.ComponentProps<any> {
 }
 
 const CtaContainer = styled.div<DoubleButtonCtaProps>`
-  align-items: center;
+    align-items: center;
 
-  background-color: rgba(33, 29, 45, 1);
-  ${(props) =>
-      !props.solid
-          ? `
-  @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
-      background-color: rgba(33, 29, 45, 0.6);
-      backdrop-filter: blur(6px);
-  }
-  `
-          : ``}
+    background-color: ${(props) => props.theme.darkerBg};
+    ${(props) =>
+        !props.solid
+            ? `
+      ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
+      border-top: 1px solid #cccccc07;
+    `
+            : ``};
 
-  border-top-left-radius: ${(props) => props.theme.bigRadius};
-  border-top-right-radius: ${(props) => props.theme.bigRadius};
-  bottom: 0;
-  display: flex;
-  font-size: 14px;
-  font-weight: 500;
-  justify-content: space-around;
-  left: 0;
-  opacity: 0;
-  padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
-  padding-bottom: calc(${(props) => props.theme.regularSpacing} + env(safe-area-inset-bottom));
-  padding-bottom: calc(${(props) => props.theme.regularSpacing} + constant(safe-area-inset-bottom));
-  position: fixed;
-  transform: translateY(100%);
-  transition: all 300ms ease, opacity 450ms ease;
-  width: 100%;
-  max-width: 900px;
-  z-index: 9999;
+    border-top-left-radius: ${(props) => props.theme.bigRadius};
+    border-top-right-radius: ${(props) => props.theme.bigRadius};
+    bottom: 0;
+    display: flex;
+    font-size: 14px;
+    font-weight: 500;
+    justify-content: space-around;
+    left: 0;
+    opacity: 0;
+    padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
+    padding-bottom: calc(${(props) => props.theme.regularSpacing} + env(safe-area-inset-bottom));
+    padding-bottom: calc(${(props) => props.theme.regularSpacing} + constant(safe-area-inset-bottom));
+    position: fixed;
+    transform: translateY(100%);
+    transition: all 300ms ease, opacity 450ms ease;
+    width: 100%;
+    max-width: 900px;
+    z-index: 9999;
 
     @media screen and (min-width: 900px) {
         margin-left: calc((100% - 900px) / 2);
     }
 
-  ${(props) =>
-      props.show &&
-      `
+    ${(props) =>
+        props.show &&
+        `
     opacity: 1;
     transform: translateY(0%);
   `}
 
-  h4 {
-    color: ${browser?.name === 'firefox' ? '#9a989a' : (props) => props.theme.textColorDarker};
-    margin-bottom: ${(props) => props.theme.smallSpacing};
-  }
+    h4 {
+        color: ${browser?.name === 'firefox' ? '#9a989a' : (props) => props.theme.textColorDarker};
+        margin-bottom: ${(props) => props.theme.smallSpacing};
+    }
 
-  button {
-    margin: 0;
-  }
+    button {
+        margin: 0;
+    }
 `;
 
 const ButtonWrapper = styled.div`

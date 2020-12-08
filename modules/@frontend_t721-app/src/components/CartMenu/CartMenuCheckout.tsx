@@ -3,8 +3,8 @@ import { CartContext }                 from '../Cart/CartContext';
 import { CartMenuStripeCheckout }      from './CartMenuStripeCheckout';
 import { CartMenuStripeEndedPurchase } from './CartMenuStripeEndedPurchase';
 import styled                          from 'styled-components';
-import { getPrice }                    from '../../utils/prices';
 import { useTranslation }              from 'react-i18next';
+import { getPrice }                    from '@frontend/core/lib/utils/prices';
 
 // tslint:disable-next-line:no-empty-interface
 interface CartMenuNoneCheckoutProps {

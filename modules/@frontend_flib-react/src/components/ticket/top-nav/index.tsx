@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from '../../../config/styled';
 import Icon from '../../../components/icon';
+import { injectBlur } from '../../../utils/blur';
 
 export interface TopNavProps extends React.ComponentProps<any> {
     handleClick?: () => void;
@@ -30,18 +31,14 @@ const SafeOffsetContainer = styled.div`
     padding: ${(props) => props.theme.regularSpacing} ${(props) => props.theme.biggerSpacing};
     position: fixed;
     top: 0;
-    transition: backdrop-filter 300ms ease;
     height: calc(48px + constant(safe-area-inset-top));
     height: calc(48px + env(safe-area-inset-top));
     width: 100%;
     z-index: 9999;
 
     &.scrolled {
-        background-color: rgba(33, 29, 45, 1);
-        @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
-            background-color: rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(16px);
-        }
+        ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
+        border-bottom: 1px solid #cccccc07;
     }
 `;
 
@@ -110,13 +107,8 @@ const BackgroundHidder = styled.div<BackgroundHidderProps>`
     background-color: transparent;
   `
             : `
-
-        background-color: rgba(33, 29, 45, 1);
-        @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
-            background-color: rgba(0, 0, 0, 0);
-            backdrop-filter: blur(16px);
-        }
-    `}
+              ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
+              `}
 `;
 
 export const TopNav: React.FunctionComponent<TopNavProps> = (props: TopNavProps): JSX.Element => {

@@ -5,17 +5,17 @@ import { Icon }                      from '@frontend/flib-react/lib/components';
 import { Theme }                     from '@frontend/flib-react/lib/config/theme';
 import { useLazyRequest }            from '@frontend/core/lib/hooks/useLazyRequest';
 import { PurchasesCloseResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesCloseResponse.dto';
-import { v4 }                        from 'uuid';
-import { useDispatch }               from 'react-redux';
-import { useToken }                  from '@frontend/core/lib/hooks/useToken';
-import { isNil }                     from 'lodash';
-import { PushNotification }          from '@frontend/core/lib/redux/ducks/notifications';
-import { PurchaseError }             from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
-import { useTranslation }            from 'react-i18next';
-import { TicketsContext }            from '@frontend/core/lib/contexts/TicketsContext';
-import { getEnv }                    from '@frontend/core/lib/utils/getEnv';
-import { timing }                    from '@frontend/core/lib/tracking/timing';
-import { event }                     from '@frontend/core/lib/tracking/registerEvent';
+import { v4 }               from 'uuid';
+import { useDispatch }      from 'react-redux';
+import { useToken }         from '@frontend/core/lib/hooks/useToken';
+import { isNil }            from 'lodash';
+import { PushNotification } from '@frontend/core/lib/redux/ducks/notifications';
+import { PurchaseError }    from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
+import { useTranslation }   from 'react-i18next';
+import { TicketsContext }   from '@frontend/core/lib/contexts/TicketsContext';
+import { getEnv }           from '@frontend/core/lib/utils/getEnv';
+import { timing }           from '@frontend/core/lib/tracking/timing';
+import { event }            from '@frontend/core/lib/tracking/registerEvent';
 
 const Container = styled.div`
   height: calc(100% - 50px);
