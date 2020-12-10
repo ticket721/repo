@@ -29,6 +29,7 @@ import { PurchasesSetProductsResponseDto } from '@app/server/controllers/purchas
 import { PurchasesCheckoutInputDto } from '@app/server/controllers/purchases/dto/PurchasesCheckoutInput.dto';
 import { PurchasesCheckoutResponseDto } from '@app/server/controllers/purchases/dto/PurchasesCheckoutResponse.dto';
 import { PurchasesCloseResponseDto } from '@app/server/controllers/purchases/dto/PurchasesCloseResponse.dto';
+import { PurchasesCloseInputDto } from './dto/PurchasesCloseInput.dto';
 
 /**
  * Controller exposing routes to manage the Stripe Interface of an user
@@ -202,7 +203,7 @@ export class PurchasesController extends ControllerBasics<StripeInterfaceEntity>
     @Roles('authenticated')
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
-    async close(@User() user: UserDto): Promise<PurchasesCloseResponseDto> {
+    async close(@Body() body: PurchasesCloseInputDto, @User() user: UserDto): Promise<PurchasesCloseResponseDto> {
         const cartPurchaseEntityId = await this._crudCall(
             this.usersService.recoverUserCart(user.id),
             StatusCodes.InternalServerError,
@@ -234,7 +235,7 @@ export class PurchasesController extends ControllerBasics<StripeInterfaceEntity>
         }
 
         const purchaseCloseErrors = await this._serviceCall(
-            this.purchasesService.close(user, cartPurchaseEntity),
+            this.purchasesService.close(user, cartPurchaseEntity, body.mailActionUrl),
             StatusCodes.InternalServerError,
         );
 

@@ -1,4 +1,5 @@
 import {
+    ItemSummary,
     ProductCheckerServiceBase,
     PurchasedItem,
     PurchaseError,
@@ -19,6 +20,20 @@ import { EventsService } from '@lib/common/events/Events.service';
 import { OperationsService } from '@lib/common/operations/Operations.service';
 import { isNil } from 'lodash';
 import { DatesService } from '@lib/common/dates/Dates.service';
+
+export interface TicketSummaryInfos {
+    ticketId: string;
+    categoryId: string;
+    categoryName: string;
+    dates: {
+        coverUrl: string;
+        name: string;
+        beginDate: Date;
+        endDate: Date;
+        online: boolean;
+        location?: string;
+    }[];
+}
 
 /**
  * Static ticket limit per cart
@@ -817,6 +832,61 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
                 type: 'ticket721',
                 price: (Math.floor(categoryEntity.price * percentFee) + staticFee) * product.quantity,
             },
+        };
+    }
+
+    /**
+     * Generate product summary
+     *
+     * @param product
+     * @param purchasedItems
+     */
+    async generateSummary(
+        product: Product,
+        purchasedItems: PurchasedItem[],
+    ): Promise<ServiceResponse<ItemSummary<TicketSummaryInfos>[]>> {
+        const datesService = this.moduleRef.get(DatesService, {
+            strict: false,
+        });
+
+        const categoryResp = await this.categoriesService.findOne(product.id);
+
+        if (categoryResp.error) {
+            return {
+                error: categoryResp.error,
+                response: null,
+            };
+        }
+
+        const datesResp = await datesService.findAllByGroupId(product.group_id);
+
+        if (datesResp.error) {
+            return {
+                error: datesResp.error,
+                response: null,
+            };
+        }
+
+        return {
+            error: null,
+            response: purchasedItems.map(item => ({
+                type: 'ticket',
+                data: {
+                    ticketId: item.id,
+                    categoryId: categoryResp.response.id,
+                    categoryName: categoryResp.response.display_name,
+                    dates: datesResp.response
+                        .filter(date => categoryResp.response.dates.includes(date.id))
+                        .map(date => ({
+                            coverUrl: date.metadata.avatar,
+                            name: date.metadata.name,
+                            beginDate: date.timestamps.event_begin,
+                            endDate: date.timestamps.event_end,
+                            online: date.online,
+                            location: date.location?.location_label,
+                        })),
+                },
+            })),
         };
     }
 }

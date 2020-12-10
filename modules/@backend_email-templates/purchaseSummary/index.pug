@@ -1,0 +1,96 @@
+doctype html
+html(lang='en' style="background-color: #120f1a")
+    head
+        title=t('mail_head_title')
+        link(rel='preconnect' href='https://fonts.gstatic.com')
+        link(href='https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap' rel='stylesheet')
+    body
+        table(width="100%" border="0" cellspacing="0" cellpadding="0")
+            tr
+                th(colspan='2' style="padding: 32px 0; font-family: 'Roboto', sans-serif; font-weight: 600; text-transform: uppercase; font-size: 20px; color: #fff;")=`# ${t('mail_body_subtitle')} #`
+            each ticket in tickets
+                tr
+                    td(colspan='2')
+                        table(width="100%" border="0" cellspacing="0" cellpadding="0" style="padding: 0 8px 24px;")
+                            tr
+                                td(style="padding-bottom: 12px;")
+                                    span(style="font-family: 'Roboto', sans-serif; font-weight: 300; font-size: 20px; color: #fff;")=`${ticket.seats} x `
+                                    span(style="font-family: 'Roboto', sans-serif; font-weight: 600; font-size: 20px; color: #fff;")=`${ticket.categoryName}`
+                                    div
+                                        span(style="font-family: 'Roboto', sans-serif; font-weight: 300; font-size: 20px; color: #fff;")=` | `
+                                        span(style="font-family: 'Roboto', sans-serif; font-weight: 300; font-size: 16px; color: #fff;")=t('give_access')
+                            each date in ticket.dates
+                                tr
+                                    td
+                                        table(width="100%" border="0" cellspacing="0" cellpadding="0" style="padding: 4px 24px;")
+                                            tr
+                                                td(style=`height: 80px; width: 80px; background-image: url('${date.coverUrl}'); background-repeat: no-repeat; background-position: top center; background-size: cover; border-radius: 8px`)
+                                                td(colspan='2' style="padding-left: 16px;")
+                                                    table(width="100%" border="0" cellspacing="0" cellpadding="0")
+                                                        tr
+                                                            th(align='left' style="font-family: 'Roboto', sans-serif; font-weight: 600; text-transform: uppercase; font-size: 15px; color: #fff;")=`${date.name}`
+                                                        tr
+                                                            td(width="50%")
+                                                                table
+                                                                    tr
+                                                                        td(style="font-family: 'Roboto', sans-serif; font-weight: 400; font-size: 13px; color: #ccc;")=`${t('from')} ${date.beginDate}`
+                                                                    tr
+                                                                        td(style="font-family: 'Roboto', sans-serif; font-weight: 300; font-size: 12px; color: #ccc;")=`${t('to')} ${date.endDate}`
+                                                            td(width="50%" style="font-family: 'Roboto', sans-serif; font-weight: 400; font-size: 13px; color: #ccc;")=`${date.location}`
+                            tr
+                                td
+                                    table(style="width: 100%; padding-top: 20px;")
+                                        each id, index in ticket.ids
+                                            tr
+                                                th(align='left' style="font-family: 'Roboto', sans-serif; font-weight: 400; text-transform: uppercase; font-size: 10px; color: #999;")=`${t('ticket_label')} ${index + 1}`
+                                            tr
+                                                td(style="font-family: 'Roboto', sans-serif; font-weight: 400; font-size: 14px; color: #aaa; padding-bottom: 8px; text-transform: uppercase;")=`${id}`
+                            tr
+                                td(style="display: block; width: 100%; height: 1px; background-color: #b1b1b1; margin-top: 16px;")
+            tr
+                td
+                    table(style="padding-left: 16px;")
+                        tr
+                            td
+                                span(style="font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 300; color: #ccc;")=t('purchased_by')
+                                span(style="font-family: 'Roboto', sans-serif; font-size: 16px; color: #fff;")=` ${username}`
+                        tr
+                            td
+                                span(style="font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 300; color: #ccc;")=t('purchased_on')
+                                span(style="font-family: 'Roboto', sans-serif; font-size: 15px; color: #fff;")=` ${purchasedDate}`
+                td
+                    table
+                        tr
+                            td(style="font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 300; color: #ccc; text-transform: uppercase;")=t('total_label')
+                        tr(style="display: flex; align-items: flex-end;")
+                            if !totalPrice
+                                td(style="font-family: 'Roboto', sans-serif; color: #fff; font-size: 20px; font-weight: 600;")=t('free')
+                            else
+                                td(style="font-family: 'Roboto', sans-serif; color: #fff; font-size: 20px; font-weight: 600;")=`${totalPrice}`
+                                if fees
+                                    td(style="font-family: 'Roboto', sans-serif; color: #ddd; font-size: 12px; font-weight: 400; padding-left: 4px;")=`${fees} ${t('fees_label')}`
+            tr
+                td(colspan='2' align='center')
+                    a(href=`${actionUrl}`)
+                        button(style="margin: 32px; background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(260deg, #079CF0, #2143AB); color: #fff; border: none; font-size: 16px; font-weight: 300; padding: 16px 64px; border-radius: 8px; font-weight: 300; cursor: pointer; cursor: pointer;")=t('view_ticket_btn')
+        each ticket in tickets
+            each id, index in ticket.ids
+                div(itemscope='' itemtype='http://schema.org/EventReservation')
+                    meta(itemprop="reservationNumber" content=`${id}`)
+                    link(itemprop='reservationStatus' href='http://schema.org/Confirmed')
+                    div(itemprop='underName' itemscope='' itemtype='http://schema.org/Person')
+                        meta(itemprop='name' content=`${username}`)
+                    div(itemprop='reservationFor' itemscope='' itemtype='http://schema.org/Event')
+                        meta(itemprop='name' content=`${ticket.markupEventName}`)
+                        link(itemprop='image' href=`${ticket.markupCoverUrl}`)
+                        link(itemprop='url' href=`${actionUrl}`)
+                        div(itemprop='performer' itemscope='' itemtype='http://schema.org/Person')
+                            meta(itemprop='name' content=`${ticket.markupEventName}`)
+                            link(itemprop='image' href=`${ticket.markupCoverUrl}`)
+                        meta(itemprop='startDate' content=`${ticket.markupStartDate}`)
+                        div(itemprop='location' itemscope='' itemtype='http://schema.org/Place')
+                            meta(itemprop='name' content=`${ticket.markupLocation}`)
+                            div(itemprop='address' itemscope='' itemtype='http://schema.org/PostalAddress')
+                                meta(itemprop='streetAddress' content='')
+                    link(itemprop='url' href=`${actionUrl}`)
+                    meta(itemprop='ticketNumber' content=`${index + 1}`)

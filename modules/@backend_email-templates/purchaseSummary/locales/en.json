@@ -1,0 +1,15 @@
+{
+    "mail_subject": "Reservation summary",
+    "mail_head_title": "Reservation summary",
+    "mail_body_subtitle": "Reservation Summary",
+    "give_access": "Give access to",
+    "from": "From",
+    "to": "To",
+    "ticket_label": "Ticket",
+    "purchased_on": "on",
+    "purchased_by": "Purchased by",
+    "total_label": "Total",
+    "fees_label": "of fees included",
+    "free": "Free",
+    "view_ticket_btn": "View tickets"
+}

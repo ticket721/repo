@@ -5,6 +5,7 @@ import { PurchasesSetProductsInputDto }         from '@app/server/controllers/pu
 import { PurchasesSetProductsResponseDto }      from '@app/server/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
 import { PurchasesCheckoutInputDto }            from '@app/server/controllers/purchases/dto/PurchasesCheckoutInput.dto';
 import { PurchasesCheckoutResponseDto }         from '@app/server/controllers/purchases/dto/PurchasesCheckoutResponse.dto';
+import { PurchasesCloseInputDto }               from '@app/server/controllers/purchases/dto/PurchasesCloseInput.dto';
 import { PurchasesCloseResponseDto }            from '@app/server/controllers/purchases/dto/PurchasesCloseResponse.dto';
 
 export async function purchasesFetch(
@@ -46,13 +47,16 @@ export async function purchasesCheckout(
 }
 
 export async function purchasesClose(
-    token: string
+    token: string,
+    mailActionUrl: string
 ): Promise<AxiosResponse<PurchasesCloseResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<PurchasesCloseResponseDto>('/purchases/close', {
+    return self.post<PurchasesCloseInputDto>('/purchases/close', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-    }, null);
+    }, {
+        mailActionUrl
+    });
 }

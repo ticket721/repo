@@ -32,6 +32,18 @@ export interface PurchasedItem {
     id: string;
 }
 
+export interface ItemSummary<ItemSummaryInfos> {
+    /**
+     * Type of the product
+     */
+    type: string;
+
+    /**
+     * summary data
+     */
+    data: ItemSummaryInfos;
+}
+
 /**
  * Base class for all product checker classes
  */
@@ -103,4 +115,15 @@ export abstract class ProductCheckerServiceBase {
      * @param product
      */
     abstract async fees(user: UserDto, purchaseEntity: PurchaseEntity, product: Product): Promise<ServiceResponse<Fee>>;
+
+    /**
+     * Generate summary
+     *
+     * @param product
+     * @param purchasedItems
+     */
+    abstract async generateSummary(
+        product: Product,
+        purchasedItems: PurchasedItem[],
+    ): Promise<ServiceResponse<ItemSummary<any>[]>>;
 }
