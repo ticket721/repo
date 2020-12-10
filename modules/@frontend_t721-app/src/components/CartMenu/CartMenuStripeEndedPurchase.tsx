@@ -99,6 +99,7 @@ export const CartMenuStripeEndedPurchase: React.FC<CartMenuStripeEndedPurchasePr
 
                 closeLazyRequest.lazyRequest([
                     token,
+                    `${getEnv().REACT_APP_SELF}/wallet`,
                     v4()
                 ]);
 
