@@ -48,7 +48,7 @@ export async function purchasesCheckout(
 
 export async function purchasesClose(
     token: string,
-    mailActionUrl: string
+    mailActionUrl?: string
 ): Promise<AxiosResponse<PurchasesCloseResponseDto>> {
 
     const self: T721SDK = this;

@@ -60,7 +60,7 @@ export class EmailService {
             price: { total: number; fees: number; currency: string };
             items: ItemSummary<any>[];
         },
-        actionUrl: string,
+        actionUrl?: string,
     ): Promise<ServiceResponse<EmailDriverSendOptions>> {
         const DTFormat = new Intl.DateTimeFormat(user.locale, {
             year: '2-digit',
@@ -80,7 +80,7 @@ export class EmailService {
                 ? `${data.price.fees / 100}${data.price.currency === 'EUR' ? '€' : data.price.currency}`
                 : 0,
             purchasedDate: DTFormat.format(Date.now()),
-            actionUrl,
+            walletUrl: actionUrl ? actionUrl + '/wallet' : null,
             tickets: [],
         };
 
@@ -107,6 +107,7 @@ export class EmailService {
 
                             return {
                                 ...date,
+                                url: actionUrl ? actionUrl + '/event/' + date.id : null,
                                 beginDate: DTFormat.format(checkedBeginDate),
                                 endDate: DTFormat.format(checkedEndDate),
                                 location: date.online ? 'Online' : date.location,

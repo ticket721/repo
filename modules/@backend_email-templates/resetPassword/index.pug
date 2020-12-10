@@ -1,16 +1,16 @@
 doctype html
-html(lang='en' style="background-color: #120f1a")
+html(lang='en')
     head
         title=t('mail_head_title')
         link(rel='preconnect' href='https://fonts.gstatic.com')
         link(href='https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap' rel='stylesheet')
-    body(style="background-color: #120f1a")
+    body
         table(width="100%" border="0" cellspacing="0" cellpadding="0")
             tr
                 td(align="center")
-                    p(style="color: #fff; font-family: 'Roboto', sans-serif; font-weight: 300; margin-top: 40px; width: 60%;")=t('mail_body_subtitle')
+                    p(style="color: #000; font-family: 'Roboto', sans-serif; font-weight: 300; margin-top: 40px; width: 60%;")=t('mail_body_subtitle')
             tr
                 td(align="center")
                     a(href=`${validationLink}` style="margin-top: 20px;")
-                        button(style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(260deg, #079CF0, #2143AB); color: #fff; border: none; font-size: 16px; font-weight: 300; padding: 12px; border-radius: 8px; font-weight: 300; cursor: pointer; margin-top: 20px; cursor: pointer;")=t('mail_body_button')
+                        button(style="background: #4685d6; color: #fff; border: none; font-size: 16px; font-weight: 300; padding: 12px; border-radius: 8px; font-weight: 300; cursor: pointer; margin-top: 20px; cursor: pointer;")=t('mail_body_button')
 

@@ -21,16 +21,62 @@ import { OperationsService } from '@lib/common/operations/Operations.service';
 import { isNil } from 'lodash';
 import { DatesService } from '@lib/common/dates/Dates.service';
 
+/**
+ * Ticket Summary Informations
+ */
 export interface TicketSummaryInfos {
+    /**
+     * ticket id
+     */
     ticketId: string;
+
+    /**
+     * category id
+     */
     categoryId: string;
+
+    /**
+     * category name
+     */
     categoryName: string;
+
+    /**
+     * dates informations
+     */
     dates: {
+        /**
+         * date id
+         */
+        id: string;
+
+        /**
+         * cover url
+         */
         coverUrl: string;
+
+        /**
+         * date name
+         */
         name: string;
+
+        /**
+         * begin date
+         */
         beginDate: Date;
+
+        /**
+         * end date
+         */
         endDate: Date;
+
+        /**
+         * is online
+         */
         online: boolean;
+
+        /**
+         * location label
+         */
         location?: string;
     }[];
 }
@@ -878,6 +924,7 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
                     dates: datesResp.response
                         .filter(date => categoryResp.response.dates.includes(date.id))
                         .map(date => ({
+                            id: date.id,
                             coverUrl: date.metadata.avatar,
                             name: date.metadata.name,
                             beginDate: date.timestamps.event_begin,
