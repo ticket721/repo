@@ -32,6 +32,9 @@ export interface PurchasedItem {
     id: string;
 }
 
+/**
+ * Item Summary
+ */
 export interface ItemSummary<ItemSummaryInfos> {
     /**
      * Type of the product

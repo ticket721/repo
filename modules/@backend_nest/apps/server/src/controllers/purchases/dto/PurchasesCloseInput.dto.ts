@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 /**
  * Data model required when closing the purchase
@@ -10,5 +10,6 @@ export class PurchasesCloseInputDto {
      */
     @ApiProperty()
     @IsString()
+    @IsOptional()
     mailActionUrl?: string;
 }

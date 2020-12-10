@@ -18,6 +18,7 @@ import { UsersService } from '@lib/common/users/Users.service';
 import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 import { MINUTE } from '@lib/common/utils/time';
 import { EmailService } from '../email/Email.service';
+import { WinstonLoggerService } from '../logger/WinstonLogger.service';
 
 /**
  * Expiration of the cart
@@ -48,6 +49,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         private readonly timeToolService: TimeToolService,
         private readonly usersService: UsersService,
         private readonly emailService: EmailService,
+        private readonly winstonLogger: WinstonLoggerService,
     ) {
         super(
             purchaseEntity,
@@ -747,7 +749,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
     async close(
         user: UserDto,
         purchase: PurchaseEntity,
-        mailActionUrl: string,
+        mailActionUrl?: string,
     ): Promise<ServiceResponse<PurchaseError[]>> {
         const errors: PurchaseError[] = [];
 
@@ -860,14 +862,8 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
 
             const sendEmailResp = await this.emailService.sendPurchaseSummary(user, summaryData, mailActionUrl);
 
-            if (sendEmailResp.error) {
-                errors.push({
-                    reason: sendEmailResp.error,
-                    context: {
-                        emailOptions: sendEmailResp.response,
-                    },
-                });
-            }
+            this.winstonLogger.log('failed_send_purchase_summary');
+            this.winstonLogger.log(sendEmailResp.error);
         }
 
         const purchaseUpdateRes = await this.update(
