@@ -6,13 +6,18 @@ import { BaseModel, InjectModel, InjectRepository, uuid } from '@iaminfinity/exp
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { ModuleRef } from '@nestjs/core';
-import { ProductCheckerServiceBase, PurchaseError } from '@lib/common/purchases/ProductChecker.base.service';
+import {
+    ItemSummary,
+    ProductCheckerServiceBase,
+    PurchaseError,
+} from '@lib/common/purchases/ProductChecker.base.service';
 import { isNil, merge } from 'lodash';
 import { PaymentError, PaymentHandlerBaseService } from '@lib/common/purchases/PaymentHandler.base.service';
 import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
 import { UsersService } from '@lib/common/users/Users.service';
 import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 import { MINUTE } from '@lib/common/utils/time';
+import { EmailService } from '../email/Email.service';
 
 /**
  * Expiration of the cart
@@ -32,6 +37,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
      * @param moduleRef
      * @param timeToolService
      * @param usersService
+     * @param emailService
      */
     constructor(
         @InjectRepository(PurchasesRepository)
@@ -41,6 +47,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         private readonly moduleRef: ModuleRef,
         private readonly timeToolService: TimeToolService,
         private readonly usersService: UsersService,
+        private readonly emailService: EmailService,
     ) {
         super(
             purchaseEntity,
@@ -737,7 +744,11 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
      * @param user
      * @param purchase
      */
-    async close(user: UserDto, purchase: PurchaseEntity): Promise<ServiceResponse<PurchaseError[]>> {
+    async close(
+        user: UserDto,
+        purchase: PurchaseEntity,
+        mailActionUrl: string,
+    ): Promise<ServiceResponse<PurchaseError[]>> {
         const errors: PurchaseError[] = [];
 
         const paymentHandler: PaymentHandlerBaseService = this.moduleRef.get(`payment/${purchase.payment_interface}`, {
@@ -790,6 +801,18 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                 };
             }
 
+            const summaryData: {
+                price: { total: number; fees: number; currency: string };
+                items: ItemSummary<any>[];
+            } = {
+                price: {
+                    total: purchase.price,
+                    fees: purchase.fees.reduce((acc, fee) => acc + fee.price, 0),
+                    currency: purchase.currency,
+                },
+                items: [],
+            };
+
             for (let idx = 0; idx < purchase.products.length; ++idx) {
                 const product = purchase.products[idx];
 
@@ -806,7 +829,20 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                             context: {},
                         });
                     } else {
-                        errors.push(null);
+                        const purchaseSummaryRes = await productHandler.generateSummary(
+                            product,
+                            confirmationRes.response,
+                        );
+
+                        if (purchaseSummaryRes.error) {
+                            errors.push({
+                                reason: purchaseSummaryRes.error,
+                                context: {},
+                            });
+                        } else {
+                            summaryData.items.push(...purchaseSummaryRes.response);
+                            errors.push(null);
+                        }
                     }
                 } else if (purchase.payment.status === 'rejected') {
                     const confirmationRes = await productHandler.ko(user, purchase, idx);
@@ -820,6 +856,17 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                         errors.push(confirmationRes.response);
                     }
                 }
+            }
+
+            const sendEmailResp = await this.emailService.sendPurchaseSummary(user, summaryData, mailActionUrl);
+
+            if (sendEmailResp.error) {
+                errors.push({
+                    reason: sendEmailResp.error,
+                    context: {
+                        emailOptions: sendEmailResp.response,
+                    },
+                });
             }
         }
 

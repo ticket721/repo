@@ -1,0 +1,15 @@
+{
+    "mail_subject": "Résumé de votre réservation",
+    "mail_head_title": "Résumé de votre réservation",
+    "mail_body_subtitle": "Résumé de votre réservation",
+    "give_access": "Donne accès à",
+    "from": "Du",
+    "to": "Au",
+    "ticket_label": "Billet",
+    "purchased_on": "le",
+    "purchased_by": "Acheté par",
+    "total_label": "Total",
+    "fees_label": "de frais compris",
+    "free": "Gratuit",
+    "view_ticket_btn": "Accéder aux billets"
+}

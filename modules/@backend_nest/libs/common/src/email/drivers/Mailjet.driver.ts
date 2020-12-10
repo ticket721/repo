@@ -68,12 +68,15 @@ export class MailjetDriver implements EmailDriver {
             locale: options.locale,
         });
 
+        const subjectPrefix = options.locals.subjectPrefix || '';
+        const subjectSuffix = options.locals.subjectSuffix || '';
+
         // here should send
         try {
             await this.mailjet.post('send').request({
                 FromEmail: 'noreply@ticket721.com',
                 FromName: 'Ticket721',
-                Subject: localeData['mail_subject'],
+                Subject: subjectPrefix + localeData['mail_subject'] + subjectSuffix,
                 'Html-part': mail,
                 Recipients: [
                     {
