@@ -57,6 +57,31 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
     }
 
     /**
+     * Find many purchase entities by their ids
+     *
+     * @param purchaseIds
+     */
+    async findMany(purchaseIds: string[]): Promise<ServiceResponse<PurchaseEntity[]>> {
+        // Recover Purchase
+        const purchaseRes = await this.search({
+            id: {
+                $in: purchaseIds.map(id => uuid(id) as any),
+            },
+        });
+
+        if (purchaseRes.error) {
+            return {
+                error: 'error_while_checking',
+                response: null,
+            };
+        }
+
+        return {
+            response: purchaseRes.response,
+            error: null,
+        };
+    }
+    /**
      * Find one purchase entity by its id
      *
      * @param purchaseId

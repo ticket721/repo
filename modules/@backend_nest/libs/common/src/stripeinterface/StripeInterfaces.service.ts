@@ -15,6 +15,7 @@ import { SECOND } from '@lib/common/utils/time';
 import { TimeToolService } from '../toolbox/Time.tool.service';
 import { NestError } from '@lib/common/utils/NestError';
 import { ConfigService } from '@lib/common/config/Config.service';
+import { isNil } from 'lodash';
 
 /**
  * Service to CRUD StripeInterfaceEntities
@@ -347,7 +348,7 @@ export class StripeInterfacesService extends CRUDExtension<StripeInterfacesRepos
                     connect_account_updated_at: this.timeToolService.now(),
                 };
 
-                if (account.capabilities.card_payments === 'active') {
+                if (account.capabilities.card_payments === 'active' && !isNil(account.business_profile?.url)) {
                     const storedDomains: Stripe.ApplePayDomain[] = (await stripe.applePayDomains.list()).data;
 
                     const domains = this.configService.get('APPLE_PAY_DOMAINS').split(',');

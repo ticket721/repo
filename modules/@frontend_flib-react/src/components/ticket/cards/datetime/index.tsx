@@ -4,7 +4,6 @@ import CardContainer from '../../../elements/card-container';
 import Separator from '../../../elements/separator';
 import Icon from '../../../icon';
 import { useEffect, useState } from 'react';
-import { useMediaQuery } from 'react-responsive';
 
 interface EventDates {
     id?: string;
@@ -25,6 +24,7 @@ export interface DateTimeCardProps extends React.ComponentProps<any> {
     wSeparator?: boolean;
     onClick?: (dateId: string) => void;
     small?: boolean;
+    smallContent?: boolean;
     paddingOverride?: string;
 }
 
@@ -86,7 +86,6 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
     const [collapsed, setCollapsed] = useState<boolean>(true);
     const [collapsing, setCollapsing] = useState<boolean>(false);
     const [datesHeight, setDatesHeight] = useState<string>('');
-    const isSmall = useMediaQuery({ query: '(max-height: 700px)' });
 
     useEffect(() => setDatesHeight(props.dates.length * 136 + 'px'), []);
 
@@ -107,7 +106,7 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
                     onClick={() => (props.dates.length > 1 ? setCollapsed(false) : null)}
                     iconColor={props.iconColor}
                 >
-                    {props.dates[0].startDate === props.dates[props.dates.length - 1].endDate ? (
+                    {props.dates[0].startDate === props.dates[0].endDate ? (
                         <>
                             <Info>{props.dates[0].startDate}</Info>
                             <Info
@@ -115,9 +114,9 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
                                     fontWeight: 400,
                                 }}
                             >
-                                {props.dates[0].startTime}
-                                <Icon icon={'arrow'} size={'12px'} />
-                                {props.dates[props.dates.length - 1].endTime}
+                                <span>
+                                    {props.dates[0].startTime} - {props.dates[0].endTime}
+                                </span>
                             </Info>
                         </>
                     ) : (
@@ -125,14 +124,13 @@ export const DateTimeCard: React.FunctionComponent<DateTimeCardProps & { classNa
                             <Info>
                                 {props.dates[0].startDate} - {props.dates[0].startTime}
                             </Info>
-                            {!isSmall ? (
+                            {!props.smallContent ? (
                                 <Info
                                     style={{
                                         fontWeight: 400,
                                     }}
                                 >
-                                    {props.dates[props.dates.length - 1].endDate} -{' '}
-                                    {props.dates[props.dates.length - 1].endTime}
+                                    {props.dates[0].endDate} - {props.dates[0].endTime}
                                 </Info>
                             ) : null}
                         </>

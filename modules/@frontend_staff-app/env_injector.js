@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-let output = `window.injectedEnv = {`;
+let output = `var injectedEnv = {`;
 
 for (const varName of Object.keys(process.env)) {
     if (varName.indexOf('REACT_APP_') === 0) {

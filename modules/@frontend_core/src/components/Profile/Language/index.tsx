@@ -1,7 +1,7 @@
 import React from 'react';
 import { SelectableList } from '@frontend/flib-react/lib/components';
 import { useTranslation } from 'react-i18next';
-import { useHaptics, HapticsImpactStyle } from '../../../utils/useHaptics';
+import { useHaptics, HapticsImpactStyle } from '../../../hooks/useHaptics';
 import './locales';
 
 const Language: React.FC = () => {

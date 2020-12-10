@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled                                           from 'styled-components';
 import { useDispatch } from 'react-redux';
 
@@ -27,6 +27,8 @@ import { v4 } from 'uuid';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
 import { b64ImgtoBlob } from '../../utils/b64ImgtoBlob';
 import { useUploadImage } from '@frontend/core/lib/hooks/useUploadImage';
+import { uploadImageWithSdk } from '../../utils/uploadImageWithSdk';
+import { EventsContext } from '@frontend/core/lib/contexts/EventsContext';
 
 export interface FormProps {
     onComplete: () => void;
@@ -81,10 +83,10 @@ const updateCategories = (categories: CategoryWithDatesPayload[]): CategoryWithD
         currency: category.currency.toUpperCase()
     }));
 
-
 const CreateEvent: React.FC = () => {
     const [ t ] = useTranslation('create_event');
 
+    const eventReq = useContext(EventsContext);
     const [ currentStep, setCurrentStep ] = useState<number>(0);
 
     const [redirecting, setRedirecting] = useState<boolean>(false);
@@ -154,6 +156,16 @@ const CreateEvent: React.FC = () => {
         switch (currentStep) {
             case 0: return <GeneralInfoForm
                 primaryColor={formik.values.imagesMetadata.signatureColors[0]}
+                uploadDescImage={token ? async (file: File) => {
+                    const url = await uploadImageWithSdk(token, file);
+
+                    if (!url) {
+                        dispatch(PushNotification(t('upload_error'), 'error'));
+                        return;
+                    }
+
+                    return url;
+                } : undefined}
                 />;
             case 1: return <StylesForm
                 eventName={formik.values.textMetadata.name}
@@ -206,6 +218,7 @@ const CreateEvent: React.FC = () => {
             formik.resetForm();
             formik.validateForm();
             setRedirecting(true);
+            eventReq.force();
             setTimeout(() => {
                 localStorage.removeItem('event-creation');
                 history.push('/');

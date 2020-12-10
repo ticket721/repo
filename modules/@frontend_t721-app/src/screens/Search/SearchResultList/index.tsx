@@ -5,7 +5,7 @@ import { useDispatch, useSelector }    from 'react-redux';
 import { T721AppState }                from '../../../redux';
 import { SearchEventList }             from './SearchEventList';
 import { SetSearch }                      from '../../../redux/ducks/search';
-import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 
 export interface SearchResultListProps {
     enableFilter: () => void;

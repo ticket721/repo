@@ -2,7 +2,7 @@ import React                          from 'react';
 import { Icon, Navbar as FlibNavbar } from '@frontend/flib-react/lib/components';
 import { Link, useLocation }          from 'react-router-dom';
 import { isNavItemActive }                from '@frontend/core/lib/utils/isNavItemActive';
-import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 
 interface NavbarProps {
     visible: boolean;

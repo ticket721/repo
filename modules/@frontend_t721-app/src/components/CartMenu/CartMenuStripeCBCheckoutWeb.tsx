@@ -6,10 +6,10 @@ import { useTranslation }             from 'react-i18next';
 import { useDeepEffect }              from '@frontend/core/lib/hooks/useDeepEffect';
 import { useElements }                from '@stripe/react-stripe-js';
 import { PushNotification }           from '@frontend/core/lib/redux/ducks/notifications';
-import { StripeSDK }                  from '@frontend/core/lib/utils/StripeSDKContext';
+import { StripeSDK }                  from '@frontend/core/lib/contexts/StripeSDKContext';
 import { CartContext }                from '../Cart/CartContext';
 import { useDispatch }                from 'react-redux';
-import { UserContext }                from '@frontend/core/lib/utils/UserContext';
+import { UserContext }                from '@frontend/core/lib/contexts/UserContext';
 import { getEnv }                     from '@frontend/core/lib/utils/getEnv';
 import MediaQuery from 'react-responsive';
 

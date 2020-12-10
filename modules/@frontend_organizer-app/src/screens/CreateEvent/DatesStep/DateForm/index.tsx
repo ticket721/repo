@@ -4,11 +4,12 @@ import { useTranslation } from 'react-i18next';
 import './locales';
 
 import styled from 'styled-components';
-import { useFormikContext } from 'formik';
+import { useField, useFormikContext } from 'formik';
 import { EventCreationPayload } from '@common/global';
 import { OnlineTag } from '../../../../components/OnlineTag';
-import { Button } from '@frontend/flib-react/lib/components';
+import { Button, TextInput } from '@frontend/flib-react/lib/components';
 import { DatesAndTypologyForm } from '../../../../components/DatesAndTypologyForm';
+import { evaluateError } from '../../../../utils/extractError';
 
 export interface DateFormProps {
     idx: number;
@@ -21,16 +22,27 @@ export const DateForm: React.FC<DateFormProps> = ({ idx, newDate, onComplete }) 
     const formikCtx = useFormikContext<EventCreationPayload>();
     const sigColors = formikCtx.values.imagesMetadata.signatureColors;
 
+    const [ nameField, nameMeta ] = useField<string>(`datesConfiguration[${idx}].name`);
+
     return (
         <DateFormContainer>
             <Header>
                 <Title>
-                    <span>{t('date_title') + (idx + 1)}</span>
+                    <span>{nameField.value}</span>
                     {formikCtx.values.datesConfiguration[idx].online ? (
                         <OnlineTag />
                     ) : null}
                 </Title>
             </Header>
+            {
+                formikCtx.values.datesConfiguration.length > 1 ?
+                <TextInput
+                {...nameField}
+                className={'name-input'}
+                label={t('name_label')}
+                error={evaluateError(nameMeta)}/> :
+                null
+            }
             <DatesAndTypologyForm parentField={`datesConfiguration[${idx}]`} />
             <ActionButton>
                 {
@@ -74,6 +86,10 @@ const DateFormContainer = styled.div`
     font-size: 13px;
     font-weight: bold;
     box-shadow: 0 0 16px black;
+
+    .name-input {
+        margin-bottom: ${props => props.theme.regularSpacing};
+    }
 `;
 
 const Header = styled.div`

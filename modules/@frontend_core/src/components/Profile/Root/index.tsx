@@ -5,6 +5,7 @@ import {
     LanguageLink,
     LinksContainer,
     WalletHeader,
+    InfoLine,
 } from '@frontend/flib-react/lib/components';
 import { useRequest } from '../../../hooks/useRequest';
 import { v4 } from 'uuid';
@@ -14,14 +15,15 @@ import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import '../locales';
 import { TicketsCountResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
-import { UserContext } from '../../../utils/UserContext';
+import { UserContext } from '../../../contexts/UserContext';
 import { FeatureFlag } from '../../FeatureFlag';
 import { getEnv } from '../../../utils/getEnv';
 import { isRequestError } from '../../../utils/isRequestError';
 import { useToken } from '../../../hooks/useToken';
-import { useHaptics, HapticsImpactStyle } from '../../../utils/useHaptics';
+import { useHaptics, HapticsImpactStyle } from '../../../hooks/useHaptics';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import { event } from '../../../tracking/registerEvent';
 // tslint:disable-next-line:no-var-requires
 const StripeLogo = require('./stripe.png');
 
@@ -138,6 +140,7 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                         });
                         dispatch(Logout());
                         history.replace('/');
+                        event('Auth', 'Logout', 'User logged out');
                     }}
                 />
                 <FeatureFlag flag={'admin_flag'}>
@@ -165,6 +168,49 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons }: Prof
                     />
                     {thisIsASelfDestructVariable}
                 </FeatureFlag>
+            </LinksContainer>
+            <LinksContainer title={t('about')}>
+                <InfoLine discrete={true} label={t('release')} content={getEnv().REACT_APP_RELEASE} />
+                <ArrowLink
+                    discrete={true}
+                    label={t('cgo')}
+                    onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        history.push('/about/cgo');
+                    }}
+                />
+                <ArrowLink
+                    discrete={true}
+                    label={t('cgu')}
+                    onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        history.push('/about/cgu');
+                    }}
+                />
+                <ArrowLink
+                    discrete={true}
+                    label={t('privacy')}
+                    onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        history.push('/about/privacy');
+                    }}
+                />
+                <ArrowLink
+                    discrete={true}
+                    label={t('acknowledgements')}
+                    onClick={() => {
+                        haptics.impact({
+                            style: HapticsImpactStyle.Light,
+                        });
+                        history.push('/about/acknowledgements');
+                    }}
+                />
             </LinksContainer>
         </>
     );

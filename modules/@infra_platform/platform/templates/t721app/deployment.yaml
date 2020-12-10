@@ -27,6 +27,9 @@ spec:
     spec:
       serviceAccountName: {{ include "platform.fullname" . }}--platform--sa
       volumes:
+        - name: t721app-config-server-config
+          configMap:
+            name: {{ template "platform.fullname" . }}--t721app-config-server-config--cfmp
         - name: t721app-config-well-known
           configMap:
             name: {{ template "platform.fullname" . }}--t721app-config-well-known--cfmp
@@ -65,6 +68,10 @@ spec:
               value: {{ required "[t721app] Missing config.t721app.createEventLink" .Values.config.t721app.createEventLink}}
             - name: REACT_APP_SELF
               value: 'https://{{ required "[t721app] Missing config.t721app.self value" .Values.config.t721app.self }}'
+            - name: REACT_APP_GA_ID
+              value: '{{ required "[t721app] Missing config.t721app.gaId value" .Values.config.t721app.gaId }}'
+            - name: SITEMAP_ENABLED
+              value: '{{ required "[t721app] Missing config.t721app.sitemapEnabled value" .Values.config.t721app.sitemapEnabled }}'
           ports:
             - name: http
               containerPort: 5000
@@ -77,6 +84,9 @@ spec:
               memory: "512Mi"
               cpu: "250m"
           volumeMounts:
+            - name: t721app-config-server-config
+              mountPath: /repo/modules/@frontend_t721-app/server.config.js
+              subPath: server.config.js
             - name: t721app-config-well-known
               mountPath: /repo/modules/@frontend_t721-app/build/.well-known/apple-app-site-association
               subPath: apple-app-site-association

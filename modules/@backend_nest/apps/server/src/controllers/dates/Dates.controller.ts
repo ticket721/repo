@@ -129,6 +129,11 @@ export class DatesController extends ControllerBasics<DateEntity> {
                         source: `
                         double distance = doc['location.location'].arcDistance(params.lat, params.lon) / 1000;
                         double time = (doc['timestamps.event_end'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+
+                        if (time < 0) {
+                            time = Math.abs(time) * 2;
+                        }
+
                         return distance + time;
                     `,
                         params: {
@@ -147,7 +152,13 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 _script: {
                     script: {
                         source: `
-                        return (doc['timestamps.event_end'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+                        double time = (doc['timestamps.event_end'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+
+                        if (time < 0) {
+                            time = Math.abs(time) * 2;
+                        }
+
+                        return time;
                     `,
                         params: {
                             now: hour,
@@ -266,7 +277,13 @@ export class DatesController extends ControllerBasics<DateEntity> {
                 _script: {
                     script: {
                         source: `
-                        return (doc['timestamps.event_begin'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+                        double time = (doc['timestamps.event_begin'].getValue().toInstant().toEpochMilli() - params.now) / 3600000;
+
+                        if (time < 0) {
+                            time = Math.abs(time) * 2;
+                        }
+
+                        return time;
                     `,
                         params: {
                             now: hour,

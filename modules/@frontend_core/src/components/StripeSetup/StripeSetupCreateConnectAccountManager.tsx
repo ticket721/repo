@@ -5,7 +5,7 @@ import { FullButtonCta, Icon, SelectInput } from '@frontend/flib-react/lib/compo
 import axios, { Method } from 'axios';
 import { getEnv } from '../../utils/getEnv';
 import qs from 'qs';
-import { useCustomStripe } from '../../utils/useCustomStripe';
+import { useCustomStripe } from '../../hooks/useCustomStripe';
 import { Dispatch } from 'redux';
 import { PushNotification } from '../../redux/ducks/notifications';
 import React, { useState } from 'react';
@@ -17,12 +17,12 @@ import { useLazyRequest } from '../../hooks/useLazyRequest';
 import { useDeepEffect } from '../../hooks/useDeepEffect';
 import { useTranslation } from 'react-i18next';
 import './StripeSetupCreateConnectAccountManager.locales';
-import { CtaMargin } from '../../utils/CtaMargin';
-import { TopNavMargin } from '../../utils/TopNavMargin';
-import { InvisibleStatusBarMargin } from '../../utils/InvisibleStatusBarMargin';
+import { CtaMargin } from '../../utils/margins/CtaMargin';
+import { TopNavMargin } from '../../utils/margins/TopNavMargin';
+import { InvisibleStatusBarMargin } from '../../utils/margins/InvisibleStatusBarMargin';
 import { currencies, symbolOf } from '@common/global';
-import { StripeSDK } from '../../utils/StripeSDKContext';
-import { useHaptics, HapticsImpactStyle } from '../../utils/useHaptics';
+import { StripeSDK } from '../../contexts/StripeSDKContext';
+import { useHaptics, HapticsImpactStyle } from '../../hooks/useHaptics';
 
 const StripeServiceAgreementUrl = 'https://stripe.com/legal';
 const StripeConnectedAccountAgreementUrl = 'https://stripe.com/connect-account/legal';

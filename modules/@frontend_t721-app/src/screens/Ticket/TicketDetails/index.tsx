@@ -30,18 +30,18 @@ import {
 import { DynamicQrCode }                       from '../DynamicQrCode';
 import { CategoryEntity }                      from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { TicketEntity }                        from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
-import { DateEntity }                          from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
-import { EventEntity }                         from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
-import { useInView }                           from 'react-intersection-observer';
-import { useWindowDimensions }                 from '@frontend/core/lib/hooks/useWindowDimensions';
-import { getPrice }                            from '../../../utils/prices';
-import { PushNotification }                    from '@frontend/core/lib/redux/ducks/notifications';
-import { OnlineBadge }                         from '@frontend/flib-react/lib/components/events/single-image/OnlineTag';
+import { DateEntity }                                              from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { EventEntity }                                             from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
+import { useInView }                                               from 'react-intersection-observer';
+import { useWindowDimensions }                                     from '@frontend/core/lib/hooks/useWindowDimensions';
+import { PushNotification }                                        from '@frontend/core/lib/redux/ducks/notifications';
+import { OnlineBadge }                                             from '@frontend/flib-react/lib/components/events/single-image/OnlineTag';
 import { usePlatform }                                             from '@capacitor-community/react-hooks/platform';
 import { DownloadAppModal }                                        from '../DownloadAppModal';
-import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 import { Theme }                                                   from '@frontend/flib-react/lib/config/theme';
-import Sticky from 'react-stickynode';
+import Sticky                                                      from 'react-stickynode';
+import { getPrice }                                                from '@frontend/core/lib/utils/prices';
 // tslint:disable-next-line:no-var-requires
 const publicIp = require('public-ip');
 // tslint:disable-next-line:no-var-requires

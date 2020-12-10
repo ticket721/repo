@@ -13,8 +13,9 @@ import { getEnv } from '../../utils/getEnv';
 import { useDispatch } from 'react-redux';
 import { PushNotification } from '../../redux/ducks/notifications';
 import { useHistory } from 'react-router';
-import { HapticsImpactStyle, useHaptics, HapticsNotificationType } from '../../utils/useHaptics';
-import { useKeyboardState } from '../../utils/useKeyboardState';
+import { HapticsImpactStyle, useHaptics, HapticsNotificationType } from '../../hooks/useHaptics';
+import { useKeyboardState } from '../../hooks/useKeyboardState';
+import { event } from '../../tracking/registerEvent';
 
 export const Reset: React.FC = () => {
     const [t] = useTranslation('reset');
@@ -48,6 +49,7 @@ export const Reset: React.FC = () => {
             });
             dispatch(PushNotification(t('reset_email_success'), 'success'));
             history.goBack();
+            event('Auth', 'Reset', 'User asked for password reset');
         }
     }, [resetPasswordLazyRequest.response]);
     const isTabletOrMobile = useMediaQuery({ maxWidth: 900 });

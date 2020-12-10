@@ -79,7 +79,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
             token,
             id,
         ],
-        refreshRate: 50,
+        refreshRate: 10,
     }, ticketCountUuid);
 
     const { response: toggleCategoryStatusResp, lazyRequest: toggleCategoryStatus } =

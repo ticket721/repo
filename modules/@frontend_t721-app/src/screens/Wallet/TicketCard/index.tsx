@@ -9,9 +9,9 @@ import { TicketEntity }          from '@common/sdk/lib/@backend_nest/libs/common
 import { DateEntity }            from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { EventEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
 import TicketPreview             from '@frontend/flib-react/lib/components/ticket/infos';
-import { useIncrement }          from '../../../utils/useIncrement';
+import { useIncrement }          from '../../../hooks/useIncrement';
 import { formatDay, formatHour }          from '@frontend/core/lib/utils/date';
-import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 
 interface TicketCardProps {
     ticket: Omit<TicketEntity, 'category'>;

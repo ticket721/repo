@@ -4,12 +4,12 @@ import { formatShort }                 from '@frontend/core/lib/utils/date';
 import { v4 }                          from 'uuid';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
 import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { getPriceRange }               from '../../../utils/prices';
 import { SingleEvent }                 from '@frontend/flib-react/lib/components';
 import { useHistory }                  from 'react-router';
 import { getImgPath }                  from '@frontend/core/lib/utils/images';
 import { useTranslation }              from 'react-i18next';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
+import { useToken }                    from '@frontend/core/lib/hooks/useToken';
+import { getPriceRange }               from '@frontend/core/lib/utils/prices';
 
 interface SearchResultEventProps {
     date: DateEntity;

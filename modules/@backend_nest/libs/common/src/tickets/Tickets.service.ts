@@ -70,6 +70,87 @@ export class TicketsService extends CRUDExtension<TicketsRepository, TicketEntit
     }
 
     /**
+     * Count all categories by group id
+     *
+     * @param categories
+     */
+    public async countAllByCategories(categories: string[]): Promise<ServiceResponse<number>> {
+        const ticketsRes = await this.countElastic({
+            body: {
+                query: {
+                    bool: {
+                        must: {
+                            terms: {
+                                category: categories,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (ticketsRes.error) {
+            return {
+                error: 'error_while_counting',
+                response: null,
+            };
+        }
+
+        return {
+            response: ticketsRes.response.count,
+            error: null,
+        };
+    }
+
+    /**
+     * Find all categories by group id
+     *
+     * @param categories
+     * @param pageSize
+     * @param pageIndex
+     */
+    public async findAllByCategories(
+        categories: string[],
+        pageSize: number,
+        pageIndex: number,
+    ): Promise<ServiceResponse<TicketEntity[]>> {
+        const ticketsRes = await this.searchElastic({
+            body: {
+                from: pageIndex * pageSize,
+                size: pageSize,
+                sort: [
+                    {
+                        created_at: {
+                            order: 'desc',
+                        },
+                    },
+                ],
+                query: {
+                    bool: {
+                        must: {
+                            terms: {
+                                category: categories,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (ticketsRes.error) {
+            return {
+                error: 'error_while_fetching_tickets',
+                response: null,
+            };
+        }
+
+        return {
+            response: ticketsRes.response.hits.hits.map(fromES),
+            error: null,
+        };
+    }
+
+    /**
      * Count tickets that have been created
      *
      * @param purchases

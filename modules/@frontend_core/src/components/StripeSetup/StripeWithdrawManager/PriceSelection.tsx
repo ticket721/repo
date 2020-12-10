@@ -6,7 +6,7 @@ import Cleave from 'cleave.js/react';
 import { symbolOf } from '@common/global';
 import { Currency } from './Currency';
 import { useStripeBalance } from '../../../hooks/useStripeBalance';
-import { HapticsImpactStyle, useHaptics } from '../../../utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '../../../hooks/useHaptics';
 
 interface CurrencySelectorProps {
     currency: Currency;

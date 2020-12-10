@@ -51,7 +51,7 @@ export const ConfirmDeletion: React.FC<ConfirmDeletionProps> = ({ idx, complete 
     };
 
     return <Popup>
-        <Msg>{t('confirmation_msg')} <span>date n•{idx + 1}</span></Msg>
+        <Msg>{t('confirmation_msg')} <span>{formikCtx.values.datesConfiguration[idx].name}</span></Msg>
         {
             affectingCategories.length > 0 ?
             <>

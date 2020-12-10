@@ -2,7 +2,7 @@ import React from 'react';
 import { CategoryCreationPayload, EventCreationPayload } from '@common/global';
 import { useFormikContext } from 'formik';
 import styled from 'styled-components';
-import { formatShort } from '@frontend/core/lib/utils/date';
+import { formatDay } from '@frontend/core/lib/utils/date';
 import { CategoryCard } from './CategoryCard';
 
 import { useTranslation } from 'react-i18next';
@@ -79,7 +79,7 @@ export const CategoriesByDate: React.FC<CategoriesByDateProps> = ({
                     filtered={filtered}>
                         {
                             !filtered ?
-                            <DateTitle>date n•{dateIdx + 1} - {formatShort(date.eventBegin)} =&gt; {formatShort(date.eventEnd)}</DateTitle> :
+                            <DateTitle>{`${date.name.toUpperCase()} | ${formatDay(date.eventBegin)}`}</DateTitle> :
                             null
                         }
                         {

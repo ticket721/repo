@@ -12,6 +12,12 @@ i18n.addResourceBundle('en', 'profile', {
     you_are_an_admin: 'You are an admin',
     self_destruct: 'Self Destruct 💀',
     receive_money_with_stripe: 'Receive money with Stripe',
+    about: 'About',
+    cgu: 'User Terms of Service',
+    cgo: 'Organizer Terms of Service',
+    privacy: 'Privacy Policy',
+    acknowledgements: 'Acknowledgements',
+    release: 'V',
 });
 i18n.addResourceBundle('fr', 'profile', {
     en: 'Anglais',
@@ -25,4 +31,10 @@ i18n.addResourceBundle('fr', 'profile', {
     you_are_an_admin: 'Vous êtes un admin',
     self_destruct: 'Auto Destruction 💀',
     receive_money_with_stripe: "Recevoir de l'argent avec Stripe",
+    about: 'À propos',
+    cgu: 'Conditions Générales Utilisateur',
+    cgo: 'Conditions Générales Organisateur',
+    privacy: 'Politique de Confidentialité',
+    acknowledgements: 'Mentions Légales',
+    release: 'V',
 });

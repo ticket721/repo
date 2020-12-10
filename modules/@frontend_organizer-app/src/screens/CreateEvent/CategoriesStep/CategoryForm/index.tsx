@@ -11,6 +11,7 @@ import { CategoryFields } from '../../../../components/CategoryFields';
 import { SaleDeltas } from '../../../../components/CategoryFields/useCategoryCreationFields';
 import { MultiDatesTag } from '../../../../components/MultiDatesTag';
 import { useBeforeunload } from 'react-beforeunload';
+import { formatDay } from '@frontend/core/lib/utils/date';
 
 export interface CategoryFormProps {
     idx: number;
@@ -56,6 +57,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ idx, newCategory, on
             <CategoryFields
             parentField={`categoriesConfiguration[${idx}]`}
             dateRanges={formikCtx.values.datesConfiguration.map(date => ({
+                name: `${date.name.toUpperCase()} | ${formatDay(date.eventBegin)}`,
                 eventBegin: date.eventBegin,
                 eventEnd: date.eventEnd,
             }))}

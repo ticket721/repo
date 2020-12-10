@@ -1,6 +1,6 @@
 import { Redirect, Route, useLocation } from 'react-router-dom';
 import React, { PropsWithChildren, useContext } from 'react';
-import { UserContext } from '../../utils/UserContext';
+import { UserContext } from '../../contexts/UserContext';
 import { ValidateEmail } from '../ValidateEmail';
 
 export interface ProtectedRouteProps {

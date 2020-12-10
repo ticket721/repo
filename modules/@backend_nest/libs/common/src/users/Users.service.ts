@@ -85,6 +85,28 @@ export class UsersService {
     }
 
     /**
+     * Retrieve users by uuids
+     *
+     * @param ids
+     */
+    async findByIds(ids: string[]): Promise<ServiceResponse<UserEntity[]>> {
+        try {
+            const users: UserEntity[] = await this.usersRepository
+                .find({ id: { $in: ids.map(id => uuid(id)) as any } })
+                .toPromise();
+            return {
+                response: users || [],
+                error: null,
+            };
+        } catch (e) {
+            return {
+                response: null,
+                error: 'unexpected_error',
+            };
+        }
+    }
+
+    /**
      * Retrieve user by uuid
      *
      * @param id

@@ -8,7 +8,7 @@ import { useWindowDimensions }        from '@frontend/core/lib/hooks/useWindowDi
 import { Theme }                      from '@frontend/flib-react/lib/config/theme';
 import { Brightness }                 from '@ionic-native/brightness';
 import { motion }                              from 'framer';
-import { HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { HapticsNotificationType, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 
 export interface DynamicQrCodeProps {
     name: string;
@@ -147,7 +147,6 @@ const QrCodeWrapper = styled(motion.div)`
     justify-content: space-evenly;
     align-items: center;
     background-color: #ffffff;
-    backdrop-filter: blur(6px);
     padding: 6vh ${props => props.theme.biggerSpacing};
 `;
 

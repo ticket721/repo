@@ -1,17 +1,17 @@
 import { DateEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import React, { useState }             from 'react';
 import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
-import { CategoriesSearchResponseDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { getLowestPrice, getPriceRange } from '../../../utils/prices';
-import { EventContainer }                from './EventContainer';
+import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { EventContainer }              from './EventContainer';
 import { EventCta }                    from '@frontend/flib-react/lib/components';
 import { v4 }                          from 'uuid';
 import { useSelector }                 from 'react-redux';
 import { T721AppState }                from '../../../redux';
 import { useTranslation }              from 'react-i18next';
 import { useHistory }                  from 'react-router';
-import { EventsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
-import styled from 'styled-components';
+import { EventsSearchResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSearchResponse.dto';
+import styled                            from 'styled-components';
+import { getLowestPrice, getPriceRange } from '@frontend/core/lib/utils/prices';
 
 export interface EventCategoryFetcherProps {
     date: DateEntity;

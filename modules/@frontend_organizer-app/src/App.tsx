@@ -19,11 +19,12 @@ import MediaQuery                        from 'react-responsive';
 import { routes }                        from './routes';
 import { FullPageLoading }               from '@frontend/flib-react/lib/components';
 import './shared/Translations/global';
-import { UserContext, UserContextGuard } from '@frontend/core/lib/utils/UserContext';
+import { UserContext, UserContextGuard } from '@frontend/core/lib/contexts/UserContext';
+import { EventsContextGuard } from '@frontend/core/lib/contexts/EventsContext';
 import { FeatureFlag }                   from '@frontend/core/lib/components/FeatureFlag';
 import { ProtectedByOwnership }          from '@frontend/core/lib/components/ProtectedByOwnership';
-import { EventsDrawer }                  from './components/EventsDrawer';
-import { StripeSDKManager }              from '@frontend/core/lib/utils/StripeSDKContext';
+import { EventsDrawer }                  from './shared/EventsDrawer';
+import { StripeSDKManager }              from '@frontend/core/lib/contexts/StripeSDKContext';
 import { getEnv }                        from '@frontend/core/lib/utils/getEnv';
 import * as Sentry                       from '@sentry/react';
 import { Integrations }                  from '@sentry/tracing';
@@ -63,66 +64,70 @@ const App: React.FC = () => {
     return (
         <Suspense fallback={<FullPageLoading/>}>
             <UserContextGuard>
-                <StripeSDKManager>
-                    <AppContainer>
-                        <MediaQuery minDeviceWidth={900}>
-                            {
-                                location.pathname !== '/register' && location.pathname !== '/login'
-
-                                    ?
-                                    <Navbar/>
-
-                                    :
-                                    null
-                            }
-                        </MediaQuery>
-                        <EventsDrawerWrapper/>
-                        <Suspense fallback={<FullPageLoading/>}>
-                            <Switch location={location} key={location.pathname}>
+                <EventsContextGuard>
+                    <StripeSDKManager>
+                        <AppContainer>
+                            <MediaQuery minDeviceWidth={900}>
                                 {
-                                    appStatus === AppStatus.Ready
+                                    location.pathname !== '/register' && location.pathname !== '/login'
 
                                         ?
-                                        routes.map((route, idx) => {
+                                        <Navbar/>
 
-                                            let Page;
-
-                                            if (route.flag) {
-                                                Page = () => <FeatureFlag flag={route.flag}>
-                                                    <route.page/>
-                                                </FeatureFlag>
-                                            } else {
-                                                Page = route.page;
-                                            }
-
-                                            if (route.protected) {
-
-                                                return <ProtectedRoute exact={true} path={route.path} key={idx}>
-                                                    <PageWrapper>
-                                                        {
-                                                            route.entityParam ?
-                                                                <ProtectedByOwnership entityType={route.entityType} entityParam={route.entityParam}>
-                                                                    <Page/>
-                                                                </ProtectedByOwnership>
-                                                                :
-                                                                <Page/>
-                                                        }
-                                                    </PageWrapper>
-                                                </ProtectedRoute>;
-
-                                            }
-                                            return <Route exact={true} key={idx} path={route.path}>
-                                                <Page/>
-                                            </Route>;
-                                        })
                                         :
                                         null
                                 }
-                                <Redirect to={'/'}/>
-                            </Switch>
-                        </Suspense>
-                    </AppContainer>
-                </StripeSDKManager>
+                            </MediaQuery>
+                            <EventsDrawerWrapper/>
+                            <Suspense fallback={<FullPageLoading/>}>
+                                <Switch location={location} key={location.pathname}>
+                                    {
+                                        appStatus === AppStatus.Ready
+
+                                            ?
+                                            routes.map((route, idx) => {
+
+                                                let Page;
+
+                                                if (route.flag) {
+                                                    Page = () => <FeatureFlag flag={route.flag}>
+                                                        <route.page/>
+                                                    </FeatureFlag>
+                                                } else {
+                                                    Page = route.page;
+                                                }
+
+                                                if (route.protected) {
+
+                                                    return <ProtectedRoute exact={true} path={route.path} key={idx}>
+                                                        <PageWrapper>
+                                                            {
+                                                                route.entityParam ?
+                                                                    <ProtectedByOwnership
+                                                                    entityType={route.entityType}
+                                                                    entityParam={route.entityParam}>
+                                                                        <Page/>
+                                                                    </ProtectedByOwnership>
+                                                                    :
+                                                                    <Page/>
+                                                            }
+                                                        </PageWrapper>
+                                                    </ProtectedRoute>;
+
+                                                }
+                                                return <Route exact={true} key={idx} path={route.path}>
+                                                    <Page/>
+                                                </Route>;
+                                            })
+                                            :
+                                            null
+                                    }
+                                    <Redirect to={'/'}/>
+                                </Switch>
+                            </Suspense>
+                        </AppContainer>
+                    </StripeSDKManager>
+                </EventsContextGuard>
             </UserContextGuard>
             <ToastStacker additionalLocales={[]}/>
         </Suspense>

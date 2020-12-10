@@ -257,6 +257,8 @@ apps:
       config.t721app.playStoreLink: "${CONFIG_PRODUCTION_T721APP_PLAYSTORE_LINK}"
       config.t721app.self: "app.ticket721.com"
       config.t721app.createEventLink: "https://organizer.ticket721.com/create-event"
+      config.t721app.sitemapEnabled: "true"
+      config.t721app.gaId: "${CONFIG_PRODUCTION_T721APP_GA_ID}"
 
       config.t721app.webMerchantId: "${CONFIG_PRODUCTION_T721APP_APPLE_MERCHANT_ID}"
       config.organizer.webMerchantId: "${CONFIG_PRODUCTION_T721APP_APPLE_MERCHANT_ID}"
@@ -264,6 +266,7 @@ apps:
       config.t721app.iosMerchantId: "${CONFIG_PRODUCTION_IOS_T721APP_APPLE_MERCHANT_ID}"
       config.organizer.iosMerchantId: "${CONFIG_PRODUCTION_IOS_T721APP_APPLE_MERCHANT_ID}"
       config.staff.iosMerchantId: "${CONFIG_PRODUCTION_IOS_T721APP_APPLE_MERCHANT_ID}"
+      config.organizer.gaId: "${CONFIG_PRODUCTION_ORGANIZER_GA_ID}"
 
       config.organizer.sentry_dsn: "${CONFIG_PRODUCTION_ORGANIZER_SENTRY_DSN}"
       config.t721app.sentry_dsn: "${CONFIG_PRODUCTION_T721APP_SENTRY_DSN}"

@@ -11,6 +11,7 @@ import './locales';
 import { useFormik } from 'formik';
 import { v4 } from 'uuid';
 import { useHistory, useLocation } from 'react-router';
+import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 const initialValues: CategoryPayload = {
     name: '',
@@ -27,9 +28,10 @@ interface DateItem {
     eventEnd: Date;
 }
 
-export const useCategoryCreation = (token: string, dates: DateItem[]) => {
+export const useCategoryCreation = (dates: DateItem[], refetch: () => void) => {
     const { t } = useTranslation('create_category');
     const dispatch = useDispatch();
+    const token = useToken();
 
     const { state, pathname } = useLocation<Partial<CategoryPayload> & Partial<{ dates: string[] }>>();
 
@@ -144,12 +146,12 @@ export const useCategoryCreation = (token: string, dates: DateItem[]) => {
         },
         onSubmit,
         validate,
-        enableReinitialize: true,
     });
 
     useEffect(() => {
         if (createCategoryResp.data?.category) {
             dispatch(PushNotification(t('creation_successful'), 'success'));
+            refetch();
             history.push(pathname + '/' + createCategoryResp.data.category.id);
         }
         // eslint-disable-next-line

@@ -3,6 +3,7 @@ import styled from '../../../config/styled';
 import Icon from '../../icon';
 import Countdown from 'react-countdown';
 import { useEffect, useState } from 'react';
+import { injectBlur } from '../../../utils/blur';
 
 const DTFormatShort = new Intl.DateTimeFormat('default', {
     month: 'short',
@@ -108,8 +109,7 @@ const DisabledContainer = styled.div<DisabledContainerProps>`
     height: 100%;
     top: 0;
     left: 0;
-    backdrop-filter: blur(3px);
-    background-color: rgba(0, 0, 0, 0.4);
+    ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
     display: flex;
     justify-content: center;
     align-items: center;
@@ -209,6 +209,15 @@ const Description = styled.p<DescriptionProps>`
     margin: 0 !important;
 `;
 
+const DateDiscrete = styled.span`
+    display: block;
+    color: ${(props) => props.theme.textColor};
+    font-weight: 200;
+    opacity: 0.7;
+    font-size: 14px;
+    margin-left: ${(props) => props.theme.smallSpacing};
+`;
+
 const Discrete = styled.span`
     color: ${(props) => props.theme.textColor};
     font-weight: 200;
@@ -228,7 +237,7 @@ const DateDescription = (props: { date: DateInfo; theme: string; idx: number }):
             {props.idx > 0 ? <Discrete>{'+ '}</Discrete> : null}
             {props.date.online ? <LiveIcon icon={'live'} color={props.theme} size={'16px'} /> : null}
             {props.date.name}
-            <Discrete>, {formatShort(props.date.start)}</Discrete>
+            <DateDiscrete>{formatShort(props.date.start)}</DateDiscrete>
         </Description>
     );
 };
@@ -264,13 +273,28 @@ export const TicketType: React.FunctionComponent<TicketTypeProps> = (props: Tick
                 </DisabledContainer>
             ) : null}
             <div className={'row aic jcsb'}>
-                <h3>{props.title}</h3>
+                <h3
+                    style={{
+                        maxWidth: '60%',
+                    }}
+                >
+                    {props.title}
+                </h3>
                 <TicketCount ticketsLeft={props.ticketsLeft}>
                     <TicketIcon icon={'ticket'} size={'20px'} color={props.gradient[0]} />
                     {`${props.ticketsLeft} ${props.ticketsLeftLabel}`}
                 </TicketCount>
             </div>
-            <h4>{props.price}</h4>
+            <h4
+                style={{
+                    fontWeight: 600,
+                    fontSize: 20,
+                    color: props.gradient[0],
+                    wordWrap: 'break-word',
+                }}
+            >
+                {props.price}
+            </h4>
 
             <div style={{ marginTop: 12, marginBottom: 12 }}>
                 {props.dates.map((date: DateInfo, idx: number) => (

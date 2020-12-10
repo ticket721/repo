@@ -7,7 +7,7 @@ import { CategoryForm } from './CategoryForm';
 import { ConfirmDeletion } from './ConfirmDeletion';
 import { CategoriesByDate } from './CategoriesByDate';
 import { Button, SelectInput, SelectOption } from '@frontend/flib-react/lib/components';
-import { formatShort } from '@frontend/core/lib/utils/date';
+import { formatDay } from '@frontend/core/lib/utils/date';
 
 import { useTranslation } from 'react-i18next';
 import './locales';
@@ -57,7 +57,7 @@ export const CategoriesStep: React.FC = () => {
                 <SelectInput
                 label={t('categories_by_date_label')}
                 options={formikCtx.values.datesConfiguration.map((date, idx) => ({
-                    label: `date n•${idx + 1} - ${formatShort(date.eventBegin)} => ${formatShort(date.eventEnd)}`,
+                    label: `${date.name} | ${formatDay(date.eventBegin)}`,
                     value: idx.toString(),
                 }))}
                 allOpt={allDatesOpt}

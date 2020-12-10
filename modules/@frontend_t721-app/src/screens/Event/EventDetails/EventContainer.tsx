@@ -19,12 +19,12 @@ import shareImg                         from '../../../media/images/social/share
 import likedOnImg                         from '../../../media/images/social/like_on.svg';
 import likedOffImg                         from '../../../media/images/social/like_off.svg';
 import { useWindowDimensions }            from '@frontend/core/lib/hooks/useWindowDimensions';
-import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 import { Plugins, Capacitor }             from '@capacitor/core';
 import { useDispatch }                    from 'react-redux';
 import { PushNotification }               from '@frontend/core/lib/redux/ducks/notifications';
 import { getEnv }                         from '@frontend/core/lib/utils/getEnv';
-import { useSavedEvents }                 from '../../../utils/useSavedEvents';
+import { useSavedEvents }                 from '../../../hooks/useSavedEvents';
 const { Share } = Plugins;
 
 export interface EventContainerProps {
@@ -185,11 +185,11 @@ export const EventContainer: React.FC<EventContainerProps> = (props: EventContai
                                             Share
                                                 .share({
                                                     title: `${t('share_title')} ${props.date.metadata.name}`,
-                                                    text: `${t('share_text')} "${props.date.metadata.name}" ${t('share_text_end')}`,
                                                     url: `${getEnv().REACT_APP_SELF}/event/${props.date.id}`,
                                                     dialogTitle: `${t('share_dialog')} ${props.date.metadata.name}`
                                                 })
                                                 .catch(e => {
+                                                    console.error(e);
                                                     copyToClipboard(`${getEnv().REACT_APP_SELF}/event/${props.date.id}`, dispatch, t('copied'));
                                                 })
                                         }

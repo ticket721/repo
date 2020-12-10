@@ -1,14 +1,20 @@
 import './locales';
-import React, { useState }          from 'react';
-import { LocationModifier }         from '../../components/LocationModifier';
-import { SearchResultList }         from './SearchResultList';
-import styled from 'styled-components';
+import React, { useState }  from 'react';
+import { LocationModifier } from '../../components/LocationModifier';
+import { SearchResultList } from './SearchResultList';
+import styled               from 'styled-components';
+import { useKeyboardState } from '@frontend/core/lib/hooks/useKeyboardState';
 
-const SearchWrapper = styled.div`
+interface SearchWrapperProps {
+    keyboardHeight: number;
+}
+
+const SearchWrapper = styled.div<SearchWrapperProps>`
     width: 100vw;
     @media screen and (min-width: 900px) {
       width: 900px;
     }
+    padding-bottom: ${(props) => props.keyboardHeight}px;
 `;
 
 const Search: React.FC = () => {
@@ -17,9 +23,10 @@ const Search: React.FC = () => {
         active: false,
         customCity: null
     });
+    const keyboard = useKeyboardState();
 
     return (
-        <SearchWrapper>
+        <SearchWrapper keyboardHeight={keyboard.keyboardHeight}>
             {
                 locationFilter.active
 

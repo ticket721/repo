@@ -1,29 +1,31 @@
-import { useRequest } from '@frontend/core/lib/hooks/useRequest';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
-import { FullPageLoading, Error, Toggle } from '@frontend/flib-react/lib/components';
-import React, { useEffect, useState } from 'react';
+import { Toggle } from '@frontend/flib-react/lib/components';
+import React, { useEffect, useMemo, useState } from 'react';
 import { v4 }                          from 'uuid';
 import { useTranslation }              from 'react-i18next';
 import styled                          from 'styled-components';
-import { useHistory, useParams }       from 'react-router';
-import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { eventParam }                  from '../../types';
+import { useHistory }       from 'react-router';
 import { OnlineTag }                   from '../../../components/OnlineTag';
 import { RequestResp, useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
 import { EventsStatusResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsStatusResponse.dto';
 import { useDispatch }                 from 'react-redux';
 import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
 import { Dispatch }                    from 'redux';
+import { CategoryEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import { format } from '@frontend/core/lib/utils/date';
 
 export interface DateCardProps {
+    eventId: string;
     id: string;
     eventStatus: 'preview' | 'live';
     status: 'preview' | 'live';
     name: string;
+    begin: Date;
+    end: Date;
     online: boolean;
     avatar: string;
     colors: string[];
-    categoryIds: string[];
+    categories: CategoryEntity[];
     forceRefresh: () => void;
 }
 
@@ -44,14 +46,17 @@ const handleStatus = (req: RequestResp<EventsStatusResponseDto>, history: any, d
 }
 
 export const DateCard: React.FC<DateCardProps> = ({
+    eventId,
     id,
     eventStatus,
     status,
     name,
+    begin,
+    end,
     online,
     avatar,
     colors,
-    categoryIds,
+    categories,
     forceRefresh,
 }) => {
     const [ t ] = useTranslation('dates_dashboard');
@@ -60,31 +65,22 @@ export const DateCard: React.FC<DateCardProps> = ({
     const history = useHistory();
     const dispatch = useDispatch();
 
-    const { eventId } = useParams<eventParam>();
-
-    const [fetchCategoriesUuid] = useState(v4() + '@categories-fetch');
     const [toggleDateStatusUuid] = useState(v4() + '@date-status-toggle');
 
     const [ dateStatusChanging, setDateStatusChanging ] = useState<boolean>(false);
 
-    const [ categoriesInfos, setCategoriesInfos ] = useState<{ startPrice: number, totalSeats: number }>();
+    const categoriesInfos = useMemo<{ startPrice: number, totalSeats: number }>(() => {
+        const totalSeats = categories.reduce((acc, category) => acc + category.seats, 0);
 
-    const { response: categoriesResp, force: forceCategories } = useRequest<CategoriesSearchResponseDto>({
-        method: 'categories.search',
-        args: [
-            token,
-            {
-                id: {
-                    $in: categoryIds
-                },
-                $sort: [{
-                    $field_name: 'price',
-                    $order: 'asc',
-                }]
-            },
-        ],
-        refreshRate: 50,
-    }, fetchCategoriesUuid);
+        if (!totalSeats) {
+            return null;
+        }
+
+        return {
+            startPrice: categories.sort((prevCategory, category) => prevCategory.price - category.price)[0].price,
+            totalSeats,
+        };
+    }, [categories]);
 
     const { response: toggleDateStatusResp, lazyRequest: toggleDateStatus } =
         useLazyRequest<EventsStatusResponseDto>('events.status', toggleDateStatusUuid);
@@ -108,17 +104,6 @@ export const DateCard: React.FC<DateCardProps> = ({
     }
 
     useEffect(() => {
-        if (categoriesResp.data?.categories.length > 0) {
-            const totalSeats = categoriesResp.data.categories.reduce((acc, category) => acc + category.seats, 0);
-            setCategoriesInfos({
-                startPrice: categoriesResp.data.categories[0].price,
-                totalSeats,
-            });
-        }
-    // eslint-disable-next-line
-    }, [categoriesResp.data?.categories]);
-
-    useEffect(() => {
         if (toggleDateStatusResp.data) {
             forceRefresh();
             setDateStatusChanging(false);
@@ -133,14 +118,6 @@ export const DateCard: React.FC<DateCardProps> = ({
         }
         // eslint-disable-next-line
     }, [toggleDateStatusResp.error]);
-
-    if (categoriesResp.loading) {
-        return <FullPageLoading/>;
-    }
-
-    if (categoriesResp.error) {
-        return <Error message={t('categories_fetch_error')} onRefresh={forceCategories}/>;
-    }
 
     return <Container>
         {
@@ -167,18 +144,26 @@ export const DateCard: React.FC<DateCardProps> = ({
                     null
                 }
                 <Name>{name}</Name>
-                {
-                    categoriesResp.data.categories.length > 0 ?
-                    <CategoriesInfos primaryColor={colors[0]}>
-                        <strong>{categoriesInfos?.totalSeats}</strong>&nbsp;{t('seats')}&nbsp;•&nbsp;
-                        {
-                            categoriesInfos?.startPrice > 0 ?
-                            <>{t('from')}&nbsp;<strong>{categoriesInfos.startPrice/100}€</strong></> :
-                            <strong>{t('free')}</strong>
-                        }
-                    </CategoriesInfos> :
-                    null
-                }
+                <DateRange>
+                    {t('from')}&nbsp;
+                    <strong>{format(begin)}</strong>
+                    &nbsp;{t('to')}&nbsp;
+                    <strong>{format(end)}</strong>
+                </DateRange>
+                <CategoriesInfos primaryColor={colors[0]}>
+                    {
+                        categoriesInfos !== null ?
+                        <>
+                            <strong>{categoriesInfos.totalSeats}</strong>&nbsp;{t('seats')}&nbsp;•&nbsp;
+                            {
+                                categoriesInfos.startPrice > 0 ?
+                                <>{t('price_from')}&nbsp;<strong>{categoriesInfos.startPrice/100}€</strong></> :
+                                <strong>{t('free')}</strong>
+                            }
+                        </> :
+                        <NoCategory>{t('no_category')}</NoCategory>
+                    }
+                </CategoriesInfos>
         </DateCardContainer>
     </Container>;
 };
@@ -249,6 +234,19 @@ const Name = styled.span`
     z-index: 1;
 `;
 
+const DateRange = styled.div`
+    display: flex;
+    z-index: 1;
+    padding-bottom: ${props => props.theme.smallSpacing};
+    font-size: 12px;
+    color: ${props => props.theme.textColorDark};
+
+    strong {
+        color: ${props => props.theme.textColor};
+        font-weight: 500;
+    }
+`;
+
 const CategoriesInfos = styled.span<{ primaryColor: string }>`
     font-size: 14px;
     z-index: 1;
@@ -261,4 +259,8 @@ const CategoriesInfos = styled.span<{ primaryColor: string }>`
         color: ${props => props.primaryColor};
         text-shadow: 0 0 1px ${props => props.primaryColor};
     }
+`;
+
+const NoCategory = styled.span`
+    color: #AAA;
 `;

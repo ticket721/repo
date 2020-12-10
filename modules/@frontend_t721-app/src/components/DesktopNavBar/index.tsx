@@ -9,9 +9,10 @@ import { useHistory }                  from 'react-router';
 import { NavLink }                     from 'react-router-dom';
 import { useToken }                    from '@frontend/core/lib/hooks/useToken';
 import './locales';
+
 import { v4 }                          from 'uuid';
 import { TicketsCountResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
-import { UserContext }                 from '@frontend/core/lib/utils/UserContext';
+import { UserContext }                 from '@frontend/core/lib/contexts/UserContext';
 import { useLazyRequest }              from '@frontend/core/lib/hooks/useLazyRequest';
 import { getEnv }                      from '@frontend/core/lib/utils/getEnv';
 
@@ -90,9 +91,18 @@ export const DesktopNavbar: React.FC = () => {
                     </Connect>
                 }
             </UserContainer>
-            <DrawerAccount
-                route={profileRoute}
-                onClose={() => history.push(history.location.pathname)}/>
+            {
+                user
+
+                    ?
+                    <DrawerAccount
+                        route={profileRoute}
+                        onClose={() => history.push(history.location.pathname)}/>
+
+                    :
+                    null
+
+            }
         </Container>
     );
 };
@@ -117,9 +127,9 @@ const Link = styled(NavLink)<{ selected: boolean }>`
     margin-left: ${props => props.theme.biggerSpacing};
 
     ${props => props.selected ?
-        `color: ${props.theme.textColor};`
-        : null
-    }
+    `color: ${props.theme.textColor};`
+    : null
+}
 
     :hover {
         color: ${props => props.theme.textColor};

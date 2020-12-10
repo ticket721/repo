@@ -12,11 +12,15 @@ import { v4 }                                                      from 'uuid';
 import { PurchasesSetProductsResponseDto }                         from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
 import { PushNotification }                                        from '@frontend/core/lib/redux/ducks/notifications';
 import { PurchaseError }                                           from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
-import { UserContext }                                             from '@frontend/core/lib/utils/UserContext';
+import { UserContext }                                             from '@frontend/core/lib/contexts/UserContext';
 import { getEnv }                                                  from '@frontend/core/lib/utils/getEnv';
-import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { event }                                                   from '@frontend/core/lib/tracking/registerEvent';
+import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
+import { DateEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { conversionEvent }                                         from '@frontend/core/lib/tracking/conversionEvent';
 
 export interface TicketSelectionCtaProps {
+    date: DateEntity;
     category: CategoryEntity;
     gradients: string[];
     clearSelection: () => void;
@@ -102,6 +106,13 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
                             type: HapticsNotificationType.SUCCESS
                         });
                         force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
+                        event(
+                            'Purchase',
+                            'Add ticket to cart',
+                            'User added a ticket to cart',
+                            props.category.id
+                        );
+                        conversionEvent(`AddToCart${props.date.id.split('-').join('').toUpperCase()}`)
                         props.clearSelection();
                     }
 

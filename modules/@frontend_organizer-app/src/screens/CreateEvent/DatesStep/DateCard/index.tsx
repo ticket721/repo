@@ -25,7 +25,7 @@ export const DateCard: React.FC<DateCardProps> = ({ idx, onEdition, triggerDelet
         error={formikCtx.errors.datesConfiguration && !!formikCtx.errors.datesConfiguration[idx]}>
             <Header>
                 <Title>
-                    <span>{t('date_title') + (idx + 1)}</span>
+                    <span>{formikCtx.values.datesConfiguration[idx].name}</span>
                     {
                         formikCtx.values.datesConfiguration[idx].online ?
                         <OnlineTag/> :

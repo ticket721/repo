@@ -13,10 +13,10 @@ import { PurchaseError }                       from '@common/sdk/lib/@backend_ne
 import { CartState }                           from '../Cart/CartContext';
 import { CartMenuStripeCBCheckout }            from './CartMenuStripeCBCheckout';
 import { getEnv }                              from '@frontend/core/lib/utils/getEnv';
-import { useCustomStripe }                     from '@frontend/core/lib/utils/useCustomStripe';
+import { useCustomStripe }                     from '@frontend/core/lib/hooks/useCustomStripe';
 import { useApplePay }                         from './useApplePay';
 import { PaymentButtonDiv, PaymentButtonIcon } from './PaymentButton';
-import { HapticsImpactStyle, useHaptics }      from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, useHaptics }      from '@frontend/core/lib/hooks/useHaptics';
 
 const ComingSoonText = styled.span`
   opacity: 0.7;

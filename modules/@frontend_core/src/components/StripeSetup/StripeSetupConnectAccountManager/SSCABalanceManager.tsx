@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { symbolOf } from '@common/global';
-import { HapticsImpactStyle, useHaptics } from '../../../utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '../../../hooks/useHaptics';
 
 export interface BalanceCurrencyInfo {
     amount: number;

@@ -5,7 +5,7 @@ import { motion }                                          from 'framer-motion';
 import { useWindowDimensions }                             from '@frontend/core/lib/hooks/useWindowDimensions';
 import { CartContext }                                     from '../Cart/CartContext';
 import { CartMenuPreview }                                 from './CartMenuPreview';
-import { UserContext }                                     from '@frontend/core/lib/utils/UserContext';
+import { UserContext }                                     from '@frontend/core/lib/contexts/UserContext';
 import { ValidateEmailComponent }                          from '@frontend/core/lib/components/ValidateEmail';
 import { Button, DoubleButtonCta }                         from '@frontend/flib-react/lib/components';
 import { isNil }                                           from 'lodash';
@@ -15,17 +15,19 @@ import { v4 }                                              from 'uuid';
 import { useLazyRequest }                                  from '@frontend/core/lib/hooks/useLazyRequest';
 import { PushNotification }                                from '@frontend/core/lib/redux/ducks/notifications';
 import { PurchasesSetProductsResponseDto }                 from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesSetProductsResponse.dto';
-import { PurchasesCheckoutResponseDto }                    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesCheckoutResponse.dto';
-import { PurchaseError }                                   from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
-import { useTranslation }                                  from 'react-i18next';
-import { CartMenuCheckout }                                from './CartMenuCheckout';
-import { CartMenuExpired }                                 from './CartMenuExpired';
-import Countdown                                           from 'react-countdown';
-import { getEnv }                                          from '@frontend/core/lib/utils/getEnv';
-import MediaQuery, { useMediaQuery }                       from 'react-responsive';
-import { usePlatform }                                     from '@capacitor-community/react-hooks/platform';
-import { useKeyboardState }                                        from '@frontend/core/lib/utils/useKeyboardState';
-import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { PurchasesCheckoutResponseDto }                            from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/purchases/dto/PurchasesCheckoutResponse.dto';
+import { PurchaseError }                                           from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/ProductChecker.base.service';
+import { useTranslation }                                          from 'react-i18next';
+import { CartMenuCheckout }                                        from './CartMenuCheckout';
+import { CartMenuExpired }                                         from './CartMenuExpired';
+import Countdown                                                   from 'react-countdown';
+import { getEnv }                                                  from '@frontend/core/lib/utils/getEnv';
+import MediaQuery, { useMediaQuery }                               from 'react-responsive';
+import { usePlatform }                                             from '@capacitor-community/react-hooks/platform';
+import { useKeyboardState }                                        from '@frontend/core/lib/hooks/useKeyboardState';
+import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
+import { event }                                                   from '@frontend/core/lib/tracking/registerEvent';
+import { injectBlur }                                              from '@frontend/flib-react/lib/utils/blur';
 // tslint:disable-next-line:no-var-requires
 const SAI = require('safe-area-insets');
 
@@ -63,12 +65,7 @@ const MenuContainer = styled(motion.div) <MenuContainerProps>`
         border-radius: 12px;
     }
 
-    background-color: rgba(33, 29, 45, 1);
-    @supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
-        background-color: rgba(33, 29, 45, 0.6);
-        backdrop-filter: blur(8px);
-    }
-
+    ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
 `;
 
 const MenuContainerHeaderContainer = styled.div`
@@ -301,6 +298,11 @@ export const CartMenu: React.FC = (): JSX.Element => {
                         haptics.notification({
                             type: HapticsNotificationType.SUCCESS
                         });
+                        event(
+                            'Purchase',
+                            'Cart checkout',
+                            'User proceeds to payment'
+                        );
                         cart.force(parseInt(getEnv().REACT_APP_ERROR_THRESHOLD, 10));
                     }
 
@@ -356,22 +358,19 @@ export const CartMenu: React.FC = (): JSX.Element => {
             onClick={cart.closeMenu}
             variants={{
                 visible: {
+                    display: 'block',
                     opacity: 0.75,
-                    left: 0,
                     transition: {
-                        duration: 1.1,
-                        left: {
-                            duration: 0,
-                        },
+                        duration: 0.3,
                     },
                 },
                 hidden: {
+                    display: 'none',
                     opacity: 0,
-                    left: '-100vw',
                     transition: {
-                        duration: 1,
-                        left: {
-                            delay: 1.1,
+                        duration: 0.3,
+                        display: {
+                            delay: 0.3,
                             duration: 0,
                         },
                     },

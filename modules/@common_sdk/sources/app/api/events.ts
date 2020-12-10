@@ -17,6 +17,10 @@ import { EventsStatusInputDto }                 from '@app/server/controllers/ev
 import { EventsBindStripeInterfaceInputDto }    from '@app/server/controllers/events/dto/EventsBindStripeInterfaceInput.dto';
 import { EventsBindStripeInterfaceResponseDto } from '@app/server/controllers/events/dto/EventsBindStripeInterfaceResponse.dto';
 import { EventsOwnerResponseDto }               from '@app/server/controllers/events/dto/EventsOwnerResponse.dto';
+import { EventsAttendeesInputDto }              from '@app/server/controllers/events/dto/EventsAttendeesInput.dto';
+import { EventsAttendeesResponseDto }           from '@app/server/controllers/events/dto/EventsAttendeesResponse.dto';
+import { EventsExportInputDto }                 from '@app/server/controllers/events/dto/EventsExportInput.dto';
+import { EventsExportResponseDto }              from '@app/server/controllers/events/dto/EventsExportResponse.dto';
 
 export async function eventsSearch(
     token: string,
@@ -26,6 +30,34 @@ export async function eventsSearch(
     const self: T721SDK = this;
 
     return self.post<Partial<EventsSearchInputDto>>('/events/search', {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
+export async function eventsExport(
+    token: string,
+    event: string,
+    query: Partial<EventsExportInputDto>,
+): Promise<AxiosResponse<EventsExportResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<Partial<EventsAttendeesInputDto>>(`/events/${event}/export`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
+export async function eventsAttendees(
+    token: string,
+    event: string,
+    query: Partial<EventsAttendeesInputDto>,
+): Promise<AxiosResponse<EventsAttendeesResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<Partial<EventsAttendeesInputDto>>(`/events/${event}/attendees`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);

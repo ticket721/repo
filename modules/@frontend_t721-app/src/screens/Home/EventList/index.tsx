@@ -5,7 +5,7 @@ import { useSelector }                     from 'react-redux';
 import { HomeEventList }                   from './HomeEventList';
 import { LocationState, T721AppState }     from '../../../redux';
 import styled                             from 'styled-components';
-import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/utils/useHaptics';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 
 export interface EventListProps {
     enableFilter: () => void;
