@@ -862,8 +862,10 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
 
             const sendEmailResp = await this.emailService.sendPurchaseSummary(user, summaryData, mailActionUrl);
 
-            this.winstonLogger.log('failed_send_purchase_summary');
-            this.winstonLogger.log(sendEmailResp.error);
+            if (sendEmailResp.error) {
+                this.winstonLogger.log('failed_send_purchase_summary');
+                this.winstonLogger.log(sendEmailResp.error);
+            }
         }
 
         const purchaseUpdateRes = await this.update(
