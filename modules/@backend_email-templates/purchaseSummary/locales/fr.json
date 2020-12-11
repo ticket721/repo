@@ -1,7 +1,8 @@
 {
     "mail_subject": "Résumé de votre réservation",
     "mail_head_title": "Résumé de votre réservation",
-    "mail_body_subtitle": "Résumé de votre réservation",
+    "mail_body_title": "Merci d'avoir effectué votre achat sur la plateforme Ticket721 !",
+    "mail_body_subtitle": "Résumé de votre réservation ci-dessous",
     "give_access": "Donne accès à",
     "give_access_plural": "Donnent accès à",
     "from": "Du",

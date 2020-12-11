@@ -9,6 +9,7 @@ import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { UserDto } from '../users/dto/User.dto';
 import { ItemSummary } from '../purchases/ProductChecker.base.service';
 import parseISO from 'date-fns/parseISO';
+import { formatDay, formatHour, formatShort, format } from '../utils/date';
 
 /**
  * Service to send emails with selected EmailDriver
@@ -62,16 +63,23 @@ export class EmailService {
         },
         actionUrl?: string,
     ): Promise<ServiceResponse<EmailDriverSendOptions>> {
-        const DTFormat = new Intl.DateTimeFormat(user.locale, {
-            year: '2-digit',
-            month: '2-digit',
-            day: '2-digit',
-            hour: 'numeric',
-            minute: 'numeric',
-        });
+        const sameDay = (d1: Date, d2: Date): boolean => {
+            return (
+                d1.getFullYear() === d2.getFullYear() &&
+                d1.getMonth() === d2.getMonth() &&
+                d1.getDate() === d2.getDate()
+            );
+        };
+
+        const getDateString = (begin: Date, end: Date): string => {
+            if (sameDay(begin, end)) {
+                return `${formatDay(begin)}, ${formatHour(begin)} → ${formatHour(end)}`;
+            }
+            return `${formatShort(begin)} → ${formatShort(end)}`;
+        };
 
         const locals = {
-            subjectSuffix: ` | ${data.items.length} Tickets`,
+            subjectSuffix: ` | ${data.items.length} Ticket${data.items.length > 1 ? 's' : ''}`,
             username: user.username,
             totalPrice: data.price.total
                 ? `${data.price.total / 100}${data.price.currency === 'EUR' ? '€' : data.price.currency}`
@@ -79,7 +87,7 @@ export class EmailService {
             fees: data.price.fees
                 ? `${data.price.fees / 100}${data.price.currency === 'EUR' ? '€' : data.price.currency}`
                 : 0,
-            purchasedDate: DTFormat.format(Date.now()),
+            purchasedDate: format(new Date()),
             walletUrl: actionUrl ? actionUrl + '/wallet' : null,
             tickets: [],
         };
@@ -108,8 +116,7 @@ export class EmailService {
                             return {
                                 ...date,
                                 url: actionUrl ? actionUrl + '/event/' + date.id : null,
-                                beginDate: DTFormat.format(checkedBeginDate),
-                                endDate: DTFormat.format(checkedEndDate),
+                                rangeDates: getDateString(checkedBeginDate, checkedEndDate),
                                 location: date.online ? 'Online' : date.location,
                             };
                         }),
