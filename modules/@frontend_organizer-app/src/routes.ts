@@ -33,6 +33,11 @@ export const routes: RouteDatum[] = [
         page: AcknowledgementsPage,
     },
     {
+        path: '/event/:eventId/sales',
+        page: lazy(() => import('./routes/EventSales')),
+        protected: true
+    },
+    {
         path: '/event/:eventId/stats',
         page: lazy(() => import('./routes/EventStats')),
         protected: true

@@ -27,6 +27,7 @@ import { pageview }                                                        from 
 import { useHistory }                                                      from 'react-router';
 import { UserContextGuard }                                                from '@frontend/core/lib/contexts/UserContext';
 import { FullPageLoading }                                                 from '@frontend/flib-react/lib/components';
+import ToastStacker                                                        from '@frontend/core/lib/components/ToastStacker';
 
 const store: Store<T721AppState> = configureStore<any>({
     location: LocationReducer,
@@ -65,6 +66,7 @@ const Root = () => {
         <ThemeProvider theme={customThemes['t721']}>
             <Provider store={store}>
                 <Suspense fallback={<FullPageLoading/>}>
+                    <ToastStacker additionalLocales={[]}/>
                     <UserContextGuard>
                         <ConnectedRouter history={history}>
                             <GlobalStyles/>

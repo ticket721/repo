@@ -10,7 +10,6 @@ import React, {
 import { Redirect, Route, Switch, useHistory, useLocation, withRouter } from 'react-router-dom';
 import { FullPageLoading, TopNav }                                      from '@frontend/flib-react/lib/components';
 import ProtectedRoute                                                   from '@frontend/core/lib/components/ProtectedRoute';
-import ToastStacker                                                     from '@frontend/core/lib/components/ToastStacker';
 import { T721Navbar }                                                   from './components/NavBar';
 import AdminRoutePage                                                   from './routes/Admin';
 import LoginPage                                                        from './routes/Login';
@@ -300,7 +299,6 @@ const App: React.FC = () => {
                     </CartContextManager>
                 </StripeSDKManager>
             </TicketsContextGuard>
-            <ToastStacker additionalLocales={[]}/>
             <DeepLinksListener/>
         </Suspense>
     );

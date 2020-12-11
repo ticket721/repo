@@ -95,18 +95,20 @@ export const CartMenuStripeEndedPurchase: React.FC<CartMenuStripeEndedPurchasePr
     const tickets = useContext(TicketsContext);
 
     useEffect(() => {
-            setTimeout(() => {
+            if (token) {
+                setTimeout(() => {
 
-                closeLazyRequest.lazyRequest([
-                    token,
-                    {
-                        appUrl: `${getEnv().REACT_APP_SELF}`,
-                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    },
-                    v4()
-                ]);
+                    closeLazyRequest.lazyRequest([
+                        token,
+                        {
+                            appUrl: `${getEnv().REACT_APP_SELF}`,
+                            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        },
+                        v4()
+                    ]);
 
-            }, 1000);
+                }, 1000);
+            }
         },
         // eslint-disable-next-line
         [token]);

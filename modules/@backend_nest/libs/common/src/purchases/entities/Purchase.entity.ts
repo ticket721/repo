@@ -103,6 +103,7 @@ export class PurchaseEntity {
     constructor(pe?: PurchaseEntity) {
         if (pe) {
             this.id = pe.id ? pe.id.toString() : pe.id;
+            this.close_guard = pe.close_guard;
             this.owner = pe.owner ? pe.owner.toString() : pe.owner;
             this.fees = ECAAG(pe.fees);
             this.created_at = pe.created_at;
@@ -122,6 +123,15 @@ export class PurchaseEntity {
      */
     @GeneratedUUidColumn()
     id: string;
+
+    /**
+     * Prevent multiple close calls in short timelapses
+     */
+    @Column({
+        type: 'timestamp',
+    })
+        // tslint:disable-next-line:variable-name
+    close_guard: Date;
 
     /**
      * Owner

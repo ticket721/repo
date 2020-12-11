@@ -108,6 +108,7 @@ const Prices = styled.h3<PricesProps>`
     background: -webkit-linear-gradient(0deg, ${(props) => props.colors[0]}, ${(props) => props.colors[1]});
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    font-weight: 500;
 `;
 
 const EventTitle = styled.h2`

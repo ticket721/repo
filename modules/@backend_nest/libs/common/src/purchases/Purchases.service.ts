@@ -10,15 +10,17 @@ import {
     ItemSummary,
     ProductCheckerServiceBase,
     PurchaseError,
-} from '@lib/common/purchases/ProductChecker.base.service';
-import { isNil, merge } from 'lodash';
+}                                                  from '@lib/common/purchases/ProductChecker.base.service';
+import { isNil, merge }                            from 'lodash';
 import { PaymentError, PaymentHandlerBaseService } from '@lib/common/purchases/PaymentHandler.base.service';
-import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
-import { UsersService } from '@lib/common/users/Users.service';
-import { ECAAG } from '@lib/common/utils/ECAAG.helper';
-import { MINUTE } from '@lib/common/utils/time';
-import { EmailService } from '../email/Email.service';
-import { WinstonLoggerService } from '../logger/WinstonLogger.service';
+import { TimeToolService }                         from '@lib/common/toolbox/Time.tool.service';
+import { UsersService }                            from '@lib/common/users/Users.service';
+import { ECAAG }                                   from '@lib/common/utils/ECAAG.helper';
+import { MINUTE }                                  from '@lib/common/utils/time';
+import { EmailService }                            from '../email/Email.service';
+import { WinstonLoggerService }                    from '../logger/WinstonLogger.service';
+import { ESSearchHit }                             from '@lib/common/utils/ESSearchReturn.type';
+import { fromES }                                  from '@lib/common/utils/fromES.helper';
 
 /**
  * Expiration of the cart
@@ -66,6 +68,111 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
     }
 
     /**
+     * Find plage by group id
+     *
+     * @param groupId
+     * @param start
+     * @param end
+     */
+    async findPlageByGroupId(groupId: string, start: Date, end: Date): Promise<ServiceResponse<PurchaseEntity[]>> {
+
+        const payload: any = {
+            body: {
+                query: {
+                    bool: {
+                        must: [
+                            {
+                                nested: {
+                                    path: 'products',
+                                    query: {
+                                        bool: {
+                                            must: {
+                                                match: {
+                                                    'products.group_id': groupId
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ],
+                        filter: {
+                            script: {
+                                script: {
+                                    source: `
+                                        return !doc['checked_out_at'].empty;
+                                    `,
+                                    lang: 'painless',
+                                },
+                            },
+                        }
+                    },
+                },
+            }
+        };
+
+        if (start !== null && end !== null) {
+            payload.body.query.bool.must.push({
+                range: {
+                    checked_out_at: {
+                        gte: start.getTime(),
+                        lte: end.getTime()
+                    }
+                }
+            });
+        } else if (start !== null) {
+            payload.body.query.bool.must.push({
+                range: {
+                    checked_out_at: {
+                        gte: start.getTime()
+                    }
+                }
+            });
+        } else if (end !== null) {
+            payload.body.query.bool.range.push({
+                range: {
+                    checked_out_at: {
+                        lte: end.getTime()
+                    }
+                }
+            });
+        }
+
+        const purchaseCountRes = await this.countElastic(payload);
+
+        if (purchaseCountRes.error) {
+            return {
+                error: purchaseCountRes.error,
+                response: null
+            }
+        }
+
+        payload.body.size = purchaseCountRes.response.count;
+        payload.body.sort = [
+            {
+                checked_out_at: {
+                    order: 'asc'
+                }
+            }
+        ];
+
+        // Recover Purchase
+        const purchaseRes = await this.searchElastic(payload);
+
+        if (purchaseRes.error) {
+            return {
+                error: 'error_while_checking',
+                response: null,
+            };
+        }
+
+        return {
+            response: purchaseRes.response.hits.hits.map((hit: ESSearchHit<PurchaseEntity>): PurchaseEntity => fromES(hit)),
+            error: null,
+        };
+    }
+
+    /**
      * Find many purchase entities by their ids
      *
      * @param purchaseIds
@@ -90,6 +197,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
             error: null,
         };
     }
+
     /**
      * Find one purchase entity by its id
      *
@@ -194,9 +302,9 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                     !!feeDesc
                         ? feeDesc
                         : {
-                              type: 'none',
-                              price: 0,
-                          },
+                            type: 'none',
+                            price: 0,
+                        },
             ),
             error: null,
         };

@@ -38,7 +38,7 @@ import {
     eventsCount,
     eventsCreate,
     eventsSearch,
-    eventsGuestlist, eventsAddDate, eventsEdit, eventsStatus, eventsBindStripeInterface, eventsOwner, eventsAttendees, eventsExport,
+    eventsGuestlist, eventsAddDate, eventsEdit, eventsStatus, eventsBindStripeInterface, eventsOwner, eventsAttendees, eventsExport, eventsSales,
 } from './app/api/events';
 
 // CATEGORIES
@@ -128,6 +128,7 @@ export class T721SDK {
         this.events.owner = this.events.owner.bind(this);
         this.events.attendees = this.events.attendees.bind(this);
         this.events.export = this.events.export.bind(this);
+        this.events.sales = this.events.sales.bind(this);
 
         this.categories.count = this.categories.count.bind(this);
         this.categories.search = this.categories.search.bind(this);
@@ -312,6 +313,7 @@ export class T721SDK {
         owner: eventsOwner,
         attendees: eventsAttendees,
         export: eventsExport,
+        sales: eventsSales,
         create: {
             create: eventsCreate,
         },

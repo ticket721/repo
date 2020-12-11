@@ -3,6 +3,7 @@ import styled         from 'styled-components';
 import { motion }     from 'framer-motion';
 import { useHistory } from 'react-router';
 import attendeesImg   from './attendees.jpg';
+import salesImg   from './sales.jpg';
 import { injectBlur } from '@frontend/flib-react/lib/utils/blur';
 import { useTranslation } from 'react-i18next';
 import './locales';
@@ -15,6 +16,7 @@ const StatCard = styled(motion.div)<StatCardProps>`
   position: relative;
   width: 300px;
   height: 200px;
+  margin: ${props => props.theme.regularSpacing};
   border-radius: ${props => props.theme.defaultRadius};
   background-color: ${props => props.theme.darkerBg};
   background-image: url(${props => props.illustration});
@@ -53,7 +55,10 @@ export const Stats = ({eventId}: {eventId: string}): JSX.Element => {
         style={{
             width: '100%',
             height: '100%',
-            padding: 30
+            padding: 30,
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: 'wrap'
         }}
     >
         <StatCard
@@ -73,6 +78,26 @@ export const Stats = ({eventId}: {eventId: string}): JSX.Element => {
             <ContentCard>
                 <h3>{t('attendees')}</h3>
                 <span>{t('attendees_description')}</span>
+            </ContentCard>
+            <BlurCard/>
+        </StatCard>
+        <StatCard
+            illustration={salesImg}
+            onClick={
+                () => {
+                    history.push(`/event/${eventId}/sales`);
+                }
+            }
+            whileHover={{
+                scale: 1.02
+            }}
+            whileTap={{
+                scale: 0.98
+            }}
+        >
+            <ContentCard>
+                <h3>{t('sales')}</h3>
+                <span>{t('sales_description')}</span>
             </ContentCard>
             <BlurCard/>
         </StatCard>

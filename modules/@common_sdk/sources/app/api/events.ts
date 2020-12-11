@@ -21,6 +21,8 @@ import { EventsAttendeesInputDto }              from '@app/server/controllers/ev
 import { EventsAttendeesResponseDto }           from '@app/server/controllers/events/dto/EventsAttendeesResponse.dto';
 import { EventsExportInputDto }                 from '@app/server/controllers/events/dto/EventsExportInput.dto';
 import { EventsExportResponseDto }              from '@app/server/controllers/events/dto/EventsExportResponse.dto';
+import { EventsSalesInputDto }                  from '@app/server/controllers/events/dto/EventsSalesInput.dto';
+import { EventsSalesResponseDto }               from '@app/server/controllers/events/dto/EventsSalesResponse.dto';
 
 export async function eventsSearch(
     token: string,
@@ -30,6 +32,20 @@ export async function eventsSearch(
     const self: T721SDK = this;
 
     return self.post<Partial<EventsSearchInputDto>>('/events/search', {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
+export async function eventsSales(
+    token: string,
+    event: string,
+    query: Partial<EventsSalesInputDto>,
+): Promise<AxiosResponse<EventsSalesResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<Partial<EventsSalesInputDto>>(`/events/${event}/sales`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
