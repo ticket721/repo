@@ -11,5 +11,13 @@ export class PurchasesCloseInputDto {
     @ApiProperty()
     @IsString()
     @IsOptional()
-    mailActionUrl?: string;
+    appUrl?: string;
+
+    /**
+     * user timezone
+     */
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    timezone?: string;
 }

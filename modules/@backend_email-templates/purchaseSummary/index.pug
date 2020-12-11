@@ -42,7 +42,10 @@ html(lang='en')
                                         span(style="font-family: 'Roboto', sans-serif; font-weight: 600; font-size: 20px; color: #000; padding-left: 4px;")=`${ticket.categoryName}`
                                         div(style="padding-left: 4px;")
                                             span(style="font-family: 'Roboto', sans-serif; font-weight: 300; font-size: 20px; color: #000;")=` | `
-                                            span(style="font-family: 'Roboto', sans-serif; font-weight: 300; font-size: 16px; color: #000;")=t('give_access', { count: ticket.seats })
+                                            if ticket.seats > 1
+                                                span(style="font-family: 'Roboto', sans-serif; font-weight: 300; font-size: 16px; color: #000;")=t('give_access_plural')
+                                            else
+                                                span(style="font-family: 'Roboto', sans-serif; font-weight: 300; font-size: 16px; color: #000;")=t('give_access')
                                 each date in ticket.dates
                                     tr
                                         td

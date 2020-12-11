@@ -48,7 +48,7 @@ export async function purchasesCheckout(
 
 export async function purchasesClose(
     token: string,
-    mailActionUrl?: string
+    query?: PurchasesCloseInputDto,
 ): Promise<AxiosResponse<PurchasesCloseResponseDto>> {
 
     const self: T721SDK = this;
@@ -56,7 +56,5 @@ export async function purchasesClose(
     return self.post<PurchasesCloseInputDto>('/purchases/close', {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-    }, {
-        mailActionUrl
-    });
+    }, query);
 }

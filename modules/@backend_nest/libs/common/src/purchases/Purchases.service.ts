@@ -749,7 +749,8 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
     async close(
         user: UserDto,
         purchase: PurchaseEntity,
-        mailActionUrl?: string,
+        appUrl?: string,
+        timezone?: string,
     ): Promise<ServiceResponse<PurchaseError[]>> {
         const errors: PurchaseError[] = [];
 
@@ -860,7 +861,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                 }
             }
 
-            const sendEmailResp = await this.emailService.sendPurchaseSummary(user, summaryData, mailActionUrl);
+            const sendEmailResp = await this.emailService.sendPurchaseSummary(user, summaryData, appUrl, timezone);
 
             if (sendEmailResp.error) {
                 this.winstonLogger.log('failed_send_purchase_summary');
