@@ -99,7 +99,10 @@ export const CartMenuStripeEndedPurchase: React.FC<CartMenuStripeEndedPurchasePr
 
                 closeLazyRequest.lazyRequest([
                     token,
-                    `${getEnv().REACT_APP_SELF}`,
+                    {
+                        appUrl: `${getEnv().REACT_APP_SELF}`,
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    },
                     v4()
                 ]);
 

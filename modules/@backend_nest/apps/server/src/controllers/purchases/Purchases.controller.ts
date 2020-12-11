@@ -235,7 +235,7 @@ export class PurchasesController extends ControllerBasics<StripeInterfaceEntity>
         }
 
         const purchaseCloseErrors = await this._serviceCall(
-            this.purchasesService.close(user, cartPurchaseEntity, body?.mailActionUrl),
+            this.purchasesService.close(user, cartPurchaseEntity, body?.appUrl, body?.timezone),
             StatusCodes.InternalServerError,
         );
 

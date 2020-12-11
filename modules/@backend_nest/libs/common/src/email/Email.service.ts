@@ -8,7 +8,6 @@ import { Injectable } from '@nestjs/common';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { UserDto } from '../users/dto/User.dto';
 import { ItemSummary } from '../purchases/ProductChecker.base.service';
-import parseISO from 'date-fns/parseISO';
 import { formatDay, formatHour, formatShort, format } from '../utils/date';
 
 /**
@@ -61,7 +60,8 @@ export class EmailService {
             price: { total: number; fees: number; currency: string };
             items: ItemSummary<any>[];
         },
-        actionUrl?: string,
+        appUrl?: string,
+        timezone?: string,
     ): Promise<ServiceResponse<EmailDriverSendOptions>> {
         const sameDay = (d1: Date, d2: Date): boolean => {
             return (
@@ -71,11 +71,20 @@ export class EmailService {
             );
         };
 
-        const getDateString = (begin: Date, end: Date): string => {
-            if (sameDay(begin, end)) {
-                return `${formatDay(begin)}, ${formatHour(begin)} → ${formatHour(end)}`;
+        const getDateString = (beginTimestamp: number, endTimestamp: number): string => {
+            if (sameDay(new Date(beginTimestamp), new Date(endTimestamp))) {
+                return `${formatDay(beginTimestamp, user.locale, timezone)},
+                 ${formatHour(beginTimestamp, user.locale, timezone)} → ${formatHour(
+                    endTimestamp,
+                    user.locale,
+                    timezone,
+                )}`;
             }
-            return `${formatShort(begin)} → ${formatShort(end)}`;
+            return `${formatShort(beginTimestamp, user.locale, timezone)} → ${formatShort(
+                endTimestamp,
+                user.locale,
+                timezone,
+            )}`;
         };
 
         const locals = {
@@ -87,8 +96,8 @@ export class EmailService {
             fees: data.price.fees
                 ? `${data.price.fees / 100}${data.price.currency === 'EUR' ? '€' : data.price.currency}`
                 : 0,
-            purchasedDate: format(new Date()),
-            walletUrl: actionUrl ? actionUrl + '/wallet' : null,
+            purchasedDate: format(Date.now(), user.locale, timezone),
+            walletUrl: appUrl ? appUrl + '/wallet' : null,
             tickets: [],
         };
 
@@ -106,17 +115,28 @@ export class EmailService {
                         markupEventName: item.data.dates[0].name + (datesCount > 1 ? ` +${datesCount - 1}` : ''),
                         markupLocation: computedLocation + (datesCount > 1 ? ` +${datesCount - 1}` : ''),
                         markupCoverUrl: item.data.dates[0].coverUrl,
-                        markupStartDate: item.data.dates[0].beginDate,
+                        markupStartDate: format(
+                            (typeof item.data.dates[0].beginDate === 'string'
+                                ? new Date(item.data.dates[0].beginDate)
+                                : item.data.dates[0].beginDate
+                            ).getTime(),
+                            user.locale,
+                            timezone,
+                        ),
                         dates: item.data.dates.map(date => {
-                            const checkedBeginDate =
-                                typeof date.beginDate === 'string' ? parseISO(date.beginDate) : date.beginDate;
-                            const checkedEndDate =
-                                typeof date.endDate === 'string' ? parseISO(date.endDate) : date.endDate;
+                            const beginDateTimestamp: number = (typeof date.beginDate === 'string'
+                                ? new Date(date.beginDate)
+                                : date.beginDate
+                            ).getTime();
+                            const endDateTimestamp: number = (typeof date.endDate === 'string'
+                                ? new Date(date.endDate)
+                                : date.endDate
+                            ).getTime();
 
                             return {
                                 ...date,
-                                url: actionUrl ? actionUrl + '/event/' + date.id : null,
-                                rangeDates: getDateString(checkedBeginDate, checkedEndDate),
+                                url: appUrl ? appUrl + '/event/' + date.id : null,
+                                rangeDates: getDateString(beginDateTimestamp, endDateTimestamp),
                                 location: date.online ? 'Online' : date.location,
                             };
                         }),
