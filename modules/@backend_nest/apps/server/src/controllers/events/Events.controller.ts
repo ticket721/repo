@@ -74,6 +74,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param categoriesService
      * @param uuidToolsService
      * @param usersService
+     * @param purchasesService
      * @param stripeInterfacesService
      */
     constructor(
@@ -257,8 +258,8 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         return {
             transactions: purchases.map((purchaseEntity: PurchaseEntity): Transaction => ({
-                price: purchaseEntity.price,
-                currency: purchaseEntity.currency,
+                price: purchaseEntity.price || 0,
+                currency: purchaseEntity.currency || 'FREE',
                 date: purchaseEntity.checked_out_at,
                 status: purchaseEntity.payment?.status || 'waiting',
                 quantity: 1

@@ -1,13 +1,14 @@
 import { Transaction }                                           from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSalesResponse.dto';
 import { DAY, HALF, HOUR, MINUTE, QUARTER, SIXHOUR, TWELVEHOUR } from './time';
+import { trimByValue }                                           from './trim';
 
-export const fillTheGapsByValue = (transactions: Transaction[], end: Date, value: number): Transaction[] => {
-    if (transactions.length === 0) {
+export const fillTheGapsByValue = (transactions: Transaction[], end: Date, value: number, status: string, start?: Date): Transaction[] => {
+
+    if (!start && transactions.length === 0) {
         return transactions;
     }
 
-    const startVal = transactions[0].date.getTime();
-    const status = transactions[0].status;
+    const startVal = start ? trimByValue(start, value).getTime() : transactions[0].date.getTime();
     const endVal = end.getTime();
 
     const ret: Transaction[] = [];
@@ -20,7 +21,7 @@ export const fillTheGapsByValue = (transactions: Transaction[], end: Date, value
                 date: new Date(minute),
                 price: 0,
                 currency: null,
-                status,
+                status: status as 'waiting' | 'confirmed' | 'rejected',
                 quantity: 0
             });
         } else {
@@ -32,14 +33,15 @@ export const fillTheGapsByValue = (transactions: Transaction[], end: Date, value
 
 }
 
-export const fillTheGaps = (mode: string, transactions: Transaction[], end: Date): Transaction[] => {
+export const fillTheGaps = (mode: string, transactions: Transaction[], end: Date, status: string, start?: Date): Transaction[] => {
     switch (mode) {
-        case 'minutes': return fillTheGapsByValue(transactions, end, MINUTE);
-        case 'quarters': return fillTheGapsByValue(transactions, end, QUARTER);
-        case 'halfs': return fillTheGapsByValue(transactions, end, HALF);
-        case 'hours': return fillTheGapsByValue(transactions, end, HOUR);
-        case 'sixhours': return fillTheGapsByValue(transactions, end, SIXHOUR);
-        case 'twelvehours': return fillTheGapsByValue(transactions, end, TWELVEHOUR);
-        case 'days': return fillTheGapsByValue(transactions, end, DAY);
+        case 'minutes': return fillTheGapsByValue(transactions, end, MINUTE, status, start);
+        case '5minutes': return fillTheGapsByValue(transactions, end, 5 * MINUTE, status, start);
+        case 'quarters': return fillTheGapsByValue(transactions, end, QUARTER, status, start);
+        case 'halfs': return fillTheGapsByValue(transactions, end, HALF, status, start);
+        case 'hours': return fillTheGapsByValue(transactions, end, HOUR, status, start);
+        case 'sixhours': return fillTheGapsByValue(transactions, end, SIXHOUR, status, start);
+        case 'twelvehours': return fillTheGapsByValue(transactions, end, TWELVEHOUR, status, start);
+        case 'days': return fillTheGapsByValue(transactions, end, DAY, status, start);
     }
 }

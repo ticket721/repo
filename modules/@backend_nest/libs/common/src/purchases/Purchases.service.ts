@@ -15,9 +15,9 @@ import { isNil, merge }                            from 'lodash';
 import { PaymentError, PaymentHandlerBaseService } from '@lib/common/purchases/PaymentHandler.base.service';
 import { TimeToolService }                         from '@lib/common/toolbox/Time.tool.service';
 import { UsersService }                            from '@lib/common/users/Users.service';
-import { ECAAG }                                   from '@lib/common/utils/ECAAG.helper';
-import { MINUTE }                                  from '@lib/common/utils/time';
-import { EmailService }                            from '../email/Email.service';
+import { ECAAG }          from '@lib/common/utils/ECAAG.helper';
+import { MINUTE, SECOND } from '@lib/common/utils/time';
+import { EmailService }   from '../email/Email.service';
 import { WinstonLoggerService }                    from '../logger/WinstonLogger.service';
 import { ESSearchHit }                             from '@lib/common/utils/ESSearchReturn.type';
 import { fromES }                                  from '@lib/common/utils/fromES.helper';
@@ -129,7 +129,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                 }
             });
         } else if (end !== null) {
-            payload.body.query.bool.range.push({
+            payload.body.query.bool.must.push({
                 range: {
                     checked_out_at: {
                         lte: end.getTime()
@@ -848,6 +848,48 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         }
     }
 
+    async closeGuard(
+        purchaseId: string
+    ): Promise<ServiceResponse<void>> {
+        const now = Date.now();
+
+        const purchaseEntityRes = await this.findOne(purchaseId);
+
+        if (purchaseEntityRes.error) {
+            return {
+                error: purchaseEntityRes.error,
+                response: null
+            }
+        }
+
+        const purchase: PurchaseEntity = purchaseEntityRes.response;
+
+        if (!isNil(purchase.close_guard) && new Date(purchase.close_guard).getTime() + (10 * SECOND) > now) {
+            return {
+                error: 'guard_restriction',
+                response: null
+            }
+        }
+
+        const closeGuardRes = await this.update({
+            id: purchase.id
+        }, {
+            close_guard: new Date()
+        });
+
+        if (closeGuardRes.error) {
+            return {
+                error: 'unable_to_setup_guard',
+                response: null
+            }
+        }
+
+        return {
+            error: null,
+            response: null
+        }
+    }
+
     /**
      * Close the purchase entity
      *
@@ -862,6 +904,16 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         appUrl?: string,
         timezone?: string,
     ): Promise<ServiceResponse<PurchaseError[]>> {
+
+        const closeGuardRes = await this.closeGuard(purchase.id);
+
+        if (closeGuardRes.error) {
+            return {
+                error: closeGuardRes.error,
+                response: null
+            }
+        }
+
         const errors: PurchaseError[] = [];
 
         const paymentHandler: PaymentHandlerBaseService = this.moduleRef.get(`payment/${purchase.payment_interface}`, {

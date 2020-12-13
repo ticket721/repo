@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import styled                                     from 'styled-components';
-import { FullPageLoading, Icon, WalletHeader } from '@frontend/flib-react/lib/components';
+import styled                                             from 'styled-components';
+import { ArrowLink, FullPageLoading, Icon, WalletHeader } from '@frontend/flib-react/lib/components';
 
 import { DrawerAccount, ProfileRoute } from '@frontend/core/lib/components/DrawerAccount';
 import { useTranslation }              from 'react-i18next';
@@ -10,11 +10,13 @@ import { NavLink }                     from 'react-router-dom';
 import { useToken }                    from '@frontend/core/lib/hooks/useToken';
 import './locales';
 
-import { v4 }                          from 'uuid';
-import { TicketsCountResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
-import { UserContext }                 from '@frontend/core/lib/contexts/UserContext';
-import { useLazyRequest }              from '@frontend/core/lib/hooks/useLazyRequest';
-import { getEnv }                      from '@frontend/core/lib/utils/getEnv';
+import { v4 }                      from 'uuid';
+import { TicketsCountResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
+import { UserContext }             from '@frontend/core/lib/contexts/UserContext';
+import { useLazyRequest }          from '@frontend/core/lib/hooks/useLazyRequest';
+import { getEnv }                  from '@frontend/core/lib/utils/getEnv';
+import { CartContext }             from '../Cart/CartContext';
+import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 
 export const DesktopNavbar: React.FC = () => {
     const { t } = useTranslation('navbar');
@@ -22,7 +24,38 @@ export const DesktopNavbar: React.FC = () => {
     const [uuid] = useState(v4());
     const user = useContext(UserContext);
     const [ profileRoute, setProfileRoute ] = useState<ProfileRoute>();
+    const cart = useContext(CartContext);
+    const haptics = useHaptics();
     const token = useToken();
+    const extraButtons = [];
+
+    if (cart.cart && cart.cart.products.length > 0) {
+        extraButtons.push(
+            <ArrowLink
+                key={'open_cart'}
+                label={t('open_cart')}
+                onClick={() => {
+                    haptics.impact({
+                        style: HapticsImpactStyle.Light,
+                    });
+                    cart.openMenu();
+                }}
+            />
+        )
+    }
+
+    extraButtons.push(
+        <ArrowLink
+            key={'create_event'}
+            label={t('create_event')}
+            onClick={() => {
+                haptics.impact({
+                    style: HapticsImpactStyle.Light,
+                });
+                window.location = getEnv().REACT_APP_EVENT_CREATION_LINK;
+            }}
+        />
+    );
 
     useEffect(() => {
         if (history.location.search.match(/[?|&]profile=(root|activities|language)$/)) {
@@ -96,6 +129,8 @@ export const DesktopNavbar: React.FC = () => {
 
                     ?
                     <DrawerAccount
+                        extraButtons={extraButtons}
+                        payments={false}
                         route={profileRoute}
                         onClose={() => history.push(history.location.pathname)}/>
 
@@ -110,7 +145,6 @@ export const DesktopNavbar: React.FC = () => {
 const Container = styled.div`
     width: 100%;
     height: 80px;
-    z-index: 3;
     display: flex;
     justify-content: space-between;
     align-items: center;

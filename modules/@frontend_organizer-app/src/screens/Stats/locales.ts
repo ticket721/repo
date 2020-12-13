@@ -11,5 +11,5 @@ i18n.addResourceBundle('fr', 'stats', {
     attendees: 'Participants',
     attendees_description: 'Listez and exportez les participants de votre événement',
     sales: 'Ventes',
-    sales_description: 'Visualisez et exportez les statistiques de ventes'
+    sales_description: 'Visualisez vos statistiques de ventes'
 });

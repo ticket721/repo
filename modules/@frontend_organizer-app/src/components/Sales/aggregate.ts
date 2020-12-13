@@ -28,6 +28,7 @@ export const aggregateByValue = (transactions: Transaction[], value: number): Tr
 export const aggregate = (mode: string, transactions: Transaction[]): Transaction[] => {
     switch (mode) {
         case 'minutes': return aggregateByValue(transactions, MINUTE);
+        case '5minutes': return aggregateByValue(transactions, 5 * MINUTE);
         case 'quarters': return aggregateByValue(transactions, QUARTER);
         case 'halfs': return aggregateByValue(transactions, HALF);
         case 'hours': return aggregateByValue(transactions, HOUR);

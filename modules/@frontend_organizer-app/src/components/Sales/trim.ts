@@ -7,6 +7,7 @@ export const trimByValue = (val: Date, value: number): Date => {
 export const trim = (mode: string, date: Date): Date => {
     switch (mode) {
         case 'minutes': return trimByValue(date, MINUTE);
+        case '5minutes': return trimByValue(date, 5 * MINUTE);
         case 'quarters': return trimByValue(date, QUARTER);
         case 'halfs': return trimByValue(date, HALF);
         case 'hours': return trimByValue(date, HOUR);

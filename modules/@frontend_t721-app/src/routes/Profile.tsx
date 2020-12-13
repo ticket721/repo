@@ -1,18 +1,37 @@
 import { StatusBarMargin }                from '@frontend/core/lib/utils/margins/StatusBarMargin';
 import { NavbarMargin }                   from '@frontend/core/lib/utils/margins/NavbarMargin';
 import ProfileRoot                        from '@frontend/core/lib/components/Profile/Root';
-import React                              from 'react';
+import React, { useContext }              from 'react';
 import { ArrowLink }                      from '@frontend/flib-react/lib/components';
 import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 import { getEnv }                         from '@frontend/core/lib/utils/getEnv';
 import { useTranslation }                 from 'react-i18next';
+import { CartContext }                    from '../components/Cart/CartContext';
 
 const T721Profile: React.FC = (): JSX.Element => {
 
     const haptics = useHaptics();
+    const cart = useContext(CartContext);
     const [t] = useTranslation('common');
 
-    const extraButtons = [
+    const extraButtons = [];
+
+    if (cart.cart && cart.cart.products.length > 0) {
+        extraButtons.push(
+            <ArrowLink
+                key={'open_cart'}
+                label={t('open_cart')}
+                onClick={() => {
+                    haptics.impact({
+                        style: HapticsImpactStyle.Light,
+                    });
+                    cart.openMenu();
+                }}
+            />
+        )
+    }
+
+    extraButtons.push(
         <ArrowLink
             key={'create_event'}
             label={t('create_event')}
@@ -23,7 +42,7 @@ const T721Profile: React.FC = (): JSX.Element => {
                 window.location = getEnv().REACT_APP_EVENT_CREATION_LINK;
             }}
         />
-    ]
+    );
 
     return <ProfileRoot
         extraButtons={extraButtons}

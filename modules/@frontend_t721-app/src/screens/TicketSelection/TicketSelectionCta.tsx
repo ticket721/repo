@@ -100,7 +100,6 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
                             dispatch(PushNotification(generateErrorMessage(t, error), 'error'))
                         }
                         setTimestamp(null);
-                        props.clearSelection();
                     } else {
                         haptics.notification({
                             type: HapticsNotificationType.SUCCESS
@@ -113,14 +112,13 @@ export const TicketSelectionCta: React.FC<TicketSelectionCtaProps> = (props: Tic
                             props.category.id
                         );
                         conversionEvent(`AddToCart${props.date.id.split('-').join('').toUpperCase()}`)
-                        props.clearSelection();
                     }
 
                 }
             }
         },
         // eslint-disable-next-line
-        [addToCartLazyRequest.response.data, addToCartLazyRequest.response.error, addToCartLazyRequest.response.called]);
+        [addToCartLazyRequest.response.data, addToCartLazyRequest.response.error, addToCartLazyRequest.response.called, props.category?.id]);
 
     const loading = capturedTimesstamp !== null && capturedTimesstamp === cart.last_update;
 
