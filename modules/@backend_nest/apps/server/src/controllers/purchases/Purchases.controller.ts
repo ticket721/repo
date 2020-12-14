@@ -30,6 +30,7 @@ import { PurchasesCheckoutInputDto } from '@app/server/controllers/purchases/dto
 import { PurchasesCheckoutResponseDto } from '@app/server/controllers/purchases/dto/PurchasesCheckoutResponse.dto';
 import { PurchasesCloseResponseDto } from '@app/server/controllers/purchases/dto/PurchasesCloseResponse.dto';
 import { PurchasesCloseInputDto } from './dto/PurchasesCloseInput.dto';
+import { isNil } from 'lodash';
 
 /**
  * Controller exposing routes to manage the Stripe Interface of an user
@@ -229,6 +230,16 @@ export class PurchasesController extends ControllerBasics<StripeInterfaceEntity>
                 {
                     status: StatusCodes.BadRequest,
                     message: 'payment_still_waiting',
+                },
+                StatusCodes.BadRequest,
+            );
+        }
+
+        if (!isNil(cartPurchaseEntity.closed_at)) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'purchase_already_closed',
                 },
                 StatusCodes.BadRequest,
             );

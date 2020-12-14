@@ -21,7 +21,7 @@ const CreditCardWrapper = styled.div`
 const CardInputElement = styled.label`
     margin-top: ${props => props.theme.regularSpacing};
     position: relative;
-    background-color: ${(props) => props.theme.componentColor};
+    background-color: ${(props) => props.theme.darkerBg};
     border-radius: ${(props) => props.theme.defaultRadius};
     display: flex;
     flex-direction: column;
@@ -48,22 +48,6 @@ const CardInputElement = styled.label`
           transition: opacity 300ms ease;
           width: 4px;
       }
-    }
-
-    &:hover {
-        background-color: ${(props) => props.theme.componentColorLight};
-    }
-
-    &:focus-within {
-        background-color: ${(props) => props.theme.componentColorLighter};
-
-        & span {
-            transform: translateX(0px);
-
-            &::before {
-                opacity: 1;
-            }
-         }
     }
 
     .sub-container {
@@ -144,8 +128,10 @@ export const CartMenuStripeCBCheckoutWeb: React.FC<CartMenuStripeCBCheckoutWebPr
 
         const cardNumberElement = elements.create('cardNumber', {
             placeholder: '4242 4242 4242 4242',
+            showIcon: true,
             style: {
                 base: {
+                    backgroundColor: theme.darkerBg,
                     color: theme.textColor,
                 },
                 invalid: {
@@ -159,6 +145,7 @@ export const CartMenuStripeCBCheckoutWeb: React.FC<CartMenuStripeCBCheckoutWebPr
             placeholder: '02/42',
             style: {
                 base: {
+                    backgroundColor: theme.darkerBg,
                     color: theme.textColor,
                 },
                 invalid: {
@@ -173,6 +160,7 @@ export const CartMenuStripeCBCheckoutWeb: React.FC<CartMenuStripeCBCheckoutWebPr
             placeholder: '424',
             style: {
                 base: {
+                    backgroundColor: theme.darkerBg,
                     color: theme.textColor,
                 },
                 invalid: {

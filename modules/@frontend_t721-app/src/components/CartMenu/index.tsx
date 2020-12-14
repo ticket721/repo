@@ -407,7 +407,9 @@ export const CartMenu: React.FC = (): JSX.Element => {
                 >{t('close')}</MenuContainerHeaderClose>
             </MenuContainerHeaderContainer>
             {
-                user && user.valid
+                cart.open
+
+                    ? (user && user.valid
 
                     ?
                     expired
@@ -479,7 +481,9 @@ export const CartMenu: React.FC = (): JSX.Element => {
                         }}
                     >
                         <ValidateEmailComponent/>
-                    </div>
+                    </div>)
+
+                    : null
             }
         </MenuContainer>
     </>;
