@@ -124,7 +124,7 @@ const ticketsThatMatterFilter = (
         .map((id: string): DateEntity => dates[id])
         .filter((date: DateEntity) => !isNil(date))
         .filter((date: DateEntity) => {
-            return (new Date(date.timestamps.event_end)).getTime() - HOUR > now
+            return (new Date(date.timestamps.event_end)).getTime() + HOUR > now
         });
 
     return datesOfCategory.length > 0;
@@ -146,7 +146,7 @@ const ticketsOfThePastFilter = (
         .map((id: string): DateEntity => dates[id])
         .filter((date: DateEntity) => !isNil(date))
         .filter((date: DateEntity) => {
-            return (new Date(date.timestamps.event_end)).getTime() - HOUR <= now
+            return (new Date(date.timestamps.event_end)).getTime() + HOUR <= now
         });
 
     return datesOfCategory.length > 0;

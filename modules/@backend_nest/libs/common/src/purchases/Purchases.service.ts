@@ -745,6 +745,8 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
      *
      * @param user
      * @param purchase
+     * @param appUrl
+     * @param timezone
      */
     async close(
         user: UserDto,
