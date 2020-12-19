@@ -355,6 +355,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
 
     useEffect(() => {
         shortcut.setInvisible();
+        shortcut.closeMenu();
         return () => shortcut.setVisible();
         // eslint-disable-next-line
     }, []);

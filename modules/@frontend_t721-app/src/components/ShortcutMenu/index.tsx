@@ -639,14 +639,6 @@ export const ShortcutMenu: React.FC<any> = (props: any) => {
             </>
         </Container>
         <Menu
-            drag
-            dragMomentum={true}
-            dragConstraints={{
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-            }}
             width={window.width}
             spacing={spacing}
             navbar={navbar}

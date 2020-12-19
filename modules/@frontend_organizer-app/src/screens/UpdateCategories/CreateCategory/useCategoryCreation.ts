@@ -111,7 +111,6 @@ export const useCategoryCreation = (dates: DateItem[], refetch: () => void) => {
     };
 
     const validate = (category: CategoryWithDatesPayload) => {
-        console.log(category.price);
         const errors = checkCategory(
             omit({
                 ...category,

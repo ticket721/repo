@@ -1,4 +1,4 @@
-import { Fee, Product, PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
+import { Fee, GeneratedProduct, Product, PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 
@@ -15,21 +15,6 @@ export interface PurchaseError {
      * Additional context
      */
     context: any;
-}
-
-/**
- * Purchased item type
- */
-export interface PurchasedItem {
-    /**
-     * Type of the product
-     */
-    type: string;
-
-    /**
-     * Final id
-     */
-    id: string;
 }
 
 /**
@@ -88,7 +73,7 @@ export abstract class ProductCheckerServiceBase {
         user: UserDto,
         purchaseEntity: PurchaseEntity,
         productIdx: number,
-    ): Promise<ServiceResponse<PurchasedItem[]>>;
+    ): Promise<ServiceResponse<GeneratedProduct[]>>;
 
     /**
      * Callback called when purchase fails
@@ -127,6 +112,6 @@ export abstract class ProductCheckerServiceBase {
      */
     abstract async generateSummary(
         product: Product,
-        purchasedItems: PurchasedItem[],
+        purchasedItems: GeneratedProduct[],
     ): Promise<ServiceResponse<ItemSummary<any>[]>>;
 }

@@ -1,7 +1,13 @@
 import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { Injectable } from '@nestjs/common';
 import { PurchasesRepository } from '@lib/common/purchases/Purchases.repository';
-import { Fee, Payment, Product, PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
+import {
+    Fee,
+    GeneratedProduct,
+    Payment,
+    Product,
+    PurchaseEntity,
+} from '@lib/common/purchases/entities/Purchase.entity';
 import { BaseModel, InjectModel, InjectRepository, uuid } from '@iaminfinity/express-cassandra';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
@@ -937,6 +943,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         }
 
         let finalPrice: number;
+        let createdProducts: GeneratedProduct[] = [];
 
         if (await this.isExpired(purchase)) {
             const cancelRes = await paymentHandler.cancel(purchase.payment, paymentInterfaceIdRes.response);
@@ -1017,6 +1024,8 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                             summaryData.items.push(...purchaseSummaryRes.response);
                             errors.push(null);
                         }
+
+                        createdProducts = createdProducts.concat(confirmationRes.response);
                     }
                 } else if (purchase.payment.status === 'rejected') {
                     const confirmationRes = await productHandler.ko(user, purchase, idx);
@@ -1058,6 +1067,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
             {
                 closed_at: this.timeToolService.now(),
                 final_price: finalPrice,
+                generated_products: createdProducts,
             },
         );
 
