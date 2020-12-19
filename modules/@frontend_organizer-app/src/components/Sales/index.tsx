@@ -8,7 +8,7 @@ import { useRequest }                from '@frontend/core/lib/hooks/useRequest';
 import { isRequestError }            from '@frontend/core/lib/utils/isRequestError';
 import { useTranslation }            from 'react-i18next';
 import { EventsSalesResponseDto }    from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSalesResponse.dto';
-import { useHistory, useRouteMatch } from 'react-router';
+import { useHistory } from 'react-router';
 import { Transaction }               from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSalesResponse.dto';
 import { getPrice }                  from '@frontend/core/lib/utils/prices';
 import { trim }              from './trim';
@@ -18,42 +18,41 @@ import './locales';
 const Graph = React.lazy(() => import('./Graph'));
 
 const LoaderContainer = styled.div`
-  background-color: ${props => props.theme.darkerBg};
-  border-radius: ${props => props.theme.defaultRadius};
-  width: 90%;
-  height: 50vh;
+    background-color: ${props => props.theme.darkerBg};
+    border-radius: ${props => props.theme.defaultRadius};
+    width: 90%;
+    height: 50vh;
 `
 
 const OptionsContainer = styled.div`
-  height: 50px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 `
 
 const Option = styled.div`
-  border-radius: 4px;
-  margin: 4px;
-  padding: 4px;
-  cursor: pointer;
-  
-  &.selected {
-    background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(260deg, ${
-    props => props.theme.primaryColor.hex
-}, ${
-    props => props.theme.primaryColorGradientEnd.hex
-});
-    font-weight: bold;
-  }
-  
-  & > span {
-    text-transform: uppercase;
-    font-size: 12px;
-  }
-  
+    border-radius: 4px;
+    margin: 4px;
+    padding: 4px;
+    cursor: pointer;
+    &.selected {
+        background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(260deg, ${
+            props => props.theme.primaryColor.hex
+        }, ${
+            props => props.theme.primaryColorGradientEnd.hex
+        });
+        font-weight: bold;
+    }
+    & > span {
+        text-transform: uppercase;
+        font-size: 12px;
+    }
 `
 
-const ModeSelector = ({mode, setMode, customMin, customMax, reset}: {mode: string; setMode: (val: string) => void; customMin: number; customMax: number; reset: () => void;}) => {
+const ModeSelector = (
+    {mode, setMode, customMin, customMax, reset}:
+        {mode: string; setMode: (val: string) => void; customMin: number; customMax: number; reset: () => void;}) => {
 
     const [t] = useTranslation('stats');
 
@@ -75,7 +74,7 @@ const ModeSelector = ({mode, setMode, customMin, customMax, reset}: {mode: strin
         t('last_week'),
         t('last_month'),
         t('custom')
-    ], []);
+    ], [t]);
 
     return <>
         <OptionsContainer>
@@ -116,7 +115,7 @@ const DataSelector = ({data, setData}: {data: string; setData: (val: string) => 
     const titles = useMemo(() => [
         t('revenue'),
         t('quantity')
-    ], []);
+    ], [t]);
 
     return <>
         <OptionsContainer>
@@ -201,26 +200,26 @@ const useQueryParameterState = (key: string, defaultValue: any): [string, (val: 
 }
 
 const TotalCardContainer = styled.div`
-  position: relative;
-  background-color: ${props => props.theme.darkerBg};
-  border-radius: ${props => props.theme.defaultRadius};
-  margin: ${props => props.theme.regularSpacing};
-  height: 200px;
-  width: 30%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    position: relative;
+    background-color: ${props => props.theme.darkerBg};
+    border-radius: ${props => props.theme.defaultRadius};
+    margin: ${props => props.theme.regularSpacing};
+    height: 200px;
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `
 
 const Container = styled.div`
-  position: relative;
-  margin: ${props => props.theme.regularSpacing};
-  height: 200px;
-  width: 30%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+    position: relative;
+    margin: ${props => props.theme.regularSpacing};
+    height: 200px;
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 `
 
 const TotalCard = ({transactions, data}: {transactions: Transaction[], data: string}): JSX.Element => {
@@ -281,7 +280,16 @@ const TotalCard = ({transactions, data}: {transactions: Transaction[], data: str
 
 }
 
-const HeaderInfos = ({transactions, mode, min, max, changeMin, changeMax}: {transactions: Transaction[], mode: string, min: number, max: number, changeMin: (val: number) => void, changeMax: (val: number) => void}): JSX.Element => {
+const HeaderInfos = (
+    {transactions, mode, min, max, changeMin, changeMax}:
+        {
+            transactions: Transaction[],
+            mode: string,
+            min: number,
+            max: number,
+            changeMin: (val: number) => void,
+            changeMax: (val: number) => void
+        }): JSX.Element => {
 
     const [t] = useTranslation('stats');
 
@@ -414,14 +422,14 @@ const SalesFetcher = ({eventId}: {eventId: string}) => {
             customMin: val,
             customMax
         });
-    }, [customMin, customMax, setCustom]);
+    }, [customMax, setCustom]);
 
     const changeMax = useCallback((val: number) => {
         setCustom({
             customMin,
             customMax: val
         });
-    }, [customMin, customMax, setCustom]);
+    }, [customMin, setCustom]);
 
     const salesReq = useRequest<EventsSalesResponseDto>({
         method: 'events.sales',
@@ -473,7 +481,14 @@ const SalesFetcher = ({eventId}: {eventId: string}) => {
     }
 
     return <>
-        <HeaderInfos transactions={salesReq.response.data.transactions} mode={mode} min={customMin} max={customMax} changeMin={changeMin} changeMax={changeMax}/>
+        <HeaderInfos
+            transactions={salesReq.response.data.transactions}
+            mode={mode}
+            min={customMin}
+            max={customMax}
+            changeMin={changeMin}
+            changeMax={changeMax}
+        />
         <div
             style={{
                 width: '90%',

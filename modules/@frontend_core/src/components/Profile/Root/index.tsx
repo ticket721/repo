@@ -65,7 +65,11 @@ const Section = styled.section`
     }
 `;
 
-const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons, payments }: ProfileRootProps): JSX.Element => {
+const ProfileRoot: React.FC<ProfileRootProps> = ({
+    desktop,
+    extraButtons,
+    payments,
+}: ProfileRootProps): JSX.Element => {
     const [uuid] = useState(v4());
     const token = useToken();
     const user = useContext(UserContext);
@@ -95,29 +99,25 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({ desktop, extraButtons, paymen
                 picture={'/favicon.ico'}
                 tickets={isRequestError(tickets) ? '?' : tickets.response.data.tickets.count}
             />
-            {
-                payments
-
-                ? <Section>
-                        <h2>{t('payments')}</h2>
-                        <RoundButtonContainer>
-                            <RoundButton
-                                whileTap={{
-                                    scale: 0.95,
-                                }}
-                                avatar={`${StripeLogo}`}
-                                onClick={() => {
-                                    haptics.impact({
-                                        style: HapticsImpactStyle.Light,
-                                    });
-                                    history.push('/stripe/connect');
-                                }}
-                            />
-                        </RoundButtonContainer>
-                    </Section>
-
-                    : null
-            }
+            {payments ? (
+                <Section>
+                    <h2>{t('payments')}</h2>
+                    <RoundButtonContainer>
+                        <RoundButton
+                            whileTap={{
+                                scale: 0.95,
+                            }}
+                            avatar={`${StripeLogo}`}
+                            onClick={() => {
+                                haptics.impact({
+                                    style: HapticsImpactStyle.Light,
+                                });
+                                history.push('/stripe/connect');
+                            }}
+                        />
+                    </RoundButtonContainer>
+                </Section>
+            ) : null}
             <LinksContainer title={t('account')}>
                 {extraButtons || null}
                 <LanguageLink

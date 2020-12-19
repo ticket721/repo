@@ -258,7 +258,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         return {
             transactions: purchases.map((purchaseEntity: PurchaseEntity): Transaction => ({
-                price: purchaseEntity.price || 0,
+                price: purchaseEntity.final_price || 0,
                 currency: purchaseEntity.currency || 'FREE',
                 date: purchaseEntity.checked_out_at,
                 status: purchaseEntity.payment?.status || 'waiting',

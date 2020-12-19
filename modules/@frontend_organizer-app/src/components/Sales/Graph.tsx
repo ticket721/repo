@@ -1,22 +1,22 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import styled, { useTheme }                    from 'styled-components';
 import { Transaction }                         from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSalesResponse.dto';
 import { Theme }                               from '@frontend/flib-react/lib/config/theme';
 import { fillTheGaps }                         from './fillTheGaps';
 import { aggregate }                           from './aggregate';
 import { trim }                    from './trim';
-import { MINUTE, SECOND, SIXHOUR } from './time';
+import { MINUTE} from './time';
 import { add }                     from './add';
 // tslint:disable-next-line:no-var-requires
 const { Chart } = require('react-charts');
 
 
 const GraphContainer = styled.div`
-  background-color: ${props => props.theme.darkerBg};
-  border-radius: ${props => props.theme.defaultRadius};
-  width: 90%;
-  height: 50vh;
-  padding: ${props => props.theme.regularSpacing};
+    background-color: ${props => props.theme.darkerBg};
+    border-radius: ${props => props.theme.defaultRadius};
+    width: 90%;
+    height: 50vh;
+    padding: ${props => props.theme.regularSpacing};
 `
 
 interface GraphProps {
@@ -46,18 +46,19 @@ const generateData = (transactions: Transaction[], aggregationMode: string, end:
                 )
                     .map((tx: Transaction) => [
                         new Date(tx.date),
-                        tx.price / 100
+                        tx.price
                     ]),
                 secondaryAxisID: 'Revenue'
             },
             {
                 label: 'Pending Transactions Revenue',
                 data: aggregate(
-                    aggregationMode, transactions.filter((tx: Transaction) => tx.status === 'waiting' && new Date(tx.date).getTime() + 15 * MINUTE > Date.now())
+                    aggregationMode, transactions
+                        .filter((tx: Transaction) => tx.status === 'waiting' && new Date(tx.date).getTime() + 15 * MINUTE > Date.now())
                 )
                     .map((tx: Transaction) => [
                         new Date(tx.date),
-                        tx.price / 100
+                        tx.price
                     ]),
                 secondaryAxisID: 'Revenue'
             },
@@ -100,54 +101,17 @@ const generateData = (transactions: Transaction[], aggregationMode: string, end:
             {
                 label: 'Pending Transactions Quantity',
                 data: aggregate(
-                    aggregationMode, transactions.filter((tx: Transaction) => tx.status === 'waiting' && new Date(tx.date).getTime() + 15 * MINUTE > Date.now())
+                    aggregationMode, transactions
+                        .filter((tx: Transaction) => tx.status === 'waiting' && new Date(tx.date).getTime() + 15 * MINUTE > Date.now())
                 )
                     .map((tx: Transaction) => [
                         new Date(tx.date),
                         tx.quantity
                     ]),
                 secondaryAxisID: 'Quantity'
-            },
-            // {
-            //     label: 'Rejected Transactions Quantity',
-            //     data: fillTheGaps(
-            //         aggregationMode,
-            //         aggregate(
-            //             aggregationMode, transactions.filter((tx: Transaction) => tx.status === 'rejected')
-            //         ),
-            //         end,
-            //         'rejected',
-            //         start
-            //     )
-            //         .map((tx: Transaction) => [
-            //             new Date(tx.date),
-            //             tx.quantity
-            //         ]),
-            //     secondaryAxisID: 'Quantity'
-            // }
+            }
         ]
     }
-}
-
-const useTimer = (mode: string) => {
-    const [now, setNow] = useState(trim(mode, new Date()).getTime());
-    const [raw, setRaw] = useState(Date.now());
-
-    useEffect(() => {
-        setNow(trim(mode, new Date()).getTime())
-    }, [mode])
-
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            setNow(trim(mode, new Date()).getTime())
-            setRaw(Date.now());
-        }, 5 * SECOND)
-        return () => {
-            clearTimeout(timeoutId);
-        }
-    }, [now, mode, raw])
-
-    return now;
 }
 
 export default ({transactions, aggregation, min, max, dataMode, custom, setCustom}: GraphProps) => {
@@ -178,8 +142,8 @@ export default ({transactions, aggregation, min, max, dataMode, custom, setCusto
             return aggregate(
                 aggregation, transactions
             )
-                .map(tx => dataMode === 'revenue' ? tx.price / 100 : tx.quantity)
-                .reduce((acc, val) => val > acc ? val : acc) + 1;
+                .map(tx => dataMode === 'revenue' ? tx.price : tx.quantity)
+                .reduce((acc, val) => val > acc ? val : acc) + (dataMode === 'revenue' ? 100 : 1);
         }
     }, [transactions, aggregation, dataMode]);
 
@@ -193,19 +157,16 @@ export default ({transactions, aggregation, min, max, dataMode, custom, setCusto
         }
     }, [transactions]);
 
-    console.log(min);
-
     const data = React.useMemo(
-        () => generateData(transactions, aggregation, trim(aggregation, new Date(max)), dataMode, min ? new Date(min) : (defaultMin ? new Date(defaultMin) : undefined)),
-        [transactions, aggregation, max, dataMode, min, custom, defaultMin]
+        () => generateData(
+            transactions,
+            aggregation,
+            trim(aggregation, new Date(max)), dataMode, min ? new Date(min) : (defaultMin ? new Date(defaultMin) : undefined)
+        ),
+        [transactions, aggregation, max, dataMode, min,  defaultMin]
     )
     const series = React.useCallback(
         (s, i) => {
-            if (s.label.indexOf('Quantity') !== -1) {
-                return {
-                    type: 'line'
-                }
-            }
             return {
                 type: 'line'
             }
@@ -215,8 +176,10 @@ export default ({transactions, aggregation, min, max, dataMode, custom, setCusto
 
     const axes = React.useMemo(
         () => [
-            { id: 'Time', primary: true, type: 'time', position: 'bottom', hardMin: min, hardMax: add(aggregation, max) },
-            { id: 'Revenue', type: 'linear', position: 'left', hardMax: valueMax , show: dataMode === 'revenue'},
+            { id: 'Time', primary: true, type: 'time', position: 'bottom', hardMin: min, hardMax: add(aggregation, max)},
+            { id: 'Revenue', type: 'linear', position: 'left', hardMax: valueMax , show: dataMode === 'revenue', format: (d: string) => {
+                    return parseInt(d.replace(',', ''), 10) / 100
+                }},
             { id: 'Quantity', type: 'linear', position: 'left', hardMax: valueMax , show: dataMode === 'quantity' },
         ],
         [min, max, dataMode, aggregation, valueMax]

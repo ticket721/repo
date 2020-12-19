@@ -5,7 +5,8 @@ var migration1607701723 = {
         const purchase_close_guard_creation = {
             query: `ALTER TABLE ticket721.purchase
              ADD (
-                  close_guard timestamp
+                  close_guard timestamp,
+                  final_price int
              );`,
             params: []
         };
@@ -27,7 +28,8 @@ var migration1607701723 = {
         const purchase_close_guard_creation = {
             query: `ALTER TABLE ticket721.purchase
              DROP (
-                  close_guard
+                  close_guard,
+                  final_price
              );`,
             params: []
         };

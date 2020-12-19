@@ -279,7 +279,7 @@ const AttendeesListing: React.FC<AttendeesListingProps> = (props: AttendeesListi
         if (!isNil(ticketsResp.response?.data?.total) && ticketsResp.response.data.total !== total) {
             setTotal(ticketsResp.response.data.total)
         }
-    }, [ticketsResp.response?.data?.total])
+    }, [ticketsResp.response, total])
 
     if (isRequestError(ticketsResp)) {
         return <Error message={'attendees_fetch_error'} retryLabel={'common:retrying_in'} onRefresh={ticketsResp.force}/>;

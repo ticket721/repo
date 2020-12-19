@@ -929,6 +929,8 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
             };
         }
 
+        let finalPrice: number = undefined;
+
         if (await this.isExpired(purchase)) {
             const cancelRes = await paymentHandler.cancel(purchase.payment, paymentInterfaceIdRes.response);
 
@@ -1023,6 +1025,17 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                 }
             }
 
+            const finalPriceResp = await paymentHandler.finalPrice(purchase.payment, paymentInterfaceIdRes.response);
+
+            if (finalPriceResp.error) {
+                return {
+                    error: finalPriceResp.error,
+                    response: null
+                }
+            }
+
+            finalPrice = finalPriceResp.response;
+
             const sendEmailResp = await this.emailService.sendPurchaseSummary(user, summaryData, appUrl, timezone);
 
             if (sendEmailResp.error) {
@@ -1037,6 +1050,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
             },
             {
                 closed_at: this.timeToolService.now(),
+                final_price: finalPrice
             },
         );
 

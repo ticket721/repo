@@ -10,13 +10,14 @@ import { NavLink }                     from 'react-router-dom';
 import { useToken }                    from '@frontend/core/lib/hooks/useToken';
 import './locales';
 
-import { v4 }                      from 'uuid';
-import { TicketsCountResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
-import { UserContext }             from '@frontend/core/lib/contexts/UserContext';
-import { useLazyRequest }          from '@frontend/core/lib/hooks/useLazyRequest';
-import { getEnv }                  from '@frontend/core/lib/utils/getEnv';
-import { CartContext }             from '../Cart/CartContext';
+import { v4 }                             from 'uuid';
+import { TicketsCountResponseDto }        from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
+import { UserContext }                    from '@frontend/core/lib/contexts/UserContext';
+import { useLazyRequest }                 from '@frontend/core/lib/hooks/useLazyRequest';
+import { getEnv }                         from '@frontend/core/lib/utils/getEnv';
+import { CartContext }                    from '../Cart/CartContext';
 import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
+import { injectBlur }                     from '@frontend/flib-react/lib/utils/blur';
 
 export const DesktopNavbar: React.FC = () => {
     const { t } = useTranslation('navbar');
@@ -150,6 +151,7 @@ const Container = styled.div`
     align-items: center;
     padding: ${props => props.theme.smallSpacing} ${props => props.theme.smallSpacing} ${props => props.theme.smallSpacing} ${props => props.theme.biggerSpacing};
     z-index: 1001;
+    ${injectBlur('rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0)', '32px')};
 `;
 
 const LeftSide = styled.div`

@@ -36,6 +36,13 @@ export class NonePaymentHandler implements PaymentHandlerBaseService {
         };
     }
 
+    async finalPrice(payment: Payment, paymentInterfaceId): Promise<ServiceResponse<number>> {
+        return {
+            error: null,
+            response: 0
+        }
+    }
+
     /**
      * On Checkout callback
      *

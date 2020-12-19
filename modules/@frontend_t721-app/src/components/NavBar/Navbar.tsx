@@ -1,12 +1,17 @@
-import React                          from 'react';
-import { Icon, Navbar as FlibNavbar } from '@frontend/flib-react/lib/components';
-import { Link, useLocation }          from 'react-router-dom';
+import React                              from 'react';
+import { Icon, Navbar as FlibNavbar }     from '@frontend/flib-react/lib/components';
+import { Link, useLocation }              from 'react-router-dom';
 import { isNavItemActive }                from '@frontend/core/lib/utils/isNavItemActive';
 import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
+import styled                             from 'styled-components';
 
 interface NavbarProps {
     visible: boolean;
 }
+
+const TicketIcon = styled(Icon)`
+    transform: rotate(-45deg);
+`
 
 export const Navbar: React.FC<NavbarProps> = (props: NavbarProps): JSX.Element => {
 
@@ -41,7 +46,7 @@ export const Navbar: React.FC<NavbarProps> = (props: NavbarProps): JSX.Element =
                   })
               }}
         >
-            <Icon icon={'t721'} color='#FFFFFF' size={'22px'}/>
+            <TicketIcon icon={'ticket'} color='#FFFFFF' size={'30px'}/>
         </Link>
 
         <Link replace={true} to={'/tags'} className={isNavItemActive('/tags', location)}
