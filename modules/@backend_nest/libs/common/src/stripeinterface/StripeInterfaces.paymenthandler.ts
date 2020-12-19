@@ -24,6 +24,12 @@ export class StripeInterfacesPaymentHandler implements PaymentHandlerBaseService
         private readonly stripeInterfacesService: StripeInterfacesService,
     ) {}
 
+    /**
+     * Recover final price
+     *
+     * @param payment
+     * @param paymentInterfaceId
+     */
     async finalPrice(payment: Payment, paymentInterfaceId: string): Promise<ServiceResponse<number>> {
         try {
             const stripe: Stripe = this.stripeService.get();
@@ -52,22 +58,22 @@ export class StripeInterfacesPaymentHandler implements PaymentHandlerBaseService
                 stripeAccount: stripeInterfaceEntity.connect_account,
             });
 
-            const balanceTransaction = await stripe.balanceTransactions.retrieve(paymentIntent.charges.data[0].balance_transaction as string, {
-                stripeAccount: stripeInterfaceEntity.connect_account
-            });
+            const balanceTransaction = await stripe.balanceTransactions.retrieve(
+                paymentIntent.charges.data[0].balance_transaction as string,
+                {
+                    stripeAccount: stripeInterfaceEntity.connect_account,
+                },
+            );
 
             return {
                 error: null,
-                response: balanceTransaction.amount - balanceTransaction.fee
-            }
-
+                response: balanceTransaction.amount - balanceTransaction.fee,
+            };
         } catch (e) {
-
             return {
                 error: e.message,
-                response: null
-            }
-
+                response: null,
+            };
         }
     }
 

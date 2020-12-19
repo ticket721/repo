@@ -40,7 +40,7 @@ export class Product {
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     group_id: string;
 }
 
@@ -131,7 +131,7 @@ export class PurchaseEntity {
     @Column({
         type: 'timestamp',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     close_guard: Date;
 
     /**
@@ -140,7 +140,7 @@ export class PurchaseEntity {
     @Column({
         type: 'int',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     final_price: number;
 
     /**
@@ -184,7 +184,7 @@ export class PurchaseEntity {
     @Column({
         type: 'text',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     payment_interface: string;
 
     /**
@@ -209,7 +209,7 @@ export class PurchaseEntity {
     @Column({
         type: 'timestamp',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     checked_out_at: Date;
 
     /**
@@ -218,20 +218,20 @@ export class PurchaseEntity {
     @Column({
         type: 'timestamp',
     })
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     closed_at: Date;
 
     /**
      * Creation timestamp
      */
     @CreateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     created_at: Date;
 
     /**
      * Update timestamp
      */
     @UpdateDateColumn()
-        // tslint:disable-next-line:variable-name
+    // tslint:disable-next-line:variable-name
     updated_at: Date;
 }

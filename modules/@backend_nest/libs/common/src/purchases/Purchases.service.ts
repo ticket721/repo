@@ -10,17 +10,17 @@ import {
     ItemSummary,
     ProductCheckerServiceBase,
     PurchaseError,
-}                                                  from '@lib/common/purchases/ProductChecker.base.service';
-import { isNil, merge }                            from 'lodash';
+} from '@lib/common/purchases/ProductChecker.base.service';
+import { isNil, merge } from 'lodash';
 import { PaymentError, PaymentHandlerBaseService } from '@lib/common/purchases/PaymentHandler.base.service';
-import { TimeToolService }                         from '@lib/common/toolbox/Time.tool.service';
-import { UsersService }                            from '@lib/common/users/Users.service';
-import { ECAAG }          from '@lib/common/utils/ECAAG.helper';
+import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
+import { UsersService } from '@lib/common/users/Users.service';
+import { ECAAG } from '@lib/common/utils/ECAAG.helper';
 import { MINUTE, SECOND } from '@lib/common/utils/time';
-import { EmailService }   from '../email/Email.service';
-import { WinstonLoggerService }                    from '../logger/WinstonLogger.service';
-import { ESSearchHit }                             from '@lib/common/utils/ESSearchReturn.type';
-import { fromES }                                  from '@lib/common/utils/fromES.helper';
+import { EmailService } from '../email/Email.service';
+import { WinstonLoggerService } from '../logger/WinstonLogger.service';
+import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
+import { fromES } from '@lib/common/utils/fromES.helper';
 
 /**
  * Expiration of the cart
@@ -41,6 +41,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
      * @param timeToolService
      * @param usersService
      * @param emailService
+     * @param winstonLogger
      */
     constructor(
         @InjectRepository(PurchasesRepository)
@@ -75,7 +76,6 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
      * @param end
      */
     async findPlageByGroupId(groupId: string, start: Date, end: Date): Promise<ServiceResponse<PurchaseEntity[]>> {
-
         const payload: any = {
             body: {
                 query: {
@@ -88,13 +88,13 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                                         bool: {
                                             must: {
                                                 match: {
-                                                    'products.group_id': groupId
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                                                    'products.group_id': groupId,
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
                         ],
                         filter: {
                             script: {
@@ -105,10 +105,10 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                                     lang: 'painless',
                                 },
                             },
-                        }
+                        },
                     },
                 },
-            }
+            },
         };
 
         if (start !== null && end !== null) {
@@ -116,25 +116,25 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                 range: {
                     checked_out_at: {
                         gte: start.getTime(),
-                        lte: end.getTime()
-                    }
-                }
+                        lte: end.getTime(),
+                    },
+                },
             });
         } else if (start !== null) {
             payload.body.query.bool.must.push({
                 range: {
                     checked_out_at: {
-                        gte: start.getTime()
-                    }
-                }
+                        gte: start.getTime(),
+                    },
+                },
             });
         } else if (end !== null) {
             payload.body.query.bool.must.push({
                 range: {
                     checked_out_at: {
-                        lte: end.getTime()
-                    }
-                }
+                        lte: end.getTime(),
+                    },
+                },
             });
         }
 
@@ -143,17 +143,17 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         if (purchaseCountRes.error) {
             return {
                 error: purchaseCountRes.error,
-                response: null
-            }
+                response: null,
+            };
         }
 
         payload.body.size = purchaseCountRes.response.count;
         payload.body.sort = [
             {
                 checked_out_at: {
-                    order: 'asc'
-                }
-            }
+                    order: 'asc',
+                },
+            },
         ];
 
         // Recover Purchase
@@ -167,7 +167,9 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         }
 
         return {
-            response: purchaseRes.response.hits.hits.map((hit: ESSearchHit<PurchaseEntity>): PurchaseEntity => fromES(hit)),
+            response: purchaseRes.response.hits.hits.map(
+                (hit: ESSearchHit<PurchaseEntity>): PurchaseEntity => fromES(hit),
+            ),
             error: null,
         };
     }
@@ -302,9 +304,9 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                     !!feeDesc
                         ? feeDesc
                         : {
-                            type: 'none',
-                            price: 0,
-                        },
+                              type: 'none',
+                              price: 0,
+                          },
             ),
             error: null,
         };
@@ -848,9 +850,12 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         }
     }
 
-    async closeGuard(
-        purchaseId: string
-    ): Promise<ServiceResponse<void>> {
+    /**
+     * Prevents multiple calls in short time lapses
+     *
+     * @param purchaseId
+     */
+    async closeGuard(purchaseId: string): Promise<ServiceResponse<void>> {
         const now = Date.now();
 
         const purchaseEntityRes = await this.findOne(purchaseId);
@@ -858,36 +863,39 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         if (purchaseEntityRes.error) {
             return {
                 error: purchaseEntityRes.error,
-                response: null
-            }
+                response: null,
+            };
         }
 
         const purchase: PurchaseEntity = purchaseEntityRes.response;
 
-        if (!isNil(purchase.close_guard) && new Date(purchase.close_guard).getTime() + (10 * SECOND) > now) {
+        if (!isNil(purchase.close_guard) && new Date(purchase.close_guard).getTime() + 10 * SECOND > now) {
             return {
                 error: 'guard_restriction',
-                response: null
-            }
+                response: null,
+            };
         }
 
-        const closeGuardRes = await this.update({
-            id: purchase.id
-        }, {
-            close_guard: new Date()
-        });
+        const closeGuardRes = await this.update(
+            {
+                id: purchase.id,
+            },
+            {
+                close_guard: new Date(),
+            },
+        );
 
         if (closeGuardRes.error) {
             return {
                 error: 'unable_to_setup_guard',
-                response: null
-            }
+                response: null,
+            };
         }
 
         return {
             error: null,
-            response: null
-        }
+            response: null,
+        };
     }
 
     /**
@@ -904,14 +912,13 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         appUrl?: string,
         timezone?: string,
     ): Promise<ServiceResponse<PurchaseError[]>> {
-
         const closeGuardRes = await this.closeGuard(purchase.id);
 
         if (closeGuardRes.error) {
             return {
                 error: closeGuardRes.error,
-                response: null
-            }
+                response: null,
+            };
         }
 
         const errors: PurchaseError[] = [];
@@ -929,7 +936,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
             };
         }
 
-        let finalPrice: number = undefined;
+        let finalPrice: number;
 
         if (await this.isExpired(purchase)) {
             const cancelRes = await paymentHandler.cancel(purchase.payment, paymentInterfaceIdRes.response);
@@ -1030,8 +1037,8 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
             if (finalPriceResp.error) {
                 return {
                     error: finalPriceResp.error,
-                    response: null
-                }
+                    response: null,
+                };
             }
 
             finalPrice = finalPriceResp.response;
@@ -1050,7 +1057,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
             },
             {
                 closed_at: this.timeToolService.now(),
-                final_price: finalPrice
+                final_price: finalPrice,
             },
         );
 

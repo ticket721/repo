@@ -1,5 +1,5 @@
 import { IsDateString, IsOptional } from 'class-validator';
-import { ApiPropertyOptional }                   from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
  * Data model required when fetching sales info
@@ -24,5 +24,4 @@ export class EventsSalesInputDto {
     @IsDateString()
     @IsOptional()
     end?: Date;
-
 }
