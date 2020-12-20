@@ -10,6 +10,28 @@ import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
+ * Generated product info
+ */
+export class GeneratedProduct {
+    /**
+     * Product Type
+     */
+    type: string;
+    /**
+     * Product ID
+     */
+    id: string;
+    /**
+     * Final price
+     */
+    price: number;
+    /**
+     * Currency
+     */
+    currency: string;
+}
+
+/**
  * Product type
  */
 export class Product {
@@ -103,6 +125,8 @@ export class PurchaseEntity {
     constructor(pe?: PurchaseEntity) {
         if (pe) {
             this.id = pe.id ? pe.id.toString() : pe.id;
+            this.final_price = pe.final_price;
+            this.close_guard = pe.close_guard;
             this.owner = pe.owner ? pe.owner.toString() : pe.owner;
             this.fees = ECAAG(pe.fees);
             this.created_at = pe.created_at;
@@ -110,6 +134,7 @@ export class PurchaseEntity {
             this.closed_at = pe.closed_at;
             this.checked_out_at = pe.checked_out_at;
             this.products = ECAAG(pe.products);
+            this.generated_products = ECAAG(pe.generated_products);
             this.currency = pe.currency;
             this.payment = pe.payment;
             this.payment_interface = pe.payment_interface;
@@ -122,6 +147,34 @@ export class PurchaseEntity {
      */
     @GeneratedUUidColumn()
     id: string;
+
+    /**
+     * List of all generated products + their price
+     */
+    @Column({
+        type: 'list',
+        typeDef: '<frozen<generated_product>>',
+    })
+    // tslint:disable-next-line:variable-name
+    generated_products: GeneratedProduct[];
+
+    /**
+     * Prevent multiple close calls in short timelapses
+     */
+    @Column({
+        type: 'timestamp',
+    })
+    // tslint:disable-next-line:variable-name
+    close_guard: Date;
+
+    /**
+     * Prevent multiple close calls in short timelapses
+     */
+    @Column({
+        type: 'int',
+    })
+    // tslint:disable-next-line:variable-name
+    final_price: number;
 
     /**
      * Owner

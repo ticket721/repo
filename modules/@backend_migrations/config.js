@@ -118,5 +118,20 @@ module.exports = [
         type: 'elasticsearch',
         name: 'post_category_custom_fees',
         timestamp: '20201124195324'
+    },
+    {
+        type: 'elasticsearch',
+        name: 'pre_purchase_close_guard',
+        timestamp: '20201211154824'
+    },
+    {
+        type: 'cassandra',
+        name: 'purchase_close_guard',
+        timestamp: '1607701723'
+    },
+    {
+        type: 'elasticsearch',
+        name: 'post_purchase_close_guard',
+        timestamp: '20201211154828'
     }
 ];

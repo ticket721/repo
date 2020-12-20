@@ -24,7 +24,6 @@ const ComingSoonText = styled.span`
   font-size: 10px;
 `;
 
-
 const ButtonContainer = styled.div`
   height: 100%;
   overflow: scroll;

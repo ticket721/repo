@@ -196,6 +196,7 @@ export class PurchasesController extends ControllerBasics<StripeInterfaceEntity>
     /**
      * Clears cart when payment succesful
      *
+     * @param body
      * @param user
      */
     @Post('/close')

@@ -125,18 +125,25 @@ const FilterModeOption: React.FC<FilterHeaderProps> = (props: FilterHeaderProps)
     return null;
 };
 
-const FilterCategoriesOption: React.FC<FilterHeaderProps & { group_id: string }> = (props: FilterHeaderProps & { group_id: string }): JSX.Element => {
+const getCategoryTitle = (category: CategoryEntity, dates: DateEntity[], t: any): string => {
+    if (category.dates.length > 1) {
+        return `${category.display_name} - (${t('multi_dates', {count: category.dates.length})})`
+    } else {
+        return `${category.display_name} - (${dates[dates.findIndex(
+            (_date) => category.dates.indexOf(_date.id) !== -1)
+            ]?.metadata.name.toUpperCase()})`
+    }
+}
 
-    return <div
-        style={{
-            maxWidth: 400,
-        }}
-    >
+const FilterCategoriesOption: React.FC<FilterHeaderProps & { group_id: string }> = (props: FilterHeaderProps & { group_id: string }): JSX.Element => {
+    const [t] = useTranslation('attendees');
+
+    return <div>
         <SelectInput
             value={props.filtersAndToggles.categories}
             options={
                 props.categories.map((category: CategoryEntity): SelectOption => ({
-                    label: category.display_name,
+                    label: getCategoryTitle(category, props.dates, t),
                     value: category.id,
                 }))
             }
@@ -152,11 +159,7 @@ const FilterCategoriesOption: React.FC<FilterHeaderProps & { group_id: string }>
 
 const FilterDatesOption: React.FC<FilterHeaderProps & { group_id: string }> = (props: FilterHeaderProps & { group_id: string }): JSX.Element => {
 
-    return <div
-        style={{
-            maxWidth: 400,
-        }}
-    >
+    return <div>
         <SelectInput
             value={props.filtersAndToggles.dates}
             options={
@@ -235,12 +238,26 @@ const mailing = (attendees: any[]): void => {
 `;
     }
 
-    download('mailing-list.csv', fileContent);
+    const now = new Date();
+
+    download(`mailing-list.${
+        now.getFullYear()
+    }${
+        now.getMonth() + 1
+    }${
+        now.getDate()
+    }-${
+        now.getHours()
+    }${
+        now.getMinutes()
+    }${
+        now.getSeconds()
+    }.csv`, fileContent);
 }
 
 const csv = (attendees: any[], categories: CategoryEntity[]): void => {
 
-    let fileContent = `Email, Ticket ID, Category ID, Category Name, Price, Currency, Purchase Date
+    let fileContent = `Email, Ticket ID, Category ID, Category Name, Paid Price, Currency, Purchase Date
 `;
 
     for (const attendee of attendees) {
@@ -248,7 +265,21 @@ const csv = (attendees: any[], categories: CategoryEntity[]): void => {
 `;
     }
 
-    download('export.csv', fileContent);
+    const now = new Date();
+
+    download(`export.${
+        now.getFullYear()
+    }${
+        now.getMonth() + 1
+    }${
+        now.getDate()
+    }-${
+        now.getHours()
+    }${
+        now.getMinutes()
+    }${
+        now.getSeconds()
+    }.csv`, fileContent);
 }
 
 const FilterExportButtons: React.FC<FilterHeaderProps> = (props: FilterHeaderProps): JSX.Element => {

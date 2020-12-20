@@ -1,10 +1,9 @@
 import {
     ItemSummary,
     ProductCheckerServiceBase,
-    PurchasedItem,
     PurchaseError,
 } from '@lib/common/purchases/ProductChecker.base.service';
-import { Fee, Product, PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
+import { Fee, GeneratedProduct, Product, PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { Injectable } from '@nestjs/common';
@@ -703,9 +702,9 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         user: UserDto,
         purchaseEntity: PurchaseEntity,
         productIdx: number,
-    ): Promise<ServiceResponse<PurchasedItem[]>> {
+    ): Promise<ServiceResponse<GeneratedProduct[]>> {
         const product = purchaseEntity.products[productIdx];
-        const ret: PurchasedItem[] = [];
+        const ret: GeneratedProduct[] = [];
 
         for (let idx = 0; idx < product.quantity; ++idx) {
             const createdTicketRes = await this.ticketsService.create({
@@ -724,11 +723,24 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
 
             const ticket: TicketEntity = createdTicketRes.response;
 
+            const categoryRes = await this.categoriesService.findOne(product.id);
+
+            if (categoryRes.error) {
+                return {
+                    error: categoryRes.error,
+                    response: null,
+                };
+            }
+
+            const category: CategoryEntity = categoryRes.response;
+
             this.winstonLoggerService.log(`Purchase@${purchaseEntity.id}: created Ticket@${ticket.id} (${idx})`);
 
             ret.push({
                 type: 'ticket',
                 id: ticket.id,
+                price: category.price,
+                currency: category.currency,
             });
         }
 
@@ -736,7 +748,7 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
             user,
             purchaseEntity,
             productIdx,
-            ret.map((pi: PurchasedItem): string => pi.id),
+            ret.map((pi: GeneratedProduct): string => pi.id),
             'confirmed',
         );
 
@@ -889,7 +901,7 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
      */
     async generateSummary(
         product: Product,
-        purchasedItems: PurchasedItem[],
+        purchasedItems: GeneratedProduct[],
     ): Promise<ServiceResponse<ItemSummary<TicketSummaryInfos>[]>> {
         const datesService = this.moduleRef.get(DatesService, {
             strict: false,

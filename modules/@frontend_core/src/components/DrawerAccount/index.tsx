@@ -15,11 +15,18 @@ import { ValidateEmail } from '../ValidateEmail';
 export type ProfileRoute = 'root' | 'activities' | 'language';
 
 interface DrawerAccountProps {
+    payments: boolean;
     route: ProfileRoute;
     onClose: () => void;
+    extraButtons?: JSX.Element[];
 }
 
-export const DrawerAccount: React.FC<DrawerAccountProps> = ({ route, onClose }: DrawerAccountProps) => {
+export const DrawerAccount: React.FC<DrawerAccountProps> = ({
+    route,
+    onClose,
+    payments,
+    extraButtons,
+}: DrawerAccountProps) => {
     const [t] = useTranslation('drawer_account');
     const history = useHistory();
     const browser = detect();
@@ -35,7 +42,7 @@ export const DrawerAccount: React.FC<DrawerAccountProps> = ({ route, onClose }: 
 
     return (
         <Drawer anchor='right' open={route !== null} onClose={onClose} browsername={browser?.name}>
-            {route === 'root' ? <ProfileRoot desktop={true} /> : null}
+            {route === 'root' ? <ProfileRoot desktop={true} payments={payments} extraButtons={extraButtons} /> : null}
             {route === 'language' ? (
                 <>
                     <BackArrow onClick={() => history.push(history.location.pathname + '?profile=root')}>

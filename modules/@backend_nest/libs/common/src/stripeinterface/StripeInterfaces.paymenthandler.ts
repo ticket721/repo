@@ -25,6 +25,59 @@ export class StripeInterfacesPaymentHandler implements PaymentHandlerBaseService
     ) {}
 
     /**
+     * Recover final price
+     *
+     * @param payment
+     * @param paymentInterfaceId
+     */
+    async finalPrice(payment: Payment, paymentInterfaceId: string): Promise<ServiceResponse<number>> {
+        try {
+            const stripe: Stripe = this.stripeService.get();
+
+            const stripeInterfaceEntityRes = await this.stripeInterfacesService.search({
+                id: paymentInterfaceId,
+            });
+
+            if (stripeInterfaceEntityRes.error) {
+                return {
+                    error: stripeInterfaceEntityRes.error,
+                    response: null,
+                };
+            }
+
+            if (stripeInterfaceEntityRes.response.length === 0) {
+                return {
+                    error: 'stripe_interface_not_found',
+                    response: null,
+                };
+            }
+
+            const stripeInterfaceEntity: StripeInterfaceEntity = stripeInterfaceEntityRes.response[0];
+
+            const paymentIntent = await stripe.paymentIntents.retrieve(payment.id, {
+                stripeAccount: stripeInterfaceEntity.connect_account,
+            });
+
+            const balanceTransaction = await stripe.balanceTransactions.retrieve(
+                paymentIntent.charges.data[0].balance_transaction as string,
+                {
+                    stripeAccount: stripeInterfaceEntity.connect_account,
+                },
+            );
+
+            return {
+                error: null,
+                response: balanceTransaction.amount - balanceTransaction.fee,
+            };
+        } catch (e) {
+            return {
+                error: e.message,
+                response: null,
+            };
+        }
+    }
+
+    /**
      * Merge all fees
      *
      * @param fees

@@ -29,6 +29,9 @@ export const SearchViewAllResultEvent: React.FC<SearchViewAllResultEventProps> =
         args: [token, {
             id: {
                 $in: props.date.categories
+            },
+            status: {
+                $eq: 'live'
             }
         }],
         refreshRate: 100

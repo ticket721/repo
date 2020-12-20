@@ -49,7 +49,7 @@ const Badge = styled(motion.div)<BadgeProps>`
     height: 25px;
     border-radius: 100%;
     background-color ${props => props.error ? 'red' : props.theme.primaryColor.hex};
-    display flex;
+    display: flex;
     justify-content: center;
     align-items: center;
     padding: 0;

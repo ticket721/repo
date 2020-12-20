@@ -61,4 +61,12 @@ export abstract class PaymentHandlerBaseService {
      * @param paymentInterfaceId
      */
     abstract async fetch(payment: Payment, paymentInterfaceId: string): Promise<ServiceResponse<Payment>>;
+
+    /**
+     * Fetch the final price
+     *
+     * @param payment
+     * @param paymentInterfaceId
+     */
+    abstract async finalPrice(payment: Payment, paymentInterfaceId: string): Promise<ServiceResponse<number>>;
 }

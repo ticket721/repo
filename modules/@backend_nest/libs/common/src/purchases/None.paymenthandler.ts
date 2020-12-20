@@ -37,6 +37,19 @@ export class NonePaymentHandler implements PaymentHandlerBaseService {
     }
 
     /**
+     * Recover final price
+     *
+     * @param payment
+     * @param paymentInterfaceId
+     */
+    async finalPrice(payment: Payment, paymentInterfaceId): Promise<ServiceResponse<number>> {
+        return {
+            error: null,
+            response: 0,
+        };
+    }
+
+    /**
      * On Checkout callback
      *
      * @param user

@@ -24,7 +24,7 @@ const Container = styled.div<SingleImageProps>`
     border-radius: ${(props) => props.theme.defaultRadius};
     width: 100%;
     overflow: hidden;
-    cursor: ${(props) => (props.clickable ? 'pointer' : 'default')};
+    ${(props) => (props.clickable ? 'cursor: pointer;' : '')}
     background-image: url(${(props) => props.cover});
     background-size: cover;
     background-position: center;

@@ -61,9 +61,11 @@ import { UsersService } from '@lib/common/users/Users.service';
 import { TicketEntity } from '@lib/common/tickets/entities/Ticket.entity';
 import { UserEntity } from '@lib/common/users/entities/User.entity';
 import { PurchasesService } from '@lib/common/purchases/Purchases.service';
-import { PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
+import { GeneratedProduct, PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
 import { EventsExportInputDto } from '@app/server/controllers/events/dto/EventsExportInput.dto';
 import { EventsExportResponseDto } from '@app/server/controllers/events/dto/EventsExportResponse.dto';
+import { EventsSalesInputDto } from '@app/server/controllers/events/dto/EventsSalesInput.dto';
+import { EventsSalesResponseDto, Transaction } from '@app/server/controllers/events/dto/EventsSalesResponse.dto';
 
 /**
  * Placeholder address
@@ -86,6 +88,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param categoriesService
      * @param uuidToolsService
      * @param usersService
+     * @param purchasesService
      * @param stripeInterfacesService
      */
     constructor(
@@ -140,16 +143,30 @@ export class EventsController extends ControllerBasics<EventEntity> {
      *
      * @param eventId
      * @param body
+     * @param user
      */
     @Post('/:event/export')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
     async _export(
         @Param('event') eventId: string,
         @Body() body: EventsExportInputDto,
+        @User() user: UserDto,
     ): Promise<EventsExportResponseDto> {
         const event = await this._crudCall(this.eventsService.findOne(eventId), StatusCodes.InternalServerError);
+
+        if (event.owner !== user.id) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Forbidden,
+                    message: 'invalid_category_id',
+                },
+                StatusCodes.Forbidden,
+            );
+        }
 
         const categoriesOfEvent = await this._crudCall(
             this.categoriesService.findAllByGroupId(event.group_id),
@@ -182,6 +199,13 @@ export class EventsController extends ControllerBasics<EventEntity> {
             StatusCodes.InternalServerError,
         );
 
+        if (tickets.length === 0) {
+            return {
+                attendees: [],
+                total: 0,
+            };
+        }
+
         const userIds = tickets.map((ticket: TicketEntity) => ticket.owner);
         const users = await this._serviceCall(this.usersService.findByIds(userIds), StatusCodes.InternalServerError);
 
@@ -193,7 +217,8 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         return {
             attendees: tickets.map((ticket: TicketEntity) => {
-                const user = users[users.findIndex((_user: UserEntity) => _user.id.toString() === ticket.owner)];
+                // tslint:disable-next-line:variable-name
+                const _user = users[users.findIndex((__user: UserEntity) => __user.id.toString() === ticket.owner)];
                 const purchase =
                     purchases[purchases.findIndex((_purchase: PurchaseEntity) => _purchase.id === ticket.receipt)];
 
@@ -203,7 +228,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
                     date: ticket.created_at,
                     price: purchase ? purchase.price || 0 : null,
                     currency: purchase ? purchase.currency || 'FREE' : null,
-                    email: user?.email || null,
+                    email: _user?.email || null,
                 };
             }),
             total: ticketsTotal,
@@ -215,16 +240,81 @@ export class EventsController extends ControllerBasics<EventEntity> {
      *
      * @param eventId
      * @param body
+     * @param user
+     */
+    @Post('/:event/sales')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @Roles('authenticated')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
+    async sales(
+        @Param('event') eventId: string,
+        @Body() body: EventsSalesInputDto,
+        @User() user: UserDto,
+    ): Promise<EventsSalesResponseDto> {
+        const event = await this._crudCall(this.eventsService.findOne(eventId), StatusCodes.InternalServerError);
+
+        if (event.owner !== user.id) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Forbidden,
+                    message: 'invalid_category_id',
+                },
+                StatusCodes.Forbidden,
+            );
+        }
+
+        const purchases = await this._serviceCall(
+            this.purchasesService.findPlageByGroupId(
+                event.group_id,
+                body.start ? new Date(body.start) : null,
+                body.end ? new Date(body.end) : null,
+            ),
+            StatusCodes.InternalServerError,
+        );
+
+        return {
+            transactions: purchases.map(
+                (purchaseEntity: PurchaseEntity): Transaction => ({
+                    price: purchaseEntity.final_price || 0,
+                    currency: purchaseEntity.currency || 'FREE',
+                    date: purchaseEntity.checked_out_at,
+                    status: purchaseEntity.payment?.status || 'waiting',
+                    quantity: 1,
+                }),
+            ),
+        };
+    }
+    /**
+     * Attendees recovery
+     *
+     * @param eventId
+     * @param body
+     * @param user
      */
     @Post('/:event/attendees')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized])
     async attendees(
         @Param('event') eventId: string,
         @Body() body: EventsAttendeesInputDto,
+        @User() user: UserDto,
     ): Promise<EventsAttendeesResponseDto> {
         const event = await this._crudCall(this.eventsService.findOne(eventId), StatusCodes.InternalServerError);
+
+        if (event.owner !== user.id) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Forbidden,
+                    message: 'invalid_category_id',
+                },
+                StatusCodes.Forbidden,
+            );
+        }
 
         const categoriesOfEvent = await this._crudCall(
             this.categoriesService.findAllByGroupId(event.group_id),
@@ -257,6 +347,15 @@ export class EventsController extends ControllerBasics<EventEntity> {
             StatusCodes.InternalServerError,
         );
 
+        if (tickets.length === 0) {
+            return {
+                attendees: [],
+                page_size: body.page_size,
+                page_number: body.page_number,
+                total: ticketsTotal,
+            };
+        }
+
         const userIds = tickets.map((ticket: TicketEntity) => ticket.owner);
         const users = await this._serviceCall(this.usersService.findByIds(userIds), StatusCodes.InternalServerError);
 
@@ -268,17 +367,27 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         return {
             attendees: tickets.map((ticket: TicketEntity) => {
-                const user = users[users.findIndex((_user: UserEntity) => _user.id.toString() === ticket.owner)];
+                // tslint:disable-next-line:variable-name
+                const _user = users[users.findIndex((__user: UserEntity) => __user.id.toString() === ticket.owner)];
                 const purchase =
                     purchases[purchases.findIndex((_purchase: PurchaseEntity) => _purchase.id === ticket.receipt)];
+                const generatedItemsIdx = purchase?.generated_products?.findIndex(
+                    (gp: GeneratedProduct): boolean => gp.id === ticket.id,
+                );
+                let price = 0;
+                let currency = 'FREE';
+                if (!isNil(generatedItemsIdx) && generatedItemsIdx !== -1) {
+                    price = purchase.generated_products[generatedItemsIdx].price;
+                    currency = purchase.generated_products[generatedItemsIdx].currency;
+                }
 
                 return {
                     ticket: ticket.id,
                     category: ticket.category,
                     date: ticket.created_at,
-                    price: purchase ? purchase.price || 0 : null,
-                    currency: purchase ? purchase.currency || 'FREE' : null,
-                    email: user?.email || null,
+                    price,
+                    currency,
+                    email: _user?.email || null,
                 };
             }),
             page_size: body.page_size,
@@ -428,9 +537,9 @@ export class EventsController extends ControllerBasics<EventEntity> {
      */
     @Post('/')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.Created)
-    @Roles('authenticated')
     @ApiResponses([
         StatusCodes.Created,
         StatusCodes.Unauthorized,

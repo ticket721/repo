@@ -72,7 +72,9 @@ const NameInputWrapper = styled.div`
 `;
 
 const Container = styled.div`
+  @media screen and (max-width: 900px) {
     padding-bottom: calc(80px + ${props => props.theme.regularSpacing});
+  }
 `;
 
 const Actions = styled.div`
@@ -127,8 +129,8 @@ export const CartMenuStripeCBCheckoutWeb: React.FC<CartMenuStripeCBCheckoutWebPr
         }
 
         const cardNumberElement = elements.create('cardNumber', {
-            placeholder: '4242 4242 4242 4242',
             showIcon: true,
+            placeholder: '4242 4242 4242 4242',
             style: {
                 base: {
                     backgroundColor: theme.darkerBg,

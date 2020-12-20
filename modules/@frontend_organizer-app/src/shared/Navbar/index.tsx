@@ -73,6 +73,7 @@ const AuthNavBar: React.FC = () => {
                 </Profile>
             </ActionContainer>
             <DrawerAccount
+                payments={true}
                 route={profileRoute}
                 onClose={() => history.push(history.location.pathname)}/>
         </Container>

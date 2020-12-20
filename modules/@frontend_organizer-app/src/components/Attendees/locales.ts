@@ -8,7 +8,7 @@ i18n.addResourceBundle('en', 'attendees', {
     results_per_page: 'Results per page',
     email: 'Email',
     category: 'Category',
-    price: 'Price',
+    price: 'Paid price',
     purchase_date: 'Purchase Date',
     ticket: 'Ticket',
     attendees_fetch_error: 'Cannot fetch attendees',
@@ -16,7 +16,9 @@ i18n.addResourceBundle('en', 'attendees', {
     exports: 'Exports',
     export_error: 'An error occured while export attendees',
     mailing_list: 'Mailing List',
-    csv: 'CSV'
+    csv: 'CSV',
+    multi_dates: '{{count}} dates',
+    no_attendees: 'No attendees'
 });
 
 i18n.addResourceBundle('fr', 'attendees', {
@@ -27,7 +29,7 @@ i18n.addResourceBundle('fr', 'attendees', {
     results_per_page: 'Resultats par page',
     email: 'Email',
     category: 'Catégorie',
-    price: 'Prix',
+    price: 'Prix payé',
     purchase_date: 'Date d\'achat',
     ticket: 'Ticket',
     attendees_fetch_error: 'Impossible de récuperer les participants',
@@ -35,5 +37,7 @@ i18n.addResourceBundle('fr', 'attendees', {
     exports: 'Exports',
     export_error: 'Une erreur est survenue lors de l\'export des particiants',
     mailing_list: 'Mailing List',
-    csv: 'CSV'
+    csv: 'CSV',
+    multi_dates: '{{count}} dates',
+    no_attendees: 'Aucun participant'
 });

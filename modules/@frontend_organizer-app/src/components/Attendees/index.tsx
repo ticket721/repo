@@ -1,21 +1,23 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react';
-import { FilterHeader }                                                 from './FilterHeader';
-import styled                                                           from 'styled-components';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { FilterHeader }     from './FilterHeader';
+import styled, { useTheme } from 'styled-components';
 import './locales';
-import { EventsContext }                                                from '../Fetchers/EventsFetcher';
-import { Error, FullPageLoading, SelectOption }                         from '@frontend/flib-react/lib/components';
-import { useToken }                                                     from '@frontend/core/lib/hooks/useToken';
+import { EventsContext }                                  from '../Fetchers/EventsFetcher';
+import { Error, FullPageLoading, SelectOption, Skeleton } from '@frontend/flib-react/lib/components';
+import { useToken }                                       from '@frontend/core/lib/hooks/useToken';
 import { v4 }                                                           from 'uuid';
-import { useRequest }                                                   from '@frontend/core/lib/hooks/useRequest';
-import { DatesSearchResponseDto }                                       from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
-import { EventsAttendeesResponseDto }                                   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsAttendeesResponse.dto';
-import { formatShort }                                                  from '@frontend/core/lib/utils/date';
-import { getPrice }                                                     from '@frontend/core/lib/utils/prices';
-import { useTranslation }                                               from 'react-i18next';
-import { CategoriesSearchResponseDto }                                  from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
-import { CategoryEntity }                                               from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-import { DateEntity }                                                   from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
-import { isRequestError }                                               from '@frontend/core/lib/utils/isRequestError';
+import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
+import { DatesSearchResponseDto }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { EventsAttendeesResponseDto }  from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsAttendeesResponse.dto';
+import { formatShort }                 from '@frontend/core/lib/utils/date';
+import { getPrice }                    from '@frontend/core/lib/utils/prices';
+import { useTranslation }              from 'react-i18next';
+import { CategoriesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/categories/dto/CategoriesSearchResponse.dto';
+import { CategoryEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import { DateEntity }                  from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
+import { isRequestError }              from '@frontend/core/lib/utils/isRequestError';
+import {isNil}                         from 'lodash';
+import { Theme }                       from '@frontend/flib-react/lib/config/theme';
 
 interface AttendeesProps {
     dates?: SelectOption[];
@@ -49,6 +51,7 @@ const AttendeesListingTableContainerPadder = styled.div`
 `;
 
 const AttendeesListingTableContainer = styled.div`
+  padding: ${props => props.theme.doubleSpacing};
   width: 100%;
 `;
 
@@ -120,7 +123,7 @@ const Page = styled.a`
 
 const AttendeesPageSelector: React.FC<AttendeesPageSelectorProps> = (props: AttendeesPageSelectorProps): JSX.Element => {
 
-    const totalPages = Math.ceil(props.total / props.size);
+    const totalPages = props.total === 0 ? 1 : Math.ceil(props.total / props.size);
     const range = [...new Array(totalPages)].map((_, idx) => idx);
 
     const [
@@ -227,6 +230,8 @@ const AttendeesListing: React.FC<AttendeesListingProps> = (props: AttendeesListi
     const [t] = useTranslation(['attendees', 'common']);
     const [currentPage, setCurrentPage] = useState(0);
     const [currentSize, setCurrentSize] = useState(10);
+    const [total, setTotal] = useState(0);
+    const theme = useTheme() as Theme;
 
     const payload: any = {
         page_size: currentSize,
@@ -270,18 +275,17 @@ const AttendeesListing: React.FC<AttendeesListingProps> = (props: AttendeesListi
         refreshRate: 10,
     }, uuid);
 
-    if (ticketsResp.response.loading) {
-        return <FullPageLoading/>;
-    }
+    useEffect(() => {
+        if (!isNil(ticketsResp.response?.data?.total) && ticketsResp.response.data.total !== total) {
+            setTotal(ticketsResp.response.data.total)
+        }
+    }, [ticketsResp.response, total])
 
     if (isRequestError(ticketsResp)) {
         return <Error message={'attendees_fetch_error'} retryLabel={'common:retrying_in'} onRefresh={ticketsResp.force}/>;
     }
 
-    const attendees = ticketsResp.response.data.attendees;
-    const page = ticketsResp.response.data.page_number;
-    const size = ticketsResp.response.data.page_size;
-    const total = ticketsResp.response.data.total;
+    const attendees = ticketsResp.response?.data?.attendees || [];
 
     return <AttendeesListingTableContainerPadder>
         <div
@@ -309,22 +313,68 @@ const AttendeesListing: React.FC<AttendeesListingProps> = (props: AttendeesListi
                 </thead>
                 <tbody>
                 {
-                    attendees.map((attendee, idx) => (
-                        <tr key={idx + page * size}>
-                            <td className={'idx'}>{(total - (idx + page * size))}</td>
-                            <td className={'email'}>{attendee.email}</td>
-                            <td className={'category'}>{
-                                props.categories[props.categories
-                                    .findIndex((cat: CategoryEntity) => cat.id === attendee.category)]?.display_name || t('unknown')
-                            }</td>
-                            <td className={'price'}>{getPrice({
-                                currency: attendee.currency,
-                                price: attendee.price,
-                            } as any, t('free'))}</td>
-                            <td className={'date'}>{formatShort(new Date(attendee.date))}</td>
-                            <td className={'id'}>{attendee.ticket}</td>
-                        </tr>
-                    ))
+
+                    ticketsResp.response.loading
+
+                        ? [...(new Array(currentSize))].map((_, idx) => (
+                            <tr key={`loading-${idx + currentPage * currentSize}`}>
+                                <td>
+                                    <Skeleton ready={false} type={'text'} rows={1} showLoadingAnimation={true} color={theme.textColorDarker}>
+                                    </Skeleton>
+                                </td>
+                                <td>
+                                    <Skeleton ready={false} type={'text'} rows={1} showLoadingAnimation={true} color={theme.textColorDarker}>
+                                    </Skeleton>
+                                </td>
+                                <td>
+                                    <Skeleton ready={false} type={'text'} rows={1} showLoadingAnimation={true} color={theme.textColorDarker}>
+                                    </Skeleton>
+                                </td>
+                                <td>
+                                    <Skeleton ready={false} type={'text'} rows={1} showLoadingAnimation={true} color={theme.textColorDarker}>
+                                    </Skeleton>
+                                </td>
+                                <td>
+                                    <Skeleton ready={false} type={'text'} rows={1} showLoadingAnimation={true} color={theme.textColorDarker}>
+                                    </Skeleton>
+                                </td>
+                                <td>
+                                    <Skeleton ready={false} type={'text'} rows={1} showLoadingAnimation={true} color={theme.textColorDarker}>
+                                    </Skeleton>
+                                </td>
+                            </tr>
+                        ))
+
+
+                        : (
+                            attendees.length > 0
+
+                                ? attendees.map((attendee, idx) => (
+                                    <tr key={idx + currentPage * currentSize}>
+                                        <td className={'idx'}>{(total - (idx + currentPage * currentSize))}</td>
+                                        <td className={'email'}>{attendee.email}</td>
+                                        <td className={'category'}>{
+                                            props.categories[props.categories
+                                                .findIndex((cat: CategoryEntity) => cat.id === attendee.category)]?.display_name || t('unknown')
+                                        }</td>
+                                        <td className={'price'}>{getPrice({
+                                            currency: attendee.currency,
+                                            price: attendee.price,
+                                        } as any, t('free'))}</td>
+                                        <td className={'date'}>{formatShort(new Date(attendee.date))}</td>
+                                        <td className={'id'}>{attendee.ticket}</td>
+                                    </tr>
+                                ))
+
+                                : <tr key={'empty'}>
+                                    <td>{t('no_attendees')}</td>
+                                    <td/>
+                                    <td/>
+                                    <td/>
+                                    <td/>
+                                    <td/>
+                                </tr>
+                        )
                 }
                 </tbody>
             </AttendeesListingTable>
@@ -349,6 +399,7 @@ export const Attendees: React.FC<AttendeesProps> = (props: AttendeesProps): JSX.
         categories: [],
         mode: 'categories',
     });
+    const [t] = useTranslation(['attendees', 'common']);
 
     const events = useContext(EventsContext);
 
@@ -414,7 +465,7 @@ export const Attendees: React.FC<AttendeesProps> = (props: AttendeesProps): JSX.
     }
 
     if (isRequestError(datesResp) || isRequestError(categoriesResp)) {
-        return <Error message={'infos_fetch_error'} retryLabel={'common:retrying_in'} onRefresh={() => {
+        return <Error message={t('infos_fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={() => {
             datesResp.force();
             categoriesResp.force();
         }}/>;

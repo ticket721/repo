@@ -27,6 +27,7 @@
         "@types/yup": "0.28.0",
         "colorthief": "2.3.0",
         "connected-react-router": "6.8.0",
+        "react-charts": "2.0.0-beta.7",
         "formik": "2.1.4",
         "formik-persist": "1.1.0",
         "framer": "1.2.8",

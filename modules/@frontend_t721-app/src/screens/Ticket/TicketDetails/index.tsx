@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import {
     DateTimeCard,
     Gradient,
@@ -8,7 +8,7 @@ import {
     PurchaseInfosCard,
     TicketHeader,
     TicketInfosCard,
-}                                              from '@frontend/flib-react/lib/components';
+}                                                          from '@frontend/flib-react/lib/components';
 import {
     formatDay,
     formatHour,
@@ -42,8 +42,8 @@ import { HapticsImpactStyle, HapticsNotificationType, useHaptics } from '@fronte
 import { Theme }                                                   from '@frontend/flib-react/lib/config/theme';
 import Sticky                                                      from 'react-stickynode';
 import { getPrice }                                                from '@frontend/core/lib/utils/prices';
-// tslint:disable-next-line:no-var-requires
-const publicIp = require('public-ip');
+import { ShortcutContext }                                         from '../../../components/ShortcutMenu';
+import { onlineLinkWrapper }                                       from '../../../utils/onlineLinkWrapper';
 // tslint:disable-next-line:no-var-requires
 const safeAreaInsets = require('safe-area-insets');
 
@@ -247,97 +247,6 @@ const QRHoverContainer = styled(motion.div) <QRHoverContainerProps>`
   align-items: center;
 `;
 
-const catchLiveTicket721Com = (onlineLink: string, ip: string, date: DateEntity): string => {
-    const url = new URL(onlineLink);
-
-    const type = url.searchParams.get('type');
-
-    switch (type) {
-        case 'vimeo': {
-            const vimeoId = url.searchParams.get('vimeo_id');
-            const chatId = url.searchParams.get('vimeo_chat_id');
-            const payload = btoa(JSON.stringify({
-                ip,
-                urls: [{
-                    url: `https://player.vimeo.com/video/${vimeoId}`,
-                    landscape: {
-                        top: '0',
-                        left: '0',
-                        height: '100%',
-                        width: '50%'
-                    },
-                    portrait: {
-                        top: '0',
-                        left: '0',
-                        height: '50%',
-                        width: '100%'
-                    }
-                }, {
-                    url: `https://vimeo.com/live-chat/${vimeoId}${chatId ? '/' + chatId : ''}`,
-                    landscape: {
-                        top: '0',
-                        left: '50%',
-                        height: '100%',
-                        width: '50%'
-                    },
-                    portrait: {
-                        top: '50%',
-                        left: '0',
-                        height: '50%',
-                        width: '100%'
-                    }
-                }]
-            }));
-
-            const destination = `https://live.ticket721.com?_=${payload}`;
-
-            window.location.href = destination;
-
-            return destination
-        }
-    }
-
-    return null
-
-}
-
-const catchExceptions = (onlineLink: string, ip: string, date: DateEntity): string => {
-    const url = new URL(onlineLink);
-
-    switch (url.hostname) {
-        case 'live.ticket721.com': {
-            return catchLiveTicket721Com(onlineLink, ip, date);
-        }
-    }
-
-    return null;
-}
-
-const onlineLinkWrapper = async (dispatch, t, onlineLink, date): Promise<void> => {
-    publicIp
-        .v4()
-        .then(
-            ip => {
-                const caughtType = catchExceptions(onlineLink, ip, date);
-
-                if (!caughtType) {
-                    const payload = btoa(JSON.stringify({
-                        ip,
-                        url: onlineLink,
-                    }));
-
-                    window.location.href = `https://live.ticket721.com/?_=${payload}`;
-                }
-
-            },
-        )
-        .catch(
-            () => {
-                dispatch(PushNotification(t('ip_fetch_error'), 'error'));
-            },
-        );
-};
-
 const isPhysicalChecker = (dates: DateEntity[]): boolean => {
     return dates.filter((date: DateEntity) => date.online === false).length > 0;
 };
@@ -433,6 +342,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
     const [currentDate, setCurrentDate] = useState<DateEntity>(null);
     const theme = useTheme() as Theme;
     const [fixedStates, setFixedStates] = useState({})
+    const shortcut = useContext(ShortcutContext);
 
     const { width } = useWindowDimensions();
     const [qrPrev, setQrPrev] = useState<string>(qrcodePreview);
@@ -442,6 +352,13 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
     const { platform } = usePlatform();
 
     const { ref, inView } = useInView();
+
+    useEffect(() => {
+        shortcut.setInvisible();
+        shortcut.closeMenu();
+        return () => shortcut.setVisible();
+        // eslint-disable-next-line
+    }, []);
 
     useEffect(() => {
         dispatch(StartRegenInterval(props.ticket.id));

@@ -1,7 +1,13 @@
 import { CRUDExtension } from '@lib/common/crud/CRUDExtension.base';
 import { Injectable } from '@nestjs/common';
 import { PurchasesRepository } from '@lib/common/purchases/Purchases.repository';
-import { Fee, Payment, Product, PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
+import {
+    Fee,
+    GeneratedProduct,
+    Payment,
+    Product,
+    PurchaseEntity,
+} from '@lib/common/purchases/entities/Purchase.entity';
 import { BaseModel, InjectModel, InjectRepository, uuid } from '@iaminfinity/express-cassandra';
 import { UserDto } from '@lib/common/users/dto/User.dto';
 import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
@@ -16,9 +22,11 @@ import { PaymentError, PaymentHandlerBaseService } from '@lib/common/purchases/P
 import { TimeToolService } from '@lib/common/toolbox/Time.tool.service';
 import { UsersService } from '@lib/common/users/Users.service';
 import { ECAAG } from '@lib/common/utils/ECAAG.helper';
-import { MINUTE } from '@lib/common/utils/time';
+import { MINUTE, SECOND } from '@lib/common/utils/time';
 import { EmailService } from '../email/Email.service';
 import { WinstonLoggerService } from '../logger/WinstonLogger.service';
+import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
+import { fromES } from '@lib/common/utils/fromES.helper';
 
 /**
  * Expiration of the cart
@@ -39,6 +47,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
      * @param timeToolService
      * @param usersService
      * @param emailService
+     * @param winstonLogger
      */
     constructor(
         @InjectRepository(PurchasesRepository)
@@ -66,6 +75,112 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
     }
 
     /**
+     * Find plage by group id
+     *
+     * @param groupId
+     * @param start
+     * @param end
+     */
+    async findPlageByGroupId(groupId: string, start: Date, end: Date): Promise<ServiceResponse<PurchaseEntity[]>> {
+        const payload: any = {
+            body: {
+                query: {
+                    bool: {
+                        must: [
+                            {
+                                nested: {
+                                    path: 'products',
+                                    query: {
+                                        bool: {
+                                            must: {
+                                                match: {
+                                                    'products.group_id': groupId,
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        ],
+                        filter: {
+                            script: {
+                                script: {
+                                    source: `
+                                        return !doc['checked_out_at'].empty;
+                                    `,
+                                    lang: 'painless',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        };
+
+        if (start !== null && end !== null) {
+            payload.body.query.bool.must.push({
+                range: {
+                    checked_out_at: {
+                        gte: start.getTime(),
+                        lte: end.getTime(),
+                    },
+                },
+            });
+        } else if (start !== null) {
+            payload.body.query.bool.must.push({
+                range: {
+                    checked_out_at: {
+                        gte: start.getTime(),
+                    },
+                },
+            });
+        } else if (end !== null) {
+            payload.body.query.bool.must.push({
+                range: {
+                    checked_out_at: {
+                        lte: end.getTime(),
+                    },
+                },
+            });
+        }
+
+        const purchaseCountRes = await this.countElastic(payload);
+
+        if (purchaseCountRes.error) {
+            return {
+                error: purchaseCountRes.error,
+                response: null,
+            };
+        }
+
+        payload.body.size = purchaseCountRes.response.count;
+        payload.body.sort = [
+            {
+                checked_out_at: {
+                    order: 'asc',
+                },
+            },
+        ];
+
+        // Recover Purchase
+        const purchaseRes = await this.searchElastic(payload);
+
+        if (purchaseRes.error) {
+            return {
+                error: 'error_while_checking',
+                response: null,
+            };
+        }
+
+        return {
+            response: purchaseRes.response.hits.hits.map(
+                (hit: ESSearchHit<PurchaseEntity>): PurchaseEntity => fromES(hit),
+            ),
+            error: null,
+        };
+    }
+
+    /**
      * Find many purchase entities by their ids
      *
      * @param purchaseIds
@@ -90,6 +205,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
             error: null,
         };
     }
+
     /**
      * Find one purchase entity by its id
      *
@@ -741,6 +857,54 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
     }
 
     /**
+     * Prevents multiple calls in short time lapses
+     *
+     * @param purchaseId
+     */
+    async closeGuard(purchaseId: string): Promise<ServiceResponse<void>> {
+        const now = Date.now();
+
+        const purchaseEntityRes = await this.findOne(purchaseId);
+
+        if (purchaseEntityRes.error) {
+            return {
+                error: purchaseEntityRes.error,
+                response: null,
+            };
+        }
+
+        const purchase: PurchaseEntity = purchaseEntityRes.response;
+
+        if (!isNil(purchase.close_guard) && new Date(purchase.close_guard).getTime() + 10 * SECOND > now) {
+            return {
+                error: 'guard_restriction',
+                response: null,
+            };
+        }
+
+        const closeGuardRes = await this.update(
+            {
+                id: purchase.id,
+            },
+            {
+                close_guard: new Date(),
+            },
+        );
+
+        if (closeGuardRes.error) {
+            return {
+                error: 'unable_to_setup_guard',
+                response: null,
+            };
+        }
+
+        return {
+            error: null,
+            response: null,
+        };
+    }
+
+    /**
      * Close the purchase entity
      *
      * @param user
@@ -754,6 +918,15 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
         appUrl?: string,
         timezone?: string,
     ): Promise<ServiceResponse<PurchaseError[]>> {
+        const closeGuardRes = await this.closeGuard(purchase.id);
+
+        if (closeGuardRes.error) {
+            return {
+                error: closeGuardRes.error,
+                response: null,
+            };
+        }
+
         const errors: PurchaseError[] = [];
 
         const paymentHandler: PaymentHandlerBaseService = this.moduleRef.get(`payment/${purchase.payment_interface}`, {
@@ -768,6 +941,9 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                 response: null,
             };
         }
+
+        let finalPrice: number;
+        let createdProducts: GeneratedProduct[] = [];
 
         if (await this.isExpired(purchase)) {
             const cancelRes = await paymentHandler.cancel(purchase.payment, paymentInterfaceIdRes.response);
@@ -848,6 +1024,8 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                             summaryData.items.push(...purchaseSummaryRes.response);
                             errors.push(null);
                         }
+
+                        createdProducts = createdProducts.concat(confirmationRes.response);
                     }
                 } else if (purchase.payment.status === 'rejected') {
                     const confirmationRes = await productHandler.ko(user, purchase, idx);
@@ -863,6 +1041,17 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                 }
             }
 
+            const finalPriceResp = await paymentHandler.finalPrice(purchase.payment, paymentInterfaceIdRes.response);
+
+            if (finalPriceResp.error) {
+                return {
+                    error: finalPriceResp.error,
+                    response: null,
+                };
+            }
+
+            finalPrice = finalPriceResp.response;
+
             const sendEmailResp = await this.emailService.sendPurchaseSummary(user, summaryData, appUrl, timezone);
 
             if (sendEmailResp.error) {
@@ -877,6 +1066,8 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
             },
             {
                 closed_at: this.timeToolService.now(),
+                final_price: finalPrice,
+                generated_products: createdProducts,
             },
         );
 

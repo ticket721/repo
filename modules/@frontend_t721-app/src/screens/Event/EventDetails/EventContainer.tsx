@@ -36,7 +36,7 @@ export interface EventContainerProps {
 
 
 const BlurredBg = styled.div<{ cover: string }>`
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     z-index: 0;
@@ -45,7 +45,7 @@ const BlurredBg = styled.div<{ cover: string }>`
     > div {
         width: 100vw;
         padding-top: 60vh;
-        filter: blur(2vw);
+        filter: blur(32px);
         background: url(${props => props.cover});
         background-size: 150%;
         background-position: center;

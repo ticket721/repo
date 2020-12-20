@@ -2,12 +2,14 @@ import i18n from '@frontend/core/lib/utils/i18n';
 
 i18n.addResourceBundle('en', 'common', {
     retrying_in: 'press to refresh',
-    create_event: 'Create Event'
+    create_event: 'Create Event',
+    open_cart: 'Open Cart'
 });
 
 i18n.addResourceBundle('fr', 'common', {
     retrying_in: 'touchez pour réessayer',
-    create_event: 'Créer un événement'
+    create_event: 'Créer un événement',
+    open_cart: 'Accéder au panier'
 });
 
 i18n.addResourceBundle('en', 'handphone', {

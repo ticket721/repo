@@ -29,6 +29,9 @@ export const SearchResultEvent: React.FC<SearchResultEventProps> = (props: Searc
         args: [token, {
             id: {
                 $in: props.date.categories
+            },
+            status: {
+                $eq: 'live'
             }
         }],
         refreshRate: 100

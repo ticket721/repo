@@ -6,7 +6,8 @@ i18n.addResourceBundle('en', 'navbar', {
     liked_events: 'Liked events',
     login: 'Login',
     register: 'Register',
-    create_event: 'Create Event'
+    create_event: 'Create Event',
+    open_cart: 'Open Cart'
 });
 
 i18n.addResourceBundle('fr', 'navbar', {
@@ -15,5 +16,6 @@ i18n.addResourceBundle('fr', 'navbar', {
     liked_events: 'Évènements favoris',
     login: 'Connexion',
     register: 'Inscription',
-    create_event: 'Créer un événement'
+    create_event: 'Créer un événement',
+    open_cart: 'Accéder au panier'
 });

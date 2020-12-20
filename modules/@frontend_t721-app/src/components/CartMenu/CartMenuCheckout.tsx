@@ -74,7 +74,6 @@ export const CartMenuCheckout: React.FC<CartMenuCheckoutProps> = (props: CartMen
         case null: {
             return <div
                 style={{
-                    height: props.height,
                     overflow: 'scroll'
                 }}
             >
@@ -107,7 +106,6 @@ export const CartMenuCheckout: React.FC<CartMenuCheckoutProps> = (props: CartMen
         case 'stripe': {
             return <div
                 style={{
-                    height: props.height,
                     overflow: 'scroll'
                 }}
             >
