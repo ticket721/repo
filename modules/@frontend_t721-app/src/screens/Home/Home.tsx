@@ -1,6 +1,6 @@
 import './locales';
-import React, { useState }  from 'react';
-import { EventList }        from './EventList';
+import React, { useState } from 'react';
+import { EventList }                  from './EventList';
 import { LocationModifier } from '../../components/LocationModifier';
 
 const Home: React.FC = () => {

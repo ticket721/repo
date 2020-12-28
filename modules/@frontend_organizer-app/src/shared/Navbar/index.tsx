@@ -2,17 +2,18 @@ import React, { useContext, useEffect, useState } from 'react';
 import styled                                     from 'styled-components';
 import { FullPageLoading, Icon, WalletHeader } from '@frontend/flib-react/lib/components';
 
-import { DrawerAccount, ProfileRoute }       from '@frontend/core/lib/components/DrawerAccount';
-import { useTranslation }                    from 'react-i18next';
-import { truncate } from '@frontend/core/lib/utils';
-import { useHistory }                        from 'react-router';
-import { NavLink }                           from 'react-router-dom';
+import { DrawerAccount, ProfileRoute } from '@frontend/core/lib/components/DrawerAccount';
+import { useTranslation }              from 'react-i18next';
+import { truncate }                    from '@frontend/core/lib/utils';
+import { useHistory }                  from 'react-router';
+import { NavLink }                     from 'react-router-dom';
 import './locales';
-import { v4 }                                from 'uuid';
-import { useRequest }                        from '@frontend/core/lib/hooks/useRequest';
-import { TicketsCountResponseDto }           from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
-import { UserContext }                       from '@frontend/core/lib/contexts/UserContext';
-import { useToken } from '@frontend/core/lib/hooks/useToken';
+import { v4 }                          from 'uuid';
+import { useRequest }                  from '@frontend/core/lib/hooks/useRequest';
+import { TicketsCountResponseDto }     from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsCountResponse.dto';
+import { UserContext }                 from '@frontend/core/lib/contexts/UserContext';
+import { useToken }                    from '@frontend/core/lib/hooks/useToken';
+import { getEnv }                      from '@frontend/core/lib/utils/getEnv';
 
 const AuthNavBar: React.FC = () => {
     const { t } = useTranslation('navbar');
@@ -67,7 +68,7 @@ const AuthNavBar: React.FC = () => {
                     }>
                     <UserHeader
                         username={user?.username}
-                        picture={'/favicon.ico'}
+                        picture={user.avatar || `${getEnv().REACT_APP_SELF}/favicon.ico`}
                         tickets={tickets.response.error ? '?' : tickets.response.data.tickets.count}/>
                     <Chevron icon='chevron' color='#fff' size='7px'/>
                 </Profile>

@@ -18,6 +18,11 @@ export class UserDto {
     username: string;
 
     /**
+     * User avatar
+     */
+    avatar: string;
+
+    /**
      * Keccak256 hash of the pure password
      */
     password: string;
@@ -25,7 +30,7 @@ export class UserDto {
     /**
      * Account type
      */
-    type: 't721' | 'web3';
+    type: 't721' | 'web3' | 'google';
 
     /**
      * Address of the account

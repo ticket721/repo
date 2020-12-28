@@ -9,6 +9,7 @@ import { AuthenticationController } from '@app/server/authentication/Authenticat
 import { PurchasesModule } from '@lib/common/purchases/Purchases.module';
 import { ToolBoxModule } from '@lib/common/toolbox/ToolBox.module';
 import { EmailModule } from '@lib/common/email/Email.module';
+import { GoogleStrategy } from '@app/server/authentication/Google.strategy';
 
 /**
  * Authentication module. Handles users registrations and authentication
@@ -29,7 +30,7 @@ import { EmailModule } from '@lib/common/email/Email.module';
             inject: [ConfigService],
         }),
     ],
-    providers: [AuthenticationService, LocalStrategy, JwtStrategy],
+    providers: [AuthenticationService, LocalStrategy, JwtStrategy, GoogleStrategy],
     controllers: [AuthenticationController],
 })
 export class AuthenticationModule {}

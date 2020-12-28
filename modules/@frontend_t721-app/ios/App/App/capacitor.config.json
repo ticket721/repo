@@ -10,6 +10,11 @@
     "plugins": {
         "Keyboard": {
             "style": "dark"
+        },
+        "GoogleAuth": {
+            "scopes": ["profile", "email"],
+            "serverClientId": "629698577321-72fv6pmpg0t8j0oh7shiburqniom7nh0.apps.googleusercontent.com",
+            "forceCodeForRefreshToken" : true
         }
     }
 }

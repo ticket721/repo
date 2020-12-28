@@ -9,7 +9,9 @@ export class PaymentStripeGenerateOnboardingUrlInputDto {
      * Refresh url paramter
      */
     @ApiProperty()
-    @IsUrl()
+    @IsUrl({
+        require_tld: false,
+    })
     // tslint:disable-next-line:variable-name
     refresh_url: string;
 
@@ -17,7 +19,9 @@ export class PaymentStripeGenerateOnboardingUrlInputDto {
      * Return url parameter
      */
     @ApiProperty()
-    @IsUrl()
+    @IsUrl({
+        require_tld: false,
+    })
     // tslint:disable-next-line:variable-name
     return_url: string;
 }

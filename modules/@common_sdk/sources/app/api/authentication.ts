@@ -26,6 +26,8 @@ import { PasswordlessUserDto }              from '@app/server/authentication/dto
 import { ResendValidationResponseDto }      from '@app/server/authentication/dto/ResendValidationResponse.dto';
 import { ResendValidationInputDto }         from '@app/server/authentication/dto/ResendValidationInput.dto';
 import { ResetPasswordInputDto }            from '@app/server/authentication/dto/ResetPasswordInputDto';
+import { GoogleLoginResponseDto }           from '@app/server/authentication/dto/GoogleLoginResponse.dto';
+import { GoogleLoginInputDto }              from '@app/server/authentication/dto/GoogleLoginInput.dto';
 
 export interface FailedRegisterReport {
     report_status: 'weak';
@@ -64,6 +66,19 @@ export async function localRegister(
     return self.post<LocalRegisterInputDto>('/authentication/local/register', {
         'Content-Type': 'application/json',
     }, createUser);
+}
+
+export async function googleLogin(idToken: string): Promise<AxiosResponse<GoogleLoginResponseDto>> {
+
+    const self: T721SDK = this;
+
+    const loginUser: GoogleLoginInputDto = {
+        idToken
+    };
+
+    return self.post<GoogleLoginInputDto>('/authentication/google/login', {
+        'Content-Type': 'application/json',
+    }, loginUser);
 }
 
 export async function localLogin(email: string, password: string): Promise<AxiosResponse<LocalLoginResponseDto>> {

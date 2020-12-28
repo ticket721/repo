@@ -1,5 +1,6 @@
 import {
     AuthAction,
+    IGoogleLogin,
     ILocalLogin,
     ILocalRegister,
     ILogout,
@@ -46,7 +47,7 @@ const SetLoadingReducer: Reducer<AuthState, ISetLoading> = (state: AuthState, ac
     loading: action.value,
 });
 
-const SubmissionReducer: Reducer<AuthState, ILocalRegister | ILocalLogin> = (
+const SubmissionReducer: Reducer<AuthState, ILocalRegister | ILocalLogin | IGoogleLogin> = (
     state: AuthState,
     action: ILocalRegister | ILocalLogin,
 ): AuthState => ({
@@ -81,6 +82,7 @@ export const AuthReducer: Reducer<AuthState, AuthAction> = (
             return SetLoadingReducer(state, action as ISetLoading);
         case AuthActionTypes.LocalRegister:
         case AuthActionTypes.LocalLogin:
+        case AuthActionTypes.GoogleLogin:
             return SubmissionReducer(state, action as ILocalRegister | ILocalLogin);
         case AuthActionTypes.ResetSubmission:
             return ResetSubmissionReducer(state, action as IResetSubmission);

@@ -54,7 +54,7 @@ interface MenuContainerProps {
 const MenuContainer = styled(motion.div) <MenuContainerProps>`
     position: fixed;
     width: ${props => props.width}px;
-    height: ${props => props.height}px;
+        // height: ${props => props.height}px;
     padding-bottom: env(safe-area-inset-bottom);
     padding-bottom: constant(safe-area-inset-bottom);
     left: ${props => props.left}px;
@@ -96,11 +96,11 @@ const MenuContainerHeaderClose = styled.p`
 `;
 
 const TimerText = styled.span`
-  font-family: "Roboto Mono", monospace;
-  margin: 0;
-  font-weight: 300;
-  font-size: 15px;
-  opacity: 0.5;
+    font-family: "Roboto Mono", monospace;
+    margin: 0;
+    font-weight: 300;
+    font-size: 15px;
+    opacity: 0.5;
 `
 
 const Actions = styled.div`
@@ -147,7 +147,7 @@ const computeMenuHeight = (window, isKeyboardOpen, keyboardHeight, platform) => 
 
     if (isKeyboardOpen) {
         if (platform === 'android') {
-            return window.height - SAI.top - SAI.bottom;
+            return window.height - SAI.top;
         }
         return window.height - keyboardHeight - SAI.top;
     }
@@ -170,14 +170,12 @@ const computeModalMenuHeight = (window, isKeyboardOpen, keyboardHeight, platform
 
 const getMenuBottom = (cart, isSmallScreen, keyboard, window, platform, menuHeight): number => {
     if (cart.open) {
-        if (platform === 'android') {
-            return !isSmallScreen ? ((window.height - 600) / 2) : 0
-        }
+
         return !isSmallScreen ?
             (!keyboard.isOpen ? (
                 (window.height - 600) / 2
-            ) : keyboard.keyboardHeight)
-            : keyboard.keyboardHeight
+            ) : 0)
+            : 0
     }
 
     return - (window.height * 2) - menuHeight;
@@ -387,7 +385,8 @@ export const CartMenu: React.FC = (): JSX.Element => {
                 duration: 0.75,
             }}
             animate={{
-                bottom: getMenuBottom(cart, isSmallScreen, keyboard, window, platform.platform, menuHeight)
+                bottom: getMenuBottom(cart, isSmallScreen, keyboard, window, platform.platform, menuHeight),
+                height: menuHeight + (platform.platform === 'ios' ? keyboard.keyboardHeight : 0)
             }}
         >
             <MenuContainerHeaderContainer>

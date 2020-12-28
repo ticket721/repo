@@ -4,4 +4,5 @@
     <string name="title_activity_main">Ticket721</string>
     <string name="package_name">com.ticket721.t721</string>
     <string name="custom_url_scheme">com.ticket721.t721</string>
+    <string name="server_client_id">629698577321-72fv6pmpg0t8j0oh7shiburqniom7nh0.apps.googleusercontent.com</string>
 </resources>

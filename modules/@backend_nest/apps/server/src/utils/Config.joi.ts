@@ -100,4 +100,6 @@ export const Config: Joi.ObjectSchema = Joi.object({
     APPLE_PAY_DOMAINS: Joi.string().required(),
 
     FEATURE_FLAGS_CONFIG: Joi.string().optional(),
+
+    GOOGLE_AUTH_CLIENT_ID: Joi.string().required(),
 });

@@ -19,6 +19,12 @@ export class CreateUserServiceInputDto {
     current_purchase: any;
 
     /**
+     * User avatar
+     */
+    @IsString()
+    avatar: string;
+
+    /**
      * Unique email
      */
     @IsEmail()
@@ -53,7 +59,7 @@ export class CreateUserServiceInputDto {
      * Account type
      */
     @IsString()
-    type: 't721' | 'web3';
+    type: 't721' | 'web3' | 'google';
 
     /**
      * Account role
@@ -72,4 +78,10 @@ export class CreateUserServiceInputDto {
      */
     @IsBoolean()
     admin: boolean;
+
+    /**
+     * True if user is valid
+     */
+    @IsBoolean()
+    valid?: boolean;
 }

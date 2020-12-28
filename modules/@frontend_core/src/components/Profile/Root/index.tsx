@@ -24,6 +24,8 @@ import { useHaptics, HapticsImpactStyle } from '../../../hooks/useHaptics';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { event } from '../../../tracking/registerEvent';
+import { logout } from '../../../oauth/logout';
+import { PushNotification } from '../../../redux/ducks/notifications';
 // tslint:disable-next-line:no-var-requires
 const StripeLogo = require('./stripe.png');
 
@@ -96,7 +98,7 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({
         <>
             <WalletHeader
                 username={user.username}
-                picture={'/favicon.ico'}
+                picture={user.avatar || `${getEnv().REACT_APP_SELF}/favicon.ico`}
                 tickets={isRequestError(tickets) ? '?' : tickets.response.data.tickets.count}
             />
             {payments ? (
@@ -145,9 +147,16 @@ const ProfileRoot: React.FC<ProfileRootProps> = ({
                         haptics.impact({
                             style: HapticsImpactStyle.Light,
                         });
-                        dispatch(Logout());
-                        history.replace('/');
-                        event('Auth', 'Logout', 'User logged out');
+                        logout(user)
+                            .then(() => {
+                                history.replace('/');
+                                dispatch(Logout());
+                                event('Auth', 'Logout', 'User logged out');
+                            })
+                            .catch((e) => {
+                                dispatch(PushNotification(e.message, 'error'));
+                                console.error(e);
+                            });
                     }}
                 />
                 <FeatureFlag flag={'admin_flag'}>

@@ -67,12 +67,20 @@ export class UserEntity {
     password: string;
 
     /**
+     * Url of avatar
+     */
+    @Column({
+        type: 'text',
+    })
+    avatar: string;
+
+    /**
      * Account type
      */
     @Column({
         type: 'text',
     })
-    type: 't721' | 'web3';
+    type: 't721' | 'web3' | 'google';
 
     /**
      * Account address

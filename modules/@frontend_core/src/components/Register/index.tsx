@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { useFormik } from 'formik';
 import { Button, TextInput, Icon, PasswordInput } from '@frontend/flib-react/lib/components';
 import { useDispatch, useSelector } from 'react-redux';
-import { AuthState, LocalRegister } from '../../redux/ducks/auth';
+import { AuthState, GoogleLogin, LocalRegister } from '../../redux/ducks/auth';
 import { useHistory } from 'react-router';
 import { AppState } from '../../redux/ducks';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { registerValidationSchema } from './validation';
 import './locales';
@@ -16,17 +16,53 @@ import { HapticsImpactStyle, useHaptics, HapticsNotificationType } from '../../h
 import { useKeyboardState } from '../../hooks/useKeyboardState';
 import { getEnv } from '../../utils/getEnv';
 import { event } from '../../tracking/registerEvent';
+import { Capacitor, Plugins } from '@capacitor/core';
+import { googleLogin } from '../../oauth/google';
+import { PushNotification } from '../../redux/ducks/notifications';
+import { Theme } from '@frontend/flib-react/lib/config/theme';
+import { v4 } from 'uuid';
+import { motion } from 'framer-motion';
+import { useQueryParameterState } from '../../hooks/useQueryParameterState';
+import { UserContext } from '../../contexts/UserContext';
 
 export interface RegisterProps {
     onLogin?: () => void;
     createEvent?: boolean;
 }
 
+const LoginModeButton = styled(motion.div)`
+    position: relative;
+    margin: ${(props) => props.theme.regularSpacing};
+    height: 50px;
+    padding: ${(props) => props.theme.regularSpacing};
+    display: flex;
+    width: 300px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-radius: ${(props) => props.theme.defaultRadius};
+    cursor: pointer;
+`;
+
+const LoginModeText = styled.span`
+    font-weight: 500;
+`;
+
+const IconLeftContainer = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 50px;
+    padding: ${(props) => props.theme.regularSpacing};
+`;
+
 export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
     const [t] = useTranslation(['registration', 'password_feedback']);
     const auth = useSelector((state: AppState): AuthState => state.auth);
     const dispatch = useDispatch();
     const haptics = useHaptics();
+    const [nonce] = useState(v4());
     const keyboard = useKeyboardState();
     const formik = useFormik({
         initialValues: {
@@ -41,36 +77,51 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
         },
     });
     const history = useHistory();
+    const user = useContext(UserContext);
+    const [mode, setMode] = useQueryParameterState('mode', 'select');
+    const theme = useTheme() as Theme;
 
     const { from }: any = history.location.state || { from: '/' };
 
+    const googleSignIn = () => {
+        googleLogin({
+            clientId: getEnv().REACT_APP_GOOGLE_AUTH_CLIENT_ID,
+            query_params: {
+                scope: 'email profile openid',
+                access_type: 'online',
+                response_type: 'id_token',
+                state: from,
+                redirect_uri: `${getEnv().REACT_APP_SELF}/_/google/redirect`,
+                prompt: 'select_account',
+                nonce,
+            },
+        });
+    };
+
     useDeepEffect(() => {
         if (!auth.loading) {
-            if (auth.submit && !auth.errors && auth.token) {
+            if (auth.submit && !auth.errors && auth.token && user !== null) {
                 haptics.notification({
                     type: HapticsNotificationType.SUCCESS,
                 });
-                history.replace(from);
                 event('Auth', 'Register', 'User registered');
-            } else {
-                if (auth.errors) {
-                    haptics.notification({
-                        type: HapticsNotificationType.SUCCESS,
-                    });
-                    formik.setErrors(auth.errors);
-                }
+                history.replace(from);
+            } else if (auth.errors) {
+                haptics.notification({
+                    type: HapticsNotificationType.SUCCESS,
+                });
+                formik.setErrors(auth.errors);
             }
         }
-    }, [auth]);
+    }, [auth, user]);
 
     const isTabletOrMobile = useMediaQuery({ maxWidth: 900 });
 
-    return (
-        <RegisterWrapper mobile={isTabletOrMobile} keyboardHeight={keyboard.keyboardHeight}>
-            <RegisterContainer mobile={isTabletOrMobile}>
-                <IconContainer>
-                    <Icon icon={'ticket721'} size={'40px'} color={'#fff'} />
-                </IconContainer>
+    let LoginContent;
+
+    switch (mode) {
+        case 'local': {
+            LoginContent = (
                 <Form
                     onSubmit={(ev) => {
                         haptics.impact({
@@ -127,22 +178,54 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
                         />
                     </Inputs>
                     <ActionsContainer>
-                        <Button
-                            variant={
-                                formik.isValid &&
-                                formik.values.password !== '' &&
-                                formik.values.passwordConfirmation !== '' &&
-                                formik.values.email !== '' &&
-                                formik.values.username !== ''
-                                    ? 'primary'
-                                    : 'disabled'
-                            }
-                            type={'submit'}
-                            title={t('register')}
-                        />
                         <div
                             style={{
-                                width: '200%',
+                                width: '100%',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <div
+                                style={{
+                                    paddingLeft: theme.smallSpacing,
+                                    paddingRight: theme.smallSpacing,
+                                    width: '100%',
+                                }}
+                            >
+                                <Button
+                                    variant={'warning'}
+                                    title={t('back')}
+                                    onClick={() => {
+                                        setMode('select');
+                                    }}
+                                />
+                            </div>
+                            <div
+                                style={{
+                                    paddingLeft: theme.smallSpacing,
+                                    paddingRight: theme.smallSpacing,
+                                    width: '100%',
+                                }}
+                            >
+                                <Button
+                                    variant={
+                                        formik.isValid &&
+                                        formik.values.password !== '' &&
+                                        formik.values.passwordConfirmation !== '' &&
+                                        formik.values.email !== '' &&
+                                        formik.values.username !== ''
+                                            ? 'primary'
+                                            : 'disabled'
+                                    }
+                                    type={'submit'}
+                                    title={t('register')}
+                                />
+                            </div>
+                        </div>
+                        <div
+                            style={{
+                                width: '100%',
                                 display: 'flex',
                                 flexDirection: isTabletOrMobile ? 'column' : 'row',
                                 alignItems: 'center',
@@ -178,6 +261,94 @@ export const Register: React.FC<RegisterProps> = (props: RegisterProps) => {
                         </div>
                     </ActionsContainer>
                 </Form>
+            );
+            break;
+        }
+        case 'select': {
+            LoginContent = (
+                <div
+                    style={{
+                        padding: theme.regularSpacing,
+                    }}
+                >
+                    <LoginModeButton
+                        whileTap={{
+                            scale: 0.98,
+                        }}
+                        style={{
+                            background: `linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), linear-gradient(260deg, ${theme.primaryColor.hex}, ${theme.primaryColorGradientEnd.hex})`,
+                        }}
+                        onClick={() => {
+                            setMode('local');
+                        }}
+                    >
+                        <IconLeftContainer>
+                            <Icon icon={'email'} size={'16px'} color={'white'} />
+                        </IconLeftContainer>
+                        <LoginModeText>{t('register_with_email')}</LoginModeText>
+                    </LoginModeButton>
+                    <LoginModeButton
+                        whileTap={{
+                            scale: 0.98,
+                        }}
+                        style={{
+                            backgroundColor: '#DC3C2B',
+                        }}
+                        onClick={() => {
+                            if (Capacitor.isPluginAvailable('GoogleAuth')) {
+                                Plugins.GoogleAuth.signIn()
+                                    .then((res: any) => {
+                                        dispatch(GoogleLogin(res.authentication.idToken));
+                                    })
+                                    .catch((err: any) => {
+                                        console.error(err);
+                                        dispatch(PushNotification(t('google_auth_error'), 'error'));
+                                    });
+                            } else {
+                                googleSignIn();
+                            }
+                        }}
+                    >
+                        <IconLeftContainer>
+                            <Icon icon={'google'} size={'16px'} color={'white'} />
+                        </IconLeftContainer>
+                        <LoginModeText>{t('register_with_google')}</LoginModeText>
+                    </LoginModeButton>
+                    <LoginModeButton
+                        whileTap={{
+                            scale: 0.98,
+                        }}
+                        style={{
+                            backgroundColor: theme.warningColor.hex,
+                        }}
+                        onClick={() => {
+                            haptics.impact({
+                                style: HapticsImpactStyle.Light,
+                            });
+                            if (props.onLogin) {
+                                props.onLogin();
+                            } else {
+                                history.replace('/login', { from });
+                            }
+                        }}
+                    >
+                        <IconLeftContainer>
+                            <Icon icon={'profile'} size={'16px'} color={'white'} />
+                        </IconLeftContainer>
+                        <LoginModeText>{t('login')}</LoginModeText>
+                    </LoginModeButton>
+                </div>
+            );
+        }
+    }
+
+    return (
+        <RegisterWrapper mobile={isTabletOrMobile} keyboardHeight={keyboard.keyboardHeight}>
+            <RegisterContainer mobile={isTabletOrMobile}>
+                <IconContainer>
+                    <Icon icon={'ticket721'} size={'40px'} color={'#fff'} />
+                </IconContainer>
+                {LoginContent}
             </RegisterContainer>
         </RegisterWrapper>
     );
@@ -249,7 +420,7 @@ const SwitchToReset = styled.span<{ isTabletOrMobile: boolean }>`
 `;
 
 const ActionsContainer = styled.div`
-    width: 50%;
+    width: 100%;
     margin-top: 25px;
     display: flex;
     flex-direction: column;

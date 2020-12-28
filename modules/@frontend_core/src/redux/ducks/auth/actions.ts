@@ -29,6 +29,16 @@ export const LocalLogin = (email: string, password: string): ILocalLogin => ({
     password,
 });
 
+export interface IGoogleLogin extends Action<string> {
+    type: AuthActionTypes.GoogleLogin;
+    idToken: string;
+}
+
+export const GoogleLogin = (idToken: string): IGoogleLogin => ({
+    type: AuthActionTypes.GoogleLogin,
+    idToken,
+});
+
 export interface ILogout extends Action<string> {
     type: AuthActionTypes.Logout;
 }

@@ -66,7 +66,7 @@ export class UsersService {
                     this.usersRepository.create({
                         ...user,
                         past_purchases: [],
-                        valid: false,
+                        valid: !!user.valid,
                     }),
                 )
                 .toPromise();
@@ -224,8 +224,19 @@ export class UsersService {
                     {
                         body: {
                             query: {
-                                match: {
-                                    email,
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                email,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                type: 't721',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },

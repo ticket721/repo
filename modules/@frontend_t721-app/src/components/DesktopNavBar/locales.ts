@@ -7,7 +7,9 @@ i18n.addResourceBundle('en', 'navbar', {
     login: 'Login',
     register: 'Register',
     create_event: 'Create Event',
-    open_cart: 'Open Cart'
+    open_cart: 'Open Cart',
+    privacy: 'Privacy Policy',
+    tos: 'Terms of Service'
 });
 
 i18n.addResourceBundle('fr', 'navbar', {
@@ -17,5 +19,7 @@ i18n.addResourceBundle('fr', 'navbar', {
     login: 'Connexion',
     register: 'Inscription',
     create_event: 'Créer un événement',
-    open_cart: 'Accéder au panier'
+    open_cart: 'Accéder au panier',
+    privacy: 'Confidentialité',
+    tos: 'Conditions d\'utilisation'
 });

@@ -1,11 +1,13 @@
 import {
     Body,
     Controller,
+    Get,
     HttpCode,
     HttpException,
     Injectable,
     Post,
     Request,
+    Response,
     UseFilters,
     UseGuards,
 } from '@nestjs/common';
@@ -41,6 +43,7 @@ import { ResendValidationResponseDto } from '@app/server/authentication/dto/Rese
 import { ResendValidationInputDto } from '@app/server/authentication/dto/ResendValidationInput.dto';
 import { EmailService } from '@lib/common/email/Email.service';
 import { b64Encode } from '@common/global';
+import { GoogleLoginResponseDto } from '@app/server/authentication/dto/GoogleLoginResponse.dto';
 
 /**
  * Controller exposing the authentication routes
@@ -63,6 +66,39 @@ export class AuthenticationController {
         private readonly emailService: EmailService,
         private readonly configService: ConfigService,
     ) {}
+
+    /**
+     * Authenticate a user by verifying its google id_token
+     *
+     * @param req
+     */
+    @Post('/google/login')
+    @UseGuards(AuthGuard('google'))
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.InternalServerError])
+    async googleLogin(@Request() req): Promise<GoogleLoginResponseDto> {
+        try {
+            delete req.user.current_purchase;
+            delete req.user.past_purchases;
+            return {
+                user: req.user,
+                token: this.jwtService.sign({
+                    username: req.user.username,
+                    sub: req.user.id,
+                }),
+                expiration: new Date(Date.now() + parse(this.configService.get('JWT_EXPIRATION'))),
+            };
+        } catch (e) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.InternalServerError,
+                    message: 'token_signature_error',
+                },
+                StatusCodes.InternalServerError,
+            );
+        }
+    }
 
     /**
      * [POST /authentication/local/login] : Login with local account

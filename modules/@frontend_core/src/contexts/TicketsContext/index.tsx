@@ -1,17 +1,18 @@
 import '../locales';
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { AppState } from '@frontend-core/redux';
 import { useSelector } from 'react-redux';
 import { v4 } from 'uuid';
 import { Token } from '../../redux/ducks/auth';
-import { FullPageLoading } from '@frontend/flib-react/lib/components';
 import { RequestBag, useRequest } from '../../hooks/useRequest';
 import { TicketsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsSearchResponse.dto';
+import { isNil } from 'lodash';
 
 export const TicketsContext = React.createContext<RequestBag<TicketsSearchResponseDto>>(undefined);
 
 interface LoggedInTicketsGuardProps {
     token: Token;
+    setResp: (rb: RequestBag<TicketsSearchResponseDto>) => void;
 }
 
 const LoggedInTicketsGuard: React.FC<PropsWithChildren<LoggedInTicketsGuardProps>> = (
@@ -38,45 +39,64 @@ const LoggedInTicketsGuard: React.FC<PropsWithChildren<LoggedInTicketsGuardProps
         uuid,
     );
 
-    return <TicketsContext.Provider value={ticketsReq}>{props.children}</TicketsContext.Provider>;
+    useEffect(() => {
+        props.setResp(ticketsReq);
+    }, [ticketsReq]);
+
+    return null;
 };
 
 interface LoggedOutTicketsGuardProps {
     token: Token;
+    setResp: (rb: RequestBag<TicketsSearchResponseDto>) => void;
 }
 
 const LoggedOutTicketsGuard: React.FC<PropsWithChildren<LoggedOutTicketsGuardProps>> = (
     props: PropsWithChildren<LoggedOutTicketsGuardProps>,
 ) => {
-    return (
-        <TicketsContext.Provider
-            value={{
-                response: {
-                    data: null,
-                    error: null,
-                    loading: false,
-                    errors: 0,
-                },
-                registerEntity: () => undefined,
-                unregisterEntity: () => undefined,
-                force: () => undefined,
-            }}
-        >
-            {props.children}
-        </TicketsContext.Provider>
-    );
+    useEffect(() => {
+        props.setResp({
+            response: {
+                data: null,
+                error: null,
+                loading: false,
+                errors: 0,
+            },
+            registerEntity: () => undefined,
+            unregisterEntity: () => undefined,
+            force: () => undefined,
+        });
+    }, []);
+
+    return null;
 };
 
 export const TicketsContextGuard: React.FC<{}> = (props) => {
     const token = useSelector((state: AppState) => state.auth.token);
+    const [ticketsReq, setTicketsReq] = useState<RequestBag<TicketsSearchResponseDto>>({
+        response: {
+            data: null,
+            error: null,
+            loading: false,
+            errors: 0,
+        },
+        registerEntity: () => undefined,
+        unregisterEntity: () => undefined,
+        force: () => undefined,
+    });
 
-    if (token === undefined) {
-        return <FullPageLoading />;
-    }
-
-    if (token === null) {
-        return <LoggedOutTicketsGuard token={token}>{props.children}</LoggedOutTicketsGuard>;
-    }
-
-    return <LoggedInTicketsGuard token={token}>{props.children}</LoggedInTicketsGuard>;
+    return (
+        <>
+            {isNil(token) ? (
+                <LoggedOutTicketsGuard token={token} setResp={setTicketsReq}>
+                    {props.children}
+                </LoggedOutTicketsGuard>
+            ) : (
+                <LoggedInTicketsGuard token={token} setResp={setTicketsReq}>
+                    {props.children}
+                </LoggedInTicketsGuard>
+            )}
+            <TicketsContext.Provider value={ticketsReq}>{props.children}</TicketsContext.Provider>
+        </>
+    );
 };
