@@ -1,6 +1,7 @@
 export enum AuthActionTypes {
     LocalRegister = '@@auth/localregister',
     LocalLogin = '@@auth/locallogin',
+    GoogleLogin = '@@auth/google',
     Logout = '@@auth/logout',
     SetToken = '@@auth/settoken',
     SetErrors = '@@auth/seterrors',

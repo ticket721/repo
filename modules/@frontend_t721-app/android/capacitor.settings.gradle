@@ -2,6 +2,9 @@
 include ':capacitor-android'
 project(':capacitor-android').projectDir = new File('../../../node_modules/@capacitor/android/capacitor')
 
+include ':codetrix-studio-capacitor-google-auth'
+project(':codetrix-studio-capacitor-google-auth').projectDir = new File('../../../node_modules/@codetrix-studio/capacitor-google-auth/android')
+
 include ':capacitor-plugin-ios-swipe-back'
 project(':capacitor-plugin-ios-swipe-back').projectDir = new File('../../../node_modules/capacitor-plugin-ios-swipe-back/android')
 

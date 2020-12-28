@@ -13,6 +13,11 @@ i18n.addResourceBundle('en', 'registration', {
     register: 'Register',
     login_switch: 'Already registered ? Login here !',
     create_event: 'Create event',
+    register_with_email: 'Register with email',
+    register_with_google: 'Register with Google',
+    login: 'Sign in',
+    google_auth_error: 'Google authentication error',
+    back: 'Back',
 
     // errors
     email_required: 'email is required',
@@ -38,6 +43,11 @@ i18n.addResourceBundle('fr', 'registration', {
     register: 'Inscription',
     login_switch: 'Déjà un compte ? Connectez vous ici !',
     create_event: 'Créer un événement',
+    register_with_email: 'Inscription avec email',
+    register_with_google: 'Inscription avec Google',
+    login: 'Se connecter',
+    google_auth_error: "Erreur lors de l'inscription avec Google",
+    back: 'Retour',
 
     // errors
     email_required: 'email requis',

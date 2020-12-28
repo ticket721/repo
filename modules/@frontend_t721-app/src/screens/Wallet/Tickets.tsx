@@ -817,8 +817,8 @@ const TicketDashboard = styled.div`
         }
 
         :hover {
-            filter: drop-shadow(0 0 20px black);
-            transform: scale(1.03);
+            filter: drop-shadow(0 0 20px #00000099);
+            transform: scale(1.01);
         }
     }
 `;

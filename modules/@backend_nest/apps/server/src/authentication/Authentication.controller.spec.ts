@@ -743,6 +743,7 @@ describe('Authentication Controller', function() {
                 locale: 'en',
                 valid: false,
                 admin: false,
+                avatar: null,
             };
             const spiedController = spy(context.authenticationController);
 
@@ -800,6 +801,7 @@ describe('Authentication Controller', function() {
                 locale: 'en',
                 valid: false,
                 admin: false,
+                avatar: null,
             };
 
             when(spiedController.sendAccountCreationMail(deepEqual(pluser), redirectUrl)).thenResolve();
@@ -1054,6 +1056,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 locale: 'fr',
                 admin: false,
+                avatar: null,
             };
 
             await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
@@ -1099,6 +1102,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 locale: 'fr',
                 admin: false,
+                avatar: null,
             };
 
             await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
@@ -1144,6 +1148,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 locale: 'fr',
                 admin: false,
+                avatar: null,
             };
 
             await expect(authenticationController.updatePassword(body, user)).rejects.toMatchObject({
@@ -1179,6 +1184,7 @@ describe('Authentication Controller', function() {
                         type: 't721',
                         locale: 'fr',
                         admin: false,
+                        avatar: null,
                     },
                     error: null,
                 }),
@@ -1200,6 +1206,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 locale: 'fr',
                 admin: false,
+                avatar: null,
             };
 
             await expect(authenticationController.updatePassword(body, user)).resolves.toMatchObject({
@@ -1213,6 +1220,7 @@ describe('Authentication Controller', function() {
                 type: 't721',
                 locale: 'fr',
                 admin: false,
+                avatar: null,
             });
         });
     });
@@ -1248,6 +1256,7 @@ describe('Authentication Controller', function() {
                 address: '0x...',
                 role: 'authenticated',
                 admin: false,
+                avatar: null,
             };
 
             when(authenticationServiceMock.validateUserEmail('123')).thenReturn(
@@ -1285,6 +1294,7 @@ describe('Authentication Controller', function() {
                 address: '0x...',
                 role: 'authenticated',
                 admin: false,
+                avatar: null,
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new NestError('jwt expired'));
@@ -1323,6 +1333,7 @@ describe('Authentication Controller', function() {
                 address: '0x...',
                 role: 'authenticated',
                 admin: false,
+                avatar: null,
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new NestError('invalid signature'));
@@ -1361,6 +1372,7 @@ describe('Authentication Controller', function() {
                 address: '0x...',
                 role: 'authenticated',
                 admin: false,
+                avatar: null,
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenThrow(new NestError('unknown error'));
@@ -1399,6 +1411,7 @@ describe('Authentication Controller', function() {
                 address: '0x...',
                 role: 'authenticated',
                 admin: false,
+                avatar: null,
             };
 
             when(jwtServiceMock.verifyAsync('test_token')).thenReturn(
@@ -1499,6 +1512,7 @@ describe('Authentication Controller', function() {
                 address: '0x...',
                 role: 'authenticated',
                 admin: false,
+                avatar: null,
             };
             const redirectUrl = 'https://google.com';
 
@@ -1541,6 +1555,7 @@ describe('Authentication Controller', function() {
                 address: '0x...',
                 role: 'authenticated',
                 admin: false,
+                avatar: null,
             };
             const redirectUrl = 'https://google.com';
 
@@ -1727,6 +1742,7 @@ describe('Authentication Controller', function() {
                 address: '0x...',
                 role: 'authenticated',
                 admin: false,
+                avatar: null,
             };
 
             when(authenticationServiceMock.validateResetPassword(user.id, 'password')).thenReturn(

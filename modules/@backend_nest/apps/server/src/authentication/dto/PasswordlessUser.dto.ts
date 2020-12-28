@@ -18,9 +18,14 @@ export class PasswordlessUserDto {
     username: string;
 
     /**
+     * User avatar
+     */
+    avatar: string;
+
+    /**
      * Type of the account
      */
-    type: 't721' | 'web3';
+    type: 't721' | 'web3' | 'google';
 
     /**
      * Address of the account

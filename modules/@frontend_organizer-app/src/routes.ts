@@ -33,6 +33,10 @@ export const routes: RouteDatum[] = [
         page: AcknowledgementsPage,
     },
     {
+        path: '/_/google/redirect',
+        page: lazy(() => import('./routes/GoogleRedirect'))
+    },
+    {
         path: '/event/:eventId/sales',
         page: lazy(() => import('./routes/EventSales')),
         protected: true

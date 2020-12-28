@@ -263,6 +263,7 @@ apps:
       config.t721app.createEventLink: "https://organizer.staging.ticket721.com/create-event"
       config.t721app.sitemapEnabled: "false"
       config.t721app.gaId: "${CONFIG_STAGING_T721APP_GA_ID}"
+      config.googleAuthClientId: "${CONFIG_STAGING_GOOGLE_AUTH_CLIENT_ID}"
 
       config.staff.segmentApiKey: "${CONFIG_STAGING_STAFF_SEGMENT_API_KEY}"
       config.staff.organizerUrl: "https://organizer.staging.ticket721.com"

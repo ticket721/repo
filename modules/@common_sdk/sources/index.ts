@@ -19,6 +19,7 @@ import {
     validateResetPassword,
     updatePassword,
     resendValidation,
+    googleLogin
 } from './app/api/authentication';
 
 // IMAGES
@@ -104,6 +105,7 @@ export class T721SDK {
         this.resetPassword = this.resetPassword.bind(this);
         this.validateResetPassword = this.validateResetPassword.bind(this);
         this.resendValidation = this.resendValidation.bind(this);
+        this.googleLogin = this.googleLogin.bind(this);
 
         this.users.me = this.users.me.bind(this);
         this.users.setDeviceAddress = this.users.setDeviceAddress.bind(this);
@@ -290,6 +292,7 @@ export class T721SDK {
     public resetPassword = resetPassword;
     public validateResetPassword = validateResetPassword;
     public resendValidation = resendValidation;
+    public googleLogin = googleLogin;
 
     public users = {
         me: usersMe,

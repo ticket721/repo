@@ -28,6 +28,7 @@ import { useHistory }                                                      from 
 import { UserContextGuard }                                                from '@frontend/core/lib/contexts/UserContext';
 import { FullPageLoading }                                                 from '@frontend/flib-react/lib/components';
 import ToastStacker                                                        from '@frontend/core/lib/components/ToastStacker';
+import DeepLinksListener                                                   from './components/DeepLinksListener';
 
 const store: Store<T721AppState> = configureStore<any>({
     location: LocationReducer,
@@ -71,6 +72,7 @@ const Root = () => {
                         <ConnectedRouter history={history}>
                             <GlobalStyles/>
                             <BrowserRouter>
+                                <DeepLinksListener/>
                                 <PageViewTracker>
                                     <ScrollToTop>
                                         <App/>

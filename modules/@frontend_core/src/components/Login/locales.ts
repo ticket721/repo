@@ -9,6 +9,11 @@ i18n.addResourceBundle('en', 'login', {
     register_switch: 'Register here !',
     forgot_password: 'Forgot password ?',
     create_event: 'Create event',
+    login_with_email: 'Login with email',
+    login_with_google: 'Login with Google',
+    register: 'Register',
+    google_auth_error: 'Google authentication error',
+    back: 'Back',
 
     // errors
     email_required: 'email is required',
@@ -23,6 +28,11 @@ i18n.addResourceBundle('fr', 'login', {
     register_switch: 'Inscrivez vous ici !',
     forgot_password: 'Mot de passe oublié ?',
     create_event: 'Créer un événement',
+    login_with_email: 'Connexion avec email',
+    login_with_google: 'Connexion avec Google',
+    register: 'Inscription',
+    google_auth_error: "Erreur d'authentification avec Google",
+    back: 'Retour',
 
     // errors
     email_required: 'email requis',

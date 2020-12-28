@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Capacitor, KeyboardInfo, Plugins } from '@capacitor/core';
 
 export const useKeyboardState = () => {
     const [keyboardState, setKeyboardState] = useState({
@@ -8,21 +7,31 @@ export const useKeyboardState = () => {
     });
 
     useEffect(() => {
-        if (Capacitor.isPluginAvailable('Keyboard')) {
-            Plugins.Keyboard.addListener('keyboardDidShow', (info: KeyboardInfo) => {
-                setKeyboardState({
-                    isOpen: true,
-                    keyboardHeight: info.keyboardHeight,
-                });
+        const onKeyboardDidShow = (info: any) => {
+            console.log(JSON.stringify(info));
+            console.log('keyboard size changed did show');
+            setKeyboardState({
+                isOpen: true,
+                keyboardHeight: info.keyboardHeight,
             });
+        };
 
-            Plugins.Keyboard.addListener('keyboardDidHide', () => {
-                setKeyboardState({
-                    isOpen: false,
-                    keyboardHeight: 0,
-                });
+        window.addEventListener('keyboardDidShow', onKeyboardDidShow);
+
+        const onKeyboardDidHide = () => {
+            console.log('keyboard size changed did hide');
+            setKeyboardState({
+                isOpen: false,
+                keyboardHeight: 0,
             });
-        }
+        };
+
+        window.addEventListener('keyboardDidHide', onKeyboardDidHide);
+
+        return () => {
+            window.removeEventListener('keyboardDidShow', onKeyboardDidShow);
+            window.removeEventListener('keyboardDidHide', onKeyboardDidHide);
+        };
     }, []);
 
     return keyboardState;

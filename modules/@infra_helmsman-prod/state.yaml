@@ -267,6 +267,7 @@ apps:
       config.organizer.iosMerchantId: "${CONFIG_PRODUCTION_IOS_T721APP_APPLE_MERCHANT_ID}"
       config.staff.iosMerchantId: "${CONFIG_PRODUCTION_IOS_T721APP_APPLE_MERCHANT_ID}"
       config.organizer.gaId: "${CONFIG_PRODUCTION_ORGANIZER_GA_ID}"
+      config.googleAuthClientId: "${CONFIG_PRODUCTION_GOOGLE_AUTH_CLIENT_ID}"
 
       config.organizer.sentry_dsn: "${CONFIG_PRODUCTION_ORGANIZER_SENTRY_DSN}"
       config.t721app.sentry_dsn: "${CONFIG_PRODUCTION_T721APP_SENTRY_DSN}"

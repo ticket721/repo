@@ -1,5 +1,5 @@
-import React, { PropsWithChildren, useContext, useState } from 'react';
-import { PurchaseEntity }                                 from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/entities/Purchase.entity';
+import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
+import { PurchaseEntity }                                            from '@common/sdk/lib/@backend_nest/libs/common/src/purchases/entities/Purchase.entity';
 import { v4 }                                             from 'uuid';
 import { useRequest }                                     from '@frontend/core/lib/hooks/useRequest';
 import { useDeepEffect }                                  from '@frontend/core/lib/hooks/useDeepEffect';
@@ -31,19 +31,22 @@ export const CartContext = React.createContext<CartState>({
     force: () => null
 });
 
-export interface CartContextManagerProps {
+export interface LoggedInCartContextManagerProps {
     token: string;
+    lastResp: PurchaseEntity;
+    setLastResp: (lr: PurchaseEntity) => void;
+    lastErrors: PurchaseError[];
+    setLastErrors: (lr: PurchaseError[]) => void;
+    isOpen: boolean;
+    setOpen: (open: boolean) => void;
+    setForce: (cbobj: {cb: (() => void)}) => void;
+    setLastUpdate: (lu: Date) => void;
 }
 
-const LoggedInCartContextManager: React.FC<PropsWithChildren<CartContextManagerProps>> =
-    (props: PropsWithChildren<CartContextManagerProps>): JSX.Element => {
+const LoggedInCartContextManager: React.FC<PropsWithChildren<LoggedInCartContextManagerProps>> =
+    (props: PropsWithChildren<LoggedInCartContextManagerProps>): JSX.Element => {
 
         const [uuid] = useState(v4());
-        const [lastUpdate, setLastUpdate] = useState(new Date());
-        const [lastResp, setLastResp] = useState<PurchaseEntity>(null);
-        const [lastErrors, setLastErrors] = useState<PurchaseError[]>(null);
-        const [isOpen, setOpen] = useState<boolean>(false);
-        const history = useHistory();
 
         const purchaseFetch = useRequest<PurchasesFetchResponseDto>({
             method: 'purchases.fetch',
@@ -53,57 +56,122 @@ const LoggedInCartContextManager: React.FC<PropsWithChildren<CartContextManagerP
 
         useDeepEffect(() => {
             if (!isNil(purchaseFetch.response.data)
-                && (!eq(purchaseFetch.response.data.cart, lastResp)
-                    || !eq(purchaseFetch.response.data.errors, lastErrors))) {
-                setLastResp(purchaseFetch.response.data.cart);
-                setLastErrors(purchaseFetch.response.data.errors);
-                setLastUpdate(new Date());
+                && (!eq(purchaseFetch.response.data.cart, props.lastResp)
+                    || !eq(purchaseFetch.response.data.errors, props.lastErrors))) {
+                props.setLastResp(purchaseFetch.response.data.cart);
+                props.setLastErrors(purchaseFetch.response.data.errors);
+                props.setLastUpdate(new Date());
             }
-        }, [purchaseFetch.response.data]);
+        },
+            // eslint-disable-next-line
+            [purchaseFetch.response.data]);
+
+        useEffect(() => {
+            props.setForce({
+                cb: purchaseFetch.force
+            })
+        },
+            // eslint-disable-next-line
+            [purchaseFetch])
 
         useDeepEffect(() => {
-            if (lastResp && lastResp.products.length === 0 && isOpen) {
-                setOpen(false);
+            if (props.lastResp && props.lastResp.products.length === 0 && props.isOpen) {
+                props.setOpen(false);
             }
-        }, [lastResp]);
+        }, [props.lastResp]);
 
-        return <CartContext.Provider value={{
-            cart: lastResp,
-            errors: lastErrors,
-            last_update: lastUpdate,
-            open: isOpen,
-            openMenu: () => {
-                setOpen(true)
-                modalview('/cart');
-            },
-            closeMenu: () => {
-                setOpen(false)
-                pageview(`${history.location.pathname}${history.location.search}`);
-            },
-            force: purchaseFetch.force
-        }}>
-            {props.children}
-        </CartContext.Provider>;
+        return null;
     }
 
-const LoggedOutCartContextManager: React.FC<PropsWithChildren<any>> = (props: PropsWithChildren<any>): JSX.Element => {
-    return <>
-        {props.children}
-    </>;
+export interface LoggedOutCartContextManagerProps {
+    token: string;
+    lastResp: PurchaseEntity;
+    setLastResp: (lr: PurchaseEntity) => void;
+    lastErrors: PurchaseError[];
+    setLastErrors: (lr: PurchaseError[]) => void;
+    isOpen: boolean;
+    setOpen: (open: boolean) => void;
+    setForce: (cbobj: {cb: (() => void)}) => void;
+    setLastUpdate: (lu: Date) => void;
+}
+
+const LoggedOutCartContextManager: React.FC<LoggedOutCartContextManagerProps> = (props: LoggedOutCartContextManagerProps): JSX.Element => {
+
+    useEffect(() => {
+        props.setLastErrors(null);
+        props.setLastUpdate(new Date());
+        props.setOpen(false);
+        props.setForce({cb: () => null});
+        props.setLastResp(null);
+    },
+        // eslint-disable-next-line
+        []);
+
+    return null;
+}
+
+export interface CartContextManagerProps {
+    token: string;
 }
 
 export const CartContextManager: React.FC<PropsWithChildren<CartContextManagerProps>> =
     (props: PropsWithChildren<CartContextManagerProps>): JSX.Element => {
 
         const user = useContext(UserContext);
+        const [lastResp, setLastResp] = useState<PurchaseEntity>(null);
+        const [lastErrors, setLastErrors] = useState<PurchaseError[]>(null);
+        const [lastUpdate, setLastUpdate] = useState(new Date());
+        const [isOpen, setOpen] = useState<boolean>(false);
+        const [force, setForce] = useState<{cb: () => void}>({
+            cb: () => null
+        });
+        const history = useHistory();
 
-        if (props.token && !isNil(user)) {
-            return <LoggedInCartContextManager token={props.token}>
+        return <>
+            {
+                props.token && !isNil(user)
+
+                    ? <LoggedInCartContextManager
+                        token={props.token}
+                        lastResp={lastResp}
+                        setLastResp={setLastResp}
+                        lastErrors={lastErrors}
+                        setLastErrors={setLastErrors}
+                        isOpen={isOpen}
+                        setOpen={setOpen}
+                        setForce={setForce}
+                        setLastUpdate={setLastUpdate}
+                    />
+
+                    : <LoggedOutCartContextManager
+                        token={props.token}
+                        lastResp={lastResp}
+                        setLastResp={setLastResp}
+                        lastErrors={lastErrors}
+                        setLastErrors={setLastErrors}
+                        isOpen={isOpen}
+                        setOpen={setOpen}
+                        setForce={setForce}
+                        setLastUpdate={setLastUpdate}
+                    />
+            }
+            <CartContext.Provider value={{
+                cart: lastResp,
+                errors: lastErrors,
+                last_update: lastUpdate,
+                open: isOpen,
+                openMenu: () => {
+                    setOpen(true)
+                    modalview('/cart');
+                },
+                closeMenu: () => {
+                    setOpen(false)
+                    pageview(`${history.location.pathname}${history.location.search}`);
+                },
+                force: force.cb
+            }}>
+
                 {props.children}
-            </LoggedInCartContextManager>
-        } else {
-            return <LoggedOutCartContextManager>
-                {props.children}
-            </LoggedOutCartContextManager>
-        }
+            </CartContext.Provider>
+        </>;
     };

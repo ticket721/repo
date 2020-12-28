@@ -133,5 +133,20 @@ module.exports = [
         type: 'elasticsearch',
         name: 'post_purchase_close_guard',
         timestamp: '20201211154828'
+    },
+    {
+        type: 'elasticsearch',
+        name: 'pre_add_user_avatar',
+        timestamp: '20201225112435'
+    },
+    {
+        type: 'cassandra',
+        name: 'add_user_avatar',
+        timestamp: '1608891951'
+    },
+    {
+        type: 'elasticsearch',
+        name: 'post_add_user_avatar',
+        timestamp: '20201225112440'
     }
 ];

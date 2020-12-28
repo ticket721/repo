@@ -55,26 +55,40 @@ export const ShortcutContext = React.createContext<ShortcutState>({
 
 export const ShortcutContextManager: React.FC<React.PropsWithChildren<any>> = (props: React.PropsWithChildren<any>) => {
 
+    const [visible, setVisible] = useState(true);
+    const [open, setOpen] = useState(false);
     const tickets = useContext(TicketsContext);
+    const [la, setLa] = useState([]);
 
-    return <ShortcutCategoriesFetcher
-        categories={
-            tickets.response.data?.tickets
-                ? tickets.response.data.tickets.map((tick: TicketEntity) => tick.category)
-                : []
-        }
-    >
-        {props.children}
-    </ShortcutCategoriesFetcher>;
+    return <>
+        <ShortcutCategoriesFetcher
+            categories={
+                tickets.response.data?.tickets
+                    ? tickets.response.data.tickets.map((tick: TicketEntity) => tick.category)
+                    : []
+            }
+            setLa={setLa}
+        />
+        <ShortcutContext.Provider value={{
+            visible: visible && la.length > 0,
+            open,
+            openMenu: () => setOpen(true),
+            closeMenu: () => setOpen(false),
+            setVisible: () => setVisible(true),
+            setInvisible: () => setVisible(false),
+            actions: la
+        }}>
+            {props.children}
+        </ShortcutContext.Provider>
+    </>
 
 };
 
-const ShortcutCategoriesFetcher: React.FC<
-    React.PropsWithChildren<{ categories: string[] }>
-    > = ({
-             children,
-             categories,
-         }: React.PropsWithChildren<{ categories: string[] }>): JSX.Element => {
+const ShortcutCategoriesFetcher: React.FC<{ categories: string[], setLa: (la: LiveAction[]) => void; }>
+    = ({
+           categories,
+           setLa
+       }: { categories: string[]; setLa: (la: LiveAction[]) => void }): JSX.Element => {
 
     const [uuid] = useState(v4());
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
@@ -93,9 +107,7 @@ const ShortcutCategoriesFetcher: React.FC<
     }, uuid);
 
     if (isRequestError(categoriesResp) || categoriesResp.response.loading) {
-        return <>
-            {children}
-        </>;
+        return <></>
     }
 
     return <ShortcutDatesFetcher
@@ -107,20 +119,19 @@ const ShortcutCategoriesFetcher: React.FC<
                 : []
         }
         categories={categoriesResp.response.data?.categories || []}
-    >
-        {children}
-    </ShortcutDatesFetcher>;
+        setLa={setLa}
+    />;
 };
 
-const ShortcutDatesFetcher: React.FC<
-    React.PropsWithChildren<{ dates: string[]; categories: CategoryEntity[] }>
-    > = ({
-             children,
-             dates,
-             categories
-         }: React.PropsWithChildren<{ dates: string[]; categories: CategoryEntity[] }>): JSX.Element => {
+const ShortcutDatesFetcher: React.FC<{ dates: string[]; categories: CategoryEntity[]; setLa: (la: LiveAction[]) => void }>
+    = ({
+           setLa,
+           dates,
+           categories
+       }: { dates: string[]; categories: CategoryEntity[]; setLa: (la: LiveAction[]) => void }): JSX.Element => {
     const [uuid] = useState(v4());
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
+    const tickets = useContext(TicketsContext);
 
     const datesResp = useRequest<DatesSearchResponseDto>({
         method: 'dates.search',
@@ -135,18 +146,25 @@ const ShortcutDatesFetcher: React.FC<
         refreshRate: 30,
     }, uuid);
 
+    useEffect(() => {
+        if (datesResp.response.data) {
+            const _dates = datesResp.response.data.dates;
+            setLa(tickets.response.data?.tickets
+                ? tickets.response.data.tickets
+                    .map(convertTicket.bind(null, _dates, categories) as (ticket: TicketEntity) => LiveAction[])
+                    .reduce((las: LiveAction[], cur: LiveAction[]) => las.concat(cur), [])
+                    .filter(isLinkAvailable)
+                    .filter(isShortcutable)
+                : [])
+        }
+    }, [tickets, datesResp, categories, setLa]);
+
+
     if (isRequestError(datesResp) || datesResp.response.loading) {
-        return <>
-            {children}
-        </>;
+        return null;
     }
 
-    return <ShortcutStateHandler
-        dates={datesResp.response.data.dates}
-        categories={categories}
-    >
-        {children}
-    </ShortcutStateHandler>;
+    return null;
 };
 
 const HOUR = 1000 * 60 * 60;
@@ -205,39 +223,6 @@ const isLinkAvailable = (liveAction: LiveAction): boolean => {
         }
         default: return true;
     }
-};
-
-const ShortcutStateHandler: React.FC<React.PropsWithChildren<
-    { dates: DateEntity[]; categories: CategoryEntity[] }>
-    > = ({
-             children,
-             dates,
-             categories
-         }: React.PropsWithChildren<{ dates: DateEntity[]; categories: CategoryEntity[] }>): JSX.Element => {
-
-    const [visible, setVisible] = useState(true);
-    const [open, setOpen] = useState(false);
-    const tickets = useContext(TicketsContext);
-
-    const la = useMemo(() => tickets.response.data?.tickets
-        ? tickets.response.data.tickets
-            .map(convertTicket.bind(null, dates, categories) as (ticket: TicketEntity) => LiveAction[])
-            .reduce((las: LiveAction[], cur: LiveAction[]) => las.concat(cur), [])
-            .filter(isLinkAvailable)
-            .filter(isShortcutable)
-        : [], [tickets, dates, categories]);
-
-    return <ShortcutContext.Provider value={{
-        visible: visible && la.length > 0,
-        open,
-        openMenu: () => setOpen(true),
-        closeMenu: () => setOpen(false),
-        setVisible: () => setVisible(true),
-        setInvisible: () => setVisible(false),
-        actions: la
-    }}>
-        {children}
-    </ShortcutContext.Provider>;
 };
 
 interface ContainerProps {

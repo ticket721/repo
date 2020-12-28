@@ -63,6 +63,7 @@ describe('Local Strategy', function() {
                         locale: 'en',
                         valid: false,
                         admin: false,
+                        avatar: null,
                     },
                     error: null,
                 }),
@@ -82,6 +83,7 @@ describe('Local Strategy', function() {
                 locale: 'en',
                 valid: false,
                 admin: false,
+                avatar: null,
             });
 
             verify(authenticationServiceMock.validateUser(email, hashedp)).called();

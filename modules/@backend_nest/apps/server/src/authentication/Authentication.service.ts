@@ -10,6 +10,8 @@ import { PurchasesService } from '@lib/common/purchases/Purchases.service';
 import { UUIDToolService } from '@lib/common/toolbox/UUID.tool.service';
 import { PurchaseEntity } from '@lib/common/purchases/entities/Purchase.entity';
 import { CRUDResponse } from '@lib/common/crud/CRUDExtension.base';
+import { v4 } from 'uuid';
+import { UserEntity } from '@lib/common/users/entities/User.entity';
 
 /**
  * Placeholder address until Ethereum is reintegrated
@@ -35,6 +37,157 @@ export class AuthenticationService {
         private readonly purchasesService: PurchasesService,
         private readonly uuidToolService: UUIDToolService,
     ) {}
+
+    /**
+     * Convert integer to hex string
+     *
+     * @param val
+     * @private
+     */
+    private intToHex(val: number): string {
+        const strVal = val.toString(16);
+        if (strVal.length % 2) {
+            return `0${strVal}`;
+        }
+        return strVal;
+    }
+
+    /**
+     * Compute unique uuid from google id + constant string
+     * @param id
+     * @private
+     */
+    private computeGoogleUUIDV4(id: string): string {
+        return v4({
+            random: Buffer.concat([
+                Buffer.from(this.intToHex(parseInt(id, 10)), 'hex'),
+                Buffer.from('google account unique identifier'),
+            ]),
+        });
+    }
+
+    /**
+     * Call to create a new user or simply retrieve existing one from google authentication
+     *
+     * @param email
+     * @param firstName
+     * @param lastName
+     * @param id
+     * @param locale
+     * @param avatar
+     */
+    async createOrRetrieveGoogleUser(
+        email: string,
+        firstName: string,
+        lastName: string,
+        id: string,
+        locale: string,
+        avatar: string,
+    ): Promise<ServiceResponse<PasswordlessUserDto>> {
+        const googleId = this.computeGoogleUUIDV4(id);
+
+        const usersResp = await this.usersService.findById(googleId);
+
+        if (usersResp.error) {
+            return {
+                error: usersResp.error,
+                response: null,
+            };
+        }
+
+        if (usersResp.response !== null) {
+            const user: UserEntity = usersResp.response;
+
+            if (user.avatar !== avatar) {
+                user.avatar = avatar;
+
+                const updateRes = await this.usersService.update(user);
+
+                if (updateRes.error) {
+                    return {
+                        error: updateRes.error,
+                        response: null,
+                    };
+                }
+            }
+
+            delete user.password;
+            delete user.current_purchase;
+            delete user.past_purchases;
+
+            return {
+                error: null,
+                response: user,
+            };
+        } else {
+            const rocksideFinalAddress = {
+                error: null,
+                response: {
+                    address: ZERO_ADDRESS,
+                },
+            };
+
+            if (rocksideFinalAddress.error) {
+                return {
+                    response: null,
+                    error: 'rockside_identity_creation_error',
+                };
+            }
+
+            const purchaseId = this.uuidToolService.generate();
+
+            const initialPurchase: CRUDResponse<PurchaseEntity> = await this.purchasesService.create({
+                owner: purchaseId,
+                fees: [],
+                products: [],
+                currency: null,
+                payment: null,
+                payment_interface: null,
+                checked_out_at: null,
+                price: null,
+            });
+
+            if (initialPurchase.error) {
+                return {
+                    error: initialPurchase.error,
+                    response: null,
+                };
+            }
+
+            const purchase: PurchaseEntity = initialPurchase.response;
+
+            const newUser: ServiceResponse<UserDto> = await this.usersService.create({
+                id: UUIDToolService.fromString(googleId),
+                current_purchase: UUIDToolService.fromString(purchase.id),
+                email,
+                password: null,
+                username: `${firstName} ${lastName}`,
+                device_address: null,
+                address: rocksideFinalAddress.response.address,
+                type: 'google',
+                role: 'authenticated',
+                locale,
+                admin: false,
+                valid: true,
+                avatar,
+            });
+
+            if (newUser.error) {
+                return newUser;
+            }
+
+            newUser.response.id = newUser.response.id.toString();
+
+            delete newUser.response.password;
+            delete (newUser.response as any).current_purchase;
+            delete (newUser.response as any).past_purchases;
+
+            return {
+                error: null,
+                response: newUser.response,
+            };
+        }
+    }
 
     /**
      * Utility to verify if any user exists with given email, and if provided
@@ -204,6 +357,7 @@ export class AuthenticationService {
             role: 'authenticated',
             locale,
             admin: false,
+            avatar: null,
         });
 
         if (newUser.error) {

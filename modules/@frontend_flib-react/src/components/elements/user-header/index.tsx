@@ -54,7 +54,7 @@ export const WalletHeader: React.FunctionComponent<WalletHeaderProps & { classNa
     return (
         <Container profileHeader={props.profileHeader} className={props.className}>
             <ImgContainer profileHeader={props.profileHeader}>
-                <img src={props.picture} alt={props.username} />
+                <img src={props.picture} alt={props.username} referrerPolicy={'no-referrer'} />
             </ImgContainer>
             <div>
                 {props.profileHeader ? <h1>{props.username}</h1> : <h3>{props.username}</h3>}

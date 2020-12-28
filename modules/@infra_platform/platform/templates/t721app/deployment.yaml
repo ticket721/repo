@@ -72,6 +72,8 @@ spec:
               value: '{{ required "[t721app] Missing config.t721app.gaId value" .Values.config.t721app.gaId }}'
             - name: SITEMAP_ENABLED
               value: '{{ required "[t721app] Missing config.t721app.sitemapEnabled value" .Values.config.t721app.sitemapEnabled }}'
+            - name: REACT_APP_GOOGLE_AUTH_CLIENT_ID
+              value: '{{ required "[t721app] Missing config.googleAuthClientId value" .Values.config.googleAuthClientId }}'
           ports:
             - name: http
               containerPort: 5000

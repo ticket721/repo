@@ -108,6 +108,21 @@ export const DesktopNavbar: React.FC = () => {
                 <BasicLink href={getEnv().REACT_APP_EVENT_CREATION_LINK}>
                     {t('create_event')}
                 </BasicLink>
+                {
+                    user
+
+                    ? null
+
+                        :
+                        <>
+                            <BasicLink href={`${getEnv().REACT_APP_SELF}/about/privacy`}>
+                                {t('privacy')}
+                            </BasicLink>
+                            <BasicLink href={`${getEnv().REACT_APP_SELF}/about/cgu`}>
+                                {t('tos')}
+                            </BasicLink>
+                        </>
+                }
                 { user ?
                     <Profile
                         onClick={
@@ -115,7 +130,7 @@ export const DesktopNavbar: React.FC = () => {
                         }>
                         <UserHeader
                             username={user?.username}
-                            picture={'/favicon.ico'}
+                            picture={user.avatar || `${getEnv().REACT_APP_SELF}/favicon.ico`}
                             tickets={ticketCountResp.error ? '?' : ticketCountResp.data?.tickets.count}/>
                         <Chevron icon='chevron' color='#fff' size='7px'/>
                     </Profile> :
@@ -173,7 +188,7 @@ const Link = styled(NavLink)<{ selected: boolean }>`
 `;
 
 const BasicLink = styled.a`
-    margin-right: ${props => props.theme.regularSpacing};
+    margin-right: ${props => props.theme.doubleSpacing};
 
     :hover {
         color: ${props => props.theme.textColor};

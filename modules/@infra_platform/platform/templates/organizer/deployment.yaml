@@ -59,6 +59,8 @@ spec:
               value: 'https://{{ required "[organizer] Missing config.organizer.self value" .Values.config.organizer.self }}'
             - name: REACT_APP_GA_ID
               value: '{{ required "[organizer] Missing config.organizer.gaId value" .Values.config.organizer.gaId }}'
+            - name: REACT_APP_GOOGLE_AUTH_CLIENT_ID
+              value: '{{ required "[organizer] Missing config.googleAuthClientId value" .Values.config.googleAuthClientId }}'
           ports:
             - name: http
               containerPort: 5000

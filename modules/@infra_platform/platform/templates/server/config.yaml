@@ -39,4 +39,6 @@ data:
 
     FEATURE_FLAGS_CONFIG=/config/feature-flags.json
 
-    APPLE_PAY_DOMAINS={{ required "[organizer] Missing config.organizer.self value" .Values.config.organizer.self }},{{ required "[organizer] Missing config.t721app.self value" .Values.config.t721app.self }},{{ required "[organizer] Missing config.staff.self value" .Values.config.staff.self }}
+    APPLE_PAY_DOMAINS={{ required "[server] Missing config.organizer.self value" .Values.config.organizer.self }},{{ required "[server] Missing config.t721app.self value" .Values.config.t721app.self }},{{ required "[server] Missing config.staff.self value" .Values.config.staff.self }}
+
+    GOOGLE_AUTH_CLIENT_ID={{ required "[server] Missing config.googleAuthClientId value" .Values.config.googleAuthClientId }}

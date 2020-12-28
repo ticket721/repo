@@ -1,12 +1,13 @@
 import { SagaIterator } from '@redux-saga/types';
 import { takeEvery, put } from 'redux-saga/effects';
 import { AuthActionTypes, Token } from './types';
-import { ILocalRegister, ILogout, SetErrors, SetLoading, SetToken } from './actions';
+import { IGoogleLogin, ILocalRegister, ILogout, ISetToken, SetErrors, SetLoading, SetToken } from './actions';
 import { LocalRegisterResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/LocalRegisterResponse.dto';
 import { LocalLoginResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/authentication/dto/LocalLoginResponse.dto';
 import { AxiosResponse } from 'axios';
 import { PushNotification } from '../notifications';
 import { getEnv } from '../../../utils/getEnv';
+import { googleLoginSdkCall } from '../../../oauth/google';
 
 function* localRegister(action: ILocalRegister): IterableIterator<any> {
     yield put(SetLoading(true));
@@ -26,7 +27,6 @@ function* localRegister(action: ILocalRegister): IterableIterator<any> {
             expiration: new Date(registerData.expiration),
         };
 
-        localStorage.setItem('token', JSON.stringify(token));
         yield put(SetToken(token));
         yield put(PushNotification('successfully_registered', 'success'));
 
@@ -69,8 +69,6 @@ function* localLogin(action: ILocalRegister): IterableIterator<any> {
             expiration: new Date(loginData.expiration),
         };
 
-        localStorage.setItem('token', JSON.stringify(token));
-
         yield put(SetToken(token));
     } catch (e) {
         if (e.message === 'Network Error') {
@@ -89,12 +87,34 @@ function* localLogin(action: ILocalRegister): IterableIterator<any> {
     yield put(SetLoading(false));
 }
 
+function* googleLogin(action: IGoogleLogin): IterableIterator<any> {
+    yield put(SetLoading(true));
+
+    try {
+        const token = yield googleLoginSdkCall(action.idToken);
+        yield put(SetToken(token));
+    } catch (e) {
+        yield put(PushNotification('invalid_google_credentials', 'error'));
+        yield put(SetErrors({ google: 'invalid_google_credentials' }));
+    }
+
+    yield put(SetLoading(false));
+}
+
 function* logout(action: ILogout): IterableIterator<any> {
     localStorage.removeItem('token');
+}
+
+function* settoken(action: ISetToken): IterableIterator<any> {
+    if (action.token) {
+        localStorage.setItem('token', JSON.stringify(action.token));
+    }
 }
 
 export function* authSaga(): SagaIterator {
     yield takeEvery(AuthActionTypes.LocalRegister, localRegister);
     yield takeEvery(AuthActionTypes.LocalLogin, localLogin);
+    yield takeEvery(AuthActionTypes.GoogleLogin, googleLogin);
     yield takeEvery(AuthActionTypes.Logout, logout);
+    yield takeEvery(AuthActionTypes.SetToken, settoken);
 }
