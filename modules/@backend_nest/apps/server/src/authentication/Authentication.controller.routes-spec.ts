@@ -47,6 +47,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         username: user.username,
                         valid: false,
                         admin: false,
+                        avatar: null,
                     },
                     expiration: expect.anything(),
                     validationToken: response.data.validationToken,
@@ -82,6 +83,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         username: user.username,
                         valid: false,
                         admin: false,
+                        avatar: null,
                     },
                     expiration: expect.anything(),
                     validationToken: response.data.validationToken,
@@ -263,6 +265,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                         type: 't721',
                         email: validationResponse.data.user.email,
                         username: validationResponse.data.user.username,
+                        avatar: null,
                         admin: false,
                     },
                 } as EmailValidationResponseDto);
@@ -312,6 +315,7 @@ export default function(getCtx: () => { ready: Promise<void> }) {
                     role: 'authenticated',
                     valid: expect.anything(),
                     locale: expect.anything(),
+                    avatar: null,
                     admin: false,
                 });
 
