@@ -283,8 +283,19 @@ export class UsersService {
                     {
                         body: {
                             query: {
-                                match: {
-                                    username,
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                username,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                type: 't721',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },

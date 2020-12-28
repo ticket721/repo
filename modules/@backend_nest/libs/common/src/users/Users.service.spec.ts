@@ -79,6 +79,7 @@ describe('Users Service', function() {
                     admin: false,
                     past_purchases: [],
                     current_purchase: null,
+                    avatar: null,
                 };
             };
 
@@ -107,6 +108,7 @@ describe('Users Service', function() {
                 admin: false,
                 past_purchases: [],
                 current_purchase: null,
+                avatar: null,
             });
         });
 
@@ -158,6 +160,7 @@ describe('Users Service', function() {
                     admin: false,
                     past_purchases: [],
                     current_purchase: null,
+                    avatar: null,
                 };
             };
 
@@ -432,8 +435,19 @@ describe('Users Service', function() {
                     deepEqual({
                         body: {
                             query: {
-                                match: {
-                                    username,
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                username,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                type: 't721',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -462,8 +476,19 @@ describe('Users Service', function() {
                     deepEqual({
                         body: {
                             query: {
-                                match: {
-                                    username,
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                username,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                type: 't721',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -488,8 +513,19 @@ describe('Users Service', function() {
                     deepEqual({
                         body: {
                             query: {
-                                match: {
-                                    username,
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                username,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                type: 't721',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -508,8 +544,19 @@ describe('Users Service', function() {
                     deepEqual({
                         body: {
                             query: {
-                                match: {
-                                    username,
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                username,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                type: 't721',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -548,8 +595,19 @@ describe('Users Service', function() {
                     deepEqual({
                         body: {
                             query: {
-                                match: {
-                                    username,
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                username,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                type: 't721',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -568,8 +626,19 @@ describe('Users Service', function() {
                     deepEqual({
                         body: {
                             query: {
-                                match: {
-                                    username,
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                username,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                type: 't721',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -618,6 +687,7 @@ describe('Users Service', function() {
                                     type: 't721',
                                     role: 'authenticated',
                                     admin: false,
+                                    avatar: null,
                                 },
                             } as ESSearchHit<UserEntity>,
                         ],
@@ -630,8 +700,19 @@ describe('Users Service', function() {
                     deepEqual({
                         body: {
                             query: {
-                                match: {
-                                    email,
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                email,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                type: 't721',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -653,6 +734,7 @@ describe('Users Service', function() {
                 password: hashedp,
                 role: 'authenticated',
                 admin: false,
+                avatar: null,
             });
 
             verify(
@@ -660,8 +742,19 @@ describe('Users Service', function() {
                     deepEqual({
                         body: {
                             query: {
-                                match: {
-                                    email,
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                email,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                type: 't721',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -686,8 +779,19 @@ describe('Users Service', function() {
                     deepEqual({
                         body: {
                             query: {
-                                match: {
-                                    email,
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                email,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                type: 't721',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -706,8 +810,19 @@ describe('Users Service', function() {
                     deepEqual({
                         body: {
                             query: {
-                                match: {
-                                    email,
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                email,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                type: 't721',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -746,8 +861,19 @@ describe('Users Service', function() {
                     deepEqual({
                         body: {
                             query: {
-                                match: {
-                                    email,
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                email,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                type: 't721',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -766,8 +892,19 @@ describe('Users Service', function() {
                     deepEqual({
                         body: {
                             query: {
-                                match: {
-                                    email,
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                email,
+                                            },
+                                        },
+                                        {
+                                            term: {
+                                                type: 't721',
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },
@@ -999,6 +1136,7 @@ describe('Users Service', function() {
                     admin: false,
                     past_purchases: [],
                     current_purchase: null,
+                    avatar: null,
                 };
             };
 
@@ -1045,6 +1183,7 @@ describe('Users Service', function() {
                 admin: false,
                 past_purchases: [],
                 current_purchase: null,
+                avatar: null,
             });
         });
 

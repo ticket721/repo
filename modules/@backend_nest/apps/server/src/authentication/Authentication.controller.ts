@@ -1,13 +1,11 @@
 import {
     Body,
     Controller,
-    Get,
     HttpCode,
     HttpException,
     Injectable,
     Post,
     Request,
-    Response,
     UseFilters,
     UseGuards,
 } from '@nestjs/common';
