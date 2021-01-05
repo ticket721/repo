@@ -27,11 +27,11 @@
         "ethereum-address": "0.0.4",
         "ethers": "4.0.45",
         "js-sha3": "0.8.0",
-        "lodash": "4.17.15",
+        "lodash": "4.17.20",
         "typescript": "3.8.3",
         "zxcvbn-i18n": "1.0.2",
         "class-validator": "0.11.0",
-        "class-transformer": "0.2.3"
+        "class-transformer": "0.3.1"
     },
     "devDependencies": {
         "@types/zxcvbn": "4.4.0",
