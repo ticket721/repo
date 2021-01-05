@@ -19,9 +19,7 @@ const Privacy = (): JSX.Element => {
                     maxWidth: 600,
                 }}
             >
-                <p
-                    style={{whiteSpace: 'pre-line'}}
-                >{`
+                <p style={{ whiteSpace: 'pre-line' }}>{`
                 Politique de confidentialité et Protection des données
 
 TICKET721 en tant que Sous-traitant du Responsable de traitement, l’Organisateur, est amené à recueillir et traiter des données vous concernant, conformément à la Loi Informatique & Libertés du 6 janvier 1978 dans sa version modifiée et le Règlement Général sur la Protection des Données n°2016/679.
