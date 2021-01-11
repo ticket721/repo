@@ -14,7 +14,7 @@ export { uuidEq, toB32, leftPad, serialize, toHex, decimalToHex, isFutureDateRan
 export { isTransactionHash, toAcceptedTransactionHashFormat, isTrackingId }                                  from './transactions';
 export { getT721ControllerGroupID, encode }                                                                  from './abi';
 export { b64Encode, b64Decode }                                                                              from './encoding';
-export { currencies, symbolOf }                                                                              from './currency';
+export { currencies, symbolOf, fromAtomicValue, format, getAtomicValue }                                     from './currency';
 export {
     checkEvent,
     EventCreationPayload,
@@ -40,7 +40,7 @@ export {
     DateCreationPayload,
     DatePayloadChecker,
     checkCategory,
-    checkDate
+    checkDate,
 }                                                                                                            from './event';
 
 /**
