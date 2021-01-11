@@ -549,7 +549,7 @@ export const symbolOf = (currency: string): string => {
     const currencyInfo = currencyFormatInfos[currency];
 
     if (isNil(currencyInfo)) {
-        return currency;
+        return undefined;
     }
 
     if (!isNil(currencyInfo.uniqSymbol)) {
@@ -560,7 +560,7 @@ export const symbolOf = (currency: string): string => {
         return currencyInfo.symbol.grapheme;
     }
 
-    return currency;
+    return undefined;
 };
 
 export const format = (currency: string, amount: number): string => {
