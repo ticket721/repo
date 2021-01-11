@@ -8,6 +8,7 @@ import { useDispatch }                                              from 'react-
 import { PaymentButtonDiv, PaymentButtonIcon }                      from './PaymentButton';
 import './locales';
 import { useTranslation }                                           from 'react-i18next';
+import { fromAtomicValue }                                          from '@common/global';
 
 interface ApplePayStatus {
     available: boolean;
@@ -118,7 +119,7 @@ export const useApplePay = (sdk: StripeSDK, cart: CartState): ApplePayStatus => 
                                     shippingName: true,
                                     items: [
                                         {
-                                            amount: cart.cart.price / 100,
+                                            amount: fromAtomicValue(cart.cart.currency, cart.cart.price),
                                             label: t('cart_name')
                                         }
                                     ]

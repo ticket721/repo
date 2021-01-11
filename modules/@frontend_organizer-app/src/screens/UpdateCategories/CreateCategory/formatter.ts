@@ -1,5 +1,5 @@
-import { CategoryWithDatesPayload } from '@common/global';
-import { CategoryEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
+import { CategoryWithDatesPayload, fromAtomicValue } from '@common/global';
+import { CategoryEntity }                            from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 
 export const formatCategoryEntity = (category: CategoryEntity, dates: number[]): CategoryWithDatesPayload => ({
     dates,
@@ -7,6 +7,6 @@ export const formatCategoryEntity = (category: CategoryEntity, dates: number[]):
     saleBegin: category.sale_begin,
     saleEnd: category.sale_end,
     seats: category.seats,
-    price: category.price / 100,
+    price: fromAtomicValue(category.currency, category.price),
     currency: category.currency,
 });

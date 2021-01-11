@@ -9,6 +9,7 @@ import { ServiceResponse } from '@lib/common/utils/ServiceResponse.type';
 import { UserDto } from '../users/dto/User.dto';
 import { ItemSummary } from '../purchases/ProductChecker.base.service';
 import { formatDay, formatHour, formatShort, format } from '../utils/date';
+import { format as formatCurrency } from '@common/global';
 
 /**
  * Service to send emails with selected EmailDriver
@@ -90,12 +91,8 @@ export class EmailService {
         const locals = {
             subjectSuffix: ` | ${data.items.length} Ticket${data.items.length > 1 ? 's' : ''}`,
             username: user.username,
-            totalPrice: data.price.total
-                ? `${data.price.total / 100}${data.price.currency === 'EUR' ? '€' : data.price.currency}`
-                : 0,
-            fees: data.price.fees
-                ? `${data.price.fees / 100}${data.price.currency === 'EUR' ? '€' : data.price.currency}`
-                : 0,
+            totalPrice: formatCurrency(data.price.currency, data.price.total),
+            fees: formatCurrency(data.price.currency, data.price.fees),
             purchasedDate: format(Date.now(), user.locale, timezone),
             walletUrl: appUrl ? appUrl + '/wallet' : null,
             tickets: [],

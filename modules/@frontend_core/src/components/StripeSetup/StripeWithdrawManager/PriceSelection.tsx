@@ -3,7 +3,7 @@ import { Icon } from '@frontend/flib-react/lib/components';
 import { motion } from 'framer-motion';
 import React, { useEffect, useMemo, useState } from 'react';
 import Cleave from 'cleave.js/react';
-import { symbolOf } from '@common/global';
+import { fromAtomicValue, symbolOf } from '@common/global';
 import { Currency } from './Currency';
 import { useStripeBalance } from '../../../hooks/useStripeBalance';
 import { HapticsImpactStyle, useHaptics } from '../../../hooks/useHaptics';
@@ -119,7 +119,7 @@ export const CurrencyValue: React.FC<CurrencyValueProps> = (props: CurrencyValue
         if (props.amount === '' || props.amount === '0') {
             return '0.00';
         } else {
-            const value = parseInt(props.amount, 10) / 100;
+            const value = fromAtomicValue(props.currency.currency, parseInt(props.amount, 10));
             const decimalsCount = value.toString().split('.')[1]?.length || 0;
             return `${value}${decimalsCount === 0 ? '.' : ''}${'0'.repeat(2 - decimalsCount)}`;
         }

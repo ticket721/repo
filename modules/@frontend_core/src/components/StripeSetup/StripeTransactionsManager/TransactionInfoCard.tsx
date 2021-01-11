@@ -1,5 +1,5 @@
 import React from 'react';
-import { symbolOf } from '@common/global';
+import { fromAtomicValue, symbolOf } from '@common/global';
 import { formatShort } from '../../../utils/date';
 import styled from 'styled-components';
 import { TxTypeColors, TxType } from './TxType';
@@ -123,7 +123,9 @@ export const TransactionInfoCard: React.FC<TransactionInfoCardProps> = (
                     <Description>{props.transaction.description || props.transaction.type}</Description>
                     <Price amount={props.transaction.amount}>
                         {props.transaction.amount < 0 ? '-' : ''} {symbolOf(props.transaction.currency)}{' '}
-                        {Math.abs(props.transaction.amount / 100).toLocaleString()}
+                        {Math.abs(
+                            fromAtomicValue(props.transaction.currency, props.transaction.amount),
+                        ).toLocaleString()}
                     </Price>
                 </TitleAndPriceContainer>
                 <DateContainer>
