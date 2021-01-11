@@ -1,4 +1,4 @@
-import { currencies, symbolOf } from './index';
+import { currencies, format, fromAtomicValue, getAtomicValue, symbolOf } from './index';
 
 describe('Currency', function () {
 
@@ -565,7 +565,127 @@ describe('Currency', function () {
 
         it('should properly recover dollar symbol', function() {
 
-            expect(symbolOf('USD')).toEqual('$');
+            expect(symbolOf('USD')).toEqual('US$');
+
+        });
+
+        it('should properly recover canadian dollar symbol', function() {
+
+            expect(symbolOf('CAD')).toEqual('CA$');
+
+        });
+
+        it('should properly recover swiss francs symbol', function() {
+
+            expect(symbolOf('CHF')).toEqual('fr.');
+
+        });
+
+        it('should properly recover japanese yen symbol', function() {
+
+            expect(symbolOf('JPY')).toEqual('¥');
+
+        });
+
+    });
+    
+    describe('format', function() {
+
+        it('should properly recover euro format', function() {
+
+            expect(format('EUR', 1000)).toEqual('€10');
+
+        });
+
+        it('should properly recover dollar format', function() {
+
+            expect(format('USD', 1000)).toEqual('US$10');
+
+        });
+
+        it('should properly recover canadian dollar format', function() {
+
+            expect(format('CAD', 1000)).toEqual('CA$10');
+
+        });
+
+        it('should properly recover swiss francs format', function() {
+
+            expect(format('CHF', 1000)).toEqual('10 fr.');
+
+        });
+
+        it('should properly recover japanese yen format', function() {
+
+            expect(format('JPY', 1000)).toEqual('¥1000');
+
+        });
+
+    });
+    
+    describe('getAtomicValue', function() {
+
+        it('should properly recover euro atomic value', function() {
+
+            expect(getAtomicValue('EUR', 10.00)).toEqual(1000);
+
+        });
+
+        it('should properly recover dollar atomic value', function() {
+
+            expect(getAtomicValue('USD', 10.00)).toEqual(1000);
+
+        });
+
+        it('should properly recover canadian dollar atomic value', function() {
+
+            expect(getAtomicValue('CAD', 10.00)).toEqual(1000);
+
+        });
+
+        it('should properly recover swiss francs atomic value', function() {
+
+            expect(getAtomicValue('CHF', 10.00)).toEqual(1000);
+
+        });
+
+        it('should properly recover japanese yen atomic value', function() {
+
+            expect(getAtomicValue('JPY', 10.00)).toEqual(10);
+
+        });
+
+    });
+    
+    describe('fromAtomicValue', function() {
+
+        it('should properly recover euro displayable value', function() {
+
+            expect(fromAtomicValue('EUR', 1000)).toEqual(10.00);
+
+        });
+
+        it('should properly recover dollar displayable value', function() {
+
+            expect(fromAtomicValue('USD', 1000)).toEqual(10.00);
+
+        });
+
+        it('should properly recover canadian dollar displayable value', function() {
+
+            expect(fromAtomicValue('CAD', 1000)).toEqual(10.00);
+
+        });
+
+        it('should properly recover swiss francs displayable value', function() {
+
+            expect(fromAtomicValue('CHF', 1000)).toEqual(10.00);
+
+        });
+
+        it('should properly recover japanese yen displayable value', function() {
+
+            expect(fromAtomicValue('JPY', 1000)).toEqual(1000);
 
         });
 
