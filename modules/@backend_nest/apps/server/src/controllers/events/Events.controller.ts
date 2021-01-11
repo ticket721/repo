@@ -221,13 +221,22 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 const _user = users[users.findIndex((__user: UserEntity) => __user.id.toString() === ticket.owner)];
                 const purchase =
                     purchases[purchases.findIndex((_purchase: PurchaseEntity) => _purchase.id === ticket.receipt)];
+                const generatedItemsIdx = purchase?.generated_products?.findIndex(
+                    (gp: GeneratedProduct): boolean => gp.id === ticket.id,
+                );
+                let price = 0;
+                let currency = 'FREE';
+                if (!isNil(generatedItemsIdx) && generatedItemsIdx !== -1) {
+                    price = purchase.generated_products[generatedItemsIdx].price;
+                    currency = purchase.generated_products[generatedItemsIdx].currency;
+                }
 
                 return {
                     ticket: ticket.id,
                     category: ticket.category,
                     date: ticket.created_at,
-                    price: purchase ? purchase.price || 0 : null,
-                    currency: purchase ? purchase.currency || 'FREE' : null,
+                    price,
+                    currency,
                     email: _user?.email || null,
                 };
             }),

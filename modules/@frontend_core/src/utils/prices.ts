@@ -1,19 +1,23 @@
-import { CategoryEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-import { symbolOf } from '@common/global';
+import { format } from '@common/global';
 
-const categoryPriceString = (category: CategoryEntity, free: string, quantity: number = 1): string => {
-    if (category.currency === 'FREE' || category.currency === null) {
+interface PriceInfo {
+    currency: string;
+    price: number;
+}
+
+const priceInfoPriceString = (priceInfo: PriceInfo, free: string, quantity: number = 1): string => {
+    if (priceInfo.currency === 'FREE' || priceInfo.currency === null) {
         return free;
     }
 
-    return `${(category.price * quantity) / 100} ${symbolOf(category.currency)}`;
+    return format(priceInfo.currency, priceInfo.price * quantity);
 };
 
-export const getPrice = (category: CategoryEntity, free: string, quantity: number = 1): string => {
-    return categoryPriceString(category, free, quantity);
+export const getPrice = (priceInfo: PriceInfo, free: string, quantity: number = 1): string => {
+    return priceInfoPriceString(priceInfo, free, quantity);
 };
 
-export const getLowestPrice = (categories: CategoryEntity[], fallback: string, free: string): string => {
+export const getLowestPrice = (categories: PriceInfo[], fallback: string, free: string): string => {
     if (categories.length === 0) {
         return fallback;
     }
@@ -21,17 +25,17 @@ export const getLowestPrice = (categories: CategoryEntity[], fallback: string, f
     let minimum = 0;
 
     for (let idx = 0; idx < categories.length; ++idx) {
-        const category = categories[idx];
+        const priceInfo = categories[idx];
 
-        if (category.price < categories[minimum].price) {
+        if (priceInfo.price < categories[minimum].price) {
             minimum = idx;
         }
     }
 
-    return categoryPriceString(categories[minimum], free);
+    return priceInfoPriceString(categories[minimum], free);
 };
 
-export const getPriceRange = (categories: CategoryEntity[], fallback: string, free: string): string => {
+export const getPriceRange = (categories: PriceInfo[], fallback: string, free: string): string => {
     if (categories.length === 0) {
         return fallback;
     }
@@ -40,18 +44,21 @@ export const getPriceRange = (categories: CategoryEntity[], fallback: string, fr
     let maximum = 0;
 
     for (let idx = 0; idx < categories.length; ++idx) {
-        const category = categories[idx];
+        const priceInfo = categories[idx];
 
-        if (category.price < categories[minimum].price) {
+        if (priceInfo.price < categories[minimum].price) {
             minimum = idx;
-        } else if (category.price > categories[maximum].price) {
+        } else if (priceInfo.price > categories[maximum].price) {
             maximum = idx;
         }
     }
 
     if (minimum === maximum) {
-        return categoryPriceString(categories[minimum], free);
+        return priceInfoPriceString(categories[minimum], free);
     } else {
-        return `${categoryPriceString(categories[minimum], free)} - ${categoryPriceString(categories[maximum], free)}`;
+        return `${priceInfoPriceString(categories[minimum], free)} - ${priceInfoPriceString(
+            categories[maximum],
+            free,
+        )}`;
     }
 };

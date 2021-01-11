@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Currency } from '@frontend-core/components/StripeSetup/StripeWithdrawManager/Currency';
 import React from 'react';
-import { symbolOf } from '@common/global';
+import { format } from '@common/global';
 import { useTranslation } from 'react-i18next';
 import { useHaptics, HapticsNotificationType } from '../../../hooks/useHaptics';
 
@@ -44,7 +44,7 @@ export const TotalBalanceIndication: React.FC<TotalBalanceIndicationProps> = (
     if (props.currency) {
         return (
             <IndicationText>
-                {t('balance')}: {(props.currency.amount / 100).toLocaleString()} {symbolOf(props.currency.currency)}
+                {t('balance')}: {format(props.currency.currency, props.currency.amount)}
             </IndicationText>
         );
     } else {

@@ -1,12 +1,13 @@
-import React, { useMemo } from 'react';
-import styled, { useTheme }                    from 'styled-components';
-import { Transaction }                         from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSalesResponse.dto';
-import { Theme }                               from '@frontend/flib-react/lib/config/theme';
-import { fillTheGaps }                         from './fillTheGaps';
-import { aggregate }                           from './aggregate';
-import { trim }                    from './trim';
-import { MINUTE} from './time';
+import React, { useMemo }   from 'react';
+import styled, { useTheme } from 'styled-components';
+import { Transaction }      from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsSalesResponse.dto';
+import { Theme }            from '@frontend/flib-react/lib/config/theme';
+import { fillTheGaps }      from './fillTheGaps';
+import { aggregate }        from './aggregate';
+import { trim }             from './trim';
+import { MINUTE}            from './time';
 import { add }                     from './add';
+import { fromAtomicValue } from '@common/global';
 // tslint:disable-next-line:no-var-requires
 const { Chart } = require('react-charts');
 
@@ -45,9 +46,10 @@ const generateData = (transactions: Transaction[], aggregationMode: string, end:
                     start
                 )
                     .map((tx: Transaction) => [
-                        new Date(tx.date),
-                        tx.price
-                    ]),
+                            new Date(tx.date),
+                            tx.price
+                        ]
+                    ),
                 secondaryAxisID: 'Revenue'
             },
             {
@@ -62,23 +64,6 @@ const generateData = (transactions: Transaction[], aggregationMode: string, end:
                     ]),
                 secondaryAxisID: 'Revenue'
             },
-            // {
-            //     label: 'Rejected Transactions Revenue',
-            //     data: fillTheGaps(
-            //         aggregationMode,
-            //         aggregate(
-            //             aggregationMode, transactions.filter((tx: Transaction) => tx.status === 'rejected')
-            //         ),
-            //         end,
-            //         'rejected',
-            //         start
-            //     )
-            //         .map((tx: Transaction) => [
-            //             new Date(tx.date),
-            //             tx.price / 100
-            //         ]),
-            //     secondaryAxisID: 'Revenue'
-            // }
         ]
         case 'quantity': return [
             {
@@ -117,6 +102,10 @@ const generateData = (transactions: Transaction[], aggregationMode: string, end:
 export default ({transactions, aggregation, min, max, dataMode, custom, setCustom}: GraphProps) => {
 
     const theme = useTheme() as Theme;
+
+    const currency = useMemo(() => {
+        return (transactions.filter((tx) => tx.currency !== null)[0] || {}).currency || null;
+    }, [transactions]);
 
     const defs = useMemo(() => (
         <defs>
@@ -178,11 +167,11 @@ export default ({transactions, aggregation, min, max, dataMode, custom, setCusto
         () => [
             { id: 'Time', primary: true, type: 'time', position: 'bottom', hardMin: min, hardMax: add(aggregation, max)},
             { id: 'Revenue', type: 'linear', position: 'left', hardMax: valueMax , show: dataMode === 'revenue', format: (d: string) => {
-                    return parseInt(d.replace(',', ''), 10) / 100
+                    return currency !== null ? fromAtomicValue(currency, parseInt(d.replace(/,/g, ''), 10)) : d
                 }},
             { id: 'Quantity', type: 'linear', position: 'left', hardMax: valueMax , show: dataMode === 'quantity' },
         ],
-        [min, max, dataMode, aggregation, valueMax]
+        [min, max, dataMode, aggregation, valueMax, currency]
     )
 
     const getSeriesStyle = React.useCallback(

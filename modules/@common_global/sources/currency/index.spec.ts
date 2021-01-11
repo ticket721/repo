@@ -617,7 +617,7 @@ describe('Currency', function () {
 
         it('should properly recover japanese yen format', function() {
 
-            expect(format('JPY', 1000)).toEqual('¥1000');
+            expect(format('JPY', 1000)).toEqual('¥1,000');
 
         });
 

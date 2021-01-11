@@ -14,6 +14,7 @@ import { useLazyRequest }          from '@frontend/core/lib/hooks/useLazyRequest
 import { EventsExportResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsExportResponse.dto';
 import { PushNotification }        from '@frontend/core/lib/redux/ducks/notifications';
 import { useDispatch }             from 'react-redux';
+import { fromAtomicValue }         from '@common/global';
 
 interface FilterHeaderProps {
     filtersAndToggles: FiltersAndToggles;
@@ -261,7 +262,7 @@ const csv = (attendees: any[], categories: CategoryEntity[]): void => {
 `;
 
     for (const attendee of attendees) {
-        fileContent += `${attendee.email}, ${attendee.ticket}, ${attendee.category}, ${categories[categories.findIndex(category => category.id === attendee.category)]?.display_name}, ${attendee.price / 100}, ${attendee.currency}, ${(new Date(attendee.date)).toISOString()}
+        fileContent += `${attendee.email}, ${attendee.ticket}, ${attendee.category}, ${categories[categories.findIndex(category => category.id === attendee.category)]?.display_name}, ${fromAtomicValue(attendee.currency, attendee.price)}, ${attendee.currency}, ${(new Date(attendee.date)).toISOString()}
 `;
     }
 

@@ -1,9 +1,8 @@
 import styled from 'styled-components';
 import { Button, SelectInput } from '@frontend/flib-react/lib/components';
-import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
-import { symbolOf } from '@common/global';
+import { format, symbolOf } from '@common/global';
 import { HapticsImpactStyle, useHaptics } from '../../../hooks/useHaptics';
 
 export interface BalanceCurrencyInfo {
@@ -93,13 +92,8 @@ const getCurrency = (currency: string, balances: BalanceCurrencyInfo[]): Balance
     return balances[balances.findIndex((b: BalanceCurrencyInfo) => b.currency === currency)];
 };
 
-const formatAmount = (locale: string, currency: string, amount: number): string => {
-    return (amount / 100).toLocaleString();
-};
-
 export const SSCABalanceManager: React.FC<SSCABalanceManagerProps> = (props: SSCABalanceManagerProps): JSX.Element => {
     const [currency, setCurrency] = useState(recoverHighestBalance(props.currencies));
-    const [, i18n] = useTranslation('language');
     const history = useHistory();
     const haptics = useHaptics();
 
@@ -123,12 +117,10 @@ export const SSCABalanceManager: React.FC<SSCABalanceManagerProps> = (props: SSC
             <BalanceTextContainer>
                 <AccountNameText>{props.name}</AccountNameText>
                 <BalanceAvailableText>
-                    {formatAmount(i18n.language, currency, getCurrency(currency, props.currencies).amount)}{' '}
-                    {symbolOf(currency)}
+                    {format(currency, getCurrency(currency, props.currencies).amount)}
                 </BalanceAvailableText>
                 <BalancePendingText visible={true}>
-                    {formatAmount(i18n.language, currency, getCurrency(currency, props.currencies).pending)}{' '}
-                    {symbolOf(currency)} pending
+                    {format(currency, getCurrency(currency, props.currencies).pending)}
                 </BalancePendingText>
             </BalanceTextContainer>
             <BalanceButtonsContainer>

@@ -546,7 +546,10 @@ export const currencies = [
 ];
 
 export const symbolOf = (currency: string): string => {
-    const currencyInfo = currencyFormatInfos[currency];
+
+    const currencyCode = currency.toUpperCase();
+
+    const currencyInfo = currencyFormatInfos[currencyCode];
 
     if (isNil(currencyInfo)) {
         return undefined;
@@ -563,38 +566,55 @@ export const symbolOf = (currency: string): string => {
     return undefined;
 };
 
-export const format = (currency: string, amount: number): string => {
-    const currencyInfo = currencyFormatInfos[currency];
+export const format = (currency: string, amount: number, symbol: boolean = true): string => {
 
-    if (isNil(currencyInfo)) {
-        return `${currency} ${fromAtomicValue(currency, amount)}`;
+    const currencyCode = currency.toUpperCase();
+
+    const currencyCodeInfo = currencyFormatInfos[currencyCode];
+
+    if (isNil(currencyCodeInfo)) {
+        if (symbol) {
+            return `${currencyCode} ${fromAtomicValue(currencyCode, amount).toLocaleString()}`;
+        } else {
+            return `${fromAtomicValue(currencyCode, amount).toLocaleString()}`;
+        }
     }
 
-    if (!isNil(currencyInfo.uniqSymbol)) {
-        return currencyInfo.uniqSymbol.template
-            .replace('1', fromAtomicValue(currency, amount))
-            .replace('$', symbolOf(currency))
+    if (!symbol) {
+        return fromAtomicValue(currencyCode, amount).toLocaleString();
     }
 
-    if (!isNil(currencyInfo.symbol)) {
-        return currencyInfo.symbol.template
-            .replace('1', fromAtomicValue(currency, amount))
-            .replace('$', symbolOf(currency))
+    if (!isNil(currencyCodeInfo.uniqSymbol)) {
+        return currencyCodeInfo.uniqSymbol.template
+            .replace('1', fromAtomicValue(currencyCode, amount).toLocaleString())
+            .replace('$', symbolOf(currencyCode))
     }
 
-    return `${currency} ${fromAtomicValue(currency, amount)}`;
+    if (!isNil(currencyCodeInfo.symbol)) {
+        return currencyCodeInfo.symbol.template
+            .replace('1', fromAtomicValue(currencyCode, amount).toLocaleString())
+            .replace('$', symbolOf(currencyCode))
+    }
+
+    return `${currencyCode} ${fromAtomicValue(currencyCode, amount).toLocaleString()}`;
 
 };
 
 export const getAtomicValue = (currency: string, amount: number): number => {
 
-    const currencyInfo = currencyFormatInfos[currency];
+    const currencyCode = currency.toUpperCase();
+
+    if (currencyCode === 'FREE') {
+        return amount;
+    }
+
+    const currencyCodeInfo = currencyFormatInfos[currencyCode];
     let decimals;
 
-    if (isNil(currencyInfo)) {
+    if (isNil(currencyCodeInfo)) {
         decimals = 2;
     } else {
-        decimals = currencyInfo.fractionSize;
+        decimals = currencyCodeInfo.fractionSize;
     }
 
     return amount * (10 ** decimals);
@@ -602,13 +622,19 @@ export const getAtomicValue = (currency: string, amount: number): number => {
 
 export const fromAtomicValue = (currency: string, amount: number): number => {
 
-    const currencyInfo = currencyFormatInfos[currency];
+    const currencyCode = currency.toUpperCase();
+
+    if (currencyCode === 'FREE') {
+        return amount;
+    }
+
+    const currencyCodeInfo = currencyFormatInfos[currencyCode];
     let decimals;
 
-    if (isNil(currencyInfo)) {
+    if (isNil(currencyCodeInfo)) {
         decimals = 2;
     } else {
-        decimals = currencyInfo.fractionSize;
+        decimals = currencyCodeInfo.fractionSize;
     }
 
     return amount / (10 ** decimals);
