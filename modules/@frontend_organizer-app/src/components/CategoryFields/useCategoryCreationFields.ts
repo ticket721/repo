@@ -1,4 +1,4 @@
-import { CustomDatePickerProps, SelectOption, SelectProps, TextInputProps, ToggleProps } from '@frontend/flib-react/lib/components';
+import { CustomDatePickerProps, PriceInputProps, SelectOption, SelectProps, TextInputProps, ToggleProps } from '@frontend/flib-react/lib/components';
 
 import './locales';
 import { useTranslation }              from 'react-i18next';
@@ -30,7 +30,7 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
     saleEndProps: CustomDatePickerProps,
     seatsProps: TextInputProps,
     freeToggleProps: ToggleProps,
-    priceProps: TextInputProps,
+    priceProps: PriceInputProps,
     duplicateOnProps?: SelectProps,
     relativeSaleDeltas?: SaleDeltas,
 } => {
@@ -39,6 +39,7 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
     const [ duplicateOnDates, setDuplicateOnDates ] = useState<SelectOption[]>([]);
     const [ maxDate, setMaxDate ] = useState<Date>(null);
     const [ isFree, setIsFree ] = useState<boolean>(false);
+    const [ lastCurrency, setLastCurrency ] = useState<string>(null);
 
     const [ nameField, nameMeta ] = useField<string>(`${parentField ? parentField + '.' : ''}name`);
     const [ saleBeginField, saleBeginMeta, saleBeginHelper ] = useField<Date>(`${parentField ? parentField + '.' : ''}saleBegin`);
@@ -173,8 +174,7 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
                     priceHelper.setValue(0);
                     currencyHelper.setValue('FREE');
                 } else {
-                    priceHelper.setValue(2);
-                    currencyHelper.setValue('EUR');
+                    currencyHelper.setValue(lastCurrency);
                 }
                 setIsFree(isCheck);
                 currencyHelper.setTouched(true);
@@ -185,20 +185,19 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
             label: t('free'),
         },
         priceProps: {
-            ...priceField,
-            value: priceField.value?.toString().replace('.', ','),
-            onChange: (e) => priceHelper.setValue(parseFloat((e.target.value as any).replaceAll(' ', '').replace(',', '.'))),
-            options: {
-                numeral: true,
-                numeralPositiveOnly: true,
-                delimiter: ' ',
-                numeralDecimalScale: 2,
-                numeralDecimalMark: ',',
-            },
+            name: priceField.name,
+            currName: currencyField.name,
+            defaultValue: priceField.value,
+            defaultCurrency: currencyField.value,
             error: evaluateError(priceMeta),
             label: t('price_label'),
             placeholder: t('price_placeholder'),
             disabled: isFree,
+            onPriceChange: priceHelper.setValue,
+            onCurrencyChange: (curr) => {
+                currencyHelper.setValue(curr);
+                setLastCurrency(curr);
+            },
         },
         duplicateOnProps: !isMultiDates && datesField.value.length > 0 ? {
             options: dateOptions.filter(date => datesField.value[0].toString() !== date.value),

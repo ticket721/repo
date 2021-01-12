@@ -15,8 +15,6 @@ import { useFormik } from 'formik';
 import { useHistory } from 'react-router';
 import { v4 } from 'uuid';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
-import { formatCategoryEntity } from './formatter';
-
 
 interface DateItem {
     id: string;
@@ -76,11 +74,7 @@ export const useCategoryEdition = (currCategory: CategoryEntity, dates: DateItem
     }
 
     const onSubmit = (category: CategoryWithDatesPayload) => {
-        const categoryWithoutDate = omit({
-            ...category,
-            price: category.price * 100,
-            currency: category.currency.toUpperCase()
-        }, 'dates');
+        const categoryWithoutDate = omit(category, 'dates');
 
         const newDateIds = dates.map((date, dateIdx) => {
             if (category.dates.includes(dateIdx)) {
@@ -107,11 +101,7 @@ export const useCategoryEdition = (currCategory: CategoryEntity, dates: DateItem
     };
 
     const validate = (category: CategoryWithDatesPayload) => {
-        const errors = checkCategory(omit({
-            ...category,
-            price: category.price * 100,
-            currency: category.currency.toUpperCase()
-        }, 'dates'));
+        const errors = checkCategory(omit(category, 'dates'));
 
         if (category.dates.length === 0) {
             return set(errors || {}, 'dates', {
@@ -128,14 +118,20 @@ export const useCategoryEdition = (currCategory: CategoryEntity, dates: DateItem
     };
 
     const formik = useFormik<CategoryWithDatesPayload>({
-        initialValues: formatCategoryEntity(
-            currCategory,
-            dates
+        initialValues: {
+            dates: dates
             .map(({ id }, dateIdx) => {
                 if (currCategory.dates.includes(id)) return dateIdx;
                 return null;
             })
-            .filter(dateIdx => dateIdx !== null)),
+            .filter(dateIdx => dateIdx !== null),
+            name: currCategory.display_name,
+            saleBegin: currCategory.sale_begin,
+            saleEnd: currCategory.sale_end,
+            seats: currCategory.seats,
+            price: currCategory.price,
+            currency: currCategory.currency,
+        },
         onSubmit,
         validate,
     });

@@ -1396,12 +1396,28 @@ jobs:
                   path: ./node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-root
 
+            - name: "CACHE @common_global"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+              uses: actions/cache@v2.1.3
+              with:
+                  path: ./modules/@common_global/node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-common_global
+
             - name: "CACHE @frontend_flib-react"
               if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
               uses: actions/cache@v2.1.3
               with:
                   path: ./modules/@frontend_flib-react/node_modules
                   key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}-frontend_flib-react
+
+            #
+            # Build dependencies
+            #
+
+            - name: "Build @common_global (yarn build in modules/@common_global)"
+              if: github.ref == 'refs/heads/develop' || steps.git_diff.outputs.diff
+              working-directory: modules/@common_global
+              run: yarn build
 
             #
             # Build & Build Storybook, Lint & Format check @frontend_flib-react

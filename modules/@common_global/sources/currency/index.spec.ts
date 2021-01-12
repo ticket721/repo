@@ -1,4 +1,4 @@
-import { currencies, format, fromAtomicValue, getAtomicValue, symbolOf } from './index';
+import { currencies, format, fromAtomicValue, getAtomicValue, getDecimalScale, symbolOf } from './index';
 
 describe('Currency', function () {
 
@@ -622,7 +622,41 @@ describe('Currency', function () {
         });
 
     });
-    
+ 
+    describe('getDecimalScale', function() {
+
+        it('should properly recover euro decimal scale', function() {
+
+            expect(getDecimalScale('EUR')).toEqual(2);
+
+        });
+
+        it('should properly recover dollar decimal scale', function() {
+
+            expect(getDecimalScale('USD')).toEqual(2);
+
+        });
+
+        it('should properly recover canadian dollar decimal scale', function() {
+
+            expect(getDecimalScale('CAD')).toEqual(2);
+
+        });
+
+        it('should properly recover swiss francs decimal scale', function() {
+
+            expect(getDecimalScale('CHF')).toEqual(2);
+
+        });
+
+        it('should properly recover japanese yen decimal scale', function() {
+
+            expect(getDecimalScale('JPY')).toEqual(0);
+
+        });
+
+    });
+
     describe('getAtomicValue', function() {
 
         it('should properly recover euro atomic value', function() {

@@ -12,8 +12,8 @@ import { useDispatch }                 from 'react-redux';
 import { PushNotification }            from '@frontend/core/lib/redux/ducks/notifications';
 import { Dispatch }                    from 'redux';
 import { CategoryEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-import { format } from '@frontend/core/lib/utils/date';
-
+import { format as formatDate } from '@frontend/core/lib/utils/date';
+import { format as formatPrice } from '@common/global/lib/currency';
 export interface DateCardProps {
     eventId: string;
     id: string;
@@ -69,15 +69,17 @@ export const DateCard: React.FC<DateCardProps> = ({
 
     const [ dateStatusChanging, setDateStatusChanging ] = useState<boolean>(false);
 
-    const categoriesInfos = useMemo<{ startPrice: number, totalSeats: number }>(() => {
+    const categoriesInfos = useMemo<{ startPrice: number, currency: string, totalSeats: number }>(() => {
         const totalSeats = categories.reduce((acc, category) => acc + category.seats, 0);
 
         if (!totalSeats) {
             return null;
         }
 
+        const minPriceCat = categories.sort((prevCategory, category) => prevCategory.price - category.price)[0];
         return {
-            startPrice: categories.sort((prevCategory, category) => prevCategory.price - category.price)[0].price,
+            startPrice: minPriceCat.price,
+            currency: minPriceCat.currency,
             totalSeats,
         };
     }, [categories]);
@@ -146,9 +148,9 @@ export const DateCard: React.FC<DateCardProps> = ({
                 <Name>{name}</Name>
                 <DateRange>
                     {t('from')}&nbsp;
-                    <strong>{format(begin)}</strong>
+                    <strong>{formatDate(begin)}</strong>
                     &nbsp;{t('to')}&nbsp;
-                    <strong>{format(end)}</strong>
+                    <strong>{formatDate(end)}</strong>
                 </DateRange>
                 <CategoriesInfos primaryColor={colors[0]}>
                     {
@@ -157,7 +159,7 @@ export const DateCard: React.FC<DateCardProps> = ({
                             <strong>{categoriesInfos.totalSeats}</strong>&nbsp;{t('seats')}&nbsp;•&nbsp;
                             {
                                 categoriesInfos.startPrice > 0 ?
-                                <>{t('price_from')}&nbsp;<strong>{categoriesInfos.startPrice/100}€</strong></> :
+                                <>{t('price_from')}&nbsp;<strong>{formatPrice(categoriesInfos.currency, categoriesInfos.startPrice)}</strong></> :
                                 <strong>{t('free')}</strong>
                             }
                         </> :

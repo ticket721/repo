@@ -1,4 +1,4 @@
-import { CustomDatePicker, Icon, SelectInput, TextInput, Toggle } from '@frontend/flib-react/lib/components';
+import { CustomDatePicker, Icon, PriceInput, SelectInput, TextInput, Toggle } from '@frontend/flib-react/lib/components';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import './locales';
@@ -81,9 +81,8 @@ export const CategoryFields: React.FC<CategoryFieldsProps> = ({ parentField, dat
                     className={'toggle'}
                     {...freeToggleProps}
                     gradient={sigColors && !!sigColors[0] ? sigColors : undefined} />
-                    <TextInput
-                    icon={'euro'}
-                    iconColor={sigColors && sigColors[0]}
+                    <PriceInput
+                    currColor={sigColors && sigColors[0]}
                     {...priceProps}/>
                 </PriceConfig>
             </SeatsAndPrice>

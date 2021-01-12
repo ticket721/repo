@@ -600,43 +600,36 @@ export const format = (currency: string, amount: number, symbol: boolean = true)
 
 };
 
-export const getAtomicValue = (currency: string, amount: number): number => {
+export const getDecimalScale = (currency: string): number => {
+    const currencyInfo = currencyFormatInfos[currency.toUpperCase()];
 
+    if (isNil(currencyInfo)) {
+        return 2;
+    } else {
+        return currencyInfo.fractionSize;
+    }
+}
+
+export const getAtomicValue = (currency: string, amount: number): number => {
     const currencyCode = currency.toUpperCase();
 
     if (currencyCode === 'FREE') {
         return amount;
     }
 
-    const currencyCodeInfo = currencyFormatInfos[currencyCode];
-    let decimals;
-
-    if (isNil(currencyCodeInfo)) {
-        decimals = 2;
-    } else {
-        decimals = currencyCodeInfo.fractionSize;
-    }
+    const decimals = getDecimalScale(currencyCode);
 
     return amount * (10 ** decimals);
 };
 
 export const fromAtomicValue = (currency: string, amount: number): number => {
-
     const currencyCode = currency.toUpperCase();
 
     if (currencyCode === 'FREE') {
         return amount;
     }
 
-    const currencyCodeInfo = currencyFormatInfos[currencyCode];
-    let decimals;
-
-    if (isNil(currencyCodeInfo)) {
-        decimals = 2;
-    } else {
-        decimals = currencyCodeInfo.fractionSize;
-    }
+    const decimals = getDecimalScale(currencyCode);
 
     return amount / (10 ** decimals);
-
 }

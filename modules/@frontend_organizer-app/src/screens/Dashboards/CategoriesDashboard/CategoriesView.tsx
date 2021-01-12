@@ -34,6 +34,7 @@ export const CategoriesView: React.FC = () => {
                     link={`/event/${events[0].id}/category/${category.id}`}
                     seats={category.seats}
                     price={category.price}
+                    currency={category.currency}
                     datesInfos={
                         dates
                         .filter(date => category.dates.includes(date.id))

@@ -79,8 +79,7 @@ const stepsInfos: StepInfos[] = [
 const updateCategories = (categories: CategoryWithDatesPayload[]): CategoryWithDatesPayload[] =>
     categories.map((category: CategoryWithDatesPayload) => ({
         ...category,
-        price: category.price * 100,
-        currency: category.currency.toUpperCase()
+        price: category.price,
     }));
 
 const CreateEvent: React.FC = () => {
@@ -135,14 +134,7 @@ const CreateEvent: React.FC = () => {
         }
 
         uploadImage(b64ImgtoBlob(eventPayload.imagesMetadata.avatar), v4());
-        setFinalEventPaylaod({
-            ...eventPayload,
-            categoriesConfiguration: eventPayload.categoriesConfiguration.map(category => ({
-                ...category,
-                price: category.price * 100,
-                currency: category.currency.toUpperCase()
-            }))
-        });
+        setFinalEventPaylaod(eventPayload);
     };
 
     const formik = useFormik({
