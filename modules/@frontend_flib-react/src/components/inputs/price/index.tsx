@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from '../../../config/styled';
-import { getAtomicValue, getDecimalScale } from '@common/global/lib/currency';
+import { fromAtomicValue, getAtomicValue, getDecimalScale } from '@common/global/lib/currency';
 import CurrencySelectInput from '../currency-select';
 import NumberFormat from 'react-number-format';
 
@@ -11,7 +11,7 @@ export interface PriceInputProps {
     placeholder?: string;
     defaultCurrency?: string;
     disabled?: boolean;
-    currDisabled?: boolean;
+    defaultValue?: number;
     value?: number;
     className?: string;
     currColor?: string;
@@ -117,7 +117,7 @@ export const PriceInput: React.FunctionComponent<PriceInputProps> = (props: Pric
                 <CurrencySelectInput
                     name={props.currName}
                     defaultCode={defaultCurrency}
-                    disabled={props.currDisabled}
+                    disabled={props.disabled}
                     selectedColor={props.currColor}
                     onChange={(currOpt) => {
                         setCurr(currOpt.value);
@@ -126,6 +126,8 @@ export const PriceInput: React.FunctionComponent<PriceInputProps> = (props: Pric
                     onBlur={props.onBlur}
                 />
                 <NumberFormat
+                    defaultValue={props.defaultValue && fromAtomicValue(curr.toUpperCase(), props.defaultValue)}
+                    value={props.value && fromAtomicValue(curr.toUpperCase(), props.value)}
                     placeholder={props.placeholder}
                     thousandSeparator={true}
                     decimalScale={getDecimalScale(curr.toUpperCase())}
@@ -133,7 +135,9 @@ export const PriceInput: React.FunctionComponent<PriceInputProps> = (props: Pric
                     allowNegative={false}
                     allowedDecimalSeparators={[',', '.']}
                     disabled={props.disabled}
-                    onValueChange={(value: any) => props.onPriceChange(getAtomicValue(curr, value.floatValue))}
+                    onValueChange={(value: any) =>
+                        props.onPriceChange(Math.round(getAtomicValue(curr.toUpperCase(), value.floatValue)))
+                    }
                 />
             </div>
             {props.error && <Error>{props.error}</Error>}

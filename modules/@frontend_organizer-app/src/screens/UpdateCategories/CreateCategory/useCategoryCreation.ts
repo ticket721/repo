@@ -82,11 +82,7 @@ export const useCategoryCreation = (dates: DateItem[], refetch: () => void) => {
     }
 
     const onSubmit = (category: CategoryWithDatesPayload) => {
-        const categoryWithoutDate = omit({
-            ...category,
-            price: category.price * 100,
-            currency: category.currency.toUpperCase()
-        }, 'dates');
+        const categoryWithoutDate = omit(category, 'dates');
 
         const concernedDateIds = dates.map((date, dateIdx) => {
             if (category.dates.includes(dateIdx)) {
@@ -112,11 +108,7 @@ export const useCategoryCreation = (dates: DateItem[], refetch: () => void) => {
 
     const validate = (category: CategoryWithDatesPayload) => {
         const errors = checkCategory(
-            omit({
-                ...category,
-                price: category.price * 100,
-                currency: category.currency.toUpperCase()
-            }, 'dates')
+            omit(category, 'dates')
         );
 
         if (category.dates.length === 0) {

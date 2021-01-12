@@ -14,6 +14,7 @@ import { EventsStatusResponseDto }          from '@common/sdk/lib/@backend_nest/
 import { PushNotification }                 from '@frontend/core/lib/redux/ducks/notifications';
 import { useDispatch }                      from 'react-redux';
 import { Dispatch }                         from 'redux';
+import { format as formatPrice } from '@common/global';
 
 export interface CategoryCardProps {
     eventId: string;
@@ -22,6 +23,7 @@ export interface CategoryCardProps {
     name: string;
     seats: number;
     price: number;
+    currency: string;
     link: string;
     datesInfos: {
         cover: string;
@@ -56,6 +58,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
     name,
     seats,
     price,
+    currency,
     link,
     datesInfos,
     forceRefresh,
@@ -181,7 +184,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
                     <strong>{ticketCountResp.data.count}</strong>/{seats}&nbsp;{t('sold_tickets')}
                 </RemainingTickets>
             </Infos>
-            <Price color={datesInfos[currentCoverIdx].colors[0]}>{price > 0 ? `${price/100}€` : t('free')}</Price>
+            <Price color={datesInfos[currentCoverIdx].colors[0]}>{currency !== 'FREE' ? formatPrice(currency, price) : t('free')}</Price>
         </CategoryCardContainer>
     </Container>;
 };

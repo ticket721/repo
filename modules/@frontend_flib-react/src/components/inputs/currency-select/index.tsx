@@ -77,8 +77,10 @@ const StyledInputContainer = styled.div<Partial<CurrencySelectProps>>`
     display: flex;
     flex-direction: column;
     transition: background-color 300ms ease;
+    min-width: 100px;
+
     &:hover {
-        background-color: ${(props) => props.theme.componentColorLight};
+        background-color: ${(props) => (!props.disabled ? props.theme.componentColorLight : null)};
     }
     &:focus-within {
         background-color: ${(props) => props.theme.componentColorLighter};
@@ -109,7 +111,7 @@ export const CurrencySelectInput: React.FunctionComponent<CurrencySelectProps> =
     );
 
     return (
-        <StyledInputContainer className={props.className} selectedColor={props.selectedColor}>
+        <StyledInputContainer className={props.className} selectedColor={props.selectedColor} disabled={props.disabled}>
             <Select
                 name={props.name}
                 components={{ SingleValue }}

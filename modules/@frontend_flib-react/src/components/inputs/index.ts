@@ -8,3 +8,4 @@ export * from './textarea';
 export * from './richtext';
 export * from './toggle';
 export * from './currency-select';
+export * from './price';
