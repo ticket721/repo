@@ -601,7 +601,7 @@ export const format = (currency: string, amount: number, symbol: boolean = true)
 };
 
 export const getDecimalScale = (currency: string): number => {
-    const currencyInfo = currencyFormatInfos[currency];
+    const currencyInfo = currencyFormatInfos[currency.toUpperCase()];
 
     if (isNil(currencyInfo)) {
         return 2;
@@ -617,7 +617,7 @@ export const getAtomicValue = (currency: string, amount: number): number => {
         return amount;
     }
 
-    const decimals = getDecimalScale(currency);
+    const decimals = getDecimalScale(currencyCode);
 
     return amount * (10 ** decimals);
 };
@@ -629,7 +629,7 @@ export const fromAtomicValue = (currency: string, amount: number): number => {
         return amount;
     }
 
-    const decimals = getDecimalScale(currency);
+    const decimals = getDecimalScale(currencyCode);
 
     return amount / (10 ** decimals);
 }

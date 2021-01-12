@@ -43,9 +43,15 @@ export const CategoriesStep: React.FC = () => {
     const addCategory = () => {
         const categoryCount = formikCtx.values.categoriesConfiguration.length;
         setCurrentEditingCategory(categoryCount);
+
+        let currency = 'EUR';
+
+        if (categoryCount > 0) {
+            currency = formikCtx.values.categoriesConfiguration[categoryCount - 1].currency;
+        }
         formikCtx.setFieldValue(`categoriesConfiguration[${categoryCount}]`, {
             ...initialCategory,
-            currency: 'EUR',
+            currency,
         });
         setNewCategory(true);
     };

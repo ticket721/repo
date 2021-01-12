@@ -3,8 +3,8 @@ import { EventCreationPayload } from '@common/global';
 import { useFormikContext } from 'formik';
 import styled from 'styled-components';
 import { Icon } from '@frontend/flib-react/lib/components';
-import { format } from '@frontend/core/lib/utils/date';
-
+import { format as formatDate } from '@frontend/core/lib/utils/date';
+import { format as formatPrice } from '@common/global/lib/currency';
 import { useTranslation }     from 'react-i18next';
 import './locales';
 
@@ -17,16 +17,6 @@ export const CardInformations: React.FC<CardInformationsProps> = ({ idx }) => {
     const formikCtx = useFormikContext<EventCreationPayload>();
     const primaryColor = formikCtx.values.imagesMetadata.signatureColors[0];
 
-    const formatPrice = (price: number): string => {
-        const formattedPrice = price?.toString().replace('.', ',');
-        const delimiterIndex = formattedPrice?.indexOf(',');
-        if (delimiterIndex !== -1 && formattedPrice?.substring(delimiterIndex).length === 2) {
-            return formattedPrice + '0';
-        }
-
-        return formattedPrice + '€';
-    };
-
     return <CardInformationsContainer>
         <SaleLabel>
             <Icon
@@ -36,12 +26,12 @@ export const CardInformations: React.FC<CardInformationsProps> = ({ idx }) => {
             <span>{t('sale_label')}</span>
         </SaleLabel>
         <CategorySaleDates>
-            <span>{format(formikCtx.values.categoriesConfiguration[idx].saleBegin)}</span>
+            <span>{formatDate(formikCtx.values.categoriesConfiguration[idx].saleBegin)}</span>
             <Arrow
                 icon={'arrow'}
                 size={'14px'}
                 color={'rgba(255, 255, 255, 0.9)'}/>
-            <span>{format(formikCtx.values.categoriesConfiguration[idx].saleEnd)}</span>
+            <span>{formatDate(formikCtx.values.categoriesConfiguration[idx].saleEnd)}</span>
         </CategorySaleDates>
         <SeatsAndPrice>
             <Seats>
@@ -54,9 +44,9 @@ export const CardInformations: React.FC<CardInformationsProps> = ({ idx }) => {
                 size={'18px'} />
             </Seats>
             <Price primaryColor={primaryColor}>{
-                formikCtx.values.categoriesConfiguration[idx].price === 0 ?
+                formikCtx.values.categoriesConfiguration[idx].currency.toUpperCase() === 'FREE' ?
                 t('free') :
-                formatPrice(formikCtx.values.categoriesConfiguration[idx].price)
+                formatPrice(formikCtx.values.categoriesConfiguration[idx].currency, formikCtx.values.categoriesConfiguration[idx].price)
             }</Price>
         </SeatsAndPrice>
     </CardInformationsContainer>;

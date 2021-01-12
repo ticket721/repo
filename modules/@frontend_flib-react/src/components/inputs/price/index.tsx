@@ -126,17 +126,17 @@ export const PriceInput: React.FunctionComponent<PriceInputProps> = (props: Pric
                     onBlur={props.onBlur}
                 />
                 <NumberFormat
-                    defaultValue={props.defaultValue && fromAtomicValue(curr.toUpperCase(), props.defaultValue)}
-                    value={props.value && fromAtomicValue(curr.toUpperCase(), props.value)}
+                    defaultValue={props.defaultValue && fromAtomicValue(curr, props.defaultValue)}
+                    value={props.value && fromAtomicValue(curr, props.value)}
                     placeholder={props.placeholder}
                     thousandSeparator={true}
-                    decimalScale={getDecimalScale(curr.toUpperCase())}
+                    decimalScale={getDecimalScale(curr)}
                     fixedDecimalScale={true}
                     allowNegative={false}
                     allowedDecimalSeparators={[',', '.']}
                     disabled={props.disabled}
                     onValueChange={(value: any) =>
-                        props.onPriceChange(Math.round(getAtomicValue(curr.toUpperCase(), value.floatValue)))
+                        props.onPriceChange(Math.round(getAtomicValue(curr, value.floatValue)))
                     }
                 />
             </div>

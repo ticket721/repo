@@ -20,7 +20,7 @@ export const EventsView: React.FC = () => {
             {
                 events.length > 0 ?
                 events.map(event =>
-                    <DatesFetcher eventId={event.id}>
+                    <DatesFetcher key={event.id} eventId={event.id}>
                         <EventCard
                         key={event.id}
                         id={event.id}
