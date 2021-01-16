@@ -37,6 +37,8 @@ import { StripeController } from '@app/server/controllers/payment/stripe/Stripe.
 import { FilestoreModule } from '@lib/common/filestore/Filestore.module';
 import { PurchasesModule } from '@lib/common/purchases/Purchases.module';
 import { PurchasesController } from '@app/server/controllers/purchases/Purchases.controller';
+import { InvitationsModule } from '@lib/common/invitations/Invitations.module';
+import { InvitationsController } from '@app/server/controllers/invitations/Invitations.controller';
 
 @Module({
     imports: [
@@ -59,6 +61,7 @@ import { PurchasesController } from '@app/server/controllers/purchases/Purchases
         EventsModule,
         TicketsModule,
         PurchasesModule,
+        InvitationsModule,
 
         StripeModule.register(),
         StripeInterfacesModule,
@@ -91,6 +94,7 @@ import { PurchasesController } from '@app/server/controllers/purchases/Purchases
         FeatureFlagsController,
         StripeController,
         PurchasesController,
+        InvitationsController,
     ],
     providers: [
         ServerService,
