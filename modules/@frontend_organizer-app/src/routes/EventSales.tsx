@@ -1,6 +1,7 @@
 import React                         from 'react';
 import { MobileWarning }             from '../utils/MobileWarning';
 import { EventPageWrapper }          from '../utils/EventPageWrapper';
+import { DesktopNavbarMargin }       from '../utils/DesktopNavbarMargin';
 import { useRouteMatch }             from 'react-router';
 import { categoryParam, eventParam } from '../screens/types';
 import { EventsFetcher }             from '../components/Fetchers/EventsFetcher';
@@ -16,4 +17,4 @@ const EventAttendeesContent = () => {
     </EventsFetcher>
 }
 
-export default MobileWarning(EventPageWrapper(EventAttendeesContent));
+export default MobileWarning(DesktopNavbarMargin(EventPageWrapper(EventAttendeesContent)));

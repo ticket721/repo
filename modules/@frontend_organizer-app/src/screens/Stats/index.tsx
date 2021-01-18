@@ -55,7 +55,7 @@ export const Stats = ({eventId}: {eventId: string}): JSX.Element => {
         style={{
             width: '100%',
             height: '100%',
-            padding: 30,
+            padding: '0 30px',
             display: 'flex',
             flexDirection: 'row',
             flexWrap: 'wrap'
