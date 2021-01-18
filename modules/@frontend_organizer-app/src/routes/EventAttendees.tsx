@@ -5,6 +5,7 @@ import { Attendees }                 from '../components/Attendees';
 import { useRouteMatch }             from 'react-router';
 import { categoryParam, eventParam } from '../screens/types';
 import { EventsFetcher }             from '../components/Fetchers/EventsFetcher';
+import { DesktopNavbarMargin } from '../utils/DesktopNavbarMargin';
 
 const EventAttendeesContent = () => {
     const match = useRouteMatch<eventParam & categoryParam>(['/event/:eventId/attendees']);
@@ -16,4 +17,4 @@ const EventAttendeesContent = () => {
     </EventsFetcher>
 }
 
-export default MobileWarning(EventPageWrapper(EventAttendeesContent));
+export default MobileWarning(DesktopNavbarMargin(EventPageWrapper(EventAttendeesContent)));

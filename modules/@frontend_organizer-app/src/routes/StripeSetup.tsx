@@ -1,4 +1,5 @@
 import { StripeSetup }              from '@frontend/core/lib/components/StripeSetup';
+import { DesktopNavbarMargin } from '../utils/DesktopNavbarMargin';
 import { MobileWarning } from '../utils/MobileWarning';
 
-export default MobileWarning(StripeSetup(80));
+export default MobileWarning(DesktopNavbarMargin(StripeSetup(80)));

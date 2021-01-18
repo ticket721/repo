@@ -116,18 +116,16 @@ const App: React.FC = () => {
                                                     if (route.protected) {
 
                                                         return <ProtectedRoute exact={true} path={route.path} key={idx}>
-                                                            <PageWrapper>
-                                                                {
-                                                                    route.entityParam ?
-                                                                        <ProtectedByOwnership
-                                                                            entityType={route.entityType}
-                                                                            entityParam={route.entityParam}>
-                                                                            <Page/>
-                                                                        </ProtectedByOwnership>
-                                                                        :
+                                                            {
+                                                                route.entityParam ?
+                                                                    <ProtectedByOwnership
+                                                                        entityType={route.entityType}
+                                                                        entityParam={route.entityParam}>
                                                                         <Page/>
-                                                                }
-                                                            </PageWrapper>
+                                                                    </ProtectedByOwnership>
+                                                                    :
+                                                                    <Page/>
+                                                            }
                                                         </ProtectedRoute>;
 
                                                     }
@@ -153,11 +151,6 @@ const App: React.FC = () => {
 
 const AppContainer = styled.div`
     width: 100%;
-`;
-
-const PageWrapper = styled.div`
-    padding: 50px 0;
-    margin-top: 80px;
 `;
 
 let WrappedApp: any = withRouter(App);
