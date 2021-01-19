@@ -8,6 +8,7 @@ import {
     Injectable,
     Param,
     Post,
+    Put,
     UseFilters,
     UseGuards,
 } from '@nestjs/common';
@@ -31,15 +32,24 @@ import { InvitationsDeleteResponseDto } from '@app/server/controllers/invitation
 import { SearchInputType } from '@lib/common/utils/SearchInput.type';
 import { InvitationsService } from '@lib/common/invitations/Invitations.service';
 import { DatesService } from '@lib/common/dates/Dates.service';
+import { InvitationsTransferInputDto } from '@app/server/controllers/invitations/dto/InvitationsTransferInput.dto';
+import { InvitationsTransferResponseDto } from '@app/server/controllers/invitations/dto/InvitationsTransferResponse.dto';
 
 /**
- * Controller exposing routes to manage the Stripe Interface of an user
+ * Controller exposing routes to manage the Invitations of an user
  */
 @Injectable()
 @ApiBearerAuth()
 @ApiTags('invitation')
 @Controller('invitations')
 export class InvitationsController extends ControllerBasics<InvitationEntity> {
+    /**
+     * Dependency Injection
+     *
+     * @param eventsService
+     * @param invitationsService
+     * @param datesService
+     */
     constructor(
         private readonly eventsService: EventsService,
         private readonly invitationsService: InvitationsService,
@@ -48,6 +58,12 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
         super();
     }
 
+    /**
+     * Search for owned invitations
+     *
+     * @param body
+     * @param user
+     */
     @Post('/search')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
@@ -70,6 +86,13 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
         };
     }
 
+    /**
+     * Search for invitations made by owned event
+     *
+     * @param body
+     * @param eventId
+     * @param user
+     */
     @Post('/:event/search')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
@@ -105,6 +128,78 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
         };
     }
 
+    /**
+     * Transfer owned invitation
+     *
+     * @param body
+     * @param invitationId
+     * @param user
+     */
+    @Put('/transfer/:invitation')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @Roles('authenticated')
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
+    async transfer(
+        @Body() body: InvitationsTransferInputDto,
+        @Param('invitation') invitationId: string,
+        @User() user: UserDto,
+    ): Promise<InvitationsTransferResponseDto> {
+        const invitation = await this._crudCall(
+            this.invitationsService.findOne(invitationId),
+            StatusCodes.InternalServerError,
+        );
+
+        if (invitation.owner !== user.email) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Forbidden,
+                    message: 'invalid_event_id',
+                },
+                StatusCodes.Forbidden,
+            );
+        }
+
+        if (body.newOwner === user.email) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'invalid_event_id',
+                },
+                StatusCodes.Forbidden,
+            );
+        }
+
+        await this._crudCall(
+            this.invitationsService.update(
+                {
+                    id: invitationId,
+                },
+                {
+                    owner: body.newOwner,
+                },
+            ),
+            StatusCodes.InternalServerError,
+        );
+
+        const updatedInvitation = await this._crudCall(
+            this.invitationsService.findOne(invitationId),
+            StatusCodes.InternalServerError,
+        );
+
+        return {
+            invitation: updatedInvitation,
+        };
+    }
+
+    /**
+     * Create new invitations
+     *
+     * @param body
+     * @param eventId
+     * @param user
+     */
     @Post('/:event')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())
@@ -125,6 +220,16 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
                     message: 'invalid_event_id',
                 },
                 StatusCodes.Forbidden,
+            );
+        }
+
+        if (body.amount < 1) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.BadRequest,
+                    message: 'invalid_amount',
+                },
+                StatusCodes.BadRequest,
             );
         }
 
@@ -169,6 +274,13 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
         };
     }
 
+    /**
+     * Delete invitations
+     *
+     * @param body
+     * @param eventId
+     * @param user
+     */
     @Delete('/:event')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @UseFilters(new HttpExceptionFilter())

@@ -1,5 +1,5 @@
-import { AxiosResponse }              from 'axios';
-import { T721SDK }                    from '../../index';
+import { AxiosResponse }                     from 'axios';
+import { T721SDK }                           from '../../index';
 import { InvitationsSearchInputDto }         from '@app/server/controllers/invitations/dto/InvitationsSearchInput.dto';
 import { InvitationsSearchResponseDto }      from '@app/server/controllers/invitations/dto/InvitationsSearchResponse.dto';
 import { InvitationsOwnedSearchInputDto }    from '@app/server/controllers/invitations/dto/InvitationsOwnedSearchInput.dto';
@@ -8,6 +8,8 @@ import { InvitationsCreateInputDto }         from '@app/server/controllers/invit
 import { InvitationsCreateResponseDto }      from '@app/server/controllers/invitations/dto/InvitationsCreateResponse.dto';
 import { InvitationsDeleteInputDto }         from '@app/server/controllers/invitations/dto/InvitationsDeleteInput.dto';
 import { InvitationsDeleteResponseDto }      from '@app/server/controllers/invitations/dto/InvitationsDeleteResponse.dto';
+import { InvitationsTransferInputDto }       from '@app/server/controllers/invitations/dto/InvitationsTransferInput.dto';
+import { InvitationsTransferResponseDto }    from '@app/server/controllers/invitations/dto/InvitationsTransferResponse.dto';
 
 export async function invitationsSearch(
     event: string,
@@ -64,3 +66,16 @@ export async function invitationsDelete(
     }, query);
 }
 
+export async function invitationsTransfer(
+    invitation: string,
+    token: string,
+    query: Partial<InvitationsTransferInputDto>,
+): Promise<AxiosResponse<InvitationsTransferResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.put<Partial<InvitationsTransferInputDto>>(`/transfer/${invitation}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
