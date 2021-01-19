@@ -148,5 +148,15 @@ module.exports = [
         type: 'elasticsearch',
         name: 'post_add_user_avatar',
         timestamp: '20201225112440'
+    },
+    {
+        type: 'cassandra',
+        name: 'add_invitations',
+        timestamp: '1610460244'
+    },
+    {
+        type: 'elasticsearch',
+        name: 'add_invitations',
+        timestamp: '20210112140915'
     }
 ];

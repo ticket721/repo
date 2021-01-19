@@ -49,6 +49,11 @@ import {
     categoriesSearch, categoriesTicketCount,
 } from './app/api/categories';
 
+// INVITATIONS
+import {
+    invitationsCreate, invitationsDelete, invitationsOwnedSearch, invitationsSearch, invitationsTransfer,
+} from './app/api/invitations';
+
 // TICKETS
 import {
     ticketsSearch,
@@ -190,6 +195,12 @@ export class T721SDK {
         this.purchases.setProducts = this.purchases.setProducts.bind(this);
         this.purchases.checkout = this.purchases.checkout.bind(this);
         this.purchases.close = this.purchases.close.bind(this);
+
+        this.invitations.search = this.invitations.search.bind(this);
+        this.invitations.ownedSearch = this.invitations.ownedSearch.bind(this);
+        this.invitations.create = this.invitations.create.bind(this);
+        this.invitations.delete = this.invitations.delete.bind(this);
+        this.invitations.transfer = this.invitations.transfer.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -379,4 +390,12 @@ export class T721SDK {
         checkout: purchasesCheckout,
         close: purchasesClose,
     };
+
+    public invitations = {
+        search: invitationsSearch,
+        ownedSearch: invitationsOwnedSearch,
+        create: invitationsCreate,
+        delete: invitationsDelete,
+        transfer: invitationsTransfer
+    }
 }
