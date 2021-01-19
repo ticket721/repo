@@ -54,6 +54,8 @@ export class EmailService {
      *
      * @param user
      * @param data
+     * @param appUrl
+     * @param timezone
      */
     async sendPurchaseSummary(
         user: UserDto,
@@ -64,92 +66,99 @@ export class EmailService {
         appUrl?: string,
         timezone?: string,
     ): Promise<ServiceResponse<EmailDriverSendOptions>> {
-        const sameDay = (d1: Date, d2: Date): boolean => {
-            return (
-                d1.getFullYear() === d2.getFullYear() &&
-                d1.getMonth() === d2.getMonth() &&
-                d1.getDate() === d2.getDate()
-            );
-        };
+        try {
+            const sameDay = (d1: Date, d2: Date): boolean => {
+                return (
+                    d1.getFullYear() === d2.getFullYear() &&
+                    d1.getMonth() === d2.getMonth() &&
+                    d1.getDate() === d2.getDate()
+                );
+            };
 
-        const getDateString = (beginTimestamp: number, endTimestamp: number): string => {
-            if (sameDay(new Date(beginTimestamp), new Date(endTimestamp))) {
-                return `${formatDay(beginTimestamp, user.locale, timezone)},
+            const getDateString = (beginTimestamp: number, endTimestamp: number): string => {
+                if (sameDay(new Date(beginTimestamp), new Date(endTimestamp))) {
+                    return `${formatDay(beginTimestamp, user.locale, timezone)},
                  ${formatHour(beginTimestamp, user.locale, timezone)} → ${formatHour(
+                        endTimestamp,
+                        user.locale,
+                        timezone,
+                    )}`;
+                }
+                return `${formatShort(beginTimestamp, user.locale, timezone)} → ${formatShort(
                     endTimestamp,
                     user.locale,
                     timezone,
                 )}`;
-            }
-            return `${formatShort(beginTimestamp, user.locale, timezone)} → ${formatShort(
-                endTimestamp,
-                user.locale,
-                timezone,
-            )}`;
-        };
+            };
 
-        const locals = {
-            subjectSuffix: ` | ${data.items.length} Ticket${data.items.length > 1 ? 's' : ''}`,
-            username: user.username,
-            totalPrice: formatCurrency(data.price.currency, data.price.total),
-            fees: formatCurrency(data.price.currency, data.price.fees),
-            purchasedDate: format(Date.now(), user.locale, timezone),
-            walletUrl: appUrl ? appUrl + '/wallet' : null,
-            tickets: [],
-        };
+            const locals = {
+                subjectSuffix: ` | ${data.items.length} Ticket${data.items.length > 1 ? 's' : ''}`,
+                username: user.username,
+                totalPrice: data.price.currency ? formatCurrency(data.price.currency, data.price.total) : null,
+                fees: data.price.currency ? formatCurrency(data.price.currency, data.price.fees) : null,
+                purchasedDate: format(Date.now(), user.locale, timezone),
+                walletUrl: appUrl ? appUrl + '/wallet' : null,
+                tickets: [],
+            };
 
-        for (const item of data.items) {
-            if (item.type === 'ticket') {
-                const ticketIdx = locals.tickets.findIndex(ticket => ticket.categoryId === item.data.categoryId);
-                if (ticketIdx === -1) {
-                    const datesCount = item.data.dates.length;
-                    const computedLocation = item.data.dates[0].online ? 'Online' : item.data.dates[0].location;
+            for (const item of data.items) {
+                if (item.type === 'ticket') {
+                    const ticketIdx = locals.tickets.findIndex(ticket => ticket.categoryId === item.data.categoryId);
+                    if (ticketIdx === -1) {
+                        const datesCount = item.data.dates.length;
+                        const computedLocation = item.data.dates[0].online ? 'Online' : item.data.dates[0].location;
 
-                    locals.tickets.push({
-                        ...item.data,
-                        seats: 1,
-                        ids: [item.data.ticketId],
-                        markupEventName: item.data.dates[0].name + (datesCount > 1 ? ` +${datesCount - 1}` : ''),
-                        markupLocation: computedLocation + (datesCount > 1 ? ` +${datesCount - 1}` : ''),
-                        markupCoverUrl: item.data.dates[0].coverUrl,
-                        markupStartDate: format(
-                            (typeof item.data.dates[0].beginDate === 'string'
-                                ? new Date(item.data.dates[0].beginDate)
-                                : item.data.dates[0].beginDate
-                            ).getTime(),
-                            user.locale,
-                            timezone,
-                        ),
-                        dates: item.data.dates.map(date => {
-                            const beginDateTimestamp: number = (typeof date.beginDate === 'string'
-                                ? new Date(date.beginDate)
-                                : date.beginDate
-                            ).getTime();
-                            const endDateTimestamp: number = (typeof date.endDate === 'string'
-                                ? new Date(date.endDate)
-                                : date.endDate
-                            ).getTime();
+                        locals.tickets.push({
+                            ...item.data,
+                            seats: 1,
+                            ids: [item.data.ticketId],
+                            markupEventName: item.data.dates[0].name + (datesCount > 1 ? ` +${datesCount - 1}` : ''),
+                            markupLocation: computedLocation + (datesCount > 1 ? ` +${datesCount - 1}` : ''),
+                            markupCoverUrl: item.data.dates[0].coverUrl,
+                            markupStartDate: format(
+                                (typeof item.data.dates[0].beginDate === 'string'
+                                    ? new Date(item.data.dates[0].beginDate)
+                                    : item.data.dates[0].beginDate
+                                ).getTime(),
+                                user.locale,
+                                timezone,
+                            ),
+                            dates: item.data.dates.map(date => {
+                                const beginDateTimestamp: number = (typeof date.beginDate === 'string'
+                                    ? new Date(date.beginDate)
+                                    : date.beginDate
+                                ).getTime();
+                                const endDateTimestamp: number = (typeof date.endDate === 'string'
+                                    ? new Date(date.endDate)
+                                    : date.endDate
+                                ).getTime();
 
-                            return {
-                                ...date,
-                                url: appUrl ? appUrl + '/event/' + date.id : null,
-                                rangeDates: getDateString(beginDateTimestamp, endDateTimestamp),
-                                location: date.online ? 'Online' : date.location,
-                            };
-                        }),
-                    });
-                } else {
-                    locals.tickets[ticketIdx].ids.push(item.data.ticketId);
-                    locals.tickets[ticketIdx].seats = locals.tickets[ticketIdx].seats + 1;
+                                return {
+                                    ...date,
+                                    url: appUrl ? appUrl + '/event/' + date.id : null,
+                                    rangeDates: getDateString(beginDateTimestamp, endDateTimestamp),
+                                    location: date.online ? 'Online' : date.location,
+                                };
+                            }),
+                        });
+                    } else {
+                        locals.tickets[ticketIdx].ids.push(item.data.ticketId);
+                        locals.tickets[ticketIdx].seats = locals.tickets[ticketIdx].seats + 1;
+                    }
                 }
             }
-        }
 
-        return await this.send({
-            template: 'purchaseSummary',
-            to: user.email,
-            locale: user.locale,
-            locals,
-        });
+            return await this.send({
+                template: 'purchaseSummary',
+                to: user.email,
+                locale: user.locale,
+                locals,
+            });
+        } catch (e) {
+            return {
+                error: e.message,
+                response: null,
+            };
+        }
     }
 }

@@ -547,6 +547,10 @@ export const currencies = [
 
 export const symbolOf = (currency: string): string => {
 
+    if (currency === null) {
+        return '';
+    }
+
     const currencyCode = currency.toUpperCase();
 
     const currencyInfo = currencyFormatInfos[currencyCode];
@@ -567,6 +571,10 @@ export const symbolOf = (currency: string): string => {
 };
 
 export const format = (currency: string, amount: number, symbol: boolean = true): string => {
+
+    if (currency === null) {
+        return `${fromAtomicValue(currency, amount).toLocaleString()}`;
+    }
 
     const currencyCode = currency.toUpperCase();
 
@@ -601,6 +609,11 @@ export const format = (currency: string, amount: number, symbol: boolean = true)
 };
 
 export const getDecimalScale = (currency: string): number => {
+
+    if (currency === null) {
+        return 2;
+    }
+
     const currencyInfo = currencyFormatInfos[currency.toUpperCase()];
 
     if (isNil(currencyInfo)) {
@@ -611,6 +624,11 @@ export const getDecimalScale = (currency: string): number => {
 }
 
 export const getAtomicValue = (currency: string, amount: number): number => {
+
+    if (currency === null) {
+        return amount;
+    }
+
     const currencyCode = currency.toUpperCase();
 
     if (currencyCode === 'FREE') {
@@ -623,6 +641,11 @@ export const getAtomicValue = (currency: string, amount: number): number => {
 };
 
 export const fromAtomicValue = (currency: string, amount: number): number => {
+
+    if (currency === null) {
+        return amount;
+    }
+
     const currencyCode = currency.toUpperCase();
 
     if (currencyCode === 'FREE') {
