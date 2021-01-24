@@ -54,18 +54,22 @@ export const showcase = () => (
                 ticketQuantity={defaultTicket.number}
                 datesCount={1}
                 datesIdx={0}
-                mainColors={['red', 'blue']}
+                mainColors={['#EBBC16', '#DB535B']}
             />
             <PullUp>
                 <TicketPreview
                     ticket={defaultTicket}
                     event_name={'Event Name'}
-                    gradient={['red', 'blue']}
+                    gradient={['#EBBC16', '#DB535B']}
                     online={false}
                     online_label={'Online Label'}
                     location_label={'Get directions'}
                     online_sublabel={'Get live link'}
                     addonsPurchased={'no addons'}
+                    banner={{
+                        label: 'Invitation',
+                        colors: ['#EBBC16', '#DB535B'],
+                    }}
                 />
             </PullUp>
         </Container>

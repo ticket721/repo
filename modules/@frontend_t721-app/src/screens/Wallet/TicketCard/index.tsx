@@ -4,8 +4,6 @@ import { TicketHeader }          from '@frontend/flib-react/lib/components/ticke
 import { useTranslation }        from 'react-i18next';
 import './locales';
 import { useHistory }            from 'react-router';
-import { CategoryEntity }        from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-import { TicketEntity }          from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
 import { DateEntity }            from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { EventEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
 import TicketPreview             from '@frontend/flib-react/lib/components/ticket/infos';
@@ -14,14 +12,15 @@ import { formatDay, formatHour }          from '@frontend/core/lib/utils/date';
 import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 
 interface TicketCardProps {
-    ticket: Omit<TicketEntity, 'category'>;
-    category: Omit<CategoryEntity, 'dates'>;
+    ticketId: string;
+    categoryName: string;
     dates: DateEntity[];
     event: EventEntity;
     width?: string;
+    isInvitation?: boolean;
 }
 
-const TicketCard = ({ ticket, category, dates, event, width }: TicketCardProps) => {
+export const TicketCard = ({ ticketId, categoryName, dates, event, width, isInvitation }: TicketCardProps) => {
     const history = useHistory();
     const [t] = useTranslation('ticket');
     const idx = useIncrement(7000);
@@ -31,7 +30,7 @@ const TicketCard = ({ ticket, category, dates, event, width }: TicketCardProps) 
         <Container
             customWidth={width}
             onClick={() => {
-                history.push(`/ticket/${ticket.id}`)
+                history.push(`/ticket/${ticketId}${isInvitation ? '/invitation' : ''}`)
                 haptics.impact({
                     style: HapticsImpactStyle.Heavy
                 });
@@ -51,17 +50,25 @@ const TicketCard = ({ ticket, category, dates, event, width }: TicketCardProps) 
                     location_label={t('get_directions')}
                     online_label={t('online')}
                     online_sublabel={dates[idx % dates.length].online && dates[idx % dates.length].online_link ? t('click_to_online') : t('online_link_soon')}
+                    banner={
+                        isInvitation ?
+                        {
+                            label: categoryName,
+                            colors: dates[idx % dates.length].metadata.signature_colors
+                        } :
+                        null
+                    }
                     ticket={{
                         name: dates[idx % dates.length].metadata.name,
                         mainColor: dates[idx % dates.length].metadata.signature_colors[0],
                         location: dates[idx % dates.length].location?.location_label,
-                        categoryName: category.display_name,
+                        categoryName,
                         startDate: formatDay(dates[idx % dates.length].timestamps.event_begin),
                         gradients: dates[idx % dates.length].metadata.signature_colors,
                         startTime: formatHour(dates[idx % dates.length].timestamps.event_begin),
                         endDate: formatDay(dates[idx % dates.length].timestamps.event_end),
                         endTime: formatHour(dates[idx % dates.length].timestamps.event_end),
-                        ticketId: ticket.id,
+                        ticketId,
                     } as any}
                     addonsPurchased={t('no_addons')}
                 />
@@ -81,5 +88,3 @@ const PullUp = styled.div`
     top: calc(${props => props.theme.biggerSpacing} * -2);
     margin-bottom: calc(${props => props.theme.biggerSpacing} * -2);
 `;
-
-export default TicketCard;

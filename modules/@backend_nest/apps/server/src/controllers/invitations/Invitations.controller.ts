@@ -34,6 +34,7 @@ import { InvitationsService } from '@lib/common/invitations/Invitations.service'
 import { DatesService } from '@lib/common/dates/Dates.service';
 import { InvitationsTransferInputDto } from '@app/server/controllers/invitations/dto/InvitationsTransferInput.dto';
 import { InvitationsTransferResponseDto } from '@app/server/controllers/invitations/dto/InvitationsTransferResponse.dto';
+import { InvitationsOwnedSearchInputDto } from '@app/server/controllers/invitations/dto/InvitationsOwnedSearchInput.dto';
 
 /**
  * Controller exposing routes to manage the Invitations of an user
@@ -71,7 +72,7 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
     @Roles('authenticated')
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError, StatusCodes.BadRequest])
     async searchOwned(
-        @Body() body: InvitationsSearchInputDto,
+        @Body() body: InvitationsOwnedSearchInputDto,
         @User() user: UserDto,
     ): Promise<InvitationsSearchResponseDto> {
         const invitations = await this._search(this.invitationsService, {

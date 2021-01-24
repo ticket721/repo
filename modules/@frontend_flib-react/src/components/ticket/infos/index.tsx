@@ -8,6 +8,11 @@ import { motion, useAnimation } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 
+interface BannerProps {
+    label: string;
+    colors: string[];
+}
+
 export interface PreviewInfosProps extends React.ComponentProps<any> {
     ticket: TicketInterface;
     event_name: string;
@@ -18,6 +23,7 @@ export interface PreviewInfosProps extends React.ComponentProps<any> {
     online_label: string;
     online_sublabel: string;
     location_label: string;
+    banner?: BannerProps;
 }
 
 const Wrapper = styled.div`
@@ -61,8 +67,26 @@ const TicketCategoryTitle = styled.h3<TicketCategoryTitleProps>`
     -webkit-text-fill-color: transparent;
 `;
 
+const Banner = styled.div<{ colors: string[] }>`
+    position: absolute;
+    top: 20px;
+    right: -25px;
+    font-size: 12px;
+    font-weight: 500;
+    transform: rotate(45deg);
+    text-transform: uppercase;
+    padding: ${(props) => props.theme.smallSpacing} 20px 4px;
+    background: linear-gradient(270deg, ${(props) => props.colors[1]}, ${(props) => props.colors[0]});
+`;
+
 const TicketHeaderInfos = styled.div`
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    overflow: hidden;
     width: calc(100% - 8px);
+    min-height: 100px;
     background-image: linear-gradient(180deg, ${(props) => props.theme.darkBg}, ${(props) => props.theme.darkerBg});
     border-top-right-radius: ${(props) => props.theme.defaultRadius};
     border-bottom-left-radius: 12px;
@@ -186,9 +210,13 @@ export const PreviewInfos: React.FunctionComponent<PreviewInfosProps> = (props: 
         <Wrapper>
             <TicketHeaderInfos>
                 <TicketHeaderTitle animate={x}>{name}</TicketHeaderTitle>
-                <TicketCategoryTitle gradientStart={props.gradient[0]} gradientEnd={props.gradient[1]}>
-                    {props.ticket.categoryName}
-                </TicketCategoryTitle>
+                {props.banner ? (
+                    <Banner colors={props.banner.colors}>{props.banner.label}</Banner>
+                ) : (
+                    <TicketCategoryTitle gradientStart={props.gradient[0]} gradientEnd={props.gradient[1]}>
+                        {props.ticket.categoryName}
+                    </TicketCategoryTitle>
+                )}
                 <TicketEventTitle>{props.event_name}</TicketEventTitle>
             </TicketHeaderInfos>
             <Separator bgColor={props.bgColor} />

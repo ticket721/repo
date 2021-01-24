@@ -14,7 +14,7 @@ export const Price = () => (
         label={text('Label', 'Price')}
         name={'price-input'}
         currName={'currency-input'}
-        defaultCurrency={text('default curr', 'USD')}
+        currency={text('default curr', 'USD')}
         disabled={boolean('disabled', false)}
         currColor={color('color', '#079CF0')}
         onPriceChange={(atomicValue) => console.log(atomicValue)}

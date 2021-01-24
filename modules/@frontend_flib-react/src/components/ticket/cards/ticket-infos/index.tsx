@@ -7,6 +7,7 @@ export interface TicketInfosCardProps extends React.ComponentProps<any> {
     ticketType?: string;
     seatInfo?: SeatProps;
     colors: string[];
+    invitation: string;
 }
 
 interface SeatProps {
@@ -44,6 +45,9 @@ const TopInfo = styled.div`
     padding: ${(props) => props.theme.doubleSpacing} ${(props) => props.theme.biggerSpacing}
         ${(props) => props.theme.biggerSpacing};
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
     width: 100%;
 
     svg {
@@ -121,6 +125,18 @@ const TicketEventName = styled.h2`
     font-weight: 500;
 `;
 
+const InvitationBanner = styled.div<{ colors: string[] }>`
+    position: absolute;
+    top: 20px;
+    right: -25px;
+    font-size: 12px;
+    font-weight: 500;
+    transform: rotate(45deg);
+    text-transform: uppercase;
+    padding: ${(props) => props.theme.smallSpacing} 20px 4px;
+    background: linear-gradient(270deg, ${(props) => props.colors[1]}, ${(props) => props.colors[0]});
+`;
+
 export const TicketInfosCard: React.FunctionComponent<TicketInfosCardProps> = (
     props: TicketInfosCardProps,
 ): JSX.Element => {
@@ -128,7 +144,11 @@ export const TicketInfosCard: React.FunctionComponent<TicketInfosCardProps> = (
         <Container>
             <TopInfo>
                 <TicketEventName>{props.eventName}</TicketEventName>
-                <TicketCategoryTitle colors={props.colors}>{props.ticketType}</TicketCategoryTitle>
+                {props.invitation ? (
+                    <InvitationBanner colors={props.colors}>{props.invitation}</InvitationBanner>
+                ) : (
+                    <TicketCategoryTitle colors={props.colors}>{props.ticketType}</TicketCategoryTitle>
+                )}
                 <TicketId>{props.ticketID}</TicketId>
             </TopInfo>
             {props.seatInfo && (

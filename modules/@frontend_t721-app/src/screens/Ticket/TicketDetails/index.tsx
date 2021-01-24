@@ -44,6 +44,7 @@ import Sticky                                                      from 'react-s
 import { getPrice }                                                from '@frontend/core/lib/utils/prices';
 import { ShortcutContext }                                         from '../../../components/ShortcutMenu';
 import { onlineLinkWrapper }                                       from '../../../utils/onlineLinkWrapper';
+import { InvitationEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/invitations/entities/Invitation.entity';
 // tslint:disable-next-line:no-var-requires
 const safeAreaInsets = require('safe-area-insets');
 
@@ -328,10 +329,10 @@ const QRHoverButton = (props: {
 };
 
 export interface TicketDetailsProps {
-    ticket: TicketEntity;
-    category: CategoryEntity;
+    ticket: TicketEntity | InvitationEntity;
+    category?: CategoryEntity;
     event: EventEntity;
-    dates: DateEntity[]
+    dates: DateEntity[];
 }
 
 export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetailsProps) => {
@@ -403,9 +404,10 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
             <Details>
                 <TicketInfosCard
                     eventName={props.event.name}
-                    ticketType={props.category.display_name}
+                    ticketType={props.category ? props.category.display_name : t('invitation')}
                     ticketID={props.ticket.id}
                     colors={props.event.signature_colors}
+                    invitation={!props.category ? t('invitation') : null}
                 />
                 {
                     isPhysical
@@ -449,7 +451,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                     priceLabel={t('price')}
                     date={formatDay(props.ticket.created_at)}
                     iconColor={props.event.signature_colors[0]}
-                    price={getPrice(props.category, t('free'))}
+                    price={props.category ? getPrice(props.category, t('free')) : t('free')}
                     wBottomLeftRadius={true}
                 />
                 {
@@ -586,7 +588,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                     platform === 'ios' || platform === 'android' ?
                         <DynamicQrCode
                             name={props.event.name}
-                            category={props.category.display_name}
+                            category={props.category ? props.category.display_name : t('invitation')}
                             color={props.event.signature_colors[0]}
                             onClose={() => setModalOpened(false)}/> :
                         <DownloadAppModal closeModal={() => setModalOpened(false)}/> :

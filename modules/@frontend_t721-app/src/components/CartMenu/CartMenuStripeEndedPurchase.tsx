@@ -92,7 +92,7 @@ export const CartMenuStripeEndedPurchase: React.FC<CartMenuStripeEndedPurchasePr
     const token = useToken();
     const closeLazyRequest = useLazyRequest<PurchasesCloseResponseDto>('purchases.close', uuid);
     const dispatch = useDispatch();
-    const tickets = useContext(TicketsContext);
+    const { tickets } = useContext(TicketsContext);
 
     useEffect(() => {
             if (token) {

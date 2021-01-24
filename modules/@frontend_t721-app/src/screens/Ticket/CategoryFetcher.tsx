@@ -14,9 +14,9 @@ interface CategoryFetcherProps {
 }
 
 export const CategoryFetcher: React.FC<CategoryFetcherProps> = ({
-                                                                    uuid,
-                                                                    ticket
-                                                                }: CategoryFetcherProps) => {
+    uuid,
+    ticket
+}: CategoryFetcherProps) => {
     const token = useToken();
     const [ t ] = useTranslation('ticket');
     const categoryResp = useRequest<CategoriesSearchResponseDto>({
