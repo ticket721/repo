@@ -5,15 +5,17 @@ import { useTranslation }              from 'react-i18next';
 import { Error, FullPageLoading }      from '@frontend/flib-react/lib/components';
 import { DatesFetcher }                from './DatesFetcher';
 import { TicketEntity }                from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
+import { InvitationEntity }            from '@common/sdk/lib/@backend_nest/libs/common/src/invitations/entities/Invitation.entity';
 import { isRequestError }              from '@frontend/core/lib/utils/isRequestError';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
 
 interface CategoriesFetcherProps {
     uuid: string;
     tickets: TicketEntity[];
+    invitations: InvitationEntity[];
 }
 
-export const CategoriesFetcher: React.FC<CategoriesFetcherProps> = ({ uuid, tickets }: CategoriesFetcherProps) => {
+export const CategoriesFetcher: React.FC<CategoriesFetcherProps> = ({ uuid, tickets, invitations }: CategoriesFetcherProps) => {
     const token = useToken();
     const [ t ] = useTranslation(['wallet', 'common']);
     const categoriesResp = useRequest<CategoriesSearchResponseDto>({
@@ -43,6 +45,7 @@ export const CategoriesFetcher: React.FC<CategoriesFetcherProps> = ({ uuid, tick
             uuid={uuid}
             tickets={tickets}
             categories={categoriesResp.response.data.categories}
+            invitations={invitations}
         />
     }
 };

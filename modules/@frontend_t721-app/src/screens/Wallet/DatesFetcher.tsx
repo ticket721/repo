@@ -5,6 +5,7 @@ import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/serve
 import { Error, FullPageLoading } from '@frontend/flib-react/lib/components';
 import { CategoryEntity }         from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { TicketEntity }           from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
+import { InvitationEntity }            from '@common/sdk/lib/@backend_nest/libs/common/src/invitations/entities/Invitation.entity';
 import { EventsFetcher }          from './EventsFetcher';
 import { isRequestError }         from '@frontend/core/lib/utils/isRequestError';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
@@ -13,13 +14,15 @@ interface DatesFetcherProps {
     uuid: string;
     tickets: TicketEntity[];
     categories: CategoryEntity[];
+    invitations: InvitationEntity[];
 }
 
 export const DatesFetcher: React.FC<DatesFetcherProps> = (
     {
         uuid,
         tickets,
-        categories
+        categories,
+        invitations,
     }: DatesFetcherProps) => {
 
     const token = useToken();
@@ -31,14 +34,11 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
                 token,
                 {
                     id: {
-                        $in: []
-                            .concat(
-                                ...categories.map(category => category.dates)
-                            )
-                            .filter(
-                                (dateId: string, idx: number, arr: string[]) => arr.indexOf(dateId) === idx
-                            )
-
+                        $in: categories.flatMap(cat => cat.dates)
+                        .concat(invitations.flatMap(invit => invit.dates))
+                        .filter(
+                            (dateId: string, idx: number, arr: string[]) => arr.indexOf(dateId) === idx
+                        )
                     }
                 }
             ],
@@ -56,6 +56,6 @@ export const DatesFetcher: React.FC<DatesFetcherProps> = (
 
     const dates = datesResp.response.data.dates;
 
-    return <EventsFetcher uuid={uuid} tickets={tickets} categories={categories} dates={dates}/>;
+    return <EventsFetcher uuid={uuid} tickets={tickets} categories={categories} invitations={invitations} dates={dates}/>;
 
 };

@@ -6,19 +6,24 @@ import { v4 } from 'uuid';
 import { Token } from '../../redux/ducks/auth';
 import { RequestBag, useRequest } from '../../hooks/useRequest';
 import { TicketsSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/tickets/dto/TicketsSearchResponse.dto';
+import { InvitationsOwnedSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/invitations/dto/InvitationsOwnedSearchResponse.dto';
 import { isNil } from 'lodash';
 
-export const TicketsContext = React.createContext<RequestBag<TicketsSearchResponseDto>>(undefined);
+export const TicketsContext = React.createContext<{
+    tickets: RequestBag<TicketsSearchResponseDto>;
+    invitations: RequestBag<InvitationsOwnedSearchResponseDto>;
+}>(undefined);
 
 interface LoggedInTicketsGuardProps {
     token: Token;
-    setResp: (rb: RequestBag<TicketsSearchResponseDto>) => void;
+    setTicketsResp: (rb: RequestBag<TicketsSearchResponseDto>) => void;
+    setInvitationsResp: (rb: RequestBag<InvitationsOwnedSearchResponseDto>) => void;
 }
 
 const LoggedInTicketsGuard: React.FC<PropsWithChildren<LoggedInTicketsGuardProps>> = (
     props: PropsWithChildren<LoggedInTicketsGuardProps>,
 ) => {
-    const [uuid] = useState<string>(v4() + '@ticketsguard');
+    const [uuid] = useState<string>(v4());
 
     const ticketsReq = useRequest<TicketsSearchResponseDto>(
         {
@@ -36,26 +41,62 @@ const LoggedInTicketsGuard: React.FC<PropsWithChildren<LoggedInTicketsGuardProps
             ],
             refreshRate: 60,
         },
-        uuid,
+        uuid + '@ticketsguard',
+    );
+
+    const invitationsReq = useRequest<InvitationsOwnedSearchResponseDto>(
+        {
+            method: 'invitations.ownedSearch',
+            args: [
+                props.token.value,
+                {
+                    $sort: [
+                        {
+                            $field_name: 'updated_at',
+                            $order: 'desc',
+                        },
+                    ],
+                },
+            ],
+            refreshRate: 60,
+        },
+        uuid + '@invitationsguard',
     );
 
     useEffect(() => {
-        props.setResp(ticketsReq);
+        props.setTicketsResp(ticketsReq);
     }, [ticketsReq]);
+
+    useEffect(() => {
+        props.setInvitationsResp(invitationsReq);
+    }, [invitationsReq]);
 
     return null;
 };
 
 interface LoggedOutTicketsGuardProps {
     token: Token;
-    setResp: (rb: RequestBag<TicketsSearchResponseDto>) => void;
+    setTicketsResp: (rb: RequestBag<TicketsSearchResponseDto>) => void;
+    setInvitationsResp: (rb: RequestBag<InvitationsOwnedSearchResponseDto>) => void;
 }
 
 const LoggedOutTicketsGuard: React.FC<PropsWithChildren<LoggedOutTicketsGuardProps>> = (
     props: PropsWithChildren<LoggedOutTicketsGuardProps>,
 ) => {
     useEffect(() => {
-        props.setResp({
+        props.setTicketsResp({
+            response: {
+                data: null,
+                error: null,
+                loading: false,
+                errors: 0,
+            },
+            registerEntity: () => undefined,
+            unregisterEntity: () => undefined,
+            force: () => undefined,
+        });
+
+        props.setInvitationsResp({
             response: {
                 data: null,
                 error: null,
@@ -85,18 +126,45 @@ export const TicketsContextGuard: React.FC<{}> = (props) => {
         force: () => undefined,
     });
 
+    const [invitationsReq, setInvitationsReq] = useState<RequestBag<InvitationsOwnedSearchResponseDto>>({
+        response: {
+            data: null,
+            error: null,
+            loading: false,
+            errors: 0,
+        },
+        registerEntity: () => undefined,
+        unregisterEntity: () => undefined,
+        force: () => undefined,
+    });
+
     return (
         <>
             {isNil(token) ? (
-                <LoggedOutTicketsGuard token={token} setResp={setTicketsReq}>
+                <LoggedOutTicketsGuard
+                    token={token}
+                    setTicketsResp={setTicketsReq}
+                    setInvitationsResp={setInvitationsReq}
+                >
                     {props.children}
                 </LoggedOutTicketsGuard>
             ) : (
-                <LoggedInTicketsGuard token={token} setResp={setTicketsReq}>
+                <LoggedInTicketsGuard
+                    token={token}
+                    setTicketsResp={setTicketsReq}
+                    setInvitationsResp={setInvitationsReq}
+                >
                     {props.children}
                 </LoggedInTicketsGuard>
             )}
-            <TicketsContext.Provider value={ticketsReq}>{props.children}</TicketsContext.Provider>
+            <TicketsContext.Provider
+                value={{
+                    tickets: ticketsReq,
+                    invitations: invitationsReq,
+                }}
+            >
+                {props.children}
+            </TicketsContext.Provider>
         </>
     );
 };

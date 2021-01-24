@@ -29,7 +29,7 @@ const Wallet: React.FC = () => {
 
     const { lazyRequest: postAddress } = useLazyRequest<UsersSetDeviceAddressResponseDto>('users.setDeviceAddress', uuid);
 
-    const ticketsResp = useContext(TicketsContext);
+    const { tickets: ticketsResp, invitations: invitationsResp } = useContext(TicketsContext);
 
     useEffect(() => {
         if (devicePk) {
@@ -43,7 +43,7 @@ const Wallet: React.FC = () => {
         // eslint-disable-next-line
     }, [token, devicePk]);
 
-    if (ticketsResp.response.loading) {
+    if (ticketsResp.response.loading || invitationsResp.response.loading) {
         return <FullPageLoading/>;
     }
 
@@ -51,15 +51,19 @@ const Wallet: React.FC = () => {
         return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={ticketsResp.force}/>);
     }
 
+    if (isRequestError(invitationsResp)) {
+        return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={invitationsResp.force}/>);
+    }
+
     return (
         <Container>
             {
-                ticketsResp.response.data?.tickets?.length > 0
-
+                ticketsResp.response.data?.tickets?.length > 0 || invitationsResp.response.data?.invitations?.length > 0
                     ?
                     <CategoriesFetcher
                         uuid={uuid}
                         tickets={ticketsResp.response.data.tickets}
+                        invitations={invitationsResp.response.data.invitations}
                     />
                     :
                     <EmptyWallet>

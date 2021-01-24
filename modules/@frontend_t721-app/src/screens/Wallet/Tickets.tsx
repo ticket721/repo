@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import styled                                  from 'styled-components';
-import TicketCard                              from './TicketCard';
+import { TicketCard }                          from './TicketCard';
 import { useHistory }                          from 'react-router';
 import { CategoryEntity }                      from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
 import { TicketEntity }                        from '@common/sdk/lib/@backend_nest/libs/common/src/tickets/entities/Ticket.entity';
+import { InvitationEntity }                        from '@common/sdk/lib/@backend_nest/libs/common/src/invitations/entities/Invitation.entity';
 import { DateEntity }                          from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { EventEntity }                    from '@common/sdk/lib/@backend_nest/libs/common/src/events/entities/Event.entity';
 import {
@@ -17,9 +18,8 @@ import { useWindowDimensions }            from '@frontend/core/lib/hooks/useWind
 import { HapticsImpactStyle, useHaptics } from '@frontend/core/lib/hooks/useHaptics';
 import { isNil }                          from 'lodash';
 import { useTranslation }                 from 'react-i18next';
-import { OnlineBadge }                    from '@frontend/flib-react/lib/components/events/single-image/OnlineTag';
-import { formatShort }                    from '@frontend/core/lib/utils/date';
 import { useStateWithLocalStorage }       from '@frontend/core/lib/hooks/useStateWithLocalStorage';
+import { TicketMiniCard } from './TicketMiniCard';
 
 const Title = styled.div`
     font-weight: bold;
@@ -54,7 +54,7 @@ const Title = styled.div`
 
 
 interface TicketsProps {
-    tickets: TicketEntity[];
+    tickets: (TicketEntity | InvitationEntity)[];
     categories: { [key: string]: CategoryEntity };
     dates: { [key: string]: DateEntity };
     events: { [key: string]: EventEntity };
@@ -67,11 +67,21 @@ interface DateWithScore {
     score: number;
 }
 
-const getBestScore = (datesWithScores: DateWithScore[], categories: { [key: string]: CategoryEntity }, ticket: TicketEntity): number => {
-    const category = categories[ticket.category];
+const getBestScore = (
+    datesWithScores: DateWithScore[],
+    categories: { [key: string]: CategoryEntity },
+    ticket: TicketEntity | InvitationEntity
+): number => {
+    let category: CategoryEntity | InvitationEntity;
 
-    if (!category) {
-        return Infinity;
+    if (ticket['category']) {
+        category = categories[ticket['category']];
+
+        if (!category) {
+            return Infinity;
+        }
+    } else {
+        category = ticket as InvitationEntity;
     }
 
     const categoryDatesWithScore = datesWithScores
@@ -91,8 +101,8 @@ const comingTicketsSort = (
     dates: DateEntity[],
     datesTimeDistances: number[],
     categories: { [key: string]: CategoryEntity },
-    ticket1: TicketEntity,
-    ticket2: TicketEntity): number => {
+    ticket1: TicketEntity | InvitationEntity,
+    ticket2: TicketEntity | InvitationEntity): number => {
 
     let datesWithScores: DateWithScore[] = [];
 
@@ -112,12 +122,18 @@ const ticketsThatMatterFilter = (
     now: number,
     dates: { [key: string]: DateEntity },
     categories: { [key: string]: CategoryEntity },
-    ticket: TicketEntity,
+    ticket: TicketEntity | InvitationEntity,
 ): boolean => {
-    const category = categories[ticket.category];
+    let category: CategoryEntity | InvitationEntity;
 
-    if (!category) {
-        return false;
+    if (ticket['category']) {
+        category = categories[ticket['category']];
+
+        if (!category) {
+            return false;
+        }
+    } else {
+        category = ticket as InvitationEntity;
     }
 
     const datesOfCategory = category.dates
@@ -134,12 +150,18 @@ const ticketsOfThePastFilter = (
     now: number,
     dates: { [key: string]: DateEntity },
     categories: { [key: string]: CategoryEntity },
-    ticket: TicketEntity,
+    ticket: TicketEntity | InvitationEntity,
 ): boolean => {
-    const category = categories[ticket.category];
+    let category: CategoryEntity | InvitationEntity;
 
-    if (!category) {
-        return false;
+    if (ticket['category']) {
+        category = categories[ticket['category']];
+
+        if (!category) {
+            return false;
+        }
+    } else {
+        category = ticket as InvitationEntity;
     }
 
     const datesOfCategory = category.dates
@@ -190,12 +212,12 @@ export const Tickets: React.FC<TicketsProps> = (props: TicketsProps) => {
 }
 
 interface MonthSection {
-    tickets: TicketEntity[];
+    tickets: (TicketEntity | InvitationEntity)[];
     month: string;
 }
 
-const getClosestDate = (now: number, category: CategoryEntity, dates: {[key: string]: DateEntity}): DateEntity => {
-    const categoryDates = category.dates
+const getClosestDate = (now: number, categoryDateIds: string[], dates: {[key: string]: DateEntity}): DateEntity => {
+    const categoryDates = categoryDateIds
         .map((did: string): DateEntity => dates[did])
         .sort((d1: DateEntity, d2: DateEntity): number => {
             return new Date(d1.timestamps.event_begin).getTime() - new Date(d2.timestamps.event_begin).getTime()
@@ -215,7 +237,7 @@ const monthStr = (date: DateEntity, language: string): string => {
 
 const getTicketSections = (
     now: number,
-    tickets: TicketEntity[],
+    tickets: (TicketEntity | InvitationEntity)[],
     categories: {[key: string]: CategoryEntity},
     dates: {[key: string]: DateEntity},
     language: string
@@ -224,9 +246,9 @@ const getTicketSections = (
     const sectionNames: string[] = [];
 
     const sortedTickets = tickets
-        .sort((t1: TicketEntity, t2: TicketEntity): number => {
-            const t1d = getClosestDate(now, categories[t1.category], dates);
-            const t2d = getClosestDate(now, categories[t2.category], dates);
+        .sort((t1: TicketEntity | InvitationEntity, t2: TicketEntity | InvitationEntity): number => {
+            const t1d = getClosestDate(now, t1['category'] ? categories[t1['category']].dates : t1['dates'], dates);
+            const t2d = getClosestDate(now, t2['category'] ? categories[t2['category']].dates : t2['dates'], dates);
 
             const t1dtimestamp = new Date(t1d.timestamps.event_begin).getTime();
             const t2dtimestamp = new Date(t2d.timestamps.event_begin).getTime();
@@ -240,7 +262,13 @@ const getTicketSections = (
         })
 
     for (const ticket of sortedTickets) {
-        const sectionName = monthStr(getClosestDate(now, categories[ticket.category], dates), language);
+        const sectionName = monthStr(
+            getClosestDate(
+                now,
+                ticket['category'] ? categories[ticket['category']].dates : ticket['dates'],
+                dates
+            ),
+            language);
 
         if (!sections[sectionName]) {
             sectionNames.push(sectionName);
@@ -292,146 +320,6 @@ const MonthTitle = styled.span`
   font-size: 14px;
 `
 
-const TicketMiniCardContainer = styled(motion.div)`
-  width: 100%;
-  max-width: 500px;
-  background-color: ${props => props.theme.darkerBg};
-  border-radius: ${props => props.theme.defaultRadius};
-  margin-top: ${props => props.theme.regularSpacing};
-  padding: ${props => props.theme.smallSpacing};
-  display: flex;
-  flex-direction: row;
-`
-
-interface DateIconProps {
-    width: number;
-    height: number;
-    avatar: string;
-    online: boolean;
-}
-
-const DateIconContainer = styled.div<DateIconProps>`
-  position: relative;
-  width: ${props => props.width}px;
-  height: ${props => props.height}px;
-  border-radius: ${props => props.theme.defaultRadius};
-  background-image: url(${props => props.avatar});
-  background-size: cover;
-  background-position: center;
-`
-
-const DateIcon = (props: DateIconProps) => {
-    return <DateIconContainer
-        width={props.width}
-        height={props.height}
-        avatar={props.avatar}
-        online={props.online}
-    >
-        {
-            props.online
-
-                ?
-                <div
-                    style={{
-                        position: 'absolute',
-                        right: 3,
-                        top: 3
-                    }}
-                >
-                    <OnlineBadge/>
-                </div>
-
-                :
-                null
-        }
-    </DateIconContainer>
-}
-
-const DateInfosContainer = styled.div`
-  width: calc(100% - 80px - ${props => props.theme.regularSpacing});
-  height: 80px;
-  margin-left: ${props => props.theme.regularSpacing};
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding-top: 4px;
-  padding-bottom: 4px;
-`
-
-interface CategoryNameProps {
-    gradientStart: string;
-    gradientEnd: string;
-}
-
-const CategoryName = styled.span<CategoryNameProps>`
-  display: block;
-  width: calc(100%);
-  font-size: 18px;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 120%;
-    background: -webkit-linear-gradient(260deg, ${(props) => props.gradientStart}, ${(props) => props.gradientEnd});
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-`
-
-const DateTitle = styled.span`
-  display: block;
-  width: calc(100%);
-  font-size: 18px;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 120%;
-`
-
-const DateTime = styled.span`
-  display: block;
-  width: calc(100%);
-  font-size: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 120%;
-`
-
-const TicketMiniCard = ({ticket, category, date}: {ticket: TicketEntity, category: CategoryEntity, date: DateEntity}): JSX.Element => {
-
-    const haptics = useHaptics();
-    const history = useHistory();
-
-    return <TicketMiniCardContainer
-        whileTap={{
-            scale: 0.98
-        }}
-        onClick={() => {
-            haptics.impact({
-                style: HapticsImpactStyle.Light,
-            });
-            history.push(`/ticket/${ticket.id}`)
-        }}
-    >
-        <DateIcon
-            width={80}
-            height={80}
-            avatar={date.metadata.avatar}
-            online={date.online}
-        />
-        <DateInfosContainer>
-            <DateTitle>{date.metadata.name}</DateTitle>
-            <CategoryName
-                gradientStart={date.metadata.signature_colors[0]}
-                gradientEnd={date.metadata.signature_colors[1]}
-            >{category.display_name}</CategoryName>
-            <DateTime>{formatShort(new Date(date.timestamps.event_begin))}</DateTime>
-        </DateInfosContainer>
-    </TicketMiniCardContainer>
-}
-
 const TicketSection = (
     {section, now, categories, dates}:
         {section: MonthSection, now: number, categories: {[key: string]: CategoryEntity}, dates: {[key: string]: DateEntity}}
@@ -450,12 +338,13 @@ const TicketSection = (
             }}
         >
             {
-                section.tickets.map((ticket: TicketEntity, idx: number) => (
+                section.tickets.map((ticket: TicketEntity | InvitationEntity, idx: number) => (
                         <TicketMiniCard
                             key={idx}
-                            ticket={ticket}
-                            category={categories[ticket.category]}
-                            date={getClosestDate(now, categories[ticket.category], dates)}
+                            ticketId={ticket.id}
+                            categoryName={ticket['category'] ? categories[ticket['category']].display_name : 'invitation'}
+                            date={getClosestDate(now, ticket['category'] ? categories[ticket['category']].dates : ticket['dates'], dates)}
+                            isInvitation={!!ticket['dates']}
                         />
                     )
                 )
@@ -706,14 +595,19 @@ const LiveTickets: React.FC<TicketsProps & {changeMode: () => void}> = (
                                 }}>
                                 {
                                     sortedTickets.map(ticket => {
-                                        const ticketCategory: CategoryEntity = categories[ticket.category];
+                                        const ticketCategory: CategoryEntity | InvitationEntity =
+                                        ticket['category'] ?
+                                        categories[ticket['category']] :
+                                        ticket as InvitationEntity;
+                                        const categoryName: string = ticket['category'] ? categories[ticket['category']].display_name : 'invitation';
                                         const ticketDates: DateEntity[] = ticketCategory.dates.map((dateId: string): DateEntity => dates[dateId]);
                                         const event: EventEntity = events[ticketDates[0].event];
 
                                         return <TicketCard
                                             key={ticket.id}
-                                            ticket={ticket}
-                                            category={ticketCategory}
+                                            ticketId={ticket.id}
+                                            isInvitation={!!ticket['dates']}
+                                            categoryName={categoryName}
                                             dates={ticketDates}
                                             event={event}
                                         />;
@@ -737,14 +631,19 @@ const LiveTickets: React.FC<TicketsProps & {changeMode: () => void}> = (
                         <TicketDashboard>
                             {
                                 sortedTickets.map(ticket => {
-                                    const ticketCategory: CategoryEntity = categories[ticket.category];
+                                    const ticketCategory: CategoryEntity | InvitationEntity =
+                                    ticket['category'] ?
+                                    categories[ticket['category']] :
+                                    ticket as InvitationEntity;
+                                    const categoryName: string = ticket['category'] ? categories[ticket['category']].display_name : 'invitation';
                                     const ticketDates: DateEntity[] = ticketCategory.dates.map((dateId: string): DateEntity => dates[dateId]);
                                     const event: EventEntity = events[ticketDates[0].event];
 
                                     return <TicketCard
                                         key={ticket.id}
-                                        ticket={ticket}
-                                        category={ticketCategory}
+                                        ticketId={ticket.id}
+                                        isInvitation={!!ticket['dates']}
+                                        categoryName={categoryName}
                                         dates={ticketDates}
                                         event={event}/>;
                                 })
