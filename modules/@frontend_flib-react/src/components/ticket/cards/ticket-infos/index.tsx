@@ -7,7 +7,7 @@ export interface TicketInfosCardProps extends React.ComponentProps<any> {
     ticketType?: string;
     seatInfo?: SeatProps;
     colors: string[];
-    invitation: string;
+    invitation?: string;
 }
 
 interface SeatProps {
