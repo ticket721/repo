@@ -36,16 +36,17 @@ export const CategoriesFetcher: React.FC<CategoriesFetcherProps> = ({ uuid, tick
         return <FullPageLoading/>;
     }
 
-    if (isRequestError(categoriesResp) || categoriesResp.response.data?.categories?.length === 0) {
+    if (
+        isRequestError(categoriesResp) ||
+        (categoriesResp.response.data?.categories?.length === 0 && invitations.length === 0)
+    ) {
         return (<Error message={t('fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={categoriesResp.force}/>);
     }
 
-    if (categoriesResp.response.data?.categories?.length > 0) {
-        return <DatesFetcher
-            uuid={uuid}
-            tickets={tickets}
-            categories={categoriesResp.response.data.categories}
-            invitations={invitations}
-        />
-    }
+    return <DatesFetcher
+        uuid={uuid}
+        tickets={tickets}
+        categories={categoriesResp.response.data.categories}
+        invitations={invitations}
+    />
 };
