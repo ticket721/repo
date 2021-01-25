@@ -51,7 +51,7 @@ import {
 
 // INVITATIONS
 import {
-    invitationsCreate, invitationsDelete, invitationsOwnedSearch, invitationsSearch, invitationsTransfer,
+    invitationsCreate, invitationsCreateBatch, invitationsDelete, invitationsOwnedSearch, invitationsSearch, invitationsTransfer,
 } from './app/api/invitations';
 
 // TICKETS
@@ -201,6 +201,7 @@ export class T721SDK {
         this.invitations.create = this.invitations.create.bind(this);
         this.invitations.delete = this.invitations.delete.bind(this);
         this.invitations.transfer = this.invitations.transfer.bind(this);
+        this.invitations.createBatch = this.invitations.createBatch.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -395,6 +396,7 @@ export class T721SDK {
         search: invitationsSearch,
         ownedSearch: invitationsOwnedSearch,
         create: invitationsCreate,
+        createBatch: invitationsCreateBatch,
         delete: invitationsDelete,
         transfer: invitationsTransfer
     }

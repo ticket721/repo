@@ -25,7 +25,7 @@ export const StatsSubMenu: React.FC<StatusSubMenuProps> = ({eventId}: StatusSubM
             </Title>
         </Header>
         <StatsContainer
-            statsCount={2}
+            statsCount={3}
         >
             <Link
                 key={'attendees'}
@@ -49,6 +49,21 @@ export const StatsSubMenu: React.FC<StatusSubMenuProps> = ({eventId}: StatusSubM
                 <span>{t('sales_title')}</span>
                 {
                     history.location.pathname.endsWith('/sales')
+
+                        ?
+                        <Arrow layoutId={'selected'}/>
+
+                        :
+                        null
+                }
+            </Link>
+            <Link
+                key={'invitations'}
+                selected={history.location.pathname.endsWith('/invitations')}
+                onClick={() => history.push(`/event/${eventId}/invitations`)}>
+                <span>{t('invitations_title')}</span>
+                {
+                    history.location.pathname.endsWith('/invitations')
 
                         ?
                         <Arrow layoutId={'selected'}/>

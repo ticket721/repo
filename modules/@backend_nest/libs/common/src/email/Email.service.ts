@@ -10,6 +10,7 @@ import { UserDto } from '../users/dto/User.dto';
 import { ItemSummary } from '../purchases/ProductChecker.base.service';
 import { formatDay, formatHour, formatShort, format } from '../utils/date';
 import { format as formatCurrency } from '@common/global';
+import { DateEntity } from '@lib/common/dates/entities/Date.entity';
 
 /**
  * Service to send emails with selected EmailDriver
@@ -48,6 +49,94 @@ export class EmailService {
         }
     }
 
+    /**
+     * Send a invitation summary email to the target email address. Compiles and injects locals
+     * into summary template.
+     *
+     * @param userMail
+     * @param locale
+     * @param data
+     * @param appUrl
+     * @param timezone
+     */
+    async sendInvitationsSummary(
+        userMail: string,
+        locale: string,
+        data: {
+            invitations: {
+                amount: number;
+                dates: DateEntity[];
+            }[];
+            hasAccount: boolean;
+        },
+        appUrl?: string,
+        timezone?: string,
+    ): Promise<ServiceResponse<EmailDriverSendOptions>> {
+        try {
+            const sameDay = (d1: Date, d2: Date): boolean => {
+                return (
+                    d1.getFullYear() === d2.getFullYear() &&
+                    d1.getMonth() === d2.getMonth() &&
+                    d1.getDate() === d2.getDate()
+                );
+            };
+
+            const getDateString = (beginTimestamp: number, endTimestamp: number): string => {
+                if (sameDay(new Date(beginTimestamp), new Date(endTimestamp))) {
+                    return `${formatDay(beginTimestamp, locale, timezone)},
+                 ${formatHour(beginTimestamp, locale, timezone)} → ${formatHour(endTimestamp, locale, timezone)}`;
+                }
+                return `${formatShort(beginTimestamp, locale, timezone)} → ${formatShort(
+                    endTimestamp,
+                    locale,
+                    timezone,
+                )}`;
+            };
+
+            const total = data.invitations.map(iv => iv.amount).reduce((agg, iv) => agg + iv, 0);
+
+            const locals = {
+                subjectSuffix: ` ${total} Ticket${total > 1 ? 's' : ''}`,
+                purchasedDate: format(Date.now(), locale, timezone),
+                registerUrl: appUrl ? appUrl + '/register' : null,
+                loginUrl: appUrl ? appUrl + '/login' : null,
+                hasAccount: data.hasAccount,
+                invitations: data.invitations.map(invitation => ({
+                    count: invitation.amount,
+                    dates: invitation.dates.map((d: DateEntity) => {
+                        const beginDateTimestamp: number = (typeof d.timestamps.event_begin === 'string'
+                            ? new Date(d.timestamps.event_begin)
+                            : d.timestamps.event_begin
+                        ).getTime();
+                        const endDateTimestamp: number = (typeof d.timestamps.event_end === 'string'
+                            ? new Date(d.timestamps.event_end)
+                            : d.timestamps.event_end
+                        ).getTime();
+                        return {
+                            coverUrl: d.metadata.avatar,
+                            url: appUrl ? appUrl + '/event/' + d.id : null,
+                            rangeDates: getDateString(beginDateTimestamp, endDateTimestamp),
+                            name: d.metadata.name,
+                            location: d.online ? 'Online' : d.location.location_label,
+                        };
+                    }),
+                })),
+            };
+
+            return await this.send({
+                template: 'invitationReceived',
+                to: userMail,
+                locale,
+                locals,
+            });
+        } catch (e) {
+            console.error(e);
+            return {
+                error: e.message,
+                response: null,
+            };
+        }
+    }
     /**
      * Send a purchase summary email to the target email address. Compiles and injects locals
      * into summary template.

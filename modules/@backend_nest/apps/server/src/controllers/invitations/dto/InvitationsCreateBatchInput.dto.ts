@@ -1,10 +1,8 @@
-import { IsEmail, IsNumber, IsString, IsUrl, IsUUID } from 'class-validator';
+import { IsEmail, IsNumber, IsString, IsUrl, IsUUID, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
-/**
- * Data model required when creating new invitations
- */
-export class InvitationsCreateInputDto {
+export class InvitationFormat {
     /**
      * New date details
      */
@@ -31,6 +29,21 @@ export class InvitationsCreateInputDto {
     })
     @IsNumber()
     amount: number;
+}
+
+/**
+ * Data model required when creating new invitations
+ */
+export class InvitationsCreateBatchInputDto {
+    /**
+     * Invitations data
+     */
+    @ApiProperty({
+        description: 'Batched invitation creation',
+    })
+    @ValidateNested({ each: true })
+    @Type(() => InvitationFormat)
+    invitations: InvitationFormat[];
 
     /**
      * App url on which to redirect
