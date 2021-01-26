@@ -3,9 +3,9 @@ import styled, { useTheme }                                    from 'styled-comp
 import { useToken }                                            from '@frontend/core/lib/hooks/useToken';
 import { v4 }                                                                   from 'uuid';
 import { useTranslation }                                                       from 'react-i18next';
-import { EventsContext }                                                        from '../Fetchers/EventsFetcher';
-import { useRequest }                                                           from '@frontend/core/lib/hooks/useRequest';
-import { DatesSearchResponseDto }                                                         from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
+import { EventsContext }          from '../Fetchers/EventsFetcher';
+import { RequestBag, useRequest } from '@frontend/core/lib/hooks/useRequest';
+import { DatesSearchResponseDto } from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/dates/dto/DatesSearchResponse.dto';
 import { isRequestError }                                                                       from '@frontend/core/lib/utils/isRequestError';
 import { Error, FullPageLoading, TextInput, SelectInput, SelectOption, Button, Skeleton, Icon } from '@frontend/flib-react/lib/components';
 import { useFormik }                                                                            from 'formik';
@@ -16,14 +16,15 @@ import { getEnv }                       from '@frontend/core/lib/utils/getEnv';
 import { useDispatch }                  from 'react-redux';
 import { PushNotification }             from '@frontend/core/lib/redux/ducks/notifications';
 import './locales';
-import { CategoryEntity }               from '@common/sdk/lib/@backend_nest/libs/common/src/categories/entities/Category.entity';
-import { getPrice }                     from '@frontend/core/lib/utils/prices';
 import { formatShort }                  from '@frontend/core/lib/utils/date';
 import { Theme }                        from '@frontend/flib-react/lib/config/theme';
-import { EventsAttendeesResponseDto }   from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/events/dto/EventsAttendeesResponse.dto';
-import { InvitationsSearchResponseDto } from '../../../../@backend_nest/apps/server/src/controllers/invitations/dto/InvitationsSearchResponse.dto';
+import {
+    InvitationsSearchResponseDto
+} from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/invitations/dto/InvitationsSearchResponse.dto';
 import { isNil }                        from 'lodash';
-import { InvitationsDeleteResponseDto } from '@backend/nest/dist/apps/server/src/controllers/invitations/dto/InvitationsDeleteResponse.dto';
+import {
+    InvitationsDeleteResponseDto
+} from '@common/sdk/lib/@backend_nest/apps/server/src/controllers/invitations/dto/InvitationsDeleteResponse.dto';
 import {isEqual} from 'lodash';
 import * as yup from 'yup';
 // tslint:disable-next-line:no-var-requires
@@ -39,18 +40,19 @@ const InvitationGeneratorContainer = styled.div`
     padding: ${props => props.theme.doubleSpacing};
     border-radius: ${props => props.theme.defaultRadius};
     margin: ${props => props.theme.regularSpacing};
-    display: inline-block;
 `
 
 const InvitationGeneratorFormContainer = styled.div`
+    max-width: 400px;
+    min-width: 300px;
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: ${props => props.theme.regularSpacing};
 `
 
 const InvitationGeneratorFormElementContainer = styled.div`
-    max-width: 300px;
+    max-width: 250px;
     width: 100%;
     margin: ${props => props.theme.regularSpacing};
 `
@@ -61,7 +63,7 @@ interface FormFields {
     count: number;
 }
 
-const InvitationsGenerator = () => {
+const InvitationsGenerator = ({force}: {force: () => void}) => {
 
     const token = useToken();
     const [uuid] = useState<string>(v4() + '@categories-fetch');
@@ -99,14 +101,17 @@ const InvitationsGenerator = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (generateInvitations.response.data) {
-            if (generateInvitations.response.error) {
-                dispatch(PushNotification(t('creation_error'), 'error'));
-            } else {
-                dispatch(PushNotification(t('creation_success'), 'success'));
+            if (generateInvitations.response.data) {
+                if (generateInvitations.response.error) {
+                    dispatch(PushNotification(t('creation_error'), 'error'));
+                } else {
+                    dispatch(PushNotification(t('creation_success'), 'success'));
+                    force();
+                }
             }
-        }
-    }, [generateInvitations.response.loading]);
+        },
+        // eslint-disable-next-line
+        [generateInvitations.response.loading]);
 
     if (isRequestError(datesResp)) {
         return <Error message={t('infos_fetch_error')} retryLabel={t('common:retrying_in')} onRefresh={datesResp.force}/>;
@@ -122,7 +127,13 @@ const InvitationsGenerator = () => {
         <h1>{t('generate_invitation_title')}</h1>
         <InvitationGeneratorFormContainer>
             <InvitationGeneratorFormElementContainer>
-                <TextInput error={formik.errors.email} label={t('generate_invitation_email')} name={'email'} onChange={formik.handleChange} value={formik.values.email}/>
+                <TextInput
+                    error={formik.errors.email}
+                    label={t('generate_invitation_email')}
+                    name={'email'}
+                    onChange={formik.handleChange}
+                    value={formik.values.email}
+                />
             </InvitationGeneratorFormElementContainer>
             <InvitationGeneratorFormElementContainer>
                 <SelectInput
@@ -155,7 +166,7 @@ const InvitationsGenerator = () => {
         </InvitationGeneratorFormContainer>
         <div
             style={{
-                width: '33%',
+                width: '100%',
                 minWidth: 200
             }}
         >
@@ -241,8 +252,20 @@ const getBatchInvitations = async (data: string[][], _dates: DateEntity[]): Prom
     const res = [];
     for (const invitation of data.slice(1)) {
 
+        let count = 0;
         for (let checkIdx = 0; checkIdx < 3; ++checkIdx) {
-            if (isNil(invitation[checkIdx])) {
+
+            if (isNil(invitation[checkIdx]) || invitation[checkIdx] === '') {
+                ++count;
+            }
+        }
+
+        if (count === 3) {
+            continue ;
+        }
+
+        for (let checkIdx = 0; checkIdx < 3; ++checkIdx) {
+            if (isNil(invitation[checkIdx]) || invitation[checkIdx] === '') {
                 return {
                     error: [
                         'missing_field',
@@ -289,8 +312,21 @@ const getBatchInvitations = async (data: string[][], _dates: DateEntity[]): Prom
         }
 
         for (const date of dates) {
-            console.log(date);
+
             if (!uuidV4Regex.test(date)) {
+                return {
+                    error: [
+                        'invalid_date',
+                        {
+                            line: idx + 1,
+                            date
+                        }
+                    ],
+                    res: null
+                }
+            }
+
+            if (_dates.findIndex((d) => d.id === date) === -1) {
                 return {
                     error: [
                         'invalid_date',
@@ -318,7 +354,7 @@ const getBatchInvitations = async (data: string[][], _dates: DateEntity[]): Prom
     }
 }
 
-const BatchInvitationGenerator = () => {
+const BatchInvitationGenerator = ({force}: {force: () => void}) => {
     const [t] = useTranslation('invitations')
     const token = useToken();
     const [uuid] = useState<string>(v4() + '@categories-fetch');
@@ -345,16 +381,20 @@ const BatchInvitationGenerator = () => {
     }, uuid);
 
     const generateInvitationsBatch = useLazyRequest('invitations.createBatch', uuid);
-    
+
     useEffect(() => {
-        if (generateInvitationsBatch.response.data) {
-            if (generateInvitationsBatch.response.error) {
-                dispatch(PushNotification(t('creation_error'), 'error'));
-            } else {
-                dispatch(PushNotification(t('creation_success'), 'success'));
+            if (generateInvitationsBatch.response.data) {
+                console.log(generateInvitationsBatch)
+                if (generateInvitationsBatch.response.error) {
+                    dispatch(PushNotification(t('creation_error'), 'error'));
+                } else {
+                    dispatch(PushNotification(t('creation_success'), 'success'));
+                    force();
+                }
             }
-        }
-    }, [generateInvitationsBatch.response.loading]);
+        },
+        // eslint-disable-next-line
+        [generateInvitationsBatch.response.data, generateInvitationsBatch.response.error]);
 
     if (datesResp.response.loading) {
         return <FullPageLoading/>;
@@ -366,18 +406,23 @@ const BatchInvitationGenerator = () => {
 
     return <InvitationGeneratorContainer>
         <h1>{t('generate_batch_invitation_title')}</h1>
-        <p><Bold><Clickable
+        <p
+            style={{
+                marginTop: 32
+            }}
+        ><Bold><Clickable
             onClick={
                 () => {
                     download('invitationtemplate.csv', `email,amount,dates
 example@example.com,2,${datesResp.response.data.dates.length ? datesResp.response.data.dates.map(d => d.id).join(' ') : ''}`)
                 }
             }
-        >Download the template CSV</Clickable></Bold> to generate several invitations at the same time.</p>
-        <p>The <Bold>email</Bold> column should contain the email receiving the invitation(s).</p>
-        <p>The <Bold>amount</Bold> column should contain the amount of invitations to generate for the given email.</p>
-        <p>The <Bold>dates</Bold> column should contain the ids of the dates where the user has access separated by a space (or the value '<Bold>all</Bold>' for all dates).</p>
-        <p>Below, you will find the list of date IDs to use, click to copy to clipboard: </p>
+        >{t('instruction_call_to_download')}</Clickable></Bold>{t('instruction_call_to_download_end')}</p>
+        <p>{t('instruction_the_field')}<Bold>email</Bold>{t('instruction_email_details')}</p>
+        <p>{t('instruction_the_field')}<Bold>amount</Bold>{t('instruction_email_details')}</p>
+        <p>{t('instruction_the_field')}<Bold>dates</Bold>{t('instruction_dates_details_first')}
+            <Bold>all</Bold>{t('instruction_dates_details_second')}</p>
+        <p>{t('instruction_dates_id_below')}</p>
         <div
             style={{
                 maxHeight: 500,
@@ -397,7 +442,7 @@ example@example.com,2,${datesResp.response.data.dates.length ? datesResp.respons
                             })
                         }}
                     >{d.id}</Clickable></Bold></p>)
-                    : <p>You need to add dates to your event</p>
+                    : <p>{t('instruction_add_dates')}</p>
             }
         </div>
         {
@@ -624,7 +669,7 @@ interface InvitationsPageSizeProps {
 const InvitationsPageSize: React.FC<InvitationsPageSizeProps> = (props: InvitationsPageSizeProps): JSX.Element => {
 
     const sizes = [10, 20, 50];
-    const [t] = useTranslation('attendees');
+    const [t] = useTranslation('invitations');
 
     return <div
         style={{
@@ -673,15 +718,15 @@ const DateTagContainer = styled.div`
 const DatesTags = (props: DatesTagsProps): JSX.Element => {
     return <>
         {
-            props.dateIds.map((id: string) => {
+            props.dateIds.map((id: string, idx: number) => {
                 const dateIdx = props.dates.findIndex((d: DateEntity) => d.id === id);
                 if (dateIdx === -1) {
-                    return <DateTagContainer>
+                    return <DateTagContainer key={idx}>
                         <p>?</p>
                     </DateTagContainer>
                 }
                 const date = props.dates[dateIdx];
-                return <DateTagContainer>
+                return <DateTagContainer key={idx}>
                     <p>{date.metadata.name}</p>
                 </DateTagContainer>
             })
@@ -697,33 +742,31 @@ const DeleteIcon = styled(Icon)`
     }
 `
 
-const InvitationsListing = (): JSX.Element => {
+interface InvitationsListingProps {
+    invitationsResp: RequestBag<InvitationsSearchResponseDto>;
+    currentSize: number;
+    setCurrentSize: (v: number) => void;
+    currentPage: number;
+    setCurrentPage: (v: number) => void;
+    total: number;
+    setTotal: (v: number) => void;
+}
+
+const InvitationsListing = ({
+                                invitationsResp,
+                                currentSize,
+                                currentPage,
+                                setCurrentPage,
+                                setCurrentSize,
+                                setTotal,
+                                total
+                            }: InvitationsListingProps): JSX.Element => {
     const [t] = useTranslation('invitations')
-    const [currentPage, setCurrentPage] = useState(0);
-    const [currentSize, setCurrentSize] = useState(10);
-    const [total, setTotal] = useState(0);
     const theme = useTheme() as Theme;
     const events = useContext(EventsContext);
     const token = useToken();
     const [uuid] = useState<string>(v4() + '@categories-fetch');
     const dispatch = useDispatch();
-
-    const invitationsResp = useRequest<InvitationsSearchResponseDto>({
-        method: 'invitations.search',
-        args: [
-            events.events[0].id,
-            token,
-            {
-                $page_size: currentSize,
-                $page_index: currentPage,
-                $sort: [{
-                    $field_name: 'updated_at',
-                    $order: 'desc'
-                }]
-            }
-        ],
-        refreshRate: 10,
-    }, uuid);
 
     const datesResp = useRequest<DatesSearchResponseDto>({
         method: 'dates.search',
@@ -745,23 +788,27 @@ const InvitationsListing = (): JSX.Element => {
     const deleteInvitationLazyRequest = useLazyRequest<InvitationsDeleteResponseDto>('invitations.delete', uuid);
 
     useEffect(() => {
-        if (!isNil(invitationsResp.response?.data?.total) && invitationsResp.response.data.total !== total) {
-            setTotal(invitationsResp.response.data.total)
-        }
-    }, [invitationsResp.response, total])
+            if (!isNil(invitationsResp.response?.data?.total) && invitationsResp.response.data.total !== total) {
+                setTotal(invitationsResp.response.data.total)
+            }
+        },
+        // eslint-disable-next-line
+        [invitationsResp.response, total])
 
     useEffect(() => {
 
-        if (!deleteInvitationLazyRequest.response.loading) {
-            if (deleteInvitationLazyRequest.response.data) {
-                dispatch(PushNotification(t('delete_invitation_success'), 'success'));
-                invitationsResp.force();
-            } else if (deleteInvitationLazyRequest.response.error) {
-                dispatch(PushNotification(t('delete_invitation_failure'), 'error'));
+            if (!deleteInvitationLazyRequest.response.loading) {
+                if (deleteInvitationLazyRequest.response.data) {
+                    dispatch(PushNotification(t('delete_invitation_success'), 'success'));
+                    invitationsResp.force();
+                } else if (deleteInvitationLazyRequest.response.error) {
+                    dispatch(PushNotification(t('delete_invitation_failure'), 'error'));
+                }
             }
-        }
 
-    }, [deleteInvitationLazyRequest.response.loading])
+        },
+        // eslint-disable-next-line
+        [deleteInvitationLazyRequest.response.loading])
 
     if (isRequestError(invitationsResp) || isRequestError(datesResp)) {
         return <Error message={t('fetch_error')} retryLabel={'common:retrying_in'} onRefresh={
@@ -844,10 +891,17 @@ const InvitationsListing = (): JSX.Element => {
                                         <td className={'dates'}>{
                                             datesResp.response.loading
 
-                                                ? <Skeleton ready={false} type={'text'} rows={1} showLoadingAnimation={true} color={theme.textColorDarker}>
+                                                ? <Skeleton
+                                                    key={idx}
+                                                    ready={false}
+                                                    type={'text'}
+                                                    rows={1}
+                                                    showLoadingAnimation={true}
+                                                    color={theme.textColorDarker}
+                                                >
                                                 </Skeleton>
 
-                                                : <DatesTags dateIds={invitation.dates} dates={datesResp.response?.data.dates || []}/>
+                                                : <DatesTags key={idx} dateIds={invitation.dates} dates={datesResp.response?.data.dates || []}/>
                                         }</td>
                                         <td className={'creation_date'}>{formatShort(new Date(invitation.created_at))}</td>
                                         <td className={'last_transfer_date'}>{formatShort(new Date(invitation.updated_at))}</td>
@@ -900,6 +954,29 @@ const InvitationsListing = (): JSX.Element => {
 }
 
 export const Invitations = (): JSX.Element => {
+    const [currentPage, setCurrentPage] = useState(0);
+    const [currentSize, setCurrentSize] = useState(10);
+    const [total, setTotal] = useState(0);
+    const token = useToken();
+    const [uuid] = useState<string>(v4() + '@categories-fetch');
+    const events = useContext(EventsContext);
+
+    const invitationsResp = useRequest<InvitationsSearchResponseDto>({
+        method: 'invitations.search',
+        args: [
+            events.events[0].id,
+            token,
+            {
+                $page_size: currentSize,
+                $page_index: currentPage,
+                $sort: [{
+                    $field_name: 'updated_at',
+                    $order: 'desc'
+                }]
+            }
+        ],
+        refreshRate: 10,
+    }, uuid);
 
     return <InvitationsContainer>
         <div
@@ -909,9 +986,21 @@ export const Invitations = (): JSX.Element => {
                 flexDirection: 'row'
             }}
         >
-            <InvitationsGenerator/>
-            <BatchInvitationGenerator/>
+            <InvitationsGenerator
+                force={invitationsResp.force}
+            />
+            <BatchInvitationGenerator
+                force={invitationsResp.force}
+            />
         </div>
-        <InvitationsListing/>
+        <InvitationsListing
+            invitationsResp={invitationsResp}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            currentSize={currentSize}
+            setCurrentSize={setCurrentSize}
+            total={total}
+            setTotal={setTotal}
+        />
     </InvitationsContainer>
 }

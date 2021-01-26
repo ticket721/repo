@@ -42,6 +42,7 @@ import { InvitationsOwnedSearchInputDto } from '@app/server/controllers/invitati
 import { InvitationsOwnedSearchResponseDto } from '@app/server/controllers/invitations/dto/InvitationsOwnedSearchResponse.dto';
 import { InvitationsCreateBatchInputDto } from '@app/server/controllers/invitations/dto/InvitationsCreateBatchInput.dto';
 import { InvitationsCreateBatchResponseDto } from '@app/server/controllers/invitations/dto/InvitationsCreateBatchResponse.dto';
+import { OperationsService } from '@lib/common/operations/Operations.service';
 
 /**
  * Controller exposing routes to manage the Invitations of an user
@@ -59,6 +60,7 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
      * @param emailService
      * @param datesService
      * @param usersService
+     * @param operationsService
      */
     constructor(
         private readonly eventsService: EventsService,
@@ -66,6 +68,7 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
         private readonly emailService: EmailService,
         private readonly datesService: DatesService,
         private readonly usersService: UsersService,
+        private readonly operationsService: OperationsService,
     ) {
         super();
     }
@@ -231,6 +234,23 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
             'user_verification_error',
         );
 
+        await this._crudCall(
+            this.operationsService.create({
+                purchase_id: null,
+                client_id: targetUser.length === 1 ? targetUser[0].id : null,
+                client_email: body.newOwner,
+                group_id: invitation.group_id,
+                category_id: null,
+                ticket_ids: [invitation.id, ...dates.map(d => d.id)],
+                type: 'invitation_transfer',
+                status: 'confirmed',
+                fee: 0,
+                quantity: 1,
+                price: 0,
+            }),
+            StatusCodes.InternalServerError,
+        );
+
         await this._serviceCall(
             this.emailService.sendInvitationsSummary(
                 body.newOwner,
@@ -320,30 +340,20 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
             }
         }
 
-        const invitations: InvitationEntity[] = [];
+        let invitations: InvitationEntity[] = [];
         const invitationsByUsers: {
             [key: string]: {
                 amount: number;
                 dates: DateEntity[];
+                ids: string[];
             }[];
         } = {};
 
         for (const invitation of body.invitations) {
-            invitationsByUsers[invitation.owner] = [
-                ...(invitationsByUsers[invitation.owner] || []),
-                {
-                    amount: invitation.amount,
-                    dates: invitation.dates.map(
-                        id =>
-                            dateEntities[
-                                dateEntities.findIndex((d: DateEntity) => d.id.toLowerCase() === id.toLowerCase())
-                            ],
-                    ),
-                },
-            ];
+            const invitationsBatch = [];
 
             for (let idx = 0; idx < invitation.amount; ++idx) {
-                invitations.push(
+                invitationsBatch.push(
                     await this._crudCall(
                         this.invitationsService.create({
                             owner: invitation.owner,
@@ -355,6 +365,22 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
                     ),
                 );
             }
+
+            invitationsByUsers[invitation.owner] = [
+                ...(invitationsByUsers[invitation.owner] || []),
+                {
+                    ids: invitationsBatch.map(i => i.id),
+                    amount: invitation.amount,
+                    dates: invitation.dates.map(
+                        id =>
+                            dateEntities[
+                                dateEntities.findIndex((d: DateEntity) => d.id.toLowerCase() === id.toLowerCase())
+                            ],
+                    ),
+                },
+            ];
+
+            invitations = invitations.concat(invitationsBatch);
         }
 
         for (const userEmail of Object.keys(invitationsByUsers)) {
@@ -363,6 +389,26 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
                 StatusCodes.InternalServerError,
                 'user_verification_error',
             );
+
+            for (const invitationBatch of invitationsByUsers[userEmail]) {
+                await this._crudCall(
+                    this.operationsService.create({
+                        purchase_id: '00000000-0000-0000-0000-000000000000',
+                        client_id: targetUser.length === 1 ? targetUser[0].id : '00000000-0000-0000-0000-000000000000',
+                        client_email: userEmail,
+                        group_id: event.group_id,
+                        currency: 'FREE',
+                        category_id: '00000000-0000-0000-0000-000000000000',
+                        ticket_ids: [...invitationBatch.ids, ...invitationBatch.dates.map(d => d.id)],
+                        type: 'invitation',
+                        status: 'confirmed',
+                        fee: 0,
+                        quantity: invitationBatch.amount,
+                        price: 0,
+                    }),
+                    StatusCodes.InternalServerError,
+                );
+            }
 
             await this._serviceCall(
                 this.emailService.sendInvitationsSummary(
@@ -466,6 +512,24 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
             this.usersService.findAnyTypeByEmail(body.owner),
             StatusCodes.InternalServerError,
             'user_verification_error',
+        );
+
+        await this._crudCall(
+            this.operationsService.create({
+                purchase_id: '00000000-0000-0000-0000-000000000000',
+                client_id: targetUser.length === 1 ? targetUser[0].id : '00000000-0000-0000-0000-000000000000',
+                client_email: body.owner,
+                currency: 'FREE',
+                group_id: event.group_id,
+                category_id: '00000000-0000-0000-0000-000000000000',
+                ticket_ids: [...invitations.map(i => i.id), ...dateEntities.map(d => d.id)],
+                type: 'invitation',
+                status: 'confirmed',
+                fee: 0,
+                quantity: body.amount,
+                price: 0,
+            }),
+            StatusCodes.InternalServerError,
         );
 
         await this._serviceCall(

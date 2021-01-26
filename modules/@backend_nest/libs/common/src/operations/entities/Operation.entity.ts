@@ -26,6 +26,8 @@ export class OperationEntity {
     constructor(op?: OperationEntity) {
         if (op) {
             this.id = op.id ? op.id.toString() : op.id;
+            this.client_email = op.client_email;
+            this.currency = op.currency;
             this.purchase_id = op.purchase_id ? op.purchase_id.toString() : op.purchase_id;
             this.client_id = op.client_id ? op.client_id.toString() : op.client_id;
             this.group_id = op.group_id;
@@ -68,6 +70,24 @@ export class OperationEntity {
     client_id: string;
 
     /**
+     * Client Email
+     */
+    @Column({
+        type: 'text',
+    })
+    // tslint:disable-next-line:variable-name
+    client_email: string;
+
+    /**
+     * Currency
+     */
+    @Column({
+        type: 'text',
+    })
+    // tslint:disable-next-line:variable-name
+    currency: string;
+
+    /**
      * Group ID
      */
     @Column({
@@ -102,7 +122,7 @@ export class OperationEntity {
         type: 'text',
     })
     // tslint:disable-next-line:variable-name
-    type: 'sell' | 'cancel';
+    type: 'sell' | 'cancel' | 'invitation' | 'invitation_transfer';
 
     /**
      * Operation status

@@ -2,6 +2,9 @@ import { IsEmail, IsNumber, IsString, IsUrl, IsUUID, ValidateNested } from 'clas
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
+/**
+ * Format of an invitation
+ */
 export class InvitationFormat {
     /**
      * New date details

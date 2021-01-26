@@ -18,7 +18,26 @@ i18n.addResourceBundle('en', 'invitations', {
     creation_date: 'Creation date',
     last_transfer_date: 'Last transfer',
     delete: 'Delete',
-    results_per_page: 'Results per page'
+    results_per_page: 'Results per page',
+    no_invitations: 'No invitations',
+
+    generate_batch_invitation_title: 'Generate Invitation Batch',
+    instruction_call_to_download: 'Download the template CSV',
+    instruction_call_to_download_end: ' to generate several invitations at the same time.',
+    instruction_the_field: 'The ',
+    instruction_email_details: ' column should contain the email receiving the invitation(s).',
+    instruction_amount_details: ' column should contain the amount of invitations to generate for the given email.',
+    instruction_dates_details_first: ' column should contain the ids of the dates where the user has access separated by a space (or the value \'',
+    instruction_dates_details_second: '\' for all dates).',
+    instruction_dates_id_below: 'Below, you will find the list of date IDs to use, click to copy to clipboard: ',
+    instruction_add_dates: 'You need to add dates to your event',
+    missing_headers: 'Invalid CSV format. Cannot find column headers "email, amount, dates" on first line',
+    missing_field: 'Missing "{{field}}" value at line {{line}}',
+    invalid_email: 'Invalid email value "{{email}}" at line {{line}}',
+    invalid_amount: 'Invalid amount value "{{amount}}" at line {{line}}, should be greater than 0',
+    invalid_date: 'Invalid date value "{{date}}" at line {{line}}',
+    clipboard_copy_success: 'Copied ID to clipboard',
+    cannot_read_file: 'An error occured while trying to read file'
 });
 
 i18n.addResourceBundle('fr', 'invitations', {
@@ -40,4 +59,23 @@ i18n.addResourceBundle('fr', 'invitations', {
     last_transfer_date: 'Dernier transfert',
     delete: 'Supprimer',
     results_per_page: 'Resultats par page',
+    no_invitations: 'Aucune invitation',
+
+    generate_batch_invitation_title: 'Générez des invitations par batch',
+    instruction_call_to_download: 'Téléchargez le template CSV',
+    instruction_call_to_download_end: ' pour générer plusieurs invitations en même temps.',
+    instruction_the_field: 'La colonne ',
+    instruction_email_details: ' doit contenir l\'email recevant la ou les invitations.',
+    instruction_amount_details: ' doit contenir la quantité d\'invitations à générer.',
+    instruction_dates_details_first: ' doit contenir les identifiants des dates accessibles par l\'invitations, séparés par des espaces (ou la valeur \'',
+    instruction_dates_details_second: '\' pour toutes les dates).',
+    instruction_dates_id_below: 'Voici les identifiants de toutes les dates de l\'événement, cliquez pour les copier au presse-papier: ',
+    instruction_add_dates: 'Vous devez ajouter des dates à votre événement',
+    missing_headers: 'Format CSV invalide. Impossible de récuper les colonnes "email, amount, dates" à la première ligne',
+    missing_field: 'Valeur manquante pour le champ "{{field}}" à la ligne {{line}}',
+    invalid_email: 'Valeur invalide pour le champ email: "{{email}}" à la ligne {{line}}',
+    invalid_amount: 'Valeur invalide pour le champ amount: "{{amount}}" à la ligne {{line}}',
+    invalid_date: 'Valeur invalide pour le champ date: "{{date}}" à la ligne {{line}}',
+    clipboard_copy_success: 'ID copié au presse-papier',
+    cannot_read_file: 'Une erreur est survenue lors de la lecture du fichier'
 });

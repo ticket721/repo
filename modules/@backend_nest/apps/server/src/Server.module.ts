@@ -39,6 +39,7 @@ import { PurchasesModule } from '@lib/common/purchases/Purchases.module';
 import { PurchasesController } from '@app/server/controllers/purchases/Purchases.controller';
 import { InvitationsModule } from '@lib/common/invitations/Invitations.module';
 import { InvitationsController } from '@app/server/controllers/invitations/Invitations.controller';
+import { OperationsModule } from '@lib/common/operations/Operations.module';
 
 @Module({
     imports: [
@@ -62,6 +63,7 @@ import { InvitationsController } from '@app/server/controllers/invitations/Invit
         TicketsModule,
         PurchasesModule,
         InvitationsModule,
+        OperationsModule,
 
         StripeModule.register(),
         StripeInterfacesModule,

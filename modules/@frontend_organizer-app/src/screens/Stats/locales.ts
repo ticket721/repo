@@ -6,7 +6,9 @@ i18n.addResourceBundle('en', 'stats', {
     sales: 'Sales',
     sales_description: 'Visualize and export sales data',
     invitations: 'Invitations',
-    invitations_description: 'Create and manage invitations'
+    invitations_description: 'Create and manage invitations',
+    slip: 'Event Slip',
+    slip_description: 'Generate your event slip in a CSV format'
 });
 
 i18n.addResourceBundle('fr', 'stats', {
@@ -15,5 +17,7 @@ i18n.addResourceBundle('fr', 'stats', {
     sales: 'Ventes',
     sales_description: 'Visualisez vos statistiques de ventes',
     invitations: 'Invitations',
-    invitations_description: 'Créez et gérez vos invitations'
+    invitations_description: 'Créez et gérez vos invitations',
+    slip: 'Bordereau de l\'événement',
+    slip_description: 'Générez votre bordereau au format CSV'
 });

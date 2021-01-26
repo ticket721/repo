@@ -4,12 +4,14 @@ i18n.addResourceBundle('en', 'stats_submenu', {
     stats_title: 'Statistics & Tools',
     attendees_title: 'Attendees',
     sales_title: 'Sales',
-    invitations_title: 'Invitations'
+    invitations_title: 'Invitations',
+    'event-slip_title': 'Event Slip'
 });
 
 i18n.addResourceBundle('fr', 'stats_submenu', {
     stats_title: 'Statistiques & Outils',
     attendees_title: 'Participants',
     sales_title: 'Ventes',
-    invitations_title: 'Invitations'
+    invitations_title: 'Invitations',
+    'event-slip_title': 'Bordereau de l\'événement'
 });
