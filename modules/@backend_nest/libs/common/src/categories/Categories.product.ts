@@ -668,8 +668,10 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         const operationCreationRes = await this.operationsService.create({
             purchase_id: purchaseEntity.id,
             client_id: user.id,
+            client_email: user.email,
             group_id: product.group_id,
             category_id: product.id,
+            currency: purchaseEntity.currency || 'FREE',
             ticket_ids: tickets,
             type: 'sell',
             status,

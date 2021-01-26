@@ -8,4 +8,9 @@ export class InvitationsSearchResponseDto {
      * Invitations matching the query
      */
     invitations: InvitationEntity[];
+
+    /**
+     * Total count
+     */
+    total: number;
 }

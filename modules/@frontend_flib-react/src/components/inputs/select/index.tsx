@@ -88,6 +88,7 @@ export interface GroupedSelectOption {
 }
 
 export interface SelectProps {
+    name?: string;
     defaultValue?: SelectOption;
     error?: string;
     label?: string;
@@ -129,7 +130,6 @@ const Error = styled.span`
     color: ${(props) => props.theme.errorColor.hex};
     font-size: 13px;
     font-weight: 500;
-    left: 10px;
     position: absolute;
     margin-left: ${(props) => props.theme.regularSpacing};
 `;
@@ -138,6 +138,7 @@ const StyledInputContainer = styled.div<Partial<SelectProps>>`
     background-color: ${(props) => props.theme.componentColor};
     border-radius: ${(props) => props.theme.defaultRadius};
     display: flex;
+    position: relative;
     flex-direction: column;
     padding-top: ${(props) => (props.label ? props.theme.biggerSpacing : 0)};
     transition: background-color 300ms ease;
@@ -189,6 +190,7 @@ export const SelectInput: React.FunctionComponent<SelectProps> = (props: SelectP
         <StyledInputContainer label={props.label} className={props.className}>
             {props.label && <StyledLabel>{props.label}</StyledLabel>}
             <Select
+                name={props.name}
                 isMulti={props.multiple}
                 isSearchable={props.searchable}
                 value={props.multiple ? selected : selected ? selected[0] : null}

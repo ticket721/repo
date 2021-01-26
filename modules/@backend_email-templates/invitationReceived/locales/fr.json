@@ -1,0 +1,14 @@
+{
+    "mail_head_title": "Vous venez de recevoir",
+    "mail_body_title": "Une invitation vous donne un accès complet à un ou plusieurs événements Ticket721",
+    "mail_body_subtitle": "Retrouvez les détails de vos invitations ci-dessous",
+    "give_access": "Donne accès à",
+    "give_access_plural": "Donnent accès à",
+    "from": "Du",
+    "to": "Au",
+    "go_connect": "Se connecter",
+    "go_register": "Créer son compte",
+    "invitation": "Invitation",
+    "connect": "Connectez vous pour accéder à vos invitations",
+    "register": "Créez un compte avec cette adresse mail pour accéder à vos invitations"
+}

@@ -4,6 +4,8 @@ import { motion }     from 'framer-motion';
 import { useHistory } from 'react-router';
 import attendeesImg   from './attendees.jpg';
 import salesImg   from './sales.jpg';
+import invitationsImg from './invitations.jpg';
+import slipImg from './slip.png';
 import { injectBlur } from '@frontend/flib-react/lib/utils/blur';
 import { useTranslation } from 'react-i18next';
 import './locales';
@@ -68,9 +70,6 @@ export const Stats = ({eventId}: {eventId: string}): JSX.Element => {
                     history.push(`/event/${eventId}/attendees`);
                 }
             }
-            whileHover={{
-                scale: 1.02
-            }}
             whileTap={{
                 scale: 0.98
             }}
@@ -88,9 +87,6 @@ export const Stats = ({eventId}: {eventId: string}): JSX.Element => {
                     history.push(`/event/${eventId}/sales`);
                 }
             }
-            whileHover={{
-                scale: 1.02
-            }}
             whileTap={{
                 scale: 0.98
             }}
@@ -98,6 +94,40 @@ export const Stats = ({eventId}: {eventId: string}): JSX.Element => {
             <ContentCard>
                 <h3>{t('sales')}</h3>
                 <span>{t('sales_description')}</span>
+            </ContentCard>
+            <BlurCard/>
+        </StatCard>
+        <StatCard
+            illustration={invitationsImg}
+            onClick={
+                () => {
+                    history.push(`/event/${eventId}/invitations`);
+                }
+            }
+            whileTap={{
+                scale: 0.98
+            }}
+        >
+            <ContentCard>
+                <h3>{t('invitations')}</h3>
+                <span>{t('invitations_description')}</span>
+            </ContentCard>
+            <BlurCard/>
+        </StatCard>
+        <StatCard
+            illustration={slipImg}
+            onClick={
+                () => {
+                    history.push(`/event/${eventId}/slip`);
+                }
+            }
+            whileTap={{
+                scale: 0.98
+            }}
+        >
+            <ContentCard>
+                <h3>{t('slip')}</h3>
+                <span>{t('slip_description')}</span>
             </ContentCard>
             <BlurCard/>
         </StatCard>

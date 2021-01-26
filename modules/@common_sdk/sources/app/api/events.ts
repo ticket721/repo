@@ -23,6 +23,7 @@ import { EventsExportInputDto }                 from '@app/server/controllers/ev
 import { EventsExportResponseDto }              from '@app/server/controllers/events/dto/EventsExportResponse.dto';
 import { EventsSalesInputDto }                  from '@app/server/controllers/events/dto/EventsSalesInput.dto';
 import { EventsSalesResponseDto }               from '@app/server/controllers/events/dto/EventsSalesResponse.dto';
+import { EventsExportSlipResponseDto }          from '@app/server/controllers/events/dto/EventsExportSlipResponse.dto';
 
 export async function eventsSearch(
     token: string,
@@ -180,4 +181,17 @@ export async function eventsGuestlist(
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
+}
+
+export async function eventsExportSlip(
+    token: string,
+    event: string
+): Promise<AxiosResponse<EventsExportSlipResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.get(`/events/${event}/slip`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    });
 }

@@ -66,6 +66,14 @@ import { EventsExportInputDto } from '@app/server/controllers/events/dto/EventsE
 import { EventsExportResponseDto } from '@app/server/controllers/events/dto/EventsExportResponse.dto';
 import { EventsSalesInputDto } from '@app/server/controllers/events/dto/EventsSalesInput.dto';
 import { EventsSalesResponseDto, Transaction } from '@app/server/controllers/events/dto/EventsSalesResponse.dto';
+import { OperationsService } from '@lib/common/operations/Operations.service';
+import { ESSearchBodyBuilder } from '@lib/common/utils/ESSearchBodyBuilder.helper';
+import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
+import {
+    EventsExportSlipResponseDto,
+    TarificationData,
+} from '@app/server/controllers/events/dto/EventsExportSlipResponse.dto';
+import { fromES } from '@lib/common/utils/fromES.helper';
 
 /**
  * Placeholder address
@@ -90,6 +98,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
      * @param usersService
      * @param purchasesService
      * @param stripeInterfacesService
+     * @param operationsService
      */
     constructor(
         private readonly eventsService: EventsService,
@@ -100,6 +109,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
         private readonly usersService: UsersService,
         private readonly purchasesService: PurchasesService,
         private readonly stripeInterfacesService: StripeInterfacesService,
+        private readonly operationsService: OperationsService,
     ) {
         super();
     }
@@ -118,6 +128,111 @@ export class EventsController extends ControllerBasics<EventEntity> {
 
         return {
             events,
+        };
+    }
+
+    /**
+     * Get event slip
+     *
+     * @param eventId
+     * @param user
+     */
+    @Get('/:event/slip')
+    @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
+    @Roles('authenticated')
+    @UseFilters(new HttpExceptionFilter())
+    @HttpCode(StatusCodes.OK)
+    @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
+    async exportSlip(@Param('event') eventId: string, @User() user: UserDto): Promise<EventsExportSlipResponseDto> {
+        const event = await this._crudCall(this.eventsService.findOne(eventId), StatusCodes.InternalServerError);
+
+        if (event.owner !== user.id) {
+            throw new HttpException(
+                {
+                    status: StatusCodes.Forbidden,
+                    message: 'invalid_category_id',
+                },
+                StatusCodes.Forbidden,
+            );
+        }
+
+        const elasticBody = ESSearchBodyBuilder({
+            group_id: {
+                $eq: event.group_id,
+            },
+            type: {
+                $eq: 'sell',
+            },
+            $sort: [
+                {
+                    $field_name: 'created_at',
+                    $order: 'asc',
+                },
+            ],
+        } as SortablePagedSearch);
+
+        const operations = await this._crudCall(
+            this.operationsService.searchElastic(elasticBody.response),
+            StatusCodes.InternalServerError,
+        );
+
+        const categoriesMapping: {
+            [key: string]: {
+                price: number;
+                currency: string;
+                amount: number;
+            }[];
+        } = {};
+
+        for (const op of operations.hits.hits) {
+            const operation = fromES(op);
+
+            if (!categoriesMapping[operation.category_id]) {
+                categoriesMapping[operation.category_id] = [];
+            }
+
+            if (
+                categoriesMapping[operation.category_id].length === 0 ||
+                categoriesMapping[operation.category_id][categoriesMapping[operation.category_id].length - 1].price !==
+                    operation.price / operation.quantity
+            ) {
+                categoriesMapping[operation.category_id].push({
+                    price: operation.price / operation.quantity,
+                    currency: operation.currency,
+                    amount: operation.quantity,
+                });
+            } else {
+                categoriesMapping[operation.category_id][categoriesMapping[operation.category_id].length - 1].amount +=
+                    operation.quantity;
+            }
+        }
+
+        const tarifications: TarificationData[] = [];
+
+        for (const categoryId of Object.keys(categoriesMapping)) {
+            const category = await this._serviceCall(
+                this.categoriesService.findOne(categoryId),
+                StatusCodes.InternalServerError,
+            );
+
+            let idx = 1;
+
+            for (const tarificationVersion of categoriesMapping[categoryId]) {
+                tarifications.push({
+                    id: category.id,
+                    name: category.display_name,
+                    version: idx,
+                    price: tarificationVersion.price,
+                    currency: tarificationVersion.currency,
+                    amount: tarificationVersion.amount,
+                });
+
+                ++idx;
+            }
+        }
+
+        return {
+            tarifications,
         };
     }
 

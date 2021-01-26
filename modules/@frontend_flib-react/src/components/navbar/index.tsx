@@ -10,24 +10,21 @@ interface StyledNavbar {
 const StyledNavbar = styled.nav<StyledNavbar>`
     ${injectBlur('rgba(33, 29, 45, 0.2)', 'rgba(33, 29, 45, 1)')};
 
-    border-top-left-radius: ${(props) => props.theme.doubleSpacing};
-    border-top-right-radius: ${(props) => props.theme.doubleSpacing};
+    border-radius: ${(props) => props.theme.doubleSpacing};
     transition: bottom 500ms ease;
     bottom: ${(props) =>
         props.visible
-            ? '0'
-            : `calc(-${props.theme.regularSpacing} * 3 - env(safe-area-inset-bottom) - ${props.iconHeight})`};
-    left: 0;
+            ? 'calc(env(safe-area-inset-bottom) + 2%)'
+            : `calc(-${props.theme.regularSpacing} * 3 - env(safe-area-inset-bottom) - ${props.iconHeight} - 2%)`};
+    left: 2%;
     padding: calc(${(props) => props.theme.regularSpacing} * 1.5) ${(props) => props.theme.doubleSpacing};
-    padding-bottom: calc(${(props) => props.theme.regularSpacing} * 1.5 + env(safe-area-inset-bottom));
-    padding-bottom: calc(${(props) => props.theme.regularSpacing} * 1.5 + constant(safe-area-inset-bottom));
     position: fixed;
-    width: 100%;
+    width: 96%;
     z-index: 9999;
     align-items: center;
     display: flex;
     justify-content: center;
-    border-top: 1px solid #cccccc07;
+    border: 1px solid #cccccc07;
 `;
 
 const ContentContainer = styled.div`

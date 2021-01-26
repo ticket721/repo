@@ -10,16 +10,18 @@ import { InvitationsDeleteInputDto }         from '@app/server/controllers/invit
 import { InvitationsDeleteResponseDto }      from '@app/server/controllers/invitations/dto/InvitationsDeleteResponse.dto';
 import { InvitationsTransferInputDto }       from '@app/server/controllers/invitations/dto/InvitationsTransferInput.dto';
 import { InvitationsTransferResponseDto }    from '@app/server/controllers/invitations/dto/InvitationsTransferResponse.dto';
+import { InvitationsCreateBatchInputDto }    from '@app/server/controllers/invitations/dto/InvitationsCreateBatchInput.dto';
+import { InvitationsCreateBatchResponseDto } from '@app/server/controllers/invitations/dto/InvitationsCreateBatchResponse.dto';
 
 export async function invitationsSearch(
     event: string,
     token: string,
-    query: Partial<InvitationsSearchInputDto>,
+    query: InvitationsSearchInputDto,
 ): Promise<AxiosResponse<InvitationsSearchResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<Partial<InvitationsSearchInputDto>>(`/invitations/${event}/search`, {
+    return self.post<InvitationsSearchInputDto>(`/invitations/${event}/search`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
@@ -41,12 +43,26 @@ export async function invitationsOwnedSearch(
 export async function invitationsCreate(
     event: string,
     token: string,
-    query: Partial<InvitationsCreateInputDto>,
+    query: InvitationsCreateInputDto,
 ): Promise<AxiosResponse<InvitationsCreateResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.post<Partial<InvitationsCreateInputDto>>(`/invitations/${event}`, {
+    return self.post<InvitationsCreateInputDto>(`/invitations/${event}`, {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }, query);
+}
+
+export async function invitationsCreateBatch(
+    event: string,
+    token: string,
+    query: InvitationsCreateBatchInputDto,
+): Promise<AxiosResponse<InvitationsCreateBatchResponseDto>> {
+
+    const self: T721SDK = this;
+
+    return self.post<InvitationsCreateBatchInputDto>(`/invitations/${event}/batch`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
@@ -55,12 +71,12 @@ export async function invitationsCreate(
 export async function invitationsDelete(
     event: string,
     token: string,
-    query: Partial<InvitationsDeleteInputDto>,
+    query: InvitationsDeleteInputDto,
 ): Promise<AxiosResponse<InvitationsDeleteResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.delete<Partial<InvitationsDeleteInputDto>>(`/invitations/${event}`, {
+    return self.delete<InvitationsDeleteInputDto>(`/invitations/${event}`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);

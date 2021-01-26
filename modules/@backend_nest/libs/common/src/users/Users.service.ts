@@ -215,6 +215,59 @@ export class UsersService {
      *
      * @param email
      */
+    async findAnyTypeByEmail(email: string): Promise<ServiceResponse<UserDto[]>> {
+        let res: ESSearchReturn<UserDto>;
+
+        try {
+            res = await new Promise<ESSearchReturn<UserDto>>((ok, ko): void => {
+                this.userEntity.search(
+                    {
+                        body: {
+                            query: {
+                                bool: {
+                                    must: [
+                                        {
+                                            term: {
+                                                email,
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                    (err, resp): void => {
+                        if (err) {
+                            return ko(err);
+                        }
+                        ok(resp);
+                    },
+                );
+            });
+        } catch (e) {
+            return {
+                response: null,
+                error: 'unexpected_error',
+            };
+        }
+
+        if (!res) {
+            return {
+                response: null,
+                error: null,
+            };
+        }
+
+        return {
+            response: res.hits.hits.map(hit => hit._source),
+            error: null,
+        };
+    }
+    /**
+     * Find a user by its email
+     *
+     * @param email
+     */
     async findByEmail(email: string): Promise<ServiceResponse<UserDto>> {
         let res: ESSearchReturn<UserDto>;
 

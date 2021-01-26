@@ -158,5 +158,20 @@ module.exports = [
         type: 'elasticsearch',
         name: 'add_invitations',
         timestamp: '20210112140915'
+    },
+    {
+        type: 'elasticsearch',
+        name: 'pre_operation_update',
+        timestamp: '20210112140916'
+    },
+    {
+        type: 'cassandra',
+        name: 'operation_update',
+        timestamp: '1610460245'
+    },
+    {
+        type: 'elasticsearch',
+        name: 'add_invitations',
+        timestamp: '20210112140917'
     }
 ];

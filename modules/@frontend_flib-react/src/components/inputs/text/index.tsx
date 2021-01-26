@@ -8,6 +8,7 @@ import Icon, { IconColor } from '../../icon';
 export interface TextInputProps extends React.ComponentProps<any> {
     error?: string;
     label: string;
+    accept?: string;
     name: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onKeyDown?: (e: React.KeyboardEvent<any>) => void;
@@ -151,6 +152,7 @@ export const TextInput: React.FunctionComponent<TextInputProps & { className?: s
                     />
                 ) : (
                     <input
+                        accept={'.csv'}
                         autoComplete={props.autoComplete || 'off'}
                         id={props.name}
                         name={props.name}

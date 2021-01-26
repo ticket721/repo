@@ -39,7 +39,16 @@ import {
     eventsCount,
     eventsCreate,
     eventsSearch,
-    eventsGuestlist, eventsAddDate, eventsEdit, eventsStatus, eventsBindStripeInterface, eventsOwner, eventsAttendees, eventsExport, eventsSales,
+    eventsGuestlist,
+    eventsAddDate,
+    eventsEdit,
+    eventsStatus,
+    eventsBindStripeInterface,
+    eventsOwner,
+    eventsAttendees,
+    eventsExport,
+    eventsSales,
+    eventsExportSlip,
 } from './app/api/events';
 
 // CATEGORIES
@@ -51,7 +60,7 @@ import {
 
 // INVITATIONS
 import {
-    invitationsCreate, invitationsDelete, invitationsOwnedSearch, invitationsSearch, invitationsTransfer,
+    invitationsCreate, invitationsCreateBatch, invitationsDelete, invitationsOwnedSearch, invitationsSearch, invitationsTransfer,
 } from './app/api/invitations';
 
 // TICKETS
@@ -136,6 +145,7 @@ export class T721SDK {
         this.events.attendees = this.events.attendees.bind(this);
         this.events.export = this.events.export.bind(this);
         this.events.sales = this.events.sales.bind(this);
+        this.events.exportSlip = this.events.exportSlip.bind(this);
 
         this.categories.count = this.categories.count.bind(this);
         this.categories.search = this.categories.search.bind(this);
@@ -201,6 +211,7 @@ export class T721SDK {
         this.invitations.create = this.invitations.create.bind(this);
         this.invitations.delete = this.invitations.delete.bind(this);
         this.invitations.transfer = this.invitations.transfer.bind(this);
+        this.invitations.createBatch = this.invitations.createBatch.bind(this);
     }
 
     connect(host: string, port: number, protocol: 'http' | 'https' = 'http') {
@@ -336,6 +347,7 @@ export class T721SDK {
         edit: eventsEdit,
         status: eventsStatus,
         bindStripeInterface: eventsBindStripeInterface,
+        exportSlip: eventsExportSlip
     };
 
     public categories = {
@@ -395,6 +407,7 @@ export class T721SDK {
         search: invitationsSearch,
         ownedSearch: invitationsOwnedSearch,
         create: invitationsCreate,
+        createBatch: invitationsCreateBatch,
         delete: invitationsDelete,
         transfer: invitationsTransfer
     }
