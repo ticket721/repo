@@ -18,7 +18,7 @@ import { PushNotification }              from '@frontend/core/lib/redux/ducks/no
 import { useHistory }                    from 'react-router';
 import { FormikProvider, useFormik } from 'formik';
 import { Persist }                                                    from 'formik-persist';
-import { CategoryWithDatesPayload, checkEvent, EventCreationPayload } from '@common/global';
+import { checkEvent, EventCreationPayload } from '@common/global';
 import { DelayedOnMountValidation }                                   from './DelayedOnMountValidation';
 import { Stepper, StepStatus } from '../../components/Stepper';
 import { useLazyRequest } from '@frontend/core/lib/hooks/useLazyRequest';
@@ -76,12 +76,6 @@ const stepsInfos: StepInfos[] = [
     },
 ];
 
-const updateCategories = (categories: CategoryWithDatesPayload[]): CategoryWithDatesPayload[] =>
-    categories.map((category: CategoryWithDatesPayload) => ({
-        ...category,
-        price: category.price,
-    }));
-
 const CreateEvent: React.FC = () => {
     const [ t ] = useTranslation('create_event');
 
@@ -102,10 +96,7 @@ const CreateEvent: React.FC = () => {
     const [ reader ] = useState<FileReader>(new FileReader());
 
     const validate = (eventPayload: EventCreationPayload) => {
-        const errors = checkEvent({
-            ...eventPayload,
-            categoriesConfiguration: updateCategories(eventPayload.categoriesConfiguration)
-        });
+        const errors = checkEvent(eventPayload);
         const errorKeys = errors ? Object.keys(errors) : [];
         const eventCreationKeys = stepsInfos.map(stepInfos => stepInfos.step);
 

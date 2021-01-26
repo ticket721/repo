@@ -9,7 +9,7 @@ export interface PriceInputProps {
     currName: string;
     label: string;
     placeholder?: string;
-    defaultCurrency?: string;
+    currency?: string;
     disabled?: boolean;
     defaultValue?: number;
     value?: number;
@@ -106,9 +106,9 @@ const StyledInputContainer = styled.div<Partial<PriceInputProps>>`
 `;
 
 export const PriceInput: React.FunctionComponent<PriceInputProps> = (props: PriceInputProps): JSX.Element => {
-    const defaultCurrency: any = props.defaultCurrency || 'USD';
+    const defaultCurrency: any = 'EUR';
 
-    const [curr, setCurr] = useState<string>(defaultCurrency);
+    const [curr, setCurr] = useState<string>(props.currency || defaultCurrency);
 
     return (
         <StyledInputContainer error={props.error} className={props.className} disabled={props.disabled}>
@@ -116,7 +116,7 @@ export const PriceInput: React.FunctionComponent<PriceInputProps> = (props: Pric
             <div className={'sub-container'}>
                 <CurrencySelectInput
                     name={props.currName}
-                    defaultCode={defaultCurrency}
+                    code={curr}
                     disabled={props.disabled}
                     selectedColor={props.currColor}
                     onChange={(currOpt) => {
@@ -126,6 +126,7 @@ export const PriceInput: React.FunctionComponent<PriceInputProps> = (props: Pric
                     onBlur={props.onBlur}
                 />
                 <NumberFormat
+                    name={props.name}
                     defaultValue={props.defaultValue && fromAtomicValue(curr, props.defaultValue)}
                     value={props.value && fromAtomicValue(curr, props.value)}
                     placeholder={props.placeholder}
@@ -138,6 +139,7 @@ export const PriceInput: React.FunctionComponent<PriceInputProps> = (props: Pric
                     onValueChange={(value: any) =>
                         props.onPriceChange(Math.round(getAtomicValue(curr, value.floatValue)))
                     }
+                    onBlur={props.onBlur}
                 />
             </div>
             {props.error && <Error>{props.error}</Error>}

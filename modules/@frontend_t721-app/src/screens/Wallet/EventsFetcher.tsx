@@ -10,11 +10,13 @@ import { DateEntity }              from '@common/sdk/lib/@backend_nest/libs/comm
 import { EventEntity }             from '@backend/nest/libs/common/src/events/entities/Event.entity';
 import { isRequestError }          from '@frontend/core/lib/utils/isRequestError';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
+import { InvitationEntity }            from '@common/sdk/lib/@backend_nest/libs/common/src/invitations/entities/Invitation.entity';
 
 interface EventsFetcherProps {
     uuid: string;
     tickets: TicketEntity[];
     categories: CategoryEntity[];
+    invitations: InvitationEntity[];
     dates: DateEntity[];
 }
 
@@ -23,6 +25,7 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = (
         uuid,
         tickets,
         categories,
+        invitations,
         dates
     }: EventsFetcherProps) => {
 
@@ -35,10 +38,7 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = (
                 token,
                 {
                     id: {
-                        $in: []
-                            .concat(
-                                ...dates.map(date => date.event)
-                            )
+                        $in: dates.flatMap(date => date.event)
                             .filter(
                                 (eventId: string, idx: number, arr: string[]) => arr.indexOf(eventId) === idx
                             )
@@ -61,7 +61,7 @@ export const EventsFetcher: React.FC<EventsFetcherProps> = (
     const events = eventsResp.response.data.events;
 
     return <Tickets
-        tickets={tickets}
+        tickets={[...tickets, ...invitations]}
         categories={
             Object.fromEntries(new Map(categories.map((category: CategoryEntity) => [category.id, category])))
         }

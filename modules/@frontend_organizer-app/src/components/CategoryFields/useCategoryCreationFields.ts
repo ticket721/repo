@@ -39,7 +39,6 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
     const [ duplicateOnDates, setDuplicateOnDates ] = useState<SelectOption[]>([]);
     const [ maxDate, setMaxDate ] = useState<Date>(null);
     const [ isFree, setIsFree ] = useState<boolean>(false);
-    const [ lastCurrency, setLastCurrency ] = useState<string>(null);
 
     const [ nameField, nameMeta ] = useField<string>(`${parentField ? parentField + '.' : ''}name`);
     const [ saleBeginField, saleBeginMeta, saleBeginHelper ] = useField<Date>(`${parentField ? parentField + '.' : ''}saleBegin`);
@@ -48,6 +47,8 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
     const [ currencyField,, currencyHelper ] = useField<string>(`${parentField ? parentField + '.' : ''}currency`);
     const [ priceField, priceMeta, priceHelper ] = useField<number>(`${parentField ? parentField + '.' : ''}price`);
     const [ datesField, datesMeta, datesHelper ] = useField<number[]>(`${parentField ? parentField + '.' : ''}dates`);
+
+    const [ lastCurrency, setLastCurrency ] = useState<string>(currencyField.value === 'FREE' ? 'EUR' : currencyField.value);
 
     const dateOptions = dateRanges.map((date, dateIdx) => ({
         label: date.name,
@@ -187,8 +188,8 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
         priceProps: {
             name: priceField.name,
             currName: currencyField.name,
-            defaultValue: priceField.value,
-            defaultCurrency: currencyField.value,
+            value: priceField.value,
+            currency: lastCurrency,
             error: evaluateError(priceMeta),
             label: t('price_label'),
             placeholder: t('price_placeholder'),
@@ -198,6 +199,7 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
                 currencyHelper.setValue(curr);
                 setLastCurrency(curr);
             },
+            onBlur: priceField.onBlur,
         },
         duplicateOnProps: !isMultiDates && datesField.value.length > 0 ? {
             options: dateOptions.filter(date => datesField.value[0].toString() !== date.value),

@@ -272,6 +272,10 @@ const App: React.FC = () => {
                                     <TagsPage/>
                                 </Route>
 
+                                <ProtectedRoute path={'/ticket/:id/invitation'} exact={true}>
+                                    <TicketPage/>
+                                </ProtectedRoute>
+
                                 <ProtectedRoute path={'/ticket/:id'} exact={true}>
                                     <TicketPage/>
                                 </ProtectedRoute>

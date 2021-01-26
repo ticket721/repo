@@ -3,6 +3,7 @@ import Select, { components } from 'react-select';
 import styled from '../../../config/styled';
 import { currencies, symbolOf } from '@common/global/lib/currency';
 import { SelectOption } from '../select';
+import { useState } from 'react';
 
 const customStyles = {
     container: () => ({
@@ -63,7 +64,7 @@ const customStyles = {
 
 export interface CurrencySelectProps {
     name: string;
-    defaultCode?: string;
+    code?: string;
     disabled?: boolean;
     value?: Array<SelectOption>;
     className?: string;
@@ -98,7 +99,7 @@ const StyledInputContainer = styled.div<Partial<CurrencySelectProps>>`
 const currenciesSelectOptions = currencies.map((curr: { code: string; description: string }) => ({
     label: `${curr.description} (${symbolOf(curr.code)})`,
     shortLabel: symbolOf(curr.code) || curr.code,
-    value: curr.code.toLowerCase(),
+    value: curr.code,
 }));
 
 const SingleValue = (props: any) => <components.SingleValue {...props}>{props.data.shortLabel}</components.SingleValue>;
@@ -106,8 +107,8 @@ const SingleValue = (props: any) => <components.SingleValue {...props}>{props.da
 export const CurrencySelectInput: React.FunctionComponent<CurrencySelectProps> = (
     props: CurrencySelectProps,
 ): JSX.Element => {
-    const defaultCurrency: any = currencies.find(
-        (curr: { code: string; description: string }) => (curr.code = props.defaultCode || 'USD'),
+    const [currency, setCurrency] = useState<any>(
+        currencies.find((curr: { code: string; description: string }) => curr.code === (props.code || 'EUR')),
     );
 
     return (
@@ -115,15 +116,20 @@ export const CurrencySelectInput: React.FunctionComponent<CurrencySelectProps> =
             <Select
                 name={props.name}
                 components={{ SingleValue }}
-                defaultValue={{
-                    label: `${defaultCurrency.description} (${symbolOf(defaultCurrency.code)})`,
-                    shortLabel: symbolOf(defaultCurrency.code) || defaultCurrency.code,
-                    value: defaultCurrency.code.toLowerCase(),
+                value={{
+                    label: `${currency.description} (${symbolOf(currency.code)})`,
+                    shortLabel: symbolOf(currency.code) || currency.code,
+                    value: currency.code.toLowerCase(),
                 }}
                 noOptionsMessage={() => 'No values available'}
                 options={currenciesSelectOptions}
                 styles={customStyles}
-                onChange={props.onChange}
+                onChange={(option: SelectOption) => {
+                    setCurrency(
+                        currencies.find((curr: { code: string; description: string }) => curr.code === option.value),
+                    );
+                    props.onChange(option);
+                }}
                 onBlur={props.onBlur}
                 isDisabled={props.disabled}
             />

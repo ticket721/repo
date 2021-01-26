@@ -9,12 +9,13 @@ import { TicketEntity }            from '@common/sdk/lib/@backend_nest/libs/comm
 import { DateEntity }              from '@common/sdk/lib/@backend_nest/libs/common/src/dates/entities/Date.entity';
 import { isRequestError }          from '@frontend/core/lib/utils/isRequestError';
 import { useToken } from '@frontend/core/lib/hooks/useToken';
+import { InvitationEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/invitations/entities/Invitation.entity';
 
 interface EventFetcherProps {
     uuid: string;
-    ticket: TicketEntity;
-    category: CategoryEntity;
+    ticket: TicketEntity | InvitationEntity;
     dates: DateEntity[];
+    category?: CategoryEntity;
 }
 
 export const EventFetcher: React.FC<EventFetcherProps> = (

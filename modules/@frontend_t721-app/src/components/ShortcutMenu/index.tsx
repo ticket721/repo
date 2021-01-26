@@ -57,7 +57,7 @@ export const ShortcutContextManager: React.FC<React.PropsWithChildren<any>> = (p
 
     const [visible, setVisible] = useState(true);
     const [open, setOpen] = useState(false);
-    const tickets = useContext(TicketsContext);
+    const { tickets } = useContext(TicketsContext);
     const [la, setLa] = useState([]);
 
     return <>
@@ -131,7 +131,7 @@ const ShortcutDatesFetcher: React.FC<{ dates: string[]; categories: CategoryEnti
        }: { dates: string[]; categories: CategoryEntity[]; setLa: (la: LiveAction[]) => void }): JSX.Element => {
     const [uuid] = useState(v4());
     const { token } = useSelector((state: T721AppState) => ({ token: state.auth.token?.value }));
-    const tickets = useContext(TicketsContext);
+    const { tickets } = useContext(TicketsContext);
 
     const datesResp = useRequest<DatesSearchResponseDto>({
         method: 'dates.search',
