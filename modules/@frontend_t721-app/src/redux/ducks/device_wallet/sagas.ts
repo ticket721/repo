@@ -33,7 +33,7 @@ function* startRegenSignatureInterval(action: IStartRegenInterval): SagaIterator
         const timestamp = new Date(Date.now() + 5000 * i).getTime();
         initialSig = yield call(
             wallet.signMessage.bind(wallet),
-            deviceWalletState.currentTicketId + timestamp);
+            action.ticketId + timestamp);
         yield put(PushLastItem(initialSig, timestamp));
     }
 

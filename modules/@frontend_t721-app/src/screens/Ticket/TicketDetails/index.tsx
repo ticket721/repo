@@ -45,6 +45,7 @@ import { getPrice }                                                from '@fronte
 import { ShortcutContext }                                         from '../../../components/ShortcutMenu';
 import { onlineLinkWrapper }                                       from '../../../utils/onlineLinkWrapper';
 import { InvitationEntity } from '@common/sdk/lib/@backend_nest/libs/common/src/invitations/entities/Invitation.entity';
+import { InvitationTransfer } from './InvitationTransfer';
 // tslint:disable-next-line:no-var-requires
 const safeAreaInsets = require('safe-area-insets');
 
@@ -362,6 +363,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
     }, []);
 
     useEffect(() => {
+        console.log('Here i am', props.ticket.id);
         dispatch(StartRegenInterval(props.ticket.id));
 
         return () => dispatch(ResetTicket());
@@ -446,14 +448,19 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                         :
                         null
                 }
-                <PurchaseInfosCard
+                {
+                    props.category ?
+                    <PurchaseInfosCard
                     purchasedLabel={t('purchased_date')}
                     priceLabel={t('price')}
                     date={formatDay(props.ticket.created_at)}
                     iconColor={props.event.signature_colors[0]}
-                    price={props.category ? getPrice(props.category, t('free')) : t('free')}
+                    price={getPrice(props.category, t('free'))}
                     wBottomLeftRadius={true}
-                />
+                    /> :
+                    <InvitationTransfer invitationId={props.ticket.id}/>
+                }
+                
                 {
                     props.dates
                         .sort(dateSortFn)

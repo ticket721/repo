@@ -181,7 +181,6 @@ const getMenuBottom = (cart, isSmallScreen, keyboard, window, platform, menuHeig
     return - (window.height * 2) - menuHeight;
 }
 
-
 export const CartMenu: React.FC = (): JSX.Element => {
 
     const [t] = useTranslation('cart');
