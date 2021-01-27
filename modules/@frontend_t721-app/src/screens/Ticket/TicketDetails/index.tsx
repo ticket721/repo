@@ -460,7 +460,6 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
                     /> :
                     <InvitationTransfer invitationId={props.ticket.id}/>
                 }
-                
                 {
                     props.dates
                         .sort(dateSortFn)

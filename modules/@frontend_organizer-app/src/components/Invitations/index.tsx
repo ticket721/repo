@@ -419,7 +419,7 @@ example@example.com,2,${datesResp.response.data.dates.length ? datesResp.respons
             }
         >{t('instruction_call_to_download')}</Clickable></Bold>{t('instruction_call_to_download_end')}</p>
         <p>{t('instruction_the_field')}<Bold>email</Bold>{t('instruction_email_details')}</p>
-        <p>{t('instruction_the_field')}<Bold>amount</Bold>{t('instruction_email_details')}</p>
+        <p>{t('instruction_the_field')}<Bold>amount</Bold>{t('instruction_amount_details')}</p>
         <p>{t('instruction_the_field')}<Bold>dates</Bold>{t('instruction_dates_details_first')}
             <Bold>all</Bold>{t('instruction_dates_details_second')}</p>
         <p>{t('instruction_dates_id_below')}</p>

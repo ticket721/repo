@@ -47,14 +47,12 @@ const Shadow = styled(motion.div)`
 
 interface MenuContainerProps {
     width: number;
-    height: number;
     left: number;
 }
 
 const MenuContainer = styled(motion.div) <MenuContainerProps>`
     position: fixed;
     width: ${props => props.width}px;
-        // height: ${props => props.height}px;
     padding-bottom: env(safe-area-inset-bottom);
     padding-bottom: constant(safe-area-inset-bottom);
     left: ${props => props.left}px;
@@ -378,7 +376,6 @@ export const CartMenu: React.FC = (): JSX.Element => {
         />
         <MenuContainer
             width={isSmallScreen || keyboard.isOpen ? window.width : 700}
-            height={menuHeight}
             left={isSmallScreen  || keyboard.isOpen ? 0 : (window.width - 700) / 2}
             transition={{
                 duration: 0.75,
