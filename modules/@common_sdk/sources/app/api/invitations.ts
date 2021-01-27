@@ -90,7 +90,7 @@ export async function invitationsTransfer(
 
     const self: T721SDK = this;
 
-    return self.put<Partial<InvitationsTransferInputDto>>(`/transfer/${invitation}`, {
+    return self.put<Partial<InvitationsTransferInputDto>>(`/invitations/transfer/${invitation}`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
     }, query);
