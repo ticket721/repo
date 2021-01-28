@@ -1,5 +1,6 @@
 {
-    "mail_head_title": "Vous venez de recevoir",
+    "mail_subject": "Vous venez de recevoir",
+    "mail_head_title": "Vous venez de recevoir des invitations",
     "mail_body_title": "Une invitation vous donne un accès complet à un ou plusieurs événements Ticket721",
     "mail_body_subtitle": "Retrouvez les détails de vos invitations ci-dessous",
     "give_access": "Donne accès à",

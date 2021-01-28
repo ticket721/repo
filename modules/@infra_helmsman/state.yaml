@@ -270,6 +270,7 @@ apps:
       config.staff.self: "staff.staging.ticket721.com"
 
       config.organizer.self: "organizer.staging.ticket721.com"
+      config.organizer.appUrl: "app.staging.ticket721.com"
       config.organizer.publishableStripeApiKey: "${CONFIG_STAGING_ORGANIZER_PUBLISHABLE_STRIPE_API_KEY}"
       config.organizer.segmentApiKey: "${CONFIG_STAGING_ORGANIZER_SEGMENT_API_KEY}"
       config.organizer.gaId: "${CONFIG_STAGING_ORGANIZER_GA_ID}"

@@ -57,6 +57,8 @@ spec:
               value: {{ required "[t721app] Missing config.organizer.sentry_dsn" .Values.config.organizer.sentry_dsn}}
             - name: REACT_APP_SELF
               value: 'https://{{ required "[organizer] Missing config.organizer.self value" .Values.config.organizer.self }}'
+            - name: REACT_APP_USER_URL
+              value: 'https://{{ required "[organizer] Missing config.organizer.appUrl value" .Values.config.organizer.appUrl }}'
             - name: REACT_APP_GA_ID
               value: '{{ required "[organizer] Missing config.organizer.gaId value" .Values.config.organizer.gaId }}'
             - name: REACT_APP_GOOGLE_AUTH_CLIENT_ID
