@@ -96,7 +96,7 @@ export class EmailService {
             const total = data.invitations.map(iv => iv.amount).reduce((agg, iv) => agg + iv, 0);
 
             const locals = {
-                subjectSuffix: ` ${total} Ticket${total > 1 ? 's' : ''}`,
+                subjectSuffix: ` ${total} Invitation${total > 1 ? 's' : ''}`,
                 purchasedDate: format(Date.now(), locale, timezone),
                 registerUrl: appUrl ? appUrl + '/register' : null,
                 loginUrl: appUrl ? appUrl + '/login' : null,
