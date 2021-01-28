@@ -38,8 +38,8 @@ const generateExport = (tarifs: any[]): void => {
 
     for (const tarif of tarifs) {
         csv = `${csv}
-${tarif.id} (${tarif.name} v${tarif.version}),${fromAtomicValue(tarif.currency, tarif.price)},${tarif.currency},`
-        csv = `${csv}${tarif.amount},${fromAtomicValue(tarif.currency, tarif.amount * tarif.price)}`
+${tarif.id} (${tarif.name} v${tarif.version}),${fromAtomicValue(tarif.currency || 'eur', tarif.price)},${tarif.currency},`
+        csv = `${csv}${tarif.amount},${fromAtomicValue(tarif.currency || 'eur', tarif.amount * tarif.price)}`
     }
 
     download('event-slip.csv', csv);

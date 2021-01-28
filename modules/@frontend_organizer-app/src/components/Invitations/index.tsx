@@ -384,7 +384,6 @@ const BatchInvitationGenerator = ({force}: {force: () => void}) => {
 
     useEffect(() => {
             if (generateInvitationsBatch.response.data) {
-                console.log(generateInvitationsBatch)
                 if (generateInvitationsBatch.response.error) {
                     dispatch(PushNotification(t('creation_error'), 'error'));
                 } else {
