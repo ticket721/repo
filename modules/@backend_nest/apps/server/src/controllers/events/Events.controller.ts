@@ -156,6 +156,20 @@ export class EventsController extends ControllerBasics<EventEntity> {
             );
         }
 
+        const elasticCountBody = ESSearchBodyBuilder({
+            group_id: {
+                $eq: event.group_id,
+            },
+            type: {
+                $eq: 'sell',
+            },
+        } as SortablePagedSearch);
+
+        const operationsCount = await this._crudCall(
+            this.operationsService.countElastic(elasticCountBody.response),
+            StatusCodes.InternalServerError,
+        );
+
         const elasticBody = ESSearchBodyBuilder({
             group_id: {
                 $eq: event.group_id,
@@ -169,6 +183,8 @@ export class EventsController extends ControllerBasics<EventEntity> {
                     $order: 'asc',
                 },
             ],
+            $page_size: operationsCount.count,
+            $page_index: 0,
         } as SortablePagedSearch);
 
         const operations = await this._crudCall(

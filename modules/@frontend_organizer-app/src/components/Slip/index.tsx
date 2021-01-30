@@ -38,7 +38,7 @@ const generateExport = (tarifs: any[]): void => {
 
     for (const tarif of tarifs) {
         csv = `${csv}
-${tarif.id} (${tarif.name} v${tarif.version}),${fromAtomicValue(tarif.currency || 'eur', tarif.price)},${tarif.currency},`
+${tarif.id} (${tarif.name} v${tarif.version}),${fromAtomicValue(tarif.currency || 'eur', tarif.price)},${tarif.currency || 'eur'},`
         csv = `${csv}${tarif.amount},${fromAtomicValue(tarif.currency || 'eur', tarif.amount * tarif.price)}`
     }
 
