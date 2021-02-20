@@ -24,6 +24,8 @@ import { EventsExportResponseDto }              from '@app/server/controllers/ev
 import { EventsSalesInputDto }                  from '@app/server/controllers/events/dto/EventsSalesInput.dto';
 import { EventsSalesResponseDto }               from '@app/server/controllers/events/dto/EventsSalesResponse.dto';
 import { EventsExportSlipResponseDto }          from '@app/server/controllers/events/dto/EventsExportSlipResponse.dto';
+import { EventsDocumentsInputDto }              from '@app/server/controllers/events/dto/EventsDocumentsInput.dto';
+import { EventsDocumentsResponseDto }           from '@app/server/controllers/events/dto/EventsDocumentsResponse.dto';
 
 export async function eventsSearch(
     token: string,
@@ -183,15 +185,16 @@ export async function eventsGuestlist(
     }, query);
 }
 
-export async function eventsExportSlip(
+export async function eventsDocuments(
     token: string,
-    event: string
-): Promise<AxiosResponse<EventsExportSlipResponseDto>> {
+    event: string,
+    query: EventsDocumentsInputDto
+): Promise<AxiosResponse<EventsDocumentsResponseDto>> {
 
     const self: T721SDK = this;
 
-    return self.get(`/events/${event}/slip`, {
+    return self.post<EventsDocumentsInputDto>(`/events/${event}/documents`, {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-    });
+    }, query);
 }

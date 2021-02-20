@@ -48,7 +48,7 @@ import {
     eventsAttendees,
     eventsExport,
     eventsSales,
-    eventsExportSlip,
+    eventsDocuments,
 } from './app/api/events';
 
 // CATEGORIES
@@ -145,7 +145,7 @@ export class T721SDK {
         this.events.attendees = this.events.attendees.bind(this);
         this.events.export = this.events.export.bind(this);
         this.events.sales = this.events.sales.bind(this);
-        this.events.exportSlip = this.events.exportSlip.bind(this);
+        this.events.documents = this.events.documents.bind(this);
 
         this.categories.count = this.categories.count.bind(this);
         this.categories.search = this.categories.search.bind(this);
@@ -347,7 +347,7 @@ export class T721SDK {
         edit: eventsEdit,
         status: eventsStatus,
         bindStripeInterface: eventsBindStripeInterface,
-        exportSlip: eventsExportSlip
+        documents: eventsDocuments
     };
 
     public categories = {

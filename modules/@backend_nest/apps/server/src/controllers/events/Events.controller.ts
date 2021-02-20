@@ -27,7 +27,9 @@ import {
     checkDate,
     checkEvent,
     DateCreationPayload,
+    fromAtomicValue,
     getT721ControllerGroupID,
+    symbolOf,
     toAcceptedAddressFormat,
 } from '@common/global';
 import { DatesService } from '@lib/common/dates/Dates.service';
@@ -69,16 +71,169 @@ import { EventsSalesResponseDto, Transaction } from '@app/server/controllers/eve
 import { OperationsService } from '@lib/common/operations/Operations.service';
 import { ESSearchBodyBuilder } from '@lib/common/utils/ESSearchBodyBuilder.helper';
 import { SortablePagedSearch } from '@lib/common/utils/SortablePagedSearch.type';
-import {
-    EventsExportSlipResponseDto,
-    TarificationData,
-} from '@app/server/controllers/events/dto/EventsExportSlipResponse.dto';
 import { fromES } from '@lib/common/utils/fromES.helper';
+import { slipTemplate } from './document_resources/slip.html';
+import { EventsDocumentsInputDto } from '@app/server/controllers/events/dto/EventsDocumentsInput.dto';
+import { EventsDocumentsResponseDto } from '@app/server/controllers/events/dto/EventsDocumentsResponse.dto';
+import { OperationEntity } from '@lib/common/operations/entities/Operation.entity';
+import { ESSearchHit } from '@lib/common/utils/ESSearchReturn.type';
+import { formatDay } from '@lib/common/utils/date';
+import * as fs from 'fs';
+import Zip from 'node-zip';
+/**
+ * Converts handlebar template to pdf
+ */
+// tslint:disable-next-line:no-var-requires
+const PDF = require('handlebars-pdf');
 
 /**
  * Placeholder address
  */
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+/**
+ * Category summary for event slip
+ */
+interface SlipCategory {
+    /**
+     * Category name
+     */
+    name: string;
+    /**
+     * Category id
+     */
+    id: string;
+    /**
+     * Version of same category
+     */
+    version: number;
+    /**
+     * Price with all taxes
+     */
+    priceInclTaxes: string;
+    /**
+     * Quantity sold
+     */
+    quantity: string;
+    /**
+     * Vat amount
+     */
+    vat: string;
+    /**
+     * Total made with all taxes
+     */
+    totalInclTaxes: string;
+    /**
+     * Total vat
+     */
+    totalVat: string;
+    /**
+     * Total fees from the platform
+     */
+    totalPlatformFees: string;
+    /**
+     * Total revenue
+     */
+    totalRevenue: string;
+    /**
+     * Total to declare
+     */
+    totalToDeclare: string;
+    /**
+     * Currency symbol
+     */
+    cl: string;
+}
+
+/**
+ * Summary of all category info
+ */
+interface SlipCategorySummary {
+    /**
+     * Total quantity of sold categories
+     */
+    quantity: string;
+    /**
+     * Total made including taxes
+     */
+    totalInclTaxes: string;
+    /**
+     * Total vat
+     */
+    totalVat: string;
+    /**
+     * Total platform fees
+     */
+    totalPlatformFees: string;
+    /**
+     * Total revenues
+     */
+    totalRevenue: string;
+    /**
+     * Total to declare
+     */
+    totalToDeclare: string;
+}
+
+/**
+ * Fee summary for a category
+ */
+interface SlipFee {
+    /**
+     * Name of the category
+     */
+    name: string;
+    /**
+     * Id of the category
+     */
+    id: string;
+    /**
+     * Version of the same id
+     */
+    version: number;
+    /**
+     * Price with all taxes
+     */
+    priceInclTaxes: string;
+    /**
+     * Quantity sold
+     */
+    quantity: string;
+    /**
+     * Vat
+     */
+    vat: string;
+    /**
+     * Total vat
+     */
+    totalPlatformVat: string;
+    /**
+     * Total fees
+     */
+    totalPlatformFees: string;
+    /**
+     * Currency symbol
+     */
+    cl: string;
+}
+
+/**
+ * Summary of fees for one category
+ */
+interface SlipFeeSummary {
+    /**
+     * Quantity sold
+     */
+    quantity: string;
+    /**
+     * Total fees
+     */
+    totalPlatformFees: string;
+    /**
+     * Total vat
+     */
+    totalPlatformVat: string;
+}
 
 /**
  * Events controller to create and fetch events
@@ -132,18 +287,235 @@ export class EventsController extends ControllerBasics<EventEntity> {
     }
 
     /**
+     * Compute the sum of all operations
+     *
+     * @param operations
+     * @param currency
+     * @private
+     */
+    private getNetTotal(operations: OperationEntity[], currency: string): number {
+        return operations
+            .map((op: OperationEntity) => op.price - op.fee)
+            .reduce((prev: number, curr: number) => prev + parseFloat(fromAtomicValue(currency, curr).toFixed(2)), 0);
+    }
+
+    /**
+     * Compute gross from net value and vat
+     *
+     * @param net
+     * @param tva
+     * @private
+     */
+    private getGrossFromNet(net: number, tva: number): number {
+        return parseFloat((net / (1 + tva)).toFixed(2));
+    }
+
+    /**
+     * Retrieve formatted categories and fees
+     *
+     * @param operations
+     * @param currency
+     * @param vat
+     * @private
+     */
+    private async getCategories(
+        operations: OperationEntity[],
+        currency: string,
+        vat: number,
+    ): Promise<[SlipCategory[], SlipCategorySummary, SlipFee[], SlipFeeSummary]> {
+        const categoriesTracker: { [key: string]: OperationEntity[][] } = {};
+        const categoryOperations = operations.filter(
+            (op: OperationEntity) => op.status === 'confirmed' && op.type === 'sell',
+        );
+        const slipCategories: SlipCategory[] = [];
+        const slipFees: SlipFee[] = [];
+
+        for (const operation of categoryOperations) {
+            if (!categoriesTracker[operation.category_id]) {
+                categoriesTracker[operation.category_id] = [];
+            }
+
+            if (categoriesTracker[operation.category_id].length === 0) {
+                categoriesTracker[operation.category_id].push([operation]);
+            } else {
+                const versions = categoriesTracker[operation.category_id].length;
+                const productPrice = categoriesTracker[operation.category_id][versions - 1][0].price;
+                const productQuantity = categoriesTracker[operation.category_id][versions - 1][0].quantity;
+                const unitaryProductPrice = productPrice / productQuantity;
+
+                if (operation.price / operation.quantity !== unitaryProductPrice) {
+                    categoriesTracker[operation.category_id].push([operation]);
+                } else {
+                    categoriesTracker[operation.category_id][versions - 1].push(operation);
+                }
+            }
+        }
+
+        for (const category of Object.keys(categoriesTracker)) {
+            for (let version = 0; version < categoriesTracker[category].length; ++version) {
+                const quantity = categoriesTracker[category][version]
+                    .map((op: OperationEntity) => op.quantity)
+                    .reduce((agg: number, curr: number) => agg + curr, 0);
+                const totalPrice = categoriesTracker[category][version]
+                    .map((op: OperationEntity) => op.price)
+                    .reduce((agg: number, curr: number) => agg + curr, 0);
+                const totalFees = categoriesTracker[category][version]
+                    .map((op: OperationEntity) => op.fee)
+                    .reduce((agg: number, curr: number) => agg + curr, 0);
+                const totalTva = totalPrice - totalFees - this.getGrossFromNet(totalPrice - totalFees, vat / 100);
+                const totalPlatformTva = totalFees - this.getGrossFromNet(totalFees, 20 / 100);
+                const categoryEntity = await this._crudCall(
+                    this.categoriesService.findOne(category),
+                    StatusCodes.InternalServerError,
+                );
+
+                slipCategories.push({
+                    name: categoryEntity.display_name,
+                    cl: symbolOf(currency) || '',
+                    id: category,
+                    version: version + 1,
+                    priceInclTaxes: fromAtomicValue(currency, totalPrice / quantity).toFixed(2),
+                    quantity: quantity.toString(),
+                    vat: vat.toString(),
+                    totalInclTaxes: fromAtomicValue(currency, totalPrice).toFixed(2),
+                    totalVat: fromAtomicValue(currency, totalTva).toFixed(2),
+                    totalPlatformFees: fromAtomicValue(currency, totalFees).toFixed(2),
+                    totalRevenue: fromAtomicValue(currency, totalPrice - totalFees - totalTva).toFixed(2),
+                    totalToDeclare: fromAtomicValue(currency, totalPrice - totalFees).toFixed(2),
+                });
+
+                slipFees.push({
+                    name: categoryEntity.display_name,
+                    cl: symbolOf(currency) || '',
+                    id: category,
+                    version: version + 1,
+                    priceInclTaxes: fromAtomicValue(currency, totalPrice / quantity).toFixed(2),
+                    quantity: quantity.toString(),
+                    vat: '20',
+                    totalPlatformVat: fromAtomicValue(currency, totalPlatformTva).toFixed(2),
+                    totalPlatformFees: fromAtomicValue(currency, totalFees).toFixed(2),
+                });
+            }
+        }
+
+        const categoriesSummary: SlipCategorySummary = {
+            quantity: slipCategories
+                .map((sp: SlipCategory) => parseInt(sp.quantity, 10))
+                .reduce((agg: number, curr: number) => agg + curr, 0)
+                .toString(),
+            totalInclTaxes: slipCategories
+                .map((sp: SlipCategory) => parseFloat(sp.totalInclTaxes))
+                .reduce((agg: number, curr: number) => agg + curr, 0)
+                .toFixed(2),
+            totalVat: slipCategories
+                .map((sp: SlipCategory) => parseFloat(sp.totalVat))
+                .reduce((agg: number, curr: number) => agg + curr, 0)
+                .toFixed(2),
+            totalPlatformFees: slipCategories
+                .map((sp: SlipCategory) => parseFloat(sp.totalPlatformFees))
+                .reduce((agg: number, curr: number) => agg + curr, 0)
+                .toFixed(2),
+            totalRevenue: slipCategories
+                .map((sp: SlipCategory) => parseFloat(sp.totalRevenue))
+                .reduce((agg: number, curr: number) => agg + curr, 0)
+                .toFixed(2),
+            totalToDeclare: slipCategories
+                .map((sp: SlipCategory) => parseFloat(sp.totalToDeclare))
+                .reduce((agg: number, curr: number) => agg + curr, 0)
+                .toFixed(2),
+        };
+
+        const feesSummary: SlipFeeSummary = {
+            quantity: slipFees
+                .map((sp: SlipFee) => parseInt(sp.quantity, 10))
+                .reduce((agg: number, curr: number) => agg + curr, 0)
+                .toString(),
+            totalPlatformVat: slipFees
+                .map((sp: SlipFee) => parseFloat(sp.totalPlatformVat))
+                .reduce((agg: number, curr: number) => agg + curr, 0)
+                .toFixed(2),
+            totalPlatformFees: slipFees
+                .map((sp: SlipFee) => parseFloat(sp.totalPlatformFees))
+                .reduce((agg: number, curr: number) => agg + curr, 0)
+                .toFixed(2),
+        };
+
+        return [slipCategories, categoriesSummary, slipFees, feesSummary];
+    }
+
+    /**
+     * Compute date range based on event dates
+     *
+     * @param gpid
+     * @private
+     */
+    private async getDateRange(gpid: string): Promise<string> {
+        const dates = await this._crudCall(this.datesService.findAllByGroupId(gpid), StatusCodes.InternalServerError);
+        let lowestDate = new Date(dates[0]?.timestamps.event_begin || null);
+        let highestDate = new Date(dates[0]?.timestamps.event_begin || null);
+
+        for (const date of dates) {
+            if (new Date(date.timestamps.event_begin).getTime() < lowestDate.getTime()) {
+                lowestDate = new Date(date.timestamps.event_begin);
+            }
+            if (new Date(date.timestamps.event_end).getTime() > highestDate.getTime()) {
+                highestDate = new Date(date.timestamps.event_end);
+            }
+        }
+
+        const startString = formatDay(lowestDate.getTime());
+        const endString = formatDay(highestDate.getTime());
+
+        if (startString === endString) {
+            return startString;
+        } else {
+            return `From ${startString} to ${endString}`;
+        }
+    }
+
+    /**
+     * Convert operations to raw csv
+     *
+     * @param operations
+     * @private
+     */
+    private operationsToCsv(operations: OperationEntity[]): string {
+        let res = ``;
+        for (const operation of operations) {
+            res = `${res}${operation.id},${operation.purchase_id},${operation.client_email},${operation.currency ||
+                'FREE'},${operation.group_id},${operation.category_id},${operation.ticket_ids.join(' ')},${
+                operation.type
+            },${operation.status},${operation.quantity},${
+                operation.currency ? fromAtomicValue(operation.currency, operation.fee).toFixed(2) : '0'
+            },${operation.currency ? fromAtomicValue(operation.currency, operation.price) : '0'},${new Date(
+                operation.created_at,
+            ).toISOString()}
+`;
+        }
+
+        return res;
+    }
+
+    /**
      * Get event slip
      *
+     * @param body
      * @param eventId
      * @param user
      */
-    @Get('/:event/slip')
+    @Post('/:event/documents')
     @UseGuards(AuthGuard('jwt'), RolesGuard, ValidGuard)
     @Roles('authenticated')
     @UseFilters(new HttpExceptionFilter())
     @HttpCode(StatusCodes.OK)
     @ApiResponses([StatusCodes.OK, StatusCodes.Unauthorized, StatusCodes.InternalServerError])
-    async exportSlip(@Param('event') eventId: string, @User() user: UserDto): Promise<EventsExportSlipResponseDto> {
+    async exportDocuments(
+        @Body() body: EventsDocumentsInputDto,
+        @Param('event') eventId: string,
+        @User() user: UserDto,
+    ): Promise<EventsDocumentsResponseDto> {
+        const exportId = this.uuidToolsService.generate();
+
         const event = await this._crudCall(this.eventsService.findOne(eventId), StatusCodes.InternalServerError);
 
         if (event.owner !== user.id) {
@@ -156,12 +528,14 @@ export class EventsController extends ControllerBasics<EventEntity> {
             );
         }
 
+        const eventTva = body.organizerTva / 100;
+
         const elasticCountBody = ESSearchBodyBuilder({
             group_id: {
                 $eq: event.group_id,
             },
             type: {
-                $eq: 'sell',
+                $in: ['sell', 'invitation'],
             },
         } as SortablePagedSearch);
 
@@ -175,7 +549,7 @@ export class EventsController extends ControllerBasics<EventEntity> {
                 $eq: event.group_id,
             },
             type: {
-                $eq: 'sell',
+                $in: ['sell', 'invitation'],
             },
             $sort: [
                 {
@@ -187,68 +561,108 @@ export class EventsController extends ControllerBasics<EventEntity> {
             $page_index: 0,
         } as SortablePagedSearch);
 
-        const operations = await this._crudCall(
+        const operationsHits = await this._crudCall(
             this.operationsService.searchElastic(elasticBody.response),
             StatusCodes.InternalServerError,
         );
 
-        const categoriesMapping: {
-            [key: string]: {
-                price: number;
-                currency: string;
-                amount: number;
-            }[];
-        } = {};
+        const operations = operationsHits.hits.hits.map((v: ESSearchHit<OperationEntity>) => fromES(v));
 
-        for (const op of operations.hits.hits) {
-            const operation = fromES(op);
-
-            if (!categoriesMapping[operation.category_id]) {
-                categoriesMapping[operation.category_id] = [];
-            }
-
-            if (
-                categoriesMapping[operation.category_id].length === 0 ||
-                categoriesMapping[operation.category_id][categoriesMapping[operation.category_id].length - 1].price !==
-                    operation.price / operation.quantity
-            ) {
-                categoriesMapping[operation.category_id].push({
-                    price: operation.price / operation.quantity,
-                    currency: operation.currency,
-                    amount: operation.quantity,
-                });
-            } else {
-                categoriesMapping[operation.category_id][categoriesMapping[operation.category_id].length - 1].amount +=
-                    operation.quantity;
-            }
+        const paidOperations = operations.filter(
+            (op: OperationEntity) => op.type === 'sell' && op.status === 'confirmed' && op.price > 0,
+        );
+        let currency = 'FREE';
+        if (paidOperations.length) {
+            currency = paidOperations[0].currency;
         }
+        const eventNetTotal = this.getNetTotal(operations, currency);
+        const eventGrossTotal = this.getGrossFromNet(eventNetTotal, eventTva);
+        const paidParticipantsCount = operations.filter(
+            (op: OperationEntity) => op.type === 'sell' && op.status === 'confirmed' && op.price > 0,
+        ).length;
+        const freeParticipantsCount = operations.filter(
+            (op: OperationEntity) => op.type === 'sell' && op.status === 'confirmed' && op.price === 0,
+        ).length;
+        const invitedParticipantsCount =
+            operations.filter((op: OperationEntity) => op.type === 'invitation' && op.status === 'confirmed').length -
+            operations.filter((op: OperationEntity) => op.type === 'invitation' && op.status === 'cancelled').length;
+        const categories = await this.getCategories(operations, currency, body.organizerTva);
+        const dateRange = await this.getDateRange(event.group_id);
+        const path = `/tmp/slip.${exportId}.pdf`;
 
-        const tarifications: TarificationData[] = [];
+        const document = {
+            template: slipTemplate,
+            context: {
+                eventSlipId: exportId,
 
-        for (const categoryId of Object.keys(categoriesMapping)) {
-            const category = await this._serviceCall(
-                this.categoriesService.findOne(categoryId),
-                StatusCodes.InternalServerError,
-            );
+                cl: symbolOf(currency) || '',
 
-            let idx = 1;
+                orgId: user.id,
+                orgName: body.organizerName,
+                orgTvaId: body.organizerTvaId,
+                orgLicenseId: body.organizerLicenseId,
+                orgStreet: body.organizerStreet,
+                orgCity: body.organizerCity,
+                orgPostalCode: body.organizerPostalCode,
+                orgCountry: body.organizerCountry,
 
-            for (const tarificationVersion of categoriesMapping[categoryId]) {
-                tarifications.push({
-                    id: category.id,
-                    name: category.display_name,
-                    version: idx,
-                    price: tarificationVersion.price,
-                    currency: tarificationVersion.currency,
-                    amount: tarificationVersion.amount,
-                });
+                vat: body.organizerTva.toString(),
+                currentDate: formatDay(Date.now()),
+                eventId: event.id,
+                eventName: event.name,
+                eventDates: dateRange,
 
-                ++idx;
-            }
-        }
+                paidParticipantsCount,
+                freeParticipantsCount,
+                invitedParticipantsCount,
+                totalParticipantCount: paidParticipantsCount + freeParticipantsCount + invitedParticipantsCount,
+
+                grossSubtotalToDeclare: eventGrossTotal.toFixed(2),
+                subtotalToDeclare: eventNetTotal.toFixed(2),
+
+                grossTotalToDeclare: eventGrossTotal.toFixed(2),
+                totalToDeclare: eventNetTotal.toFixed(2),
+
+                ticketingGrossSubtotal: eventGrossTotal.toFixed(2),
+                ticketingSubtotal: eventNetTotal.toFixed(2),
+
+                ticketingGrossTotal: eventGrossTotal.toFixed(2),
+                ticketingTotal: eventNetTotal.toFixed(2),
+
+                revenueGrossTotal: eventGrossTotal.toFixed(2),
+                revenueTotal: eventNetTotal.toFixed(2),
+
+                salesByCategory: categories[0],
+                salesByCategoryTotal: categories[1],
+
+                feesByCategory: categories[2],
+                feesByCategoryTotal: categories[3],
+            },
+            path,
+            options: {
+                width: '1240px',
+                height: '1754px',
+                border: '0',
+                format: null,
+                orientation: null,
+            },
+        };
+
+        await PDF.create(document);
+
+        const slip = fs.readFileSync(path);
+        fs.unlinkSync(path);
+
+        const rawOperations = Buffer.from(`operation,purchase_id,client_email,currency,group_id,category_id,ticket_ids,type,status,quantity,fee,price,date,
+${this.operationsToCsv(operations)}`);
+
+        const zip = Zip();
+        zip.file('slip.pdf', slip);
+        zip.file('operations.csv', rawOperations);
+        const b64ZipDocument = zip.generate({ base64: true, compression: 'DEFLATE' });
 
         return {
-            tarifications,
+            b64ZipDocument,
         };
     }
 
