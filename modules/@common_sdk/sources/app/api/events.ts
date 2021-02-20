@@ -23,7 +23,6 @@ import { EventsExportInputDto }                 from '@app/server/controllers/ev
 import { EventsExportResponseDto }              from '@app/server/controllers/events/dto/EventsExportResponse.dto';
 import { EventsSalesInputDto }                  from '@app/server/controllers/events/dto/EventsSalesInput.dto';
 import { EventsSalesResponseDto }               from '@app/server/controllers/events/dto/EventsSalesResponse.dto';
-import { EventsExportSlipResponseDto }          from '@app/server/controllers/events/dto/EventsExportSlipResponse.dto';
 import { EventsDocumentsInputDto }              from '@app/server/controllers/events/dto/EventsDocumentsInput.dto';
 import { EventsDocumentsResponseDto }           from '@app/server/controllers/events/dto/EventsDocumentsResponse.dto';
 
