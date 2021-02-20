@@ -236,13 +236,32 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
 
         await this._crudCall(
             this.operationsService.create({
-                purchase_id: null,
-                client_id: targetUser.length === 1 ? targetUser[0].id : null,
+                purchase_id: '00000000-0000-0000-0000-000000000000',
+                client_id: user.id,
+                client_email: user.email,
+                currency: 'FREE',
+                group_id: invitation.group_id,
+                category_id: '00000000-0000-0000-0000-000000000000',
+                ticket_ids: [invitation.id, ...dates.map(d => d.id)],
+                type: 'invitation',
+                status: 'cancelled',
+                fee: 0,
+                quantity: 1,
+                price: 0,
+            }),
+            StatusCodes.InternalServerError,
+        );
+
+        await this._crudCall(
+            this.operationsService.create({
+                purchase_id: '00000000-0000-0000-0000-000000000000',
+                client_id: targetUser.length === 1 ? targetUser[0].id : '00000000-0000-0000-0000-000000000000',
                 client_email: body.newOwner,
                 group_id: invitation.group_id,
-                category_id: null,
+                category_id: '00000000-0000-0000-0000-000000000000',
                 ticket_ids: [invitation.id, ...dates.map(d => d.id)],
-                type: 'invitation_transfer',
+                type: 'invitation',
+                currency: 'FREE',
                 status: 'confirmed',
                 fee: 0,
                 quantity: 1,
@@ -606,12 +625,51 @@ export class InvitationsController extends ControllerBasics<InvitationEntity> {
         }
 
         for (const invitationId of body.invitations) {
+            const invitation = await this._crudCall(
+                this.invitationsService.findOne(invitationId),
+                StatusCodes.InternalServerError,
+                'invalid_invitation_id',
+            );
+
             await this._crudCall(
                 this.invitationsService.delete({
                     id: invitationId,
                 }),
                 StatusCodes.InternalServerError,
                 'invitation_deletion_error',
+            );
+
+            const dates = await this._crudCall(
+                this.datesService.search({
+                    id: {
+                        $in: (invitation.dates.map(uuid) as unknown) as string[],
+                    },
+                }),
+                StatusCodes.InternalServerError,
+            );
+
+            const targetUser = await this._serviceCall(
+                this.usersService.findAnyTypeByEmail(invitation.owner),
+                StatusCodes.InternalServerError,
+                'user_verification_error',
+            );
+
+            await this._crudCall(
+                this.operationsService.create({
+                    purchase_id: '00000000-0000-0000-0000-000000000000',
+                    client_id: targetUser.length === 1 ? targetUser[0].id : '00000000-0000-0000-0000-000000000000',
+                    client_email: invitation.owner,
+                    group_id: invitation.group_id,
+                    category_id: '00000000-0000-0000-0000-000000000000',
+                    currency: 'FREE',
+                    ticket_ids: [invitation.id, ...dates.map(d => d.id)],
+                    type: 'invitation',
+                    status: 'cancelled',
+                    fee: 0,
+                    quantity: 1,
+                    price: 0,
+                }),
+                StatusCodes.InternalServerError,
             );
         }
 

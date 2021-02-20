@@ -122,7 +122,7 @@ export class OperationEntity {
         type: 'text',
     })
     // tslint:disable-next-line:variable-name
-    type: 'sell' | 'cancel' | 'invitation' | 'invitation_transfer';
+    type: 'sell' | 'cancel' | 'invitation';
 
     /**
      * Operation status

@@ -644,6 +644,7 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
      * @param productIdx
      * @param tickets
      * @param status
+     * @param finalPrice
      */
     async createOperation(
         user: UserDto,
@@ -651,6 +652,7 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
         productIdx: number,
         tickets: string[],
         status: 'confirmed' | 'cancelled',
+        finalPrice: number,
     ): Promise<ServiceResponse<void>> {
         const product = purchaseEntity.products[productIdx];
 
@@ -663,7 +665,28 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
             };
         }
 
+        const systemFeesResp = await this.fees(user, purchaseEntity, product);
+
+        if (systemFeesResp.error) {
+            return {
+                error: 'unable_to_retrieve_fee',
+                response: null,
+            };
+        }
+
         const categoryEntity: CategoryEntity = categoryFetchRes.response;
+
+        const productSystemFee = systemFeesResp.response?.price || 0; // How much Ticket721 takes on this product
+        const totalSystemFee = purchaseEntity.fees
+            .filter((f: Fee) => f !== null && f.type === 'ticket721')
+            .map((f: Fee) => f.price)
+            .reduce((prec: number, curr: number) => prec + curr, 0); // How much Ticket721 takes on all products
+        const totalPaymentFee = purchaseEntity.price - finalPrice - totalSystemFee; // How much Stripe takes on all products
+        const productPaymentFee = Math.round(
+            ((categoryEntity.price * product.quantity) / purchaseEntity.price) * totalPaymentFee,
+        ); // How much Stripe takes on this product
+        const productTotalFee = productSystemFee + productPaymentFee;
+        const productPrice = categoryEntity.price * product.quantity;
 
         const operationCreationRes = await this.operationsService.create({
             purchase_id: purchaseEntity.id,
@@ -671,13 +694,13 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
             client_email: user.email,
             group_id: product.group_id,
             category_id: product.id,
-            currency: purchaseEntity.currency || 'FREE',
+            currency: productPrice > 0 ? purchaseEntity.currency || 'FREE' : 'FREE',
             ticket_ids: tickets,
             type: 'sell',
             status,
-            fee: purchaseEntity.fees[productIdx]?.price || 0,
+            fee: productTotalFee,
             quantity: product.quantity,
-            price: categoryEntity.price * product.quantity,
+            price: productPrice,
         });
 
         if (operationCreationRes.error) {
@@ -699,11 +722,13 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
      * @param user
      * @param purchaseEntity
      * @param productIdx
+     * @param finalPrice
      */
     async ok(
         user: UserDto,
         purchaseEntity: PurchaseEntity,
         productIdx: number,
+        finalPrice: number,
     ): Promise<ServiceResponse<GeneratedProduct[]>> {
         const product = purchaseEntity.products[productIdx];
         const ret: GeneratedProduct[] = [];
@@ -752,6 +777,7 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
             productIdx,
             ret.map((pi: GeneratedProduct): string => pi.id),
             'confirmed',
+            finalPrice,
         );
 
         if (operationRes.error) {
@@ -773,13 +799,22 @@ export class CategoriesProduct implements ProductCheckerServiceBase {
      * @param user
      * @param purchaseEntity
      * @param productIdx
+     * @param finalPrice
      */
     async ko(
         user: UserDto,
         purchaseEntity: PurchaseEntity,
         productIdx: number,
+        finalPrice: number,
     ): Promise<ServiceResponse<PurchaseError>> {
-        const operationRes = await this.createOperation(user, purchaseEntity, productIdx, null, 'confirmed');
+        const operationRes = await this.createOperation(
+            user,
+            purchaseEntity,
+            productIdx,
+            null,
+            'confirmed',
+            finalPrice,
+        );
 
         if (operationRes.error) {
             return {

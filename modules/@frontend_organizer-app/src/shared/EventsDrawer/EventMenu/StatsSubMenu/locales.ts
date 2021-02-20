@@ -5,7 +5,7 @@ i18n.addResourceBundle('en', 'stats_submenu', {
     attendees_title: 'Attendees',
     sales_title: 'Sales',
     invitations_title: 'Invitations',
-    'event-slip_title': 'Event Slip'
+    'event-slip_title': 'Event Documents'
 });
 
 i18n.addResourceBundle('fr', 'stats_submenu', {
@@ -13,5 +13,5 @@ i18n.addResourceBundle('fr', 'stats_submenu', {
     attendees_title: 'Participants',
     sales_title: 'Ventes',
     invitations_title: 'Invitations',
-    'event-slip_title': 'Bordereau de l\'événement'
+    'event-slip_title': 'Documents de l\'événement'
 });

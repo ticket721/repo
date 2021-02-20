@@ -994,6 +994,17 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                 items: [],
             };
 
+            const finalPriceResp = await paymentHandler.finalPrice(purchase.payment, paymentInterfaceIdRes.response);
+
+            if (finalPriceResp.error) {
+                return {
+                    error: finalPriceResp.error,
+                    response: null,
+                };
+            }
+
+            finalPrice = finalPriceResp.response;
+
             for (let idx = 0; idx < purchase.products.length; ++idx) {
                 const product = purchase.products[idx];
 
@@ -1002,7 +1013,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                 });
 
                 if (purchase.payment.status === 'confirmed') {
-                    const confirmationRes = await productHandler.ok(user, purchase, idx);
+                    const confirmationRes = await productHandler.ok(user, purchase, idx, finalPrice);
 
                     if (confirmationRes.error) {
                         errors.push({
@@ -1028,7 +1039,7 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                         createdProducts = createdProducts.concat(confirmationRes.response);
                     }
                 } else if (purchase.payment.status === 'rejected') {
-                    const confirmationRes = await productHandler.ko(user, purchase, idx);
+                    const confirmationRes = await productHandler.ko(user, purchase, idx, purchase.price);
 
                     if (confirmationRes.error) {
                         errors.push({
@@ -1040,17 +1051,6 @@ export class PurchasesService extends CRUDExtension<PurchasesRepository, Purchas
                     }
                 }
             }
-
-            const finalPriceResp = await paymentHandler.finalPrice(purchase.payment, paymentInterfaceIdRes.response);
-
-            if (finalPriceResp.error) {
-                return {
-                    error: finalPriceResp.error,
-                    response: null,
-                };
-            }
-
-            finalPrice = finalPriceResp.response;
 
             const sendEmailResp = await this.emailService.sendPurchaseSummary(user, summaryData, appUrl, timezone);
 

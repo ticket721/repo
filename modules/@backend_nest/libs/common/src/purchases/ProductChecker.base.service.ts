@@ -68,11 +68,13 @@ export abstract class ProductCheckerServiceBase {
      * @param user
      * @param purchaseEntity
      * @param productIdx
+     * @param finalPrice
      */
     abstract async ok(
         user: UserDto,
         purchaseEntity: PurchaseEntity,
         productIdx: number,
+        finalPrice: number,
     ): Promise<ServiceResponse<GeneratedProduct[]>>;
 
     /**
@@ -81,11 +83,13 @@ export abstract class ProductCheckerServiceBase {
      * @param user
      * @param purchaseEntity
      * @param productIdx
+     * @param finalPrice
      */
     abstract async ko(
         user: UserDto,
         purchaseEntity: PurchaseEntity,
         productIdx: number,
+        finalPrice: number,
     ): Promise<ServiceResponse<PurchaseError>>;
 
     /**
