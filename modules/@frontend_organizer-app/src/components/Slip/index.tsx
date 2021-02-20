@@ -95,7 +95,8 @@ export const Slip = () => {
         },
     });
 
-    const submittable = formik.isValid && formik.values.fullname !== '' && formik.values['street-address'] !== '' && formik.values.city !== '' && formik.values['postal-code'] !== '' && formik.values['vat-id'] !== '' && formik.values.vat !== '';
+    const submittable = formik.isValid && formik.values.fullname !== '' && formik.values['street-address'] !== ''
+        && formik.values.city !== '' && formik.values['postal-code'] !== '' && formik.values['vat-id'] !== '' && formik.values.vat !== '';
 
     useEffect(() => {
 
@@ -137,12 +138,18 @@ export const Slip = () => {
                         margin: 16
                     }}
                 >{t('organizer-details')}</h2>
-                <PaddedTextInput label={t('fullname')} name={'fullname'} placeholder={'ex: Vitalik Buterin'} onChange={formik.handleChange} value={formik.values.fullname} error={formik.errors.fullname}/>
-                <PaddedTextInput label={t('street-address')} name={'street-address'} placeholder={'ex: 14-16 rue Soleillet'} onChange={formik.handleChange} value={formik.values['street-address']} error={formik.errors['street-address']}/>
-                <PaddedTextInput label={t('city')} name={'city'} placeholder={'ex: Paris'} onChange={formik.handleChange} value={formik.values.city} error={formik.errors.city}/>
-                <PaddedTextInput label={t('postal-code')} name={'postal-code'} placeholder={'ex: 75020'} onChange={formik.handleChange} value={formik.values['postal-code']} error={formik.errors['postal-code']}/>
-                <PaddedTextInput label={t('country')} name={'country'} placeholder={'ex: France'} onChange={formik.handleChange} value={formik.values.country} error={formik.errors.country}/>
-                <PaddedTextInput label={t('license-id')} name={'license-id'} placeholder={'ex: ALKSJDLKAJSDL'} onChange={formik.handleChange} value={formik.values['license-id']} error={formik.errors['license-id']}/>
+                <PaddedTextInput label={t('fullname')} name={'fullname'} placeholder={'ex: Vitalik Buterin'}
+                                 onChange={formik.handleChange} value={formik.values.fullname} error={formik.errors.fullname}/>
+                <PaddedTextInput label={t('street-address')} name={'street-address'} placeholder={'ex: 14-16 rue Soleillet'}
+                                 onChange={formik.handleChange} value={formik.values['street-address']} error={formik.errors['street-address']}/>
+                <PaddedTextInput label={t('city')} name={'city'} placeholder={'ex: Paris'} onChange={formik.handleChange}
+                                 value={formik.values.city} error={formik.errors.city}/>
+                <PaddedTextInput label={t('postal-code')} name={'postal-code'} placeholder={'ex: 75020'} onChange={formik.handleChange}
+                                 value={formik.values['postal-code']} error={formik.errors['postal-code']}/>
+                <PaddedTextInput label={t('country')} name={'country'} placeholder={'ex: France'} onChange={formik.handleChange}
+                                 value={formik.values.country} error={formik.errors.country}/>
+                <PaddedTextInput label={t('license-id')} name={'license-id'} placeholder={'ex: ALKSJDLKAJSDL'} onChange={formik.handleChange}
+                                 value={formik.values['license-id']} error={formik.errors['license-id']}/>
             </div>
             <div
                 style={{
@@ -156,8 +163,10 @@ export const Slip = () => {
                         margin: 16
                     }}
                 >{t('vat')}</h2>
-                <PaddedTextInput label={t('vat-id')} name={'vat-id'} placeholder={'ex: FR95878930166'} onChange={formik.handleChange} value={formik.values['vat-id']} error={formik.errors['vat-id']}/>
-                <PaddedTextInput label={t('vat')} name={'vat'} placeholder={'ex: 2.5'} options={{numeral: true}} onChange={formik.handleChange} value={formik.values.vat} error={formik.errors.vat}/>
+                <PaddedTextInput label={t('vat-id')} name={'vat-id'} placeholder={'ex: FR95878930166'} onChange={formik.handleChange}
+                                 value={formik.values['vat-id']} error={formik.errors['vat-id']}/>
+                <PaddedTextInput label={t('vat')} name={'vat'} placeholder={'ex: 2.5'} options={{numeral: true}}
+                                 onChange={formik.handleChange} value={formik.values.vat} error={formik.errors.vat}/>
             </div>
         </div>
         <Button
