@@ -25,6 +25,7 @@
         "@lerna/postclean": "echo '@backend/nest has no postclean'"
     },
     "dependencies": {
+        "node-zip": "1.1.1",
         "handlebars-pdf": "1.0.1",
         "@common/geoloc": "1.0.0",
         "@common/global": "1.0.0",
