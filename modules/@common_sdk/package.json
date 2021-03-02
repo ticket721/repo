@@ -16,7 +16,7 @@
     "license": "MIT",
     "dependencies": {
         "@common/global": "1.0.0",
-        "axios": "0.19.2",
+        "axios": "0.21.1",
         "@ticket721/e712": "0.4.1",
         "supertest": "^4.0.2",
         "tslint": "6.0.0",
