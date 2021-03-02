@@ -11,6 +11,14 @@ import { evaluateError } from '../../utils/extractError';
 import { useParams } from 'react-router';
 import { categoryParam } from '../../screens/types';
 
+const STRIPE_EURO_FIX_FEES = 25;
+const STRIPE_EURO_VAR_FEES = 0.014;
+const STRIPE_NON_EURO_FIX_FEES = 25;
+const STRIPE_NON_EURO_VAR_FEES = 0.029;
+
+const TICKET721_FIX_FEES = 100;
+const TICKET721_VAR_FEES = 0.01;
+
 export interface DateRange {
     name: string;
     eventBegin: Date;
@@ -22,6 +30,44 @@ export interface SaleDeltas {
     endSaleDelta: number;
 }
 
+interface EstimatedAmounts {
+    european: number;
+    international: number;
+}
+
+const subtractFees = (price: number): EstimatedAmounts => {
+    const subEuroStripeFeesPrice = price
+        - STRIPE_EURO_FIX_FEES
+        - (price * STRIPE_EURO_VAR_FEES);
+
+    const subInternationalStripeFeesPrice = price
+        - STRIPE_NON_EURO_FIX_FEES
+        - (price * STRIPE_NON_EURO_VAR_FEES);
+
+    return {
+        european: Math.round(subEuroStripeFeesPrice
+            - TICKET721_FIX_FEES
+            - (subEuroStripeFeesPrice * TICKET721_VAR_FEES)),
+        international: Math.round(subInternationalStripeFeesPrice
+            - TICKET721_FIX_FEES
+            - (subInternationalStripeFeesPrice * TICKET721_VAR_FEES)),
+    }
+};
+
+const addTicket721Fees = (amount: number): number => {
+    return amount + TICKET721_FIX_FEES + (amount * TICKET721_VAR_FEES);
+}
+
+const addFees = (amount: number, feesType: 'european' | 'international'): number => {
+    const addTicket721FeesPrice = addTicket721Fees(amount);
+
+    if (feesType === 'european') {
+        return addTicket721FeesPrice + STRIPE_EURO_FIX_FEES + (addTicket721FeesPrice * STRIPE_EURO_VAR_FEES);
+    }
+
+    return addTicket721FeesPrice + STRIPE_NON_EURO_FIX_FEES + (addTicket721FeesPrice * STRIPE_NON_EURO_VAR_FEES);
+};
+
 export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?: string): {
     ticketTypeProps: ToggleProps,
     datesProps: SelectProps,
@@ -31,6 +77,8 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
     seatsProps: TextInputProps,
     freeToggleProps: ToggleProps,
     priceProps: PriceInputProps,
+    maxEuroAmountProps: PriceInputProps,
+    maxInternationalAmountProps: PriceInputProps,
     duplicateOnProps?: SelectProps,
     relativeSaleDeltas?: SaleDeltas,
 } => {
@@ -45,7 +93,10 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
     const [ saleEndField, saleEndMeta, saleEndHelper ] = useField<Date>(`${parentField ? parentField + '.' : ''}saleEnd`);
     const [ seatsField, seatsMeta, seatsHelper ] = useField<number>(`${parentField ? parentField + '.' : ''}seats`);
     const [ currencyField,, currencyHelper ] = useField<string>(`${parentField ? parentField + '.' : ''}currency`);
-    const [ priceField, priceMeta, priceHelper ] = useField<number>(`${parentField ? parentField + '.' : ''}price`);
+
+    const [ payedPriceField, payedPriceMeta, payedPriceHelper ] = useField<number>(`${parentField ? parentField + '.' : ''}price`);
+    const [ maxReceivedAmount, setMaxReceivedAmount ] = useState<EstimatedAmounts>(subtractFees(payedPriceMeta.value));
+
     const [ datesField, datesMeta, datesHelper ] = useField<number[]>(`${parentField ? parentField + '.' : ''}dates`);
 
     const [ lastCurrency, setLastCurrency ] = useState<string>(currencyField.value === 'FREE' ? 'EUR' : currencyField.value);
@@ -172,7 +223,11 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
             name: 'isFree',
             onChange: (isCheck) => {
                 if (isCheck) {
-                    priceHelper.setValue(0);
+                    payedPriceHelper.setValue(0);
+                    setMaxReceivedAmount({
+                        european: 0,
+                        international: 0
+                    });
                     currencyHelper.setValue('FREE');
                 } else {
                     currencyHelper.setValue(lastCurrency);
@@ -180,26 +235,63 @@ export const useCategoryCreationFields = (dateRanges: DateRange[], parentField?:
                 setIsFree(isCheck);
                 currencyHelper.setTouched(true);
                 setTimeout(() => {
-                    priceHelper.setTouched(true);
+                    payedPriceHelper.setTouched(true);
                 }, 300);
             },
             label: t('free'),
         },
         priceProps: {
-            name: priceField.name,
+            name: payedPriceField.name,
             currName: currencyField.name,
-            value: priceField.value,
+            value: payedPriceField.value,
             currency: lastCurrency,
-            error: evaluateError(priceMeta),
+            error: evaluateError(payedPriceMeta),
             label: t('price_label'),
             placeholder: t('price_placeholder'),
             disabled: isFree,
-            onPriceChange: priceHelper.setValue,
+            onPriceChange: (newPrice) => {
+                payedPriceHelper.setValue(newPrice);
+                setMaxReceivedAmount(subtractFees(newPrice));
+            },
             onCurrencyChange: (curr) => {
                 currencyHelper.setValue(curr);
                 setLastCurrency(curr);
             },
-            onBlur: priceField.onBlur,
+            onBlur: payedPriceField.onBlur,
+        },
+        maxEuroAmountProps: {
+            name: 'received_euro_amount',
+            value: maxReceivedAmount.european,
+            error: evaluateError(payedPriceMeta),
+            label: t('euro_received_amount_label'),
+            placeholder: t('price_placeholder'),
+            disabled: isFree,
+            onPriceChange: (newAmount) => {
+                const calculatedPrice = addFees(newAmount, 'european');
+                setMaxReceivedAmount({
+                    ...subtractFees(calculatedPrice),
+                    european: newAmount
+                });
+                payedPriceHelper.setValue(Math.round(calculatedPrice));
+            },
+            onBlur: payedPriceField.onBlur,
+        },
+        maxInternationalAmountProps: {
+            name: 'received_international_amount',
+            value: maxReceivedAmount.international,
+            error: evaluateError(payedPriceMeta),
+            label: t('non_euro_received_amount_label'),
+            placeholder: t('price_placeholder'),
+            disabled: isFree,
+            onPriceChange: (newAmount) => {
+                const calculatedPrice = addFees(newAmount, 'international');
+                setMaxReceivedAmount({
+                    ...subtractFees(calculatedPrice),
+                    international: newAmount
+                });
+                payedPriceHelper.setValue(Math.round(calculatedPrice));
+            },
+            onBlur: payedPriceField.onBlur,
         },
         duplicateOnProps: !isMultiDates && datesField.value.length > 0 ? {
             options: dateOptions.filter(date => datesField.value[0].toString() !== date.value),

@@ -363,7 +363,6 @@ export const TicketDetails: React.FC<TicketDetailsProps> = (props: TicketDetails
     }, []);
 
     useEffect(() => {
-        console.log('Here i am', props.ticket.id);
         dispatch(StartRegenInterval(props.ticket.id));
 
         return () => dispatch(ResetTicket());
