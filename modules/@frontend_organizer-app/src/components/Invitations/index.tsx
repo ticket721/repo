@@ -236,7 +236,6 @@ const getBatchInvitations = async (data: string[][], _dates: DateEntity[]): Prom
     const fields = ['email', 'amount', 'dates'];
 
     if (!isEqual(data[0], fields)) {
-        console.log(data[0]);
         return {
             error: [
                 'missing_headers',

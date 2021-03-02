@@ -5,6 +5,8 @@ import './locales';
 import { useTranslation }              from 'react-i18next';
 import { DateRange, SaleDeltas, useCategoryCreationFields } from './useCategoryCreationFields';
 import { humanizeTime } from '@frontend/core/lib/utils/date';
+import { format } from '@common/global';
+import ReactTooltip from 'react-tooltip';
 
 export interface CategoryFieldsProps {
     parentField?: string;
@@ -24,10 +26,13 @@ export const CategoryFields: React.FC<CategoryFieldsProps> = ({ parentField, dat
         seatsProps,
         freeToggleProps,
         priceProps,
+        maxEuroAmountProps,
+        maxInternationalAmountProps,
         duplicateOnProps,
         relativeSaleDeltas,
     } = useCategoryCreationFields(dateRanges, parentField);
 
+    const [ onEuroPriceEdit, setOnEuroPriceEdit ] = useState<boolean>(true);
     const [ duplicate, setDuplicate ] = useState<boolean>(false);
 
     return <FormContainer>
@@ -84,6 +89,101 @@ export const CategoryFields: React.FC<CategoryFieldsProps> = ({ parentField, dat
                     <PriceInput
                     currColor={sigColors && sigColors[0]}
                     {...priceProps}/>
+                    <ReceivedAmount>
+                        {
+                            onEuroPriceEdit ?
+                            <div style={{ position: 'relative'}}>
+                                <PriceInput
+                                currColor={sigColors && sigColors[0]}
+                                currency={priceProps.currency}
+                                disabledCurr={true}
+                                tooltipId={'euro-card-received-amount-infos'}
+                                tooltipMsgs={[
+                                    t('received_amount_tooltip_1'),
+                                    t('received_amount_tooltip_2'),
+                                ]}
+                                {...maxEuroAmountProps}/>
+                                {/* eslint-disable-next-line */}
+                                <CardEmoji
+                                role={'img'}
+                                aria-label={'card type euro'}
+                                data-tip
+                                data-for={'card-type-euro-infos'}>🇪🇺</CardEmoji>
+                                <ReactTooltip id={'card-type-euro-infos'} place={'bottom'} effect={'solid'}>
+                                    {t('card_type_euro')}
+                                </ReactTooltip>
+                            </div> :
+                            <div style={{ position: 'relative'}}>
+                                <PriceInput
+                                currColor={sigColors && sigColors[0]}
+                                currency={priceProps.currency}
+                                disabledCurr={true}
+                                tooltipId={'non-euro-card-received-amount-infos'}
+                                tooltipMsgs={[
+                                    t('received_amount_tooltip_1'),
+                                    t('received_amount_tooltip_2'),
+                                ]}
+                                {...maxInternationalAmountProps}/>
+                                {/* eslint-disable-next-line */}
+                                <CardEmoji
+                                role={'img'}
+                                aria-label={'card type non euro'}
+                                data-tip
+                                data-for={'card-type-non-euro-infos'}>🌐</CardEmoji>
+                                <ReactTooltip id={'card-type-non-euro-infos'} place={'bottom'} effect={'solid'}>
+                                    {t('card_type_non_euro')}
+                                </ReactTooltip>
+                            </div>
+                        }
+                        {
+                            onEuroPriceEdit ?
+                            <>
+                                <OtherPriceMsg
+                                data-tip
+                                data-for={'card-type-non-euro-infos-second'}
+                                onClick={() => setOnEuroPriceEdit(false)}>
+                                    <span
+                                    role={'img'}
+                                    aria-label={'card type non euro'}
+                                    style={{
+                                        fontSize: 18,
+                                        paddingRight: 8
+                                    }}>🌐</span>
+                                    <span>
+                                        {
+                                            format(priceProps.currency, maxInternationalAmountProps.value)
+                                        }
+                                    </span>
+                                </OtherPriceMsg>
+                                <ReactTooltip id={'card-type-non-euro-infos-second'} place={'bottom'} effect={'solid'}>
+                                    {t('card_type_non_euro')}
+                                </ReactTooltip>
+                            </> :
+                            <>
+                                <OtherPriceMsg
+                                data-tip
+                                data-for={'card-type-euro-infos-second'}
+                                onClick={() => setOnEuroPriceEdit(true)}>
+                                    <span
+                                    role={'img'}
+                                    aria-label={'card type euro'}
+                                    style={{
+                                        fontSize: 20,
+                                        paddingRight: 8,
+                                        paddingTop: 2
+                                    }}>🇪🇺</span>
+                                    <span>
+                                        {
+                                            format(priceProps.currency, maxEuroAmountProps.value)
+                                        }
+                                    </span>
+                                </OtherPriceMsg>
+                                <ReactTooltip id={'card-type-euro-infos-second'} place={'bottom'} effect={'solid'}>
+                                    {t('card_type_euro')}
+                                </ReactTooltip>
+                            </>
+                        }
+                    </ReceivedAmount>
                 </PriceConfig>
             </SeatsAndPrice>
             <SaleDateRangeInput>
@@ -193,11 +293,15 @@ const SaleDateRangeInput = styled.div`
 const SeatsAndPrice = styled.div`
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
     margin-bottom: ${props => props.theme.regularSpacing};
 
-    & > div {
-        width: calc(50% - ${props => props.theme.smallSpacing});
+    & > div:first-child {
+        width: calc(40% - ${props => props.theme.smallSpacing});
+    }
+
+    & > div:last-child {
+        width: calc(60% - ${props => props.theme.smallSpacing});
     }
 `;
 
@@ -266,6 +370,33 @@ const DuplicateContainer = styled.div`
     & > span {
         font-weight: 500;
         color: ${props => props.theme.textColor};
+        text-decoration: underline;
+    }
+`;
+
+const ReceivedAmount = styled.div`
+    margin-top: ${props => props.theme.regularSpacing};
+    font-weight: 400;
+`;
+
+const CardEmoji = styled.span`
+    position: absolute;
+    right: 12px;
+    bottom: 8px;
+    font-size: 22px;
+    cursor: pointer;
+`;
+
+const OtherPriceMsg = styled.div`
+    display: flex;
+    align-items: center;
+    height: 20px;
+    margin: ${props => props.theme.smallSpacing};
+    font-size: 14px;
+    cursor: pointer;
+    width: fit-content;
+
+    :hover > span:last-child {
         text-decoration: underline;
     }
 `;
