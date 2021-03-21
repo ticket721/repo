@@ -75,7 +75,7 @@
         "@sentry/tracing": "5.27.4",
         "@sentry/cli": "1.59.0",
         "react-error-boundary": "3.0.2",
-        "es6-crawler-detect": "3.1.2"
+        "es6-crawler-detect": "3.1.3"
     },
     "resolutions": {
         "react-scripts/**/jest": "24.9.0"
