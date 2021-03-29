@@ -1,23 +1,27 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import styled from '../../../config/styled';
-import { fromAtomicValue, getAtomicValue, getDecimalScale } from '@common/global/lib/currency';
+import { fromAtomicValue, getAtomicValue, getDecimalScale, symbolOf } from '@common/global/lib/currency';
 import CurrencySelectInput from '../currency-select';
 import NumberFormat from 'react-number-format';
+import ReactTooltip from 'react-tooltip';
 
 export interface PriceInputProps {
     name: string;
-    currName: string;
+    currName?: string;
     label: string;
     placeholder?: string;
     currency?: string;
+    disabledCurr?: boolean;
     disabled?: boolean;
     defaultValue?: number;
     value?: number;
     className?: string;
     currColor?: string;
     error?: string;
+    tooltipId?: string;
+    tooltipMsgs?: string[];
     onPriceChange: (atomicValue: number) => void;
-    onCurrencyChange: (code: string) => void;
+    onCurrencyChange?: (code: string) => void;
     onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
 
@@ -48,6 +52,24 @@ const StyledLabel = styled.label`
         transition: opacity 300ms ease;
         width: 4px;
     }
+`;
+
+const InfoTooltip = styled.div`
+    width: 16px;
+    height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    right: 12px;
+    top: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    border: 1px solid ${(props) => props.theme.textColorDarker};
+    color: ${(props) => props.theme.textColorDarker};
+    border-radius: 10px;
+    padding: 4px 2px 2px;
+    cursor: pointer;
 `;
 
 const StyledInputContainer = styled.div<Partial<PriceInputProps>>`
@@ -105,26 +127,51 @@ const StyledInputContainer = styled.div<Partial<PriceInputProps>>`
     }
 `;
 
+const parsePrice = (price: string): number => {
+    return parseFloat(price.replace(',', ''));
+};
+
 export const PriceInput: React.FunctionComponent<PriceInputProps> = (props: PriceInputProps): JSX.Element => {
     const defaultCurrency: any = 'EUR';
 
-    const [curr, setCurr] = useState<string>(props.currency || defaultCurrency);
+    const curr = useMemo(() => {
+        return props.currency || defaultCurrency;
+    }, [props.currency]);
 
     return (
         <StyledInputContainer error={props.error} className={props.className} disabled={props.disabled}>
             <StyledLabel htmlFor={props.name}>{props.label}</StyledLabel>
+            {props.tooltipId && props.tooltipMsgs ? (
+                <>
+                    <InfoTooltip data-tip data-for={props.tooltipId}>
+                        i
+                    </InfoTooltip>
+                    <ReactTooltip id={props.tooltipId} place={'top'} effect={'solid'} multiline={true}>
+                        {props.tooltipMsgs.map((msg, idx) => (
+                            <div key={idx} style={{ padding: 4 }}>
+                                {msg}
+                            </div>
+                        ))}
+                    </ReactTooltip>
+                </>
+            ) : null}
             <div className={'sub-container'}>
-                <CurrencySelectInput
-                    name={props.currName}
-                    code={curr}
-                    disabled={props.disabled}
-                    selectedColor={props.currColor}
-                    onChange={(currOpt) => {
-                        setCurr(currOpt.value);
-                        props.onCurrencyChange(currOpt.value);
-                    }}
-                    onBlur={props.onBlur}
-                />
+                {props.currency ? (
+                    props.onCurrencyChange ? (
+                        <CurrencySelectInput
+                            name={props.currName || 'default_curr_name'}
+                            code={curr}
+                            disabled={props.disabledCurr || props.disabled}
+                            selectedColor={props.currColor}
+                            onChange={(currOpt) => {
+                                props.onCurrencyChange ? props.onCurrencyChange(currOpt.value) : console.log();
+                            }}
+                            onBlur={props.onBlur}
+                        />
+                    ) : (
+                        <span>{symbolOf(props.currency) || props.currency}</span>
+                    )
+                ) : null}
                 <NumberFormat
                     name={props.name}
                     defaultValue={props.defaultValue && fromAtomicValue(curr, props.defaultValue)}
@@ -136,9 +183,7 @@ export const PriceInput: React.FunctionComponent<PriceInputProps> = (props: Pric
                     allowNegative={false}
                     allowedDecimalSeparators={[',', '.']}
                     disabled={props.disabled}
-                    onValueChange={(value: any) =>
-                        props.onPriceChange(Math.round(getAtomicValue(curr, value.floatValue)))
-                    }
+                    onChange={(e) => props.onPriceChange(Math.round(getAtomicValue(curr, parsePrice(e.target.value))))}
                     onBlur={props.onBlur}
                 />
             </div>
