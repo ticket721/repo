@@ -55,7 +55,7 @@
         "@capacitor/cli": "2.0.1",
         "react-scripts": "3.4.1",
         "tslint": "6.0.0",
-        "serve": "11.3.2",
+        "serve": "12.0.0",
         "@sentry/react": "5.27.4",
         "@sentry/tracing": "5.27.4",
         "@sentry/cli": "1.59.0",
