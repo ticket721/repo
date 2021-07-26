@@ -47,7 +47,7 @@
         "express-locale": "2.0.0",
         "remove-markdown": "0.3.0",
         "cors": "2.8.5",
-        "ethers": "4.0.45",
+        "ethers": "5.0.0",
         "formik": "2.1.4",
         "framer": "1.2.9",
         "ionicons": "5.0.0",
