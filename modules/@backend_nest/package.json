@@ -65,7 +65,7 @@
         "elasticsearch": "16.6.0",
         "email-templates": "7.0.4",
         "ethereum-address": "0.0.4",
-        "ethers": "4.0.45",
+        "ethers": "5.0.0",
         "fs-extra": "8.1.0",
         "lodash": "4.17.15",
         "nest-schedule": "0.6.4",
@@ -83,7 +83,7 @@
         "ts-jest": "25.2.1",
         "ts-loader": "6.1.1",
         "typescript": "3.8.3",
-        "web3": "1.2.6",
+        "web3": "1.2.8",
         "winston": "3.2.1"
     },
     "devDependencies": {
