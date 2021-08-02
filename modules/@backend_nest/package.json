@@ -39,7 +39,7 @@
         "@nestjs/passport": "6.2.0",
         "@nestjs/platform-express": "6.11.8",
         "@nestjs/schematics": "6.7.0",
-        "@nestjs/swagger": "4.3.1",
+        "@nestjs/swagger": "4.7.16",
         "@nestjs/testing": "6.7.1",
         "@ticket721/e712": "file:../@public_e712",
         "@types/aws-sdk": "^2.7.0",
